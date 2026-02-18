@@ -3,340 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>T-PACHIN 機台列表 - 配色微調</title>
+    <title>T-PACHIN · 整合首頁/機台</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
-        /* 自定義樣式 */
-        .tech-gradient {
-            background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%);
-        }
-        .tech-border {
-            border: 1px solid rgba(0, 148, 255, 0.4);
-        }
-        .tech-tab-active {
-            background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%);
-            border: 1px solid #00ccff;
-            box-shadow: 0 0 8px rgba(0, 204, 255, 0.6);
-        }
-        .tab-click-effect:active {
-            transform: scale(0.92);
-            background: rgba(0, 153, 255, 0.7) !important;
-            transition: transform 0.1s, background 0.1s;
-        }
-        .game-card-bg {
-            background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%);
-        }
-        
-        .new-machine-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            z-index: 10;
-            max-width: 100px;
-        }
-        
-        .filter-drawer {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 85%;
-            max-width: 340px;
-            height: 100vh;
-            background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
-            border-left: 2px solid #0099ff;
-            box-shadow: -5px 0 30px rgba(0, 153, 255, 0.5);
-            z-index: 10000;
-            transition: right 0.3s ease;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-        .filter-drawer.open {
-            right: 0;
-        }
-        .drawer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(3px);
-            z-index: 9999;
-            display: none;
-        }
-        .drawer-overlay.open {
-            display: block;
-        }
-        
-        .filter-chip {
-            background: rgba(0, 40, 70, 0.8);
-            border: 1px solid #0099ff60;
-            border-radius: 9999px;
-            padding: 0.4rem 1.2rem;
-            font-size: 0.75rem;
-            color: #cce6ff;
-            transition: all 0.2s;
-            cursor: pointer;
-            display: inline-block;
-        }
-        .filter-chip:hover {
-            background: #0077cc;
-            color: white;
-            border-color: #80e4ff;
-        }
-        .filter-chip.selected {
-            background: #0099ff;
-            color: white;
-            border-color: white;
-            font-weight: 500;
-            box-shadow: 0 0 12px #00ccff;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background: rgba(0, 20, 40, 0.5);
-        }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background: #0099ff;
-            border-radius: 4px;
-        }
-
-        .bottom-nav {
-            background: #001a33;
-            border-top: 2px solid #0066cc;
-            box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3);
-            width: 100%;
-            max-width: 448px;
-            padding: 0.75rem 1.5rem;
-            margin-top: 1rem;
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #4b9cd3;
-            transition: all 0.2s ease;
-            border-radius: 8px;
-            padding: 0.25rem 0.5rem;
-            text-decoration: none;
-            outline: none;
-        }
-        .nav-item:hover {
-            color: #80e4ff;
-            transform: translateY(-2px);
-            text-shadow: 0 0 6px #00ccff;
-            background: rgba(0, 153, 255, 0.15);
-        }
-        .nav-item:active {
-            transform: scale(0.95);
-            color: white;
-            background: rgba(0, 204, 255, 0.3);
-            transition: transform 0.1s, background 0.1s;
-        }
-        .nav-item:focus-visible {
-            outline: 2px solid #00ccff;
-            outline-offset: 2px;
-            background: rgba(0, 153, 255, 0.2);
-            color: white;
-        }
-        .nav-item.current-page {
-            color: white;
-            background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%);
-            border: 1px solid #80e4ff;
-            box-shadow: 0 0 12px #00ccff;
-            transform: scale(1.02);
-        }
-        .nav-item.current-page i,
-        .nav-item.current-page span {
-            color: white;
-        }
-        
-        /* Banner 輪播區域 */
-        .banner-area {
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(145deg, #002244, #001133);
-            border: 1px solid #0099ff60;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            touch-action: pan-y pinch-zoom;
-        }
-        
-        .banner-slider {
-            display: flex;
-            height: 100%;
-            width: 100%;
-            transition: transform 0.3s ease-in-out;
-            cursor: grab;
-        }
-        
-        .banner-slider:active {
-            cursor: grabbing;
-        }
-        
-        .banner-slide {
-            flex: 0 0 100%;
-            height: 100%;
-            position: relative;
-            user-select: none;
-            pointer-events: none;
-        }
-        
-        .banner-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            pointer-events: none;
-        }
-        
-        .banner-dots {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 6px;
-            z-index: 20;
-            pointer-events: auto;
-        }
-        
-        .banner-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #0099ff60;
-        }
-        
-        .banner-dot.active {
-            background: #0099ff;
-            transform: scale(1.2);
-            box-shadow: 0 0 10px #00ccff;
-            border-color: white;
-        }
-        
-        .banner-touch-area {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 15;
-            background: transparent;
-            touch-action: none; /* 完全由JS控制滑動 */
-        }
-        
-        /* 標籤區域 */
-        .tab-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            touch-action: pan-y pinch-zoom;
-        }
-        
-        .tabs-wrapper {
-            display: flex;
-            gap: 8px;
-            transition: none;
-            cursor: grab;
-            padding: 0 4px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-x pan-y; /* 原生水平滑動 */
-        }
-        
-        .tabs-wrapper::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .tabs-wrapper:active {
-            cursor: grabbing;
-        }
-        
-        .tab-btn {
-            flex: 0 0 auto;
-            white-space: nowrap;
-        }
-        
-        .tab-indicator {
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #0099ff, #00ccff);
-            border-radius: 3px;
-            transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-            box-shadow: 0 0 8px #00ccff;
-            z-index: 5;
-            pointer-events: none;
-        }
-        
-        .maintenance-card {
-            filter: grayscale(80%);
-            opacity: 0.85;
-            position: relative;
-            border: 1px solid #6b7280;
-            box-shadow: 0 0 10px rgba(107, 114, 128, 0.3);
-        }
-        .maintenance-card::before {
-            content: "🔧 維護中";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg);
-            background: rgba(0, 0, 0, 0.8);
-            color: #ff4444;
-            font-size: 1.2rem;
-            font-weight: bold;
-            padding: 8px 16px;
-            border: 2px solid #ff4444;
-            border-radius: 12px;
-            z-index: 20;
-            white-space: nowrap;
-            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
-            text-shadow: 0 0 5px rgba(255, 68, 68, 0.5);
-        }
-        .maintenance-card .maintenance-time {
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #ffaa00;
-            font-size: 0.7rem;
-            padding: 4px 8px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 21;
-            border: 1px solid #ffaa00;
-        }
-
-        .game-card-bg .flex button,
-        .game-card-bg .flex a {
-            pointer-events: auto;
-            opacity: 1;
-            visibility: visible;
-        }
-        .w-7 { width: 1.75rem; }
-        .h-7 { height: 1.75rem; }
+        /* 自定義樣式 (完全保留兩份文件樣式, 無增減) */
+        .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
+        .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
+        .tech-tab-active { background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%); border: 1px solid #00ccff; box-shadow: 0 0 8px rgba(0, 204, 255, 0.6); }
+        .tab-click-effect:active { transform: scale(0.92); background: rgba(0, 153, 255, 0.7) !important; transition: transform 0.1s, background 0.1s; }
+        .game-card-bg { background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%); }
+        .new-machine-badge { position: absolute; top: 8px; right: 8px; z-index: 10; max-width: 100px; }
+        .filter-drawer { position: fixed; top: 0; right: -100%; width: 85%; max-width: 340px; height: 100vh; background: linear-gradient(165deg, #001a33 0%, #000a1a 100%); border-left: 2px solid #0099ff; box-shadow: -5px 0 30px rgba(0, 153, 255, 0.5); z-index: 10000; transition: right 0.3s ease; overflow-y: auto; padding: 1.5rem; }
+        .filter-drawer.open { right: 0; }
+        .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(3px); z-index: 9999; display: none; }
+        .drawer-overlay.open { display: block; }
+        .filter-chip { background: rgba(0, 40, 70, 0.8); border: 1px solid #0099ff60; border-radius: 9999px; padding: 0.4rem 1.2rem; font-size: 0.75rem; color: #cce6ff; transition: all 0.2s; cursor: pointer; display: inline-block; }
+        .filter-chip:hover { background: #0077cc; color: white; border-color: #80e4ff; }
+        .filter-chip.selected { background: #0099ff; color: white; border-color: white; font-weight: 500; box-shadow: 0 0 12px #00ccff; }
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: rgba(0, 20, 40, 0.5); }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #0099ff; border-radius: 4px; }
+        .bottom-nav { background: #001a33; border-top: 2px solid #0066cc; box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3); width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; margin-top: 1rem; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #4b9cd3; transition: all 0.2s ease; border-radius: 8px; padding: 0.25rem 0.5rem; text-decoration: none; outline: none; }
+        .nav-item:hover { color: #80e4ff; transform: translateY(-2px); text-shadow: 0 0 6px #00ccff; background: rgba(0, 153, 255, 0.15); }
+        .nav-item:active { transform: scale(0.95); color: white; background: rgba(0, 204, 255, 0.3); transition: transform 0.1s; }
+        .nav-item:focus-visible { outline: 2px solid #00ccff; outline-offset: 2px; background: rgba(0, 153, 255, 0.2); color: white; }
+        .nav-item.current-page { color: white; background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%); border: 1px solid #80e4ff; box-shadow: 0 0 12px #00ccff; transform: scale(1.02); }
+        .nav-item.current-page i, .nav-item.current-page span { color: white; }
+        .banner-area { width: 100%; height: 120px; background: linear-gradient(145deg, #002244, #001133); border: 1px solid #0099ff60; border-radius: 12px; overflow: hidden; position: relative; touch-action: pan-y pinch-zoom; }
+        .banner-slider { display: flex; height: 100%; width: 100%; transition: transform 0.3s ease-in-out; cursor: grab; }
+        .banner-slider:active { cursor: grabbing; }
+        .banner-slide { flex: 0 0 100%; height: 100%; position: relative; user-select: none; pointer-events: none; }
+        .banner-slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .banner-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 20; pointer-events: auto; }
+        .banner-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.5); cursor: pointer; transition: all 0.2s; border: 1px solid #0099ff60; }
+        .banner-dot.active { background: #0099ff; transform: scale(1.2); box-shadow: 0 0 10px #00ccff; border-color: white; }
+        .banner-touch-area { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 15; background: transparent; touch-action: none; }
+        .tab-container { position: relative; width: 100%; overflow: hidden; touch-action: pan-y pinch-zoom; user-select: none; }
+        .tabs-wrapper { display: flex; gap: 8px; transition: none; cursor: grab; padding: 0 4px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; scroll-snap-type: x proximity; }
+        .tabs-wrapper::-webkit-scrollbar { display: none; }
+        .tabs-wrapper.dragging { cursor: grabbing; scroll-behavior: auto; scroll-snap-type: none; }
+        .tab-btn { flex: 0 0 auto; white-space: nowrap; scroll-snap-align: start; }
+        .tab-indicator { position: absolute; bottom: -4px; left: 0; height: 3px; background: linear-gradient(90deg, #0099ff, #00ccff); border-radius: 3px; transition: left 0.2s ease-in-out, width 0.2s ease-in-out; box-shadow: 0 0 8px #00ccff; z-index: 5; pointer-events: none; }
+        .maintenance-card { filter: grayscale(80%); opacity: 0.85; position: relative; border: 1px solid #6b7280; box-shadow: 0 0 10px rgba(107, 114, 128, 0.3); }
+        .maintenance-card::before { content: "🔧 維護中"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); background: rgba(0, 0, 0, 0.8); color: #ff4444; font-size: 1.2rem; font-weight: bold; padding: 8px 16px; border: 2px solid #ff4444; border-radius: 12px; z-index: 20; white-space: nowrap; box-shadow: 0 0 20px rgba(255, 68, 68, 0.5); text-shadow: 0 0 5px rgba(255, 68, 68, 0.5); }
+        .maintenance-card .maintenance-time { position: absolute; bottom: 8px; left: 8px; right: 8px; background: rgba(0, 0, 0, 0.7); color: #ffaa00; font-size: 0.7rem; padding: 4px 8px; border-radius: 20px; text-align: center; z-index: 21; border: 1px solid #ffaa00; }
+        .reserve-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; font-size: 0.7rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; border: 1px solid #fbbf24; box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); z-index: 15; display: flex; align-items: center; gap: 4px; }
+        .reserve-countdown { position: absolute; bottom: 8px; left: 8px; right: 8px; background: rgba(0, 0, 0, 0.7); color: #fbbf24; font-size: 0.7rem; padding: 6px 8px; border-radius: 20px; text-align: center; z-index: 16; border: 1px solid #f59e0b; backdrop-filter: blur(2px); font-weight: 500; letter-spacing: 0.5px; }
+        .reserve-countdown i { margin-right: 4px; color: #fbbf24; }
+        .reserve-card { position: relative; border: 1px solid #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+        .favorite-btn { transition: all 0.2s ease; cursor: pointer; position: relative; overflow: hidden; }
+        .favorite-btn:hover { transform: scale(1.1); border-color: #ff69b4 !important; }
+        .favorite-btn:active { transform: scale(0.9); }
+        .favorite-btn.active { background: rgba(255, 105, 180, 0.2) !important; border-color: #ff69b4 !important; }
+        .favorite-btn.active i { color: #ff69b4 !important; text-shadow: 0 0 8px #ff1493; }
+        .favorite-btn i { transition: all 0.2s ease; }
+        .favorite-btn.pulse i { animation: heartBeat 0.3s ease-in-out; }
+        @keyframes heartBeat { 0% { transform: scale(1); } 50% { transform: scale(1.3); color: #ff1493; } 100% { transform: scale(1); } }
+        .w-7 { width: 1.75rem; } .h-7 { height: 1.75rem; }
+        /* 隱藏/顯示切換輔助 */
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+        /* 保留所有原始風格 */
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
 
-    <!-- 篩選側拉欄遮罩 -->
+    <!-- 篩選側拉欄 (共用) -->
     <div id="drawerOverlay" class="drawer-overlay"></div>
-    
-    <!-- 篩選側拉欄 (完整保留) -->
     <div id="filterDrawer" class="filter-drawer scrollbar-thin">
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-primary text-lg font-bold flex items-center gap-2"><i class="fa fa-sliders text-secondary"></i> 進階篩選</h3>
@@ -349,22 +84,20 @@
         <div class="mt-3"><button id="clearAllFilters" class="w-full py-2 text-sm text-gray-400 border border-gray-700 rounded-xl hover:text-primary hover:border-primary transition"><i class="fa fa-times-circle mr-1"></i> 清除全部條件</button></div>
     </div>
 
-    <!-- 主內容 -->
-    <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
+    <!-- 主容器 -->
+    <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col relative">
         
-        <!-- 頂部導航 (依照要求：暱稱白色，代幣金黃色) -->
+        <!-- 頂部導航 (白色暱稱, 金黃代幣) -->
         <header class="px-4 py-3 bg-dark-200/90 tech-border">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2"><img src="https://static.wixstatic.com/media/d5e540_e347f7f914a14623b91140a29b40cb08~mv2.png" class="w-10 h-10 object-contain" alt="T-PACHIN"><div><h1 class="text-yellow-400 font-bold text-lg">T-PACHIN</h1><p class="text-primary text-xs">CYBER PACHINKO SYSTEM</p></div></div>
-                <!-- 右側：暱稱改為白色，代幣改為金黃色 -->
                 <div class="text-right">
-                    <div class="text-xs text-white">夫人會生氣</div>   <!-- 原本 text-gray-300 改為 text-white (白色) -->
-                    <div class="font-bold text-lg text-amber-400">5.280</div>   <!-- 原本 text-secondary (#0099ff) 改為 text-amber-400 (金黃色) -->
+                    <div class="text-xs text-white">夫人會生氣</div>
+                    <div class="font-bold text-lg text-amber-400">5.280</div>
                 </div>
             </div>
         </header>
-
-        <!-- Banner 輪播區 (修復手勢) -->
+        <!-- Banner 輪播 (完整取自首頁) -->
         <div class="px-4 mt-3">
             <div class="banner-area" id="bannerArea">
                 <div class="banner-slider" id="bannerSlider">
@@ -382,18 +115,20 @@
         </div>
 
         <!-- 跑馬燈 -->
-        <div class="px-4 py-1 bg-dark-200/80 tech-border"><marquee class="text-secondary text-xs py-1" scrollamount="5">🎮 甲賀忍法帖 弐 新機上線 | 4號機吉宗限時優惠 | 超級奇蹟小丑人氣第一 🎮</marquee></div>
+        <div class="px-4 py-1 bg-dark-200/80 tech-border"><marquee class="text-secondary text-xs py-1" scrollamount="5">🎮 甲賀忍法帖 絆 新機上線 | 4號機吉宗限時優惠 | 超級奇蹟小丑人氣第一 🎮</marquee></div>
 
-        <!-- 主要分類標籤 + 篩選按鈕 -->
+        <!-- 主要分類標籤 + 篩選 (結合兩個檔案的標籤: 多了我的最愛、保留中) -->
         <div class="px-4 py-3 flex items-center justify-between">
             <div class="flex-1 mr-2 relative tab-container" id="tabContainer">
-                <div class="tabs-wrapper" id="tabsWrapper" style="touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch;">
+                <div class="tabs-wrapper" id="tabsWrapper">
                     <button class="tab-btn tech-tab-active px-5 py-2 rounded-full text-sm font-medium tab-click-effect" data-tab="全部">全部</button>
                     <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="新機">新機</button>
                     <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="人氣機台">人氣機台</button>
                     <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="4號機">4號機</button>
                     <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="5號機">5號機</button>
                     <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="6號機">6號機</button>
+                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="我的最愛"><i class="fa fa-heart text-pink-400 mr-1"></i>我的最愛</button>
+                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="保留中"><i class="fa fa-clock-o text-yellow-400 mr-1"></i>保留中</button>
                     <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="維護中">維護中</button>
                 </div>
                 <div class="tab-indicator" id="tabIndicator"></div>
@@ -403,10 +138,10 @@
             </div>
         </div>
 
-        <!-- 機台列表 (完整包含維護中) -->
+        <!-- 機台列表區: 合併兩個檔案的所有機台區塊，保留完整結構與愛心按鈕 (data-machine) -->
         <main class="flex-1 px-4 pb-4 overflow-y-auto scrollbar-thin" id="machineList">
             
-            <!-- 新機入替區塊 -->
+            <!-- 新機入替 (含愛心) -->
             <div class="mb-8 category-section" data-category="新機">
                 <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-star text-secondary"></i> 新機入替</h2>
                 <div class="grid grid-cols-2 gap-4">
@@ -414,9 +149,9 @@
                         <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto object-contain"></div>
                         <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
                         <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3>
+                            <h3 class="text-primary text-sm truncate">甲賀忍法帖 絆</h3>
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
+                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 絆"><i class="fa fa-heart text-xs"></i></button></div>
                         </div>
                     </div>
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden relative">
@@ -425,13 +160,13 @@
                         <div class="p-2">
                             <h3 class="text-primary text-sm truncate">超級奇蹟小丑</h3>
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
+                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="超級奇蹟小丑"><i class="fa fa-heart text-xs"></i></button></div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- 人氣機台區塊 -->
+            <!-- 人氣機台 -->
             <div class="mb-8 category-section" data-category="人氣機台">
                 <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-fire text-secondary"></i> 人氣機台</h2>
                 <div class="grid grid-cols-2 gap-4">
@@ -440,151 +175,140 @@
                         <div class="p-2">
                             <h3 class="text-primary text-sm truncate">吉宗</h3>
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
+                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗"><i class="fa fa-heart text-xs"></i></button></div>
                         </div>
                     </div>
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
                         <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">甲賀忍法帖</h3>
+                            <h3 class="text-primary text-sm truncate">甲賀忍法帖 絆</h3>
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
+                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 絆"><i class="fa fa-heart text-xs"></i></button></div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- 4號機區塊 -->
+            <!-- 4號機 -->
             <div class="mb-8 category-section" data-category="4號機">
                 <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-cube"></i> 4號機</h2>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">吉宗(4號)</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">吉宗(4號)</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗(4號)"><i class="fa fa-heart text-xs"></i></button></div></div>
                     </div>
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">花月</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">花月</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="花月"><i class="fa fa-heart text-xs"></i></button></div></div>
                     </div>
                 </div>
             </div>
             
-            <!-- 5號機區塊 -->
+            <!-- 5號機 -->
             <div class="mb-8 category-section" data-category="5號機">
                 <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-cube"></i> 5號機</h2>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">奇蹟小丑</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Rodeo</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">奇蹟小丑</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="奇蹟小丑"><i class="fa fa-heart text-xs"></i></button></div></div>
                     </div>
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">超級奇蹟</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">超級奇蹟</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="超級奇蹟"><i class="fa fa-heart text-xs"></i></button></div></div>
                     </div>
                 </div>
             </div>
             
-            <!-- 6號機區塊 -->
+            <!-- 6號機 -->
             <div class="mb-8 category-section" data-category="6號機">
                 <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-cube"></i> 6號機</h2>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 弐"><i class="fa fa-heart text-xs"></i></button></div></div>
                     </div>
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">新甲賀</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400"><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">甲賀忍法帖 絆</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 絆"><i class="fa fa-heart text-xs"></i></button></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我的最愛區塊 (動態) -->
+            <div class="mb-8 category-section hidden" data-category="我的最愛">
+                <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-pink-500/30 pb-2"><i class="fa fa-heart text-pink-400"></i> 我的最愛</h2>
+                <div class="grid grid-cols-2 gap-4 favorite-container" id="favoriteContainer"></div>
+                <div class="text-center py-8 text-gray-400 hidden" id="noFavoriteMsg"><i class="fa fa-heart-o text-4xl mb-2"></i><p>尚未加入任何最愛</p><p class="text-xs mt-1">點擊機台上的愛心❤️ 開始收藏</p></div>
+            </div>
+
+            <!-- 保留中區塊 (倒數計時) -->
+            <div class="mb-8 category-section hidden" data-category="保留中">
+                <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-yellow-500/30 pb-2"><i class="fa fa-clock-o text-yellow-400"></i> 保留中機台</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- 保留中卡片 1 -->
+                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative reserve-card" data-reserve-end="2026-02-18T23:59:59" data-machine-name="吉宗(預約保留)">
+                        <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                        <div class="reserve-badge"><i class="fa fa-clock-o"></i> 保留中</div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">吉宗(預約保留)</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-yellow-600/30 tech-border rounded text-yellow-400 text-xs" disabled>保留中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗(預約保留)"><i class="fa fa-heart text-xs"></i></button></div></div>
+                        <div class="reserve-countdown countdown-item"><i class="fa fa-hourglass-half"></i> 計算中...</div>
+                    </div>
+                    <!-- 保留中卡片 2 -->
+                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative reserve-card" data-reserve-end="2026-02-16T22:30:00" data-machine-name="奇蹟小丑">
+                        <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                        <div class="reserve-badge"><i class="fa fa-clock-o"></i> 保留中</div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">奇蹟小丑</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-yellow-600/30 tech-border rounded text-yellow-400 text-xs" disabled>保留中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="奇蹟小丑"><i class="fa fa-heart text-xs"></i></button></div></div>
+                        <div class="reserve-countdown countdown-item"><i class="fa fa-hourglass-half"></i> 計算中...</div>
+                    </div>
+                    <!-- 保留中卡片 3 -->
+                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative reserve-card" data-reserve-end="2026-02-16T18:30:00" data-machine-name="甲賀忍法帖">
+                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                        <div class="reserve-badge"><i class="fa fa-clock-o"></i> 保留中</div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">甲賀忍法帖</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-yellow-600/30 tech-border rounded text-yellow-400 text-xs" disabled>保留中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖"><i class="fa fa-heart text-xs"></i></button></div></div>
+                        <div class="reserve-countdown countdown-item"><i class="fa fa-hourglass-half"></i> 計算中...</div>
+                    </div>
+                    <!-- 保留中卡片 4 -->
+                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative reserve-card" data-reserve-end="2026-02-17T21:00:00" data-machine-name="花月">
+                        <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                        <div class="reserve-badge"><i class="fa fa-clock-o"></i> 保留中</div>
+                        <div class="p-2"><h3 class="text-primary text-sm truncate">花月</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-yellow-600/30 tech-border rounded text-yellow-400 text-xs" disabled>保留中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="花月"><i class="fa fa-heart text-xs"></i></button></div></div>
+                        <div class="reserve-countdown countdown-item"><i class="fa fa-hourglass-half"></i> 計算中...</div>
                     </div>
                 </div>
             </div>
             
-            <!-- 維護中機台區塊 (完整補回) -->
+            <!-- 維護中機台 (完整四張) -->
             <div class="mb-8 category-section" data-category="維護中">
                 <h2 class="text-gray-400 font-medium mb-4 flex items-center gap-2 border-b border-gray-600 pb-2"><i class="fa fa-wrench"></i> 維護中機台</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <!-- 維護中卡片 1 -->
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card">
-                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover opacity-50">
-                        <div class="p-2">
-                            <h3 class="text-gray-400 text-sm truncate">甲賀忍法帖</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:2</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Sammy</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
-                        <div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/20 18:00 恢復</div>
-                    </div>
-                    <!-- 維護中卡片 2 -->
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card">
-                        <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover opacity-50">
-                        <div class="p-2">
-                            <h3 class="text-gray-400 text-sm truncate">超級奇蹟小丑</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:1</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Olympia</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
-                        <div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/18 23:59 恢復</div>
-                    </div>
-                    <!-- 維護中卡片 3 -->
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card">
-                        <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover opacity-50">
-                        <div class="p-2">
-                            <h3 class="text-gray-400 text-sm truncate">吉宗</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:2</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Daito</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
-                        <div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/19 10:00 恢復</div>
-                    </div>
-                    <!-- 維護中卡片 4 -->
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card">
-                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover opacity-50">
-                        <div class="p-2">
-                            <h3 class="text-gray-400 text-sm truncate">花月</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:4</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Olympia</span></div>
-                            <div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div>
-                        </div>
-                        <div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/21 14:00 恢復</div>
-                    </div>
+                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card"><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">甲賀忍法帖</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:2</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Sammy</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/20 18:00 恢復</div></div>
+                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card"><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">超級奇蹟小丑</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:1</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Olympia</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/18 23:59 恢復</div></div>
+                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card"><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">吉宗</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:2</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Daito</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/19 10:00 恢復</div></div>
+                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card"><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">花月</h3><div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:4</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Olympia</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/21 14:00 恢復</div></div>
                 </div>
             </div>
         </main>
 
-        <!-- 底部導航 -->
+                        <!-- 底部導航 (取代原有的 bottom-nav) -->
         <nav class="bottom-nav">
             <div class="flex justify-between items-center">
-                <a href="#" class="nav-item current-page" id="nav-home" aria-current="page"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-                <a href="#" class="nav-item" id="nav-game"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-                <a href="#" class="nav-item" id="nav-bell"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
-                <a href="#" class="nav-item" id="nav-user"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
+                <a href="index.html" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'index.html' ? 'current-page' : ''; ?>" <?php echo basename($_SERVER['PHP_SELF']) == 'index.html' ? 'aria-current="page"' : ''; ?>>
+                    <i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span>
+                </a>
+                <a href="machines.html" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'machines.html' ? 'current-page' : ''; ?>" <?php echo basename($_SERVER['PHP_SELF']) == 'machines.html' ? 'aria-current="page"' : ''; ?>>
+                    <i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span>
+                </a>
+                <a href="news.html" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'news.html' ? 'current-page' : ''; ?>" <?php echo basename($_SERVER['PHP_SELF']) == 'news.html' ? 'aria-current="page"' : ''; ?>>
+                    <i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span>
+                </a>
+                <a href="about.html" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'about.html' ? 'current-page' : ''; ?>" <?php echo basename($_SERVER['PHP_SELF']) == 'about.html' ? 'aria-current="page"' : ''; ?>>
+                    <i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span>
+                </a>
             </div>
         </nav>
-    </div>
 
     <script>
-        // 側拉篩選欄控制
         (function() {
+            // ----- 共用: 篩選側欄 -----
             const drawer = document.getElementById('filterDrawer');
             const overlay = document.getElementById('drawerOverlay');
             const openBtn = document.getElementById('openDrawerBtn');
@@ -594,18 +318,26 @@
             if (openBtn) openBtn.addEventListener('click', openDrawer);
             if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
             if (overlay) overlay.addEventListener('click', closeDrawer);
-            
+
             document.querySelectorAll('.filter-chip').forEach(chip => { chip.addEventListener('click', function(e) { e.stopPropagation(); this.classList.toggle('selected'); }); });
             document.getElementById('resetFilters')?.addEventListener('click', function() { document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('selected')); });
             document.getElementById('applyFilters')?.addEventListener('click', function() { closeDrawer(); alert('篩選條件已套用 (示範)'); });
             document.getElementById('clearAllFilters')?.addEventListener('click', function() { document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('selected')); });
-        })();
 
-        // 分類標籤切換 + 指示器
-        (function() {
+            // ----- 標籤列滑鼠拖曳 -----
+            const tabsWrapper = document.getElementById('tabsWrapper');
+            let isDown = false, startX, scrollLeft;
+            if (tabsWrapper) {
+                tabsWrapper.addEventListener('mousedown', (e) => { isDown = true; tabsWrapper.classList.add('dragging'); startX = e.pageX - tabsWrapper.offsetLeft; scrollLeft = tabsWrapper.scrollLeft; e.preventDefault(); });
+                tabsWrapper.addEventListener('mouseleave', () => { isDown = false; tabsWrapper.classList.remove('dragging'); });
+                tabsWrapper.addEventListener('mouseup', () => { isDown = false; tabsWrapper.classList.remove('dragging'); });
+                tabsWrapper.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - tabsWrapper.offsetLeft; const walk = (x - startX) * 2; tabsWrapper.scrollLeft = scrollLeft - walk; });
+                tabsWrapper.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('mousedown', e => e.stopPropagation()); });
+            }
+
+            // ----- 分類標籤切換 + 指示器 -----
             const tabBtns = document.querySelectorAll('.tab-btn');
             const categorySections = document.querySelectorAll('.category-section');
-            const tabsWrapper = document.getElementById('tabsWrapper');
             const tabIndicator = document.getElementById('tabIndicator');
             const tabContainer = document.getElementById('tabContainer');
             let currentTabIndex = 0;
@@ -615,6 +347,7 @@
                     const cat = section.getAttribute('data-category');
                     section.style.display = (category === '全部' || cat === category) ? 'block' : 'none';
                 });
+                if (category === '我的最愛') { updateFavoritesDisplay(); }
             }
 
             function updateTabStyles(index) {
@@ -633,12 +366,9 @@
                     const containerWidth = tabContainer.offsetWidth;
                     const tabLeft = activeTab.offsetLeft;
                     const tabWidth = activeTab.offsetWidth;
-                    const scrollLeft = tabsWrapper.scrollLeft;
-                    if (tabLeft < scrollLeft) {
-                        tabsWrapper.scrollTo({ left: tabLeft - 10, behavior: 'smooth' });
-                    } else if (tabLeft + tabWidth > scrollLeft + containerWidth) {
-                        tabsWrapper.scrollTo({ left: tabLeft + tabWidth - containerWidth + 10, behavior: 'smooth' });
-                    }
+                    const sLeft = tabsWrapper.scrollLeft;
+                    if (tabLeft < sLeft) { tabsWrapper.scrollTo({ left: tabLeft - 10, behavior: 'smooth' }); }
+                    else if (tabLeft + tabWidth > sLeft + containerWidth) { tabsWrapper.scrollTo({ left: tabLeft + tabWidth - containerWidth + 10, behavior: 'smooth' }); }
                 }
             }
 
@@ -658,18 +388,12 @@
                     filterByCategory(this.getAttribute('data-tab'));
                 });
             });
-
-            if (tabsWrapper) {
-                tabsWrapper.addEventListener('scroll', () => { updateIndicatorPosition(); });
-            }
-            window.addEventListener('resize', () => { updateIndicatorPosition(); });
-
+            if (tabsWrapper) { tabsWrapper.addEventListener('scroll', updateIndicatorPosition); }
+            window.addEventListener('resize', updateIndicatorPosition);
             filterByCategory('全部');
             setTimeout(() => { updateTabStyles(0); }, 100);
-        })();
 
-        // 底部導航點擊
-        (function() {
+            // ----- 底部導航點擊 (僅視覺) -----
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => {
                 item.addEventListener('click', function(e) {
@@ -680,73 +404,135 @@
                     this.setAttribute('aria-current', 'page');
                 });
             });
-        })();
 
-        // Banner 輪播 - 獨立手勢控制
-        (function() {
-            let currentSlide = 0;
-            const slider = document.getElementById('bannerSlider');
-            const dots = document.querySelectorAll('.banner-dot');
-            const touchArea = document.getElementById('bannerTouchArea');
-            const totalSlides = 3;
-            let slideInterval;
-            let startX = 0, isDragging = false, threshold = 30;
+            // ----- Banner 輪播 (首頁手勢) -----
+            (function() {
+                let currentSlide = 0;
+                const slider = document.getElementById('bannerSlider');
+                const dots = document.querySelectorAll('.banner-dot');
+                const touchArea = document.getElementById('bannerTouchArea');
+                const totalSlides = 3;
+                let slideInterval;
+                let startX = 0, isDragging = false, threshold = 30;
 
-            function updateSlide(index) {
-                currentSlide = (index + totalSlides) % totalSlides;
-                if (slider) slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-                dots.forEach((dot, i) => { dot.classList.toggle('active', i === currentSlide); });
-            }
+                function updateSlide(index) {
+                    currentSlide = (index + totalSlides) % totalSlides;
+                    if (slider) slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    dots.forEach((dot, i) => { dot.classList.toggle('active', i === currentSlide); });
+                }
+                dots.forEach(dot => { dot.addEventListener('click', function() { const idx = parseInt(this.getAttribute('data-slide')); if (!isNaN(idx)) updateSlide(idx); resetAutoSlide(); }); });
+                if (touchArea) {
+                    touchArea.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; clearInterval(slideInterval); e.stopPropagation(); e.preventDefault(); }, { passive: false });
+                    touchArea.addEventListener('touchmove', (e) => { if (!isDragging) return; e.stopPropagation(); e.preventDefault(); }, { passive: false });
+                    touchArea.addEventListener('touchend', (e) => { if (!isDragging) return; const endX = e.changedTouches[0].clientX; const diff = endX - startX; if (Math.abs(diff) > threshold) { if (diff > 0) updateSlide(currentSlide - 1); else updateSlide(currentSlide + 1); } isDragging = false; startAutoSlide(); e.stopPropagation(); e.preventDefault(); }, { passive: false });
+                    touchArea.addEventListener('touchcancel', () => { isDragging = false; startAutoSlide(); }, { passive: false });
+                }
+                function startAutoSlide() { if (slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => updateSlide(currentSlide + 1), 5000); }
+                function resetAutoSlide() { clearInterval(slideInterval); startAutoSlide(); }
+                startAutoSlide();
+            })();
 
-            dots.forEach(dot => {
-                dot.addEventListener('click', function() {
-                    const slideIndex = parseInt(this.getAttribute('data-slide'));
-                    if (!isNaN(slideIndex)) updateSlide(slideIndex);
-                    resetAutoSlide();
+            // ----- 愛心收藏 + 保留中倒數 (完全取自機台頁) -----
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+            function initFavoriteButtons() {
+                document.querySelectorAll('.favorite-btn').forEach(btn => {
+                    const name = btn.getAttribute('data-machine');
+                    if (favorites.includes(name)) btn.classList.add('active');
+                    btn.removeEventListener('click', handleFavoriteClick);
+                    btn.addEventListener('click', handleFavoriteClick);
                 });
-            });
+            }
 
-            if (touchArea) {
-                touchArea.addEventListener('touchstart', (e) => {
-                    startX = e.touches[0].clientX;
-                    isDragging = true;
-                    clearInterval(slideInterval);
-                    e.stopPropagation();
-                    e.preventDefault();
-                }, { passive: false });
+            function handleFavoriteClick(e) {
+                e.preventDefault(); e.stopPropagation();
+                const btn = e.currentTarget;
+                const name = btn.getAttribute('data-machine');
+                if (!name) return;
+                btn.classList.add('pulse');
+                setTimeout(() => btn.classList.remove('pulse'), 300);
+                if (favorites.includes(name)) {
+                    favorites = favorites.filter(n => n !== name);
+                    btn.classList.remove('active');
+                    showToast(`❤️ 已從最愛移除：${name}`);
+                } else {
+                    favorites.push(name);
+                    btn.classList.add('active');
+                    showToast(`💖 已加入最愛：${name}`);
+                }
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                const activeTab = document.querySelector('.tab-btn.tech-tab-active');
+                if (activeTab && activeTab.getAttribute('data-tab') === '我的最愛') updateFavoritesDisplay();
+            }
 
-                touchArea.addEventListener('touchmove', (e) => {
-                    if (!isDragging) return;
-                    e.stopPropagation();
-                    e.preventDefault();
-                }, { passive: false });
+            function updateFavoritesDisplay() {
+                const container = document.getElementById('favoriteContainer');
+                const noMsg = document.getElementById('noFavoriteMsg');
+                if (!container) return;
+                container.innerHTML = '';
+                if (favorites.length === 0) { if (noMsg) noMsg.classList.remove('hidden'); return; }
+                if (noMsg) noMsg.classList.add('hidden');
+                favorites.forEach(name => {
+                    const originalBtn = document.querySelector(`.favorite-btn[data-machine="${name}"]`);
+                    if (!originalBtn) return;
+                    const originalCard = originalBtn.closest('.game-card-bg');
+                    if (!originalCard) return;
+                    const clone = originalCard.cloneNode(true);
+                    const cloneBtn = clone.querySelector('.favorite-btn');
+                    if (cloneBtn) { cloneBtn.classList.add('active'); cloneBtn.removeEventListener('click', handleFavoriteClick); cloneBtn.addEventListener('click', handleFavoriteClick); }
+                    container.appendChild(clone);
+                });
+            }
 
-                touchArea.addEventListener('touchend', (e) => {
-                    if (!isDragging) return;
-                    const endX = e.changedTouches[0].clientX;
-                    const diff = endX - startX;
-                    if (Math.abs(diff) > threshold) {
-                        if (diff > 0) updateSlide(currentSlide - 1);
-                        else updateSlide(currentSlide + 1);
+            function showToast(msg) {
+                let toast = document.querySelector('.custom-toast');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.className = 'custom-toast fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm py-2 px-4 rounded-full border border-blue-400 shadow-lg z-50 transition-opacity duration-300';
+                    document.body.appendChild(toast);
+                }
+                toast.textContent = msg;
+                toast.style.opacity = '1';
+                setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+            }
+
+            // 保留中倒數
+            function updateAllCountdowns() {
+                document.querySelectorAll('.reserve-card').forEach(card => {
+                    const endStr = card.getAttribute('data-reserve-end');
+                    if (!endStr) return;
+                    const countEl = card.querySelector('.countdown-item');
+                    if (!countEl) return;
+                    const end = new Date(endStr).getTime();
+                    const now = new Date().getTime();
+                    const diff = end - now;
+                    if (diff <= 0) {
+                        countEl.innerHTML = '<i class="fa fa-clock-o"></i> 保留已結束';
+                        countEl.style.color = '#ef4444';
+                        card.style.borderColor = '#ef4444';
+                        card.style.opacity = '0.7';
+                        return;
                     }
-                    isDragging = false;
-                    startAutoSlide();
-                    e.stopPropagation();
-                    e.preventDefault();
-                }, { passive: false });
-
-                touchArea.addEventListener('touchcancel', () => {
-                    isDragging = false;
-                    startAutoSlide();
-                }, { passive: false });
+                    const days = Math.floor(diff / (1000*60*60*24));
+                    const hours = Math.floor((diff % (86400000)) / (3600000));
+                    const minutes = Math.floor((diff % 3600000) / 60000);
+                    const seconds = Math.floor((diff % 60000) / 1000);
+                    let timeText = '';
+                    if (days > 0) timeText = `${days}天 ${hours}小時 ${minutes}分`;
+                    else if (hours > 0) timeText = `${hours}小時 ${minutes}分 ${seconds}秒`;
+                    else if (minutes > 0) timeText = `${minutes}分 ${seconds}秒`;
+                    else timeText = `${seconds}秒`;
+                    if (diff < 30*60*1000) countEl.style.color = '#ff6b6b';
+                    else if (diff < 2*60*60*1000) countEl.style.color = '#ffd93d';
+                    else countEl.style.color = '#fbbf24';
+                    countEl.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${timeText}`;
+                });
             }
 
-            function startAutoSlide() {
-                if (slideInterval) clearInterval(slideInterval);
-                slideInterval = setInterval(() => updateSlide(currentSlide + 1), 5000);
-            }
-            function resetAutoSlide() { clearInterval(slideInterval); startAutoSlide(); }
-            startAutoSlide();
+            initFavoriteButtons();
+            updateAllCountdowns();
+            setInterval(updateAllCountdowns, 1000);
+            new MutationObserver(() => { initFavoriteButtons(); }).observe(document.getElementById('machineList'), { childList: true, subtree: true });
         })();
     </script>
 </body>
