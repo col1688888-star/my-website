@@ -91,7 +91,7 @@
         .token-badge { background: linear-gradient(135deg, #fbbf24, #d97706); color: #000; font-weight: bold; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.7rem; border: 1px solid #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
         .popular-badge { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 0.65rem; font-weight: bold; padding: 2px 8px; border-radius: 20px; z-index: 10; border: 1px solid #fca5a5; box-shadow: 0 0 10px #ef4444; }
 
-        /* 維護卡片樣式 */
+        /* 維護卡片樣式 (保留但不會被使用) */
         .maintenance-card { filter: grayscale(60%); opacity: 0.9; position: relative; border-width: 1px; box-shadow: 0 0 10px rgba(107, 114, 128, 0.3); pointer-events: none; cursor: default; }
         .maintenance-card .enter-btn, .maintenance-card .favorite-btn { pointer-events: none; opacity: 0.5; }
         .maintenance-normal { border-color: #6b7280; background: linear-gradient(180deg, rgba(30, 40, 50, 0.9), rgba(10, 20, 30, 0.9)); }
@@ -243,7 +243,7 @@
     <!-- 跑馬燈 -->
     <div class="px-4 py-1 bg-dark-200/80 tech-border"><marquee class="text-secondary text-xs py-1" scrollamount="5">🎮 春季人氣機台大賞 | 甲賀忍法帖系列全線熱賣 | 代幣優惠實施中 🎮</marquee></div>
 
-    <!-- 主要分類標籤 + 篩選按鈕 -->
+    <!-- 主要分類標籤 + 篩選按鈕 (已移除「維護中」標籤) -->
     <div class="px-4 py-3 flex items-center justify-between">
         <div class="flex-1 mr-2 relative tab-container" id="tabContainer">
             <div class="tabs-wrapper" id="tabsWrapper" style="touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch;">
@@ -253,7 +253,7 @@
                 <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="4號機">4號機</button>
                 <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="5號機">5號機</button>
                 <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="6號機">6號機</button>
-                <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="維護中">維護中</button>
+                <!-- 維護中標籤已刪除 -->
             </div>
             <div class="tab-indicator" id="tabIndicator"></div>
         </div>
@@ -262,7 +262,7 @@
         </div>
     </div>
 
-    <!-- 機台列表 -->
+    <!-- 機台列表 (已完全移除「維護中機台」區塊) -->
     <main class="flex-1 px-4 pb-24 overflow-y-auto scrollbar-thin main-content" id="machineList">
         
         <!-- 新機入替區塊 -->
@@ -517,23 +517,7 @@
             </div>
         </div>
 
-        <!-- 維護中機台區塊 -->
-        <div class="category-section" data-category="維護中">
-            <h2 class="category-title"><i class="fa fa-wrench"></i> 維護中機台 <span class="text-xs text-gray-400 ml-2">暫停服務</span></h2>
-            <div class="grid grid-cols-2 gap-4">
-                <!-- 一般維護 -->
-                <div class="game-card-bg maintenance-card maintenance-normal" data-categories='["維護中"]'><span class="maintenance-badge">🔧 一般維護</span><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">甲賀忍法帖</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge opacity-50">1枚=2</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-xs text-gray-400">Sammy</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/20 18:00 恢復</div></div></div>
-                <div class="game-card-bg maintenance-card maintenance-normal" data-categories='["維護中"]'><span class="maintenance-badge">🔧 一般維護</span><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">奇蹟小丑</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge opacity-50">1枚=1</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-xs text-gray-400">Olympia</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/21 14:30 恢復</div></div></div>
-                <div class="game-card-bg maintenance-card maintenance-normal" data-categories='["維護中"]'><span class="maintenance-badge">🔧 一般維護</span><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">押忍！番長2</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge opacity-50">1枚=0.5</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-xs text-gray-400">Daito</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/23 09:00 恢復</div></div></div>
-                <div class="game-card-bg maintenance-card maintenance-normal" data-categories='["維護中"]'><span class="maintenance-badge">🔧 一般維護</span><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">花月</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge opacity-50">1枚=0.33</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-xs text-gray-400">Olympia</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/24 14:00 恢復</div></div></div>
-                <!-- 例行維護 -->
-                <div class="game-card-bg maintenance-card maintenance-routine" data-categories='["維護中"]'><span class="maintenance-badge">📅 例行維護</span><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">モンキーターン</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge opacity-50">1枚=0.25</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-xs text-gray-400">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>每週二 09:00-17:00</div></div></div>
-                <div class="game-card-bg maintenance-card maintenance-routine" data-categories='["維護中"]'><span class="maintenance-badge">📅 例行維護</span><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">コードギアス</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge opacity-50">1枚=0.2</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-xs text-gray-400">Sammy</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>每週四 14:00-18:00</div></div></div>
-                <!-- 緊急維護 -->
-                <div class="game-card-bg maintenance-card maintenance-emergency" data-categories='["維護中"]'><span class="maintenance-badge">⚠️ 緊急維護</span><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">超級奇蹟</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge opacity-50">1枚=0.17</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-xs text-gray-400">Olympia</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>緊急修復，開放時間待定</div></div></div>
-                <div class="game-card-bg maintenance-card maintenance-emergency" data-categories='["維護中"]'><span class="maintenance-badge">⚠️ 緊急維護</span><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover opacity-50"><div class="p-2"><h3 class="text-gray-400 text-sm truncate">L 犬夜叉 (緊急)</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge opacity-50">1枚=0.1</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-xs text-gray-400">Olympia</span></div><div class="flex gap-1 mt-2"><button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button><button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled><i class="fa fa-heart text-xs"></i></button></div><div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>系統異常，緊急搶修中</div></div></div>
-            </div>
-        </div>
+        <!-- 維護中機台區塊 (已完全移除) -->
     </main>
 </div>
 
@@ -677,7 +661,7 @@
         document.getElementById('nav-home')?.classList.add('current-page');
     }
 
-    // 分類標籤切換
+    // 分類標籤切換 (維護中標籤已移除，所以索引自動對齊)
     const tabBtns = document.querySelectorAll('.tab-btn');
     const categorySections = document.querySelectorAll('.category-section');
     const tabsWrapper = document.getElementById('tabsWrapper');
