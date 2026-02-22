@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
-        /* 自定義樣式 - 完整保留 */
+        /* 自定義樣式 - 完整保留 + 新增首頁互動效果 */
         .tech-gradient {
             background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%);
         }
@@ -36,52 +36,135 @@
             max-width: 100px;
         }
         
-        .filter-drawer {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 85%;
-            max-width: 340px;
-            height: 100vh;
-            background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
-            border-left: 2px solid #0099ff;
-            box-shadow: -5px 0 30px rgba(0, 153, 255, 0.5);
-            z-index: 10000;
-            transition: right 0.3s ease;
-            overflow-y: auto;
-            padding: 1.5rem;
+        /* 分類標籤樣式 - 調整為置中平均分佈 */
+        .category-tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            width: 100%;
         }
-        .filter-drawer.open { right: 0; }
-        .drawer-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(3px);
-            z-index: 9999;
-            display: none;
-        }
-        .drawer-overlay.open { display: block; }
         
-        .filter-chip {
-            background: rgba(0, 40, 70, 0.8);
-            border: 1px solid #0099ff60;
+        .category-tab {
+            background: rgba(0, 40, 70, 0.6);
+            border: 1px solid rgba(0, 153, 255, 0.3);
             border-radius: 9999px;
-            padding: 0.4rem 1.2rem;
-            font-size: 0.75rem;
+            padding: 0.6rem 1.8rem;
+            font-size: 0.95rem;
             color: #cce6ff;
             transition: all 0.2s;
             cursor: pointer;
-            display: inline-block;
+            white-space: nowrap;
+            flex: 0 1 auto;
+            min-width: 100px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-        .filter-chip:hover { background: #0077cc; color: white; border-color: #80e4ff; }
-        .filter-chip.selected { background: #0099ff; color: white; border-color: white; font-weight: 500; box-shadow: 0 0 12px #00ccff; }
+        
+        .category-tab:hover {
+            background: rgba(0, 119, 204, 0.5);
+            border-color: #00ccff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 153, 255, 0.3);
+        }
+        
+        .category-tab.active {
+            background: linear-gradient(90deg, #0066cc, #0099ff);
+            color: white;
+            border-color: #80e4ff;
+            box-shadow: 0 0 15px #00ccff;
+        }
+        
+        /* 垂直卡片樣式 */
+        .vertical-card {
+            background: linear-gradient(180deg, rgba(0, 40, 80, 0.9) 0%, rgba(0, 20, 40, 0.95) 100%);
+            border: 1px solid rgba(0, 153, 255, 0.3);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .vertical-card:hover {
+            transform: translateY(-4px);
+            border-color: #0099ff;
+            box-shadow: 0 8px 20px rgba(0, 153, 255, 0.4);
+        }
+        
+        .vertical-card-content {
+            display: flex;
+            padding: 1rem;
+            gap: 1rem;
+        }
+        
+        .vertical-card-image {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0, 153, 255, 0.3);
+        }
+        
+        .vertical-card-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .vertical-card-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #80e4ff;
+        }
+        
+        .vertical-card-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .vertical-card-tag {
+            background: rgba(0, 50, 100, 0.8);
+            border: 1px solid rgba(0, 153, 255, 0.3);
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            color: #cce6ff;
+        }
+        
+        .vertical-card-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .vertical-card-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+            color: #7aa3c2;
+        }
+        
+        .vertical-card-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
         
         .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: rgba(0, 20, 40, 0.5); }
         .scrollbar-thin::-webkit-scrollbar-thumb { background: #0099ff; border-radius: 4px; }
 
-        /* 底部導覽 */
+        /* 底部導覽 - 固定式 */
         .bottom-nav {
+            position: sticky;
+            bottom: 0;
             background: #001a33;
             border-top: 2px solid #0066cc;
             box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3);
@@ -89,6 +172,7 @@
             max-width: 448px;
             padding: 0.75rem 1.5rem;
             margin-top: 1rem;
+            z-index: 50;
         }
         .nav-item {
             display: flex; flex-direction: column; align-items: center; color: #4b9cd3;
@@ -107,76 +191,16 @@
         }
         .nav-item.current-page i, .nav-item.current-page span { color: white; }
 
-        /* 分類標籤列 */
-        .tab-container { 
-            position: relative; 
-            width: 100%; 
-            overflow: hidden; 
-            touch-action: pan-y pinch-zoom;
-            user-select: none;
-        }
-        .tabs-wrapper {
-            display: flex; 
-            gap: 8px; 
-            transition: none; 
-            cursor: grab; 
-            padding: 0 4px;
-            overflow-x: auto; 
-            scrollbar-width: none; 
-            -ms-overflow-style: none;
-            scroll-behavior: smooth; 
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-x pan-y;
-            scroll-snap-type: x proximity;
-        }
-        .tabs-wrapper::-webkit-scrollbar { display: none; }
-        .tabs-wrapper.dragging {
-            cursor: grabbing;
-            scroll-behavior: auto;
-            scroll-snap-type: none;
-        }
-        .tab-btn { 
-            flex: 0 0 auto; 
-            white-space: nowrap;
-            scroll-snap-align: start;
-        }
-        .tab-indicator {
-            position: absolute; bottom: -4px; left: 0; height: 3px;
-            background: linear-gradient(90deg, #0099ff, #00ccff); border-radius: 3px;
-            transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-            box-shadow: 0 0 8px #00ccff; z-index: 5; pointer-events: none;
-        }
-
-        /* 維護中卡片 */
-        .maintenance-card {
-            filter: grayscale(80%); opacity: 0.85; position: relative;
-            border: 1px solid #6b7280; box-shadow: 0 0 10px rgba(107, 114, 128, 0.3);
-        }
-        .maintenance-card::before {
-            content: "🔧 維護中"; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg); background: rgba(0, 0, 0, 0.8);
-            color: #ff4444; font-size: 1.2rem; font-weight: bold; padding: 8px 16px;
-            border: 2px solid #ff4444; border-radius: 12px; z-index: 20;
-            white-space: nowrap; box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
-            text-shadow: 0 0 5px rgba(255, 68, 68, 0.5);
-        }
-        .maintenance-card .maintenance-time {
-            position: absolute; bottom: 8px; left: 8px; right: 8px;
-            background: rgba(0, 0, 0, 0.7); color: #ffaa00; font-size: 0.7rem;
-            padding: 4px 8px; border-radius: 20px; text-align: center; z-index: 21;
-            border: 1px solid #ffaa00;
-        }
-
-        /* 保留中卡片倒數樣式 */
+        /* 保留中卡片樣式 */
         .reserve-badge {
             position: absolute;
-            top: 8px;
-            right: 8px;
+            top: 12px;
+            right: 12px;
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: bold;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             border: 1px solid #fbbf24;
             box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
@@ -185,57 +209,209 @@
             align-items: center;
             gap: 4px;
         }
+        
         .reserve-countdown {
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.7);
+            margin-top: 0.5rem;
+            background: rgba(0, 0, 0, 0.5);
             color: #fbbf24;
-            font-size: 0.7rem;
-            padding: 6px 8px;
+            font-size: 0.75rem;
+            padding: 6px 12px;
             border-radius: 20px;
             text-align: center;
-            z-index: 16;
             border: 1px solid #f59e0b;
             backdrop-filter: blur(2px);
             font-weight: 500;
-            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
         }
         .reserve-countdown i {
-            margin-right: 4px;
             color: #fbbf24;
         }
         .reserve-card {
             position: relative;
             border: 1px solid #f59e0b;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+            transition: all 0.3s ease;
         }
         
-        /* 愛心按鈕樣式 */
+        .reserve-card.expired {
+            border-color: #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+        
+        .reserve-card.expired .reserve-badge {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            border-color: #9ca3af;
+            box-shadow: none;
+        }
+        
+        .reserve-card.urgent {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            animation: urgentPulse 1s infinite;
+        }
+        
+        .reserve-card.urgent .reserve-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ff4444);
+            border-color: #ff8888;
+            animation: badgePulse 1s infinite;
+        }
+        
+        .reserve-card.urgent .reserve-countdown {
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+            animation: textPulse 1s infinite;
+        }
+        
+        @keyframes urgentPulse {
+            0% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.7); }
+            100% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
+        }
+        
+        @keyframes badgePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes textPulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        /* 維護中卡片樣式 */
+        .maintenance-card {
+            position: relative;
+            border: 1px solid #6b7280;
+            box-shadow: 0 0 15px rgba(107, 114, 128, 0.3);
+            filter: grayscale(60%);
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+        
+        .maintenance-card:hover {
+            filter: grayscale(40%);
+            opacity: 1;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.5);
+        }
+        
+        .maintenance-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            z-index: 15;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .maintenance-badge.general {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            border: 1px solid #9ca3af;
+            color: white;
+        }
+        
+        .maintenance-badge.routine {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: 1px solid #60a5fa;
+            color: white;
+        }
+        
+        .maintenance-badge.emergency {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: 1px solid #f87171;
+            color: white;
+        }
+        
+        .maintenance-time {
+            margin-top: 0.5rem;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ffaa00;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid #ffaa00;
+            backdrop-filter: blur(2px);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .maintenance-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .maintenance-progress-bar {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .maintenance-progress-bar.general {
+            background: linear-gradient(90deg, #9ca3af, #6b7280);
+        }
+        
+        .maintenance-progress-bar.routine {
+            background: linear-gradient(90deg, #60a5fa, #3b82f6);
+        }
+        
+        .maintenance-progress-bar.emergency {
+            background: linear-gradient(90deg, #f87171, #ef4444);
+        }
+        
+        /* 愛心按鈕樣式 - 強化互動效果 */
         .favorite-btn {
             transition: all 0.2s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            background: rgba(0, 30, 60, 0.6);
+            border: 1px solid rgba(0, 148, 255, 0.5);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
         }
         .favorite-btn:hover {
             transform: scale(1.1);
             border-color: #ff69b4 !important;
+            background: rgba(255, 105, 180, 0.15) !important;
+            box-shadow: 0 0 12px rgba(255, 105, 180, 0.6);
         }
         .favorite-btn:active {
-            transform: scale(0.9);
+            transform: scale(0.85);
+            transition: transform 0.08s;
         }
         .favorite-btn.active {
-            background: rgba(255, 105, 180, 0.2) !important;
+            background: rgba(255, 105, 180, 0.25) !important;
             border-color: #ff69b4 !important;
+            box-shadow: 0 0 15px #ff1493;
         }
         .favorite-btn.active i {
             color: #ff69b4 !important;
-            text-shadow: 0 0 8px #ff1493;
+            text-shadow: 0 0 12px #ff1493;
         }
         .favorite-btn i {
             transition: all 0.2s ease;
+            font-size: 1.1rem;
         }
         
         /* 愛心動畫效果 */
@@ -244,38 +420,189 @@
         }
         @keyframes heartBeat {
             0% { transform: scale(1); }
-            50% { transform: scale(1.3); color: #ff1493; }
+            50% { transform: scale(1.4); color: #ff1493; }
             100% { transform: scale(1); }
         }
         
-        .w-7 { width: 1.75rem; } .h-7 { height: 1.75rem; }
+        /* 進入按鈕強化 */
+        .enter-btn {
+            transition: all 0.2s ease;
+            background: linear-gradient(90deg, rgba(0, 102, 204, 0.2), rgba(0, 153, 255, 0.2));
+            border: 1px solid rgba(0, 153, 255, 0.5);
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: #cce6ff;
+            flex: 1;
+            cursor: pointer;
+        }
+        .enter-btn:hover:not(:disabled) {
+            background: linear-gradient(90deg, #0066cc, #0099ff);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 0 12px #00ccff;
+            border-color: #80e4ff;
+        }
+        .enter-btn:active:not(:disabled) {
+            transform: scale(0.95);
+            background: #004499;
+        }
+        
+        /* 禁用按鈕樣式 */
+        .enter-btn:disabled {
+            opacity: 0.5;
+            transform: none !important;
+            box-shadow: none !important;
+            pointer-events: none;
+            background: rgba(75, 85, 99, 0.3);
+            border-color: #6b7280;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        /* 可進入按鈕樣式（保留時間內） */
+        .enter-btn.available {
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-color: #34d399;
+            color: white;
+        }
+        
+        /* 提示視窗 - 強化版 */
+        .toast-notification {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff6b6b, #ff4444);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 6px 25px rgba(255, 68, 68, 0.7);
+            border: 2px solid #ffaaaa;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideDown 0.3s ease, glowPulse 1.5s infinite;
+            max-width: 90%;
+            letter-spacing: 0.5px;
+        }
+        
+        .toast-notification i {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+        }
+        
+        .toast-notification.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+        }
+        
+        @keyframes glowPulse {
+            0% { box-shadow: 0 6px 25px rgba(255, 68, 68, 0.7); }
+            50% { box-shadow: 0 6px 35px rgba(255, 68, 68, 0.9), 0 0 20px rgba(255, 255, 255, 0.5); }
+            100% { box-shadow: 0 6px 25px rgba(255, 68, 68, 0.7); }
+        }
+        
+        /* 新機入替圖片微調 */
+        .new-machine-badge img {
+            filter: drop-shadow(0 0 6px cyan);
+        }
+        
+        /* 分類區塊標題 */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 153, 255, 0.3);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .section-count {
+            background: rgba(0, 153, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: #80e4ff;
+            border: 1px solid rgba(0, 153, 255, 0.3);
+        }
+
+        /* 主內容區域 - 調整底部內邊距 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 1rem;
+        }
+
+        /* 重新整理按鈕 */
+        .refresh-button {
+            background: rgba(0, 153, 255, 0.2);
+            border: 1px solid #0099ff;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .refresh-button:hover {
+            background: rgba(0, 153, 255, 0.4);
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
 
-    <!-- 篩選側拉欄 -->
-    <div id="drawerOverlay" class="drawer-overlay"></div>
-    <div id="filterDrawer" class="filter-drawer scrollbar-thin">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-primary text-lg font-bold flex items-center gap-2"><i class="fa fa-sliders text-secondary"></i> 進階篩選</h3>
-            <button id="closeDrawer" class="text-gray-400 hover:text-primary text-2xl"><i class="fa fa-times-circle"></i></button>
-        </div>
-        <div class="mb-6"><div class="text-secondary text-sm mb-3 flex items-center gap-2"><i class="fa fa-percent"></i> 比率</div><div class="flex flex-wrap gap-2"><span class="filter-chip" data-type="ratio">2:1</span><span class="filter-chip" data-type="ratio">1:1</span><span class="filter-chip" data-type="ratio">1:2</span><span class="filter-chip" data-type="ratio">1:4</span><span class="filter-chip" data-type="ratio">1:5</span><span class="filter-chip" data-type="ratio">1:10</span></div></div>
-        <div class="mb-6"><div class="text-secondary text-sm mb-3 flex items-center gap-2"><i class="fa fa-cube"></i> 機種</div><div class="flex flex-wrap gap-2"><span class="filter-chip" data-type="model">4號機</span><span class="filter-chip" data-type="model">5號機</span><span class="filter-chip" data-type="model">6號機</span></div></div>
-        <div class="mb-8"><div class="text-secondary text-sm mb-3 flex items-center gap-2"><i class="fa fa-building"></i> 機台廠商</div><div class="grid grid-cols-2 gap-2"><span class="filter-chip text-center" data-type="vendor">ELECO</span><span class="filter-chip text-center" data-type="vendor">ENTER RISE</span><span class="filter-chip text-center" data-type="vendor">Olympia</span><span class="filter-chip text-center" data-type="vendor">北電子</span><span class="filter-chip text-center" data-type="vendor">Sammy</span><span class="filter-chip text-center" data-type="vendor">Daito</span><span class="filter-chip text-center" data-type="vendor">Rodeo</span><span class="filter-chip text-center" data-type="vendor">bellco</span><span class="filter-chip text-center" data-type="vendor">Universal</span><span class="filter-chip text-center" data-type="vendor">Bros</span><span class="filter-chip text-center" data-type="vendor">YAMASA</span><span class="filter-chip text-center" data-type="vendor">Mizuho</span></div></div>
-        <div class="flex gap-3 mt-4"><button id="resetFilters" class="flex-1 py-3 border border-primary rounded-xl text-primary hover:bg-primary/20 transition">重置篩選</button><button id="applyFilters" class="flex-1 py-3 bg-primary rounded-xl text-white font-bold hover:bg-blue-600 transition">套用</button></div>
-        <div class="mt-3"><button id="clearAllFilters" class="w-full py-2 text-sm text-gray-400 border border-gray-700 rounded-xl hover:text-primary hover:border-primary transition"><i class="fa fa-times-circle mr-1"></i> 清除全部條件</button></div>
-    </div>
-
     <!-- 主內容 -->
     <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
         
-        <!-- 頂部導航 - 調整玩家名稱與代幣顏色 -->
+        <!-- 頂部導航 -->
         <header class="px-4 py-3 bg-dark-200/90 tech-border">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2"><img src="https://static.wixstatic.com/media/d5e540_e347f7f914a14623b91140a29b40cb08~mv2.png" class="w-10 h-10 object-contain" alt="T-PACHIN"><div><h1 class="text-yellow-400 font-bold text-lg">T-PACHIN</h1><p class="text-primary text-xs">CYBER PACHINKO SYSTEM</p></div></div>
+                <div class="flex items-center gap-2">
+                    <img src="https://static.wixstatic.com/media/d5e540_e347f7f914a14623b91140a29b40cb08~mv2.png" class="w-10 h-10 object-contain" alt="T-PACHIN">
+                    <div>
+                        <h1 class="text-yellow-400 font-bold text-lg">T-PACHIN</h1>
+                        <p class="text-primary text-xs">CYBER PACHINKO SYSTEM</p>
+                    </div>
+                </div>
                 <div class="text-right">
-                    <!-- 玩家暱稱改為白色，代幣數字改為金黃色 -->
                     <div class="text-xs text-white">夫人會生氣</div>
                     <div class="font-bold text-lg text-yellow-400">5.280</div>
                 </div>
@@ -283,39 +610,40 @@
         </header>
 
         <!-- 跑馬燈 -->
-        <div class="px-4 py-1 bg-dark-200/80 tech-border"><marquee class="text-secondary text-xs py-1" scrollamount="5">🎮 甲賀忍法帖 弐 新機上線 | 4號機吉宗限時優惠 | 超級奇蹟小丑人氣第一 🎮</marquee></div>
+        <div class="px-4 py-1 bg-dark-200/80 tech-border">
+            <marquee class="text-secondary text-xs py-1" scrollamount="5">🎮 甲賀忍法帖 弐 新機上線 | 4號機吉宗限時優惠 | 超級奇蹟小丑人氣第一 | 多台機台維護中 🔧</marquee>
+        </div>
 
-        <!-- 主要分類標籤 + 篩選按鈕 -->
-        <div class="px-4 py-3 flex items-center justify-between">
-            <div class="flex-1 mr-2 relative tab-container" id="tabContainer">
-                <div class="tabs-wrapper" id="tabsWrapper">
-                    <button class="tab-btn tech-tab-active px-5 py-2 rounded-full text-sm font-medium tab-click-effect" data-tab="全部">全部</button>
-                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="新機">新機</button>
-                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="人氣機台">人氣機台</button>
-                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="4號機">4號機</button>
-                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="5號機">5號機</button>
-                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="6號機">6號機</button>
-                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="我的最愛">
-                        <i class="fa fa-heart text-pink-400 mr-1"></i>我的最愛
-                    </button>
-                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="保留中">
-                        <i class="fa fa-clock-o text-yellow-400 mr-1"></i>保留中
-                    </button>
-                    <button class="tab-btn bg-dark-200 tech-border px-5 py-2 rounded-full text-sm font-medium hover:bg-primary/30 transition tab-click-effect" data-tab="維護中">維護中</button>
-                </div>
-                <div class="tab-indicator" id="tabIndicator"></div>
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-                <button id="openDrawerBtn" class="bg-gradient-to-r from-blue-700 to-blue-500 border border-primary px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1 shadow-lg"><i class="fa fa-sliders"></i> 篩選</button>
+        <!-- 主要分類標籤 - 置中平均分佈 -->
+        <div class="px-4 py-4">
+            <div class="category-tabs-container">
+                <!-- 我的最愛標籤 -->
+                <button class="category-tab flex items-center gap-1" data-tab="我的最愛">
+                    <i class="fa fa-heart text-pink-400"></i>
+                    我的最愛
+                </button>
+                <!-- 保留中標籤 -->
+                <button class="category-tab flex items-center gap-1 active" data-tab="保留中">
+                    <i class="fa fa-clock-o text-yellow-400"></i>
+                    保留中
+                </button>
+                <!-- 維護中標籤 -->
+                <button class="category-tab flex items-center gap-1" data-tab="維護中">
+                    <i class="fa fa-wrench text-gray-400"></i>
+                    維護中
+                </button>
             </div>
         </div>
 
-        <!-- 機台列表區 - 所有愛心按鈕都加上 favorite-btn 類別和點擊功能 -->
-        <main class="flex-1 px-4 pb-4 overflow-y-auto scrollbar-thin" id="machineList">
+        <!-- 機台列表區 - 可滾動內容 -->
+        <main class="flex-1 px-4 overflow-y-auto scrollbar-thin main-content" id="machineList">
             
-            <!-- 新機入替 -->
-            <div class="mb-8 category-section" data-category="新機">
-                <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-star text-secondary"></i> 新機入替</h2>
+            <!-- 新機入替 (預設隱藏) -->
+            <div class="mb-8 category-section hidden" data-category="新機">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa fa-star text-secondary"></i> 新機入替</h2>
+                    <span class="section-count">2 台</span>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden relative">
                         <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto object-contain"></div>
@@ -325,7 +653,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 弐">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 弐" data-id="1">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -339,7 +667,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="超級奇蹟小丑">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="超級奇蹟小丑" data-id="2">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -348,9 +676,12 @@
                 </div>
             </div>
             
-            <!-- 人氣機台 -->
-            <div class="mb-8 category-section" data-category="人氣機台">
-                <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-fire text-secondary"></i> 人氣機台</h2>
+            <!-- 人氣機台 (預設隱藏) -->
+            <div class="mb-8 category-section hidden" data-category="人氣機台">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa fa-fire text-secondary"></i> 人氣機台</h2>
+                    <span class="section-count">2 台</span>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
@@ -359,7 +690,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗" data-id="3">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -372,7 +703,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖" data-id="4">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -381,9 +712,12 @@
                 </div>
             </div>
             
-            <!-- 4號機 -->
-            <div class="mb-8 category-section" data-category="4號機">
-                <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-cube"></i> 4號機</h2>
+            <!-- 4號機 (預設隱藏) -->
+            <div class="mb-8 category-section hidden" data-category="4號機">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa fa-cube"></i> 4號機</h2>
+                    <span class="section-count">2 台</span>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
@@ -392,7 +726,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗(4號)">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗(4號)" data-id="5">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -405,7 +739,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="花月">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="花月" data-id="6">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -414,9 +748,12 @@
                 </div>
             </div>
             
-            <!-- 5號機 -->
-            <div class="mb-8 category-section" data-category="5號機">
-                <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-cube"></i> 5號機</h2>
+            <!-- 5號機 (預設隱藏) -->
+            <div class="mb-8 category-section hidden" data-category="5號機">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa fa-cube"></i> 5號機</h2>
+                    <span class="section-count">2 台</span>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
@@ -425,7 +762,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Rodeo</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="奇蹟小丑">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="奇蹟小丑" data-id="7">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -438,7 +775,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="超級奇蹟">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="超級奇蹟" data-id="8">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -447,9 +784,12 @@
                 </div>
             </div>
             
-            <!-- 6號機 -->
-            <div class="mb-8 category-section" data-category="6號機">
-                <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-primary/30 pb-2"><i class="fa fa-cube"></i> 6號機</h2>
+            <!-- 6號機 (預設隱藏) -->
+            <div class="mb-8 category-section hidden" data-category="6號機">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa fa-cube"></i> 6號機</h2>
+                    <span class="section-count">2 台</span>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="game-card-bg rounded-xl tech-border overflow-hidden">
                         <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
@@ -458,7 +798,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 弐">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 弐" data-id="1">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -471,7 +811,7 @@
                             <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span></div>
                             <div class="flex gap-1 mt-2">
                                 <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="新甲賀">
+                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="新甲賀" data-id="9">
                                     <i class="fa fa-heart text-xs"></i>
                                 </button>
                             </div>
@@ -480,438 +820,849 @@
                 </div>
             </div>
 
-            <!-- 我的最愛區塊 (動態顯示已收藏的機台) -->
+            <!-- 我的最愛區塊 (預設隱藏) -->
             <div class="mb-8 category-section hidden" data-category="我的最愛">
-                <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-pink-500/30 pb-2"><i class="fa fa-heart text-pink-400"></i> 我的最愛</h2>
-                <div class="grid grid-cols-2 gap-4 favorite-container" id="favoriteContainer">
-                    <!-- 這裡會動態顯示被收藏的機台 -->
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fa fa-heart text-pink-400"></i> 我的最愛
+                    </h2>
+                    <span class="section-count" id="favoriteCount">0 台</span>
                 </div>
-                <div class="text-center py-8 text-gray-400 hidden" id="noFavoriteMsg">
-                    <i class="fa fa-heart-o text-4xl mb-2"></i>
-                    <p>尚未加入任何最愛</p>
-                    <p class="text-xs mt-1">點擊機台上的愛心❤️ 開始收藏</p>
+                
+                <!-- 垂直卡片容器 -->
+                <div class="favorite-container" id="favoriteContainer">
+                    <!-- 動態內容會由 JavaScript 生成 -->
+                </div>
+                
+                <!-- 無最愛提示 -->
+                <div class="text-center py-12 text-gray-400 hidden" id="noFavoriteMsg">
+                    <i class="fa fa-heart-o text-5xl mb-3 opacity-50"></i>
+                    <p class="text-lg">尚未加入任何最愛</p>
+                    <p class="text-sm mt-2 text-gray-500">點擊機台上的愛心❤️ 開始收藏</p>
                 </div>
             </div>
 
-            <!-- 保留中區塊 - 倒數計時 -->
-            <div class="mb-8 category-section hidden" data-category="保留中">
-                <h2 class="text-primary font-medium mb-4 flex items-center gap-2 border-b border-yellow-500/30 pb-2"><i class="fa fa-clock-o text-yellow-400"></i> 保留中機台</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- 保留中卡片 1 - 倒數 2天 -->
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative reserve-card" 
-                         data-reserve-end="2026-02-18T23:59:59"
-                         data-machine-name="吉宗(預約保留)">
-                        <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
-                        <div class="reserve-badge">
-                            <i class="fa fa-clock-o"></i> 保留中
-                        </div>
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">吉宗(預約保留)</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:2</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-yellow-600/30 tech-border rounded text-yellow-400 text-xs" disabled>保留中</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗(預約保留)">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="reserve-countdown" id="countdown-1">
-                            <i class="fa fa-hourglass-half"></i> 計算中...
-                        </div>
+            <!-- ============= 保留中區塊 ============= -->
+            <div class="mb-8 category-section" data-category="保留中">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fa fa-clock-o text-yellow-400"></i> 保留中機台
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <span class="section-count">6 台</span>
+                        <button class="refresh-button" id="refreshReserveBtn">
+                            <i class="fa fa-refresh"></i> 重新整理
+                        </button>
                     </div>
-                    
-                    <!-- 保留中卡片 2 - 倒數 5小時 -->
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative reserve-card" 
-                         data-reserve-end="2026-02-16T22:30:00"
-                         data-machine-name="奇蹟小丑">
-                        <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
-                        <div class="reserve-badge">
-                            <i class="fa fa-clock-o"></i> 保留中
-                        </div>
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">奇蹟小丑</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:5</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Rodeo</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-yellow-600/30 tech-border rounded text-yellow-400 text-xs" disabled>保留中</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="奇蹟小丑">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="reserve-countdown" id="countdown-2">
-                            <i class="fa fa-hourglass-half"></i> 計算中...
-                        </div>
-                    </div>
-                    
-                    <!-- 保留中卡片 3 - 倒數 30分鐘 -->
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative reserve-card" 
-                         data-reserve-end="2026-02-16T18:30:00"
-                         data-machine-name="甲賀忍法帖">
-                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
-                        <div class="reserve-badge">
-                            <i class="fa fa-clock-o"></i> 保留中
-                        </div>
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">甲賀忍法帖</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-yellow-600/30 tech-border rounded text-yellow-400 text-xs" disabled>保留中</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="reserve-countdown" id="countdown-3">
-                            <i class="fa fa-hourglass-half"></i> 計算中...
-                        </div>
-                    </div>
-                    
-                    <!-- 保留中卡片 4 - 倒數 1天3小時 -->
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative reserve-card" 
-                         data-reserve-end="2026-02-17T21:00:00"
-                         data-machine-name="花月">
-                        <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
-                        <div class="reserve-badge">
-                            <i class="fa fa-clock-o"></i> 保留中
-                        </div>
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">花月</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">1:4</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-yellow-600/30 tech-border rounded text-yellow-400 text-xs" disabled>保留中</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="花月">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="reserve-countdown" id="countdown-4">
-                            <i class="fa fa-hourglass-half"></i> 計算中...
-                        </div>
-                    </div>
+                </div>
+                
+                <!-- 垂直卡片容器 - 使用動態產生的未來時間 -->
+                <div class="reserve-container" id="reserveContainer">
+                    <!-- 保留中卡片會由 JavaScript 動態生成 -->
                 </div>
             </div>
             
-            <!-- 維護中機台 (愛心按鈕維持禁用) -->
-            <div class="mb-8 category-section" data-category="維護中">
-                <h2 class="text-gray-400 font-medium mb-4 flex items-center gap-2 border-b border-gray-600 pb-2"><i class="fa fa-wrench"></i> 維護中機台</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card">
-                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover opacity-50">
-                        <div class="p-2">
-                            <h3 class="text-gray-400 text-sm truncate">甲賀忍法帖</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:2</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Sammy</span></div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled>
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
+            <!-- ============= 維護中區塊 (預設隱藏) ============= -->
+            <div class="mb-8 category-section hidden" data-category="維護中">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fa fa-wrench text-gray-400"></i> 維護中機台
+                    </h2>
+                    <span class="section-count">12 台</span>
+                </div>
+                
+                <!-- 維護中卡片容器 -->
+                <div class="grid grid-cols-1 gap-4">
+                    
+                    <!-- 一般維護 4台 -->
+                    <div class="vertical-card maintenance-card">
+                        <div class="maintenance-badge general">
+                            <i class="fa fa-wrench"></i> 一般維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">吉宗</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:2</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Daito</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">4號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-clock-o"></i> 維護中</span>
+                                </div>
+                                <div class="maintenance-time">
+                                    <i class="fa fa-calendar"></i> 預計 2/23 18:00 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar general" style="width: 75%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/20 18:00 恢復</div>
                     </div>
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card">
-                        <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover opacity-50">
-                        <div class="p-2">
-                            <h3 class="text-gray-400 text-sm truncate">超級奇蹟小丑</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:1</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Olympia</span></div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled>
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
+                    
+                    <div class="vertical-card maintenance-card">
+                        <div class="maintenance-badge general">
+                            <i class="fa fa-wrench"></i> 一般維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">奇蹟小丑</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:5</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Rodeo</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">5號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-clock-o"></i> 維護中</span>
+                                </div>
+                                <div class="maintenance-time">
+                                    <i class="fa fa-calendar"></i> 預計 2/23 14:00 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar general" style="width: 45%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/18 23:59 恢復</div>
                     </div>
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card">
-                        <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover opacity-50">
-                        <div class="p-2">
-                            <h3 class="text-gray-400 text-sm truncate">吉宗</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:2</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Daito</span></div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled>
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
+                    
+                    <div class="vertical-card maintenance-card">
+                        <div class="maintenance-badge general">
+                            <i class="fa fa-wrench"></i> 一般維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">甲賀忍法帖</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:4</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Sammy</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">6號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-clock-o"></i> 維護中</span>
+                                </div>
+                                <div class="maintenance-time">
+                                    <i class="fa fa-calendar"></i> 預計 2/24 10:00 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar general" style="width: 30%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/19 10:00 恢復</div>
                     </div>
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative maintenance-card">
-                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover opacity-50">
-                        <div class="p-2">
-                            <h3 class="text-gray-400 text-sm truncate">花月</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs"><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">1:4</span><span class="bg-gray-700/50 px-1.5 py-0.5 rounded text-gray-400">Olympia</span></div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-gray-700/50 tech-border rounded text-gray-400 text-xs" disabled>維護中</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-600" disabled>
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
+                    
+                    <div class="vertical-card maintenance-card">
+                        <div class="maintenance-badge general">
+                            <i class="fa fa-wrench"></i> 一般維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">花月</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:4</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Olympia</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">4號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-clock-o"></i> 維護中</span>
+                                </div>
+                                <div class="maintenance-time">
+                                    <i class="fa fa-calendar"></i> 預計 2/24 15:00 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar general" style="width: 20%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="maintenance-time"><i class="fa fa-clock-o mr-1"></i>預計 02/21 14:00 恢復</div>
+                    </div>
+                    
+                    <!-- 例行維護 4台 -->
+                    <div class="vertical-card maintenance-card">
+                        <div class="maintenance-badge routine">
+                            <i class="fa fa-calendar-check"></i> 例行維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">超級奇蹟小丑</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:1</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Olympia</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">5號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-brush"></i> 清潔保養</span>
+                                </div>
+                                <div class="maintenance-time">
+                                    <i class="fa fa-calendar"></i> 預計 2/23 09:30 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar routine" style="width: 45%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vertical-card maintenance-card">
+                        <div class="maintenance-badge routine">
+                            <i class="fa fa-calendar-check"></i> 例行維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">新甲賀</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:4</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Sammy</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">6號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-brush"></i> 定期保養</span>
+                                </div>
+                                <div class="maintenance-time">
+                                    <i class="fa fa-calendar"></i> 預計 2/23 16:20 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar routine" style="width: 40%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vertical-card maintenance-card">
+                        <div class="maintenance-badge routine">
+                            <i class="fa fa-calendar-check"></i> 例行維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">超級奇蹟</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:1</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Olympia</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">5號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-shield"></i> 安全檢測</span>
+                                </div>
+                                <div class="maintenance-time">
+                                    <i class="fa fa-calendar"></i> 預計 2/23 11:00 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar routine" style="width: 50%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vertical-card maintenance-card">
+                        <div class="maintenance-badge routine">
+                            <i class="fa fa-calendar-check"></i> 例行維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">吉宗 改</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:2</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Daito</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">4號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-chart-line"></i> 效能優化</span>
+                                </div>
+                                <div class="maintenance-time">
+                                    <i class="fa fa-calendar"></i> 預計 2/24 09:00 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar routine" style="width: 25%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 緊急維護 4台 -->
+                    <div class="vertical-card maintenance-card" style="border-color: #ef4444;">
+                        <div class="maintenance-badge emergency">
+                            <i class="fa fa-exclamation-triangle"></i> 緊急維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">奇蹟小丑 EX</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:6</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Rodeo</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">5號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-exclamation-circle text-red-500"></i> 故障排除中</span>
+                                </div>
+                                <div class="maintenance-time" style="color: #ef4444; border-color: #ef4444;">
+                                    <i class="fa fa-calendar"></i> 預計 2/22 22:30 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar emergency" style="width: 85%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vertical-card maintenance-card" style="border-color: #ef4444;">
+                        <div class="maintenance-badge emergency">
+                            <i class="fa fa-exclamation-triangle"></i> 緊急維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">吉宗 改</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:2</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Daito</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">4號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-exclamation-triangle text-red-500"></i> 零件故障</span>
+                                </div>
+                                <div class="maintenance-time" style="color: #ef4444; border-color: #ef4444;">
+                                    <i class="fa fa-calendar"></i> 預計 2/22 21:30 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar emergency" style="width: 70%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vertical-card maintenance-card" style="border-color: #ef4444;">
+                        <div class="maintenance-badge emergency">
+                            <i class="fa fa-exclamation-triangle"></i> 緊急維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">花月 弐</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:5</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Olympia</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">4號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-exclamation-circle text-red-500"></i> 系統異常</span>
+                                </div>
+                                <div class="maintenance-time" style="color: #ef4444; border-color: #ef4444;">
+                                    <i class="fa fa-calendar"></i> 預計 2/22 23:45 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar emergency" style="width: 60%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vertical-card maintenance-card" style="border-color: #ef4444;">
+                        <div class="maintenance-badge emergency">
+                            <i class="fa fa-exclamation-triangle"></i> 緊急維護
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="vertical-card-image opacity-60">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title text-gray-400">甲賀忍法帖 極</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">1:3</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Sammy</span>
+                                    <span class="vertical-card-tag bg-gray-700/50 text-gray-400">6號機</span>
+                                </div>
+                                <div class="vertical-card-stats text-gray-500">
+                                    <span class="vertical-card-stat"><i class="fa fa-exclamation-circle text-red-500"></i> 緊急維修</span>
+                                </div>
+                                <div class="maintenance-time" style="color: #ef4444; border-color: #ef4444;">
+                                    <i class="fa fa-calendar"></i> 預計 2/23 20:00 恢復
+                                </div>
+                                <div class="maintenance-progress">
+                                    <div class="maintenance-progress-bar emergency" style="width: 35%"></div>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn" disabled>維護中</button>
+                                    <button class="favorite-btn opacity-50" disabled>
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
 
-        <!-- 底部導航 -->
-<nav class="bottom-nav">
-    <div class="flex justify-between items-center">
-        <a href="index.html" class="nav-item" id="nav-home"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-        <a href="machines.html" class="nav-item current-page" id="nav-game" aria-current="page"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-        <a href="news.html" class="nav-item" id="nav-bell"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
-        <a href="about.html" class="nav-item" id="nav-user"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
-    </div>
-</nav>
+        <!-- 底部導航 - 固定式 -->
+        <nav class="bottom-nav">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="nav-item" id="nav-home"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
+                <a href="machines.html" class="nav-item current-page" id="nav-game" aria-current="page"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
+                <a href="news.html" class="nav-item" id="nav-bell"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
+                <a href="about.html" class="nav-item" id="nav-user"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
+            </div>
+        </nav>
 
-        <script src="shared.js"></script>
-    <script>
-        (function() {
-            // 篩選側欄控制
-            const drawer = document.getElementById('filterDrawer');
-            const overlay = document.getElementById('drawerOverlay');
-            const openBtn = document.getElementById('openDrawerBtn');
-            const closeBtn = document.getElementById('closeDrawer');
-            
-            function openDrawer() { drawer.classList.add('open'); overlay.classList.add('open'); }
-            function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); }
-            if (openBtn) openBtn.addEventListener('click', openDrawer);
-            if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
-            if (overlay) overlay.addEventListener('click', closeDrawer);
+        <script>
+            // 定義 machineDatabase
+            const machineDatabase = [
+                { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1:2', vendor: 'Sammy' },
+                { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1:1', vendor: 'Olympia' },
+                { id: 3, name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:2', vendor: 'Daito' },
+                { id: 4, name: '甲賀忍法帖', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1:4', vendor: 'Sammy' },
+                { id: 5, name: '吉宗(4號)', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:2', vendor: 'Daito' },
+                { id: 6, name: '花月', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:4', vendor: 'Olympia' },
+                { id: 7, name: '奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1:5', vendor: 'Rodeo' },
+                { id: 8, name: '超級奇蹟', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1:1', vendor: 'Olympia' },
+                { id: 9, name: '新甲賀', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1:4', vendor: 'Sammy' },
+                { id: 10, name: '吉宗 SP', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:2', vendor: 'Daito' },
+                { id: 11, name: '奇蹟小丑 EX', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1:6', vendor: 'Rodeo' },
+                { id: 12, name: '甲賀忍法帖 極', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1:3', vendor: 'Sammy' },
+                { id: 13, name: '花月 弐', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:5', vendor: 'Olympia' },
+                { id: 14, name: '吉宗 改', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:2', vendor: 'Daito' }
+            ];
 
-            // 篩選晶片點擊
-            document.querySelectorAll('.filter-chip').forEach(chip => { 
-                chip.addEventListener('click', function(e) { 
-                    e.stopPropagation(); 
-                    this.classList.toggle('selected'); 
-                }); 
-            });
-            
-            document.getElementById('resetFilters')?.addEventListener('click', function() { 
-                document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('selected')); 
-            });
-            
-            document.getElementById('applyFilters')?.addEventListener('click', function() { 
-                closeDrawer(); 
-                alert('篩選條件已套用 (示範)'); 
-            });
-            
-            document.getElementById('clearAllFilters')?.addEventListener('click', function() { 
-                document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('selected')); 
-            });
+            // 收藏陣列
+            let favoriteMachines = JSON.parse(localStorage.getItem('favoriteMachines')) || [];
 
-            // ===== 滑鼠拖曳功能 =====
-            const tabsWrapper = document.getElementById('tabsWrapper');
-            let isDown = false;
-            let startX;
-            let scrollLeft;
+            // 儲存收藏
+            function saveFavorites() {
+                localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
+            }
 
-            if (tabsWrapper) {
-                tabsWrapper.addEventListener('mousedown', (e) => {
-                    isDown = true;
-                    tabsWrapper.classList.add('dragging');
-                    startX = e.pageX - tabsWrapper.offsetLeft;
-                    scrollLeft = tabsWrapper.scrollLeft;
-                    e.preventDefault();
+            // 切換收藏
+            function toggleFavorite(machine) {
+                const index = favoriteMachines.findIndex(m => m.id === machine.id);
+                if (index === -1) {
+                    favoriteMachines.push(machine);
+                } else {
+                    favoriteMachines.splice(index, 1);
+                }
+                saveFavorites();
+                updateFavoriteContainer();
+                return index === -1;
+            }
+
+            // 更新我的最愛容器
+            function updateFavoriteContainer() {
+                const container = document.getElementById('favoriteContainer');
+                const noMsg = document.getElementById('noFavoriteMsg');
+                const countSpan = document.getElementById('favoriteCount');
+                
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (favoriteMachines.length === 0) {
+                    noMsg.classList.remove('hidden');
+                    if (countSpan) countSpan.textContent = '0 台';
+                    return;
+                }
+                
+                noMsg.classList.add('hidden');
+                if (countSpan) countSpan.textContent = favoriteMachines.length + ' 台';
+                
+                favoriteMachines.forEach(machine => {
+                    const card = document.createElement('div');
+                    card.className = 'vertical-card';
+                    card.innerHTML = `
+                        <div class="vertical-card-content">
+                            <img src="${machine.image}" class="vertical-card-image">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title">${machine.name}</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag">${machine.ratio}</span>
+                                    <span class="vertical-card-tag">${machine.vendor}</span>
+                                </div>
+                                <div class="vertical-card-stats">
+                                    <span class="vertical-card-stat"><i class="fa fa-users"></i> ${Math.floor(Math.random() * 10) + 1}人排隊</span>
+                                    <span class="vertical-card-stat"><i class="fa fa-trophy"></i> 最大${Math.floor(Math.random() * 5000) + 2000}</span>
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn">進入</button>
+                                    <button class="favorite-btn active" data-machine="${machine.name}" data-id="${machine.id}">
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
                 });
-
-                tabsWrapper.addEventListener('mouseleave', () => {
-                    isDown = false;
-                    tabsWrapper.classList.remove('dragging');
-                });
-
-                tabsWrapper.addEventListener('mouseup', () => {
-                    isDown = false;
-                    tabsWrapper.classList.remove('dragging');
-                });
-
-                tabsWrapper.addEventListener('mousemove', (e) => {
-                    if (!isDown) return;
-                    e.preventDefault();
-                    const x = e.pageX - tabsWrapper.offsetLeft;
-                    const walk = (x - startX) * 2;
-                    tabsWrapper.scrollLeft = scrollLeft - walk;
+                
+                // 重新綁定新按鈕的事件
+                document.querySelectorAll('.favorite-btn').forEach(btn => {
+                    btn.addEventListener('click', favoriteClickHandler);
                 });
             }
 
-            // 分類標籤切換 + 指示器
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const categorySections = document.querySelectorAll('.category-section');
-            const tabIndicator = document.getElementById('tabIndicator');
-            const tabContainer = document.getElementById('tabContainer');
-            let currentTabIndex = 0;
-
-            function filterByCategory(category) {
-                categorySections.forEach(section => {
-                    const cat = section.getAttribute('data-category');
-                    section.style.display = (category === '全部' || cat === category) ? 'block' : 'none';
-                });
+            // 愛心點擊處理函數
+            function favoriteClickHandler(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const btn = this;
+                const machineId = parseInt(btn.dataset.id);
+                const machineName = btn.getAttribute('data-machine');
+                
+                let machine = machineDatabase.find(m => m.id === machineId);
+                if (!machine) {
+                    machine = {
+                        id: machineId,
+                        name: machineName,
+                        image: btn.closest('.vertical-card, .game-card-bg').querySelector('img').src,
+                        ratio: '1:2',
+                        vendor: '未知'
+                    };
+                }
+                
+                const added = toggleFavorite(machine);
+                btn.classList.toggle('active', added);
+                btn.classList.add('pulse');
+                setTimeout(() => btn.classList.remove('pulse'), 300);
+                
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm py-2 px-4 rounded-full border border-blue-400 shadow-lg z-50 transition-opacity duration-300';
+                toast.textContent = added ? `💖 已加入收藏：${machineName}` : `❤️ 已移除收藏：${machineName}`;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 2000);
             }
 
-            function updateTabStyles(index) {
-                tabBtns.forEach((btn, i) => {
-                    if (i === index) {
-                        btn.classList.remove('bg-dark-200', 'tech-border');
-                        btn.classList.add('tech-tab-active');
-                    } else {
-                        btn.classList.remove('tech-tab-active');
-                        btn.classList.add('bg-dark-200', 'tech-border');
-                    }
-                });
-                setTimeout(updateIndicatorPosition, 30);
-            }
-
-            function updateIndicatorPosition() {
-                const activeTab = tabBtns[currentTabIndex];
-                if (!activeTab || !tabIndicator || !tabContainer || !tabsWrapper) return;
-                const left = activeTab.offsetLeft - tabsWrapper.scrollLeft;
-                const width = activeTab.offsetWidth;
-                tabIndicator.style.left = left + 'px';
-                tabIndicator.style.width = width + 'px';
-            }
-
-            tabBtns.forEach((btn, index) => {
-                btn.addEventListener('click', function(e) {
-                    currentTabIndex = index;
-                    updateTabStyles(index);
-                    filterByCategory(this.getAttribute('data-tab'));
-                });
-            });
-
-            if (tabsWrapper) { 
-                tabsWrapper.addEventListener('scroll', () => { updateIndicatorPosition(); }); 
-            }
-            window.addEventListener('resize', () => { updateIndicatorPosition(); });
-
-            filterByCategory('全部');
-            setTimeout(() => { updateTabStyles(0); }, 100);
-
-            // ===== 愛心收藏功能 =====
-            // 為所有愛心按鈕加上 data-id
-            const favoriteBtns = document.querySelectorAll('.favorite-btn');
-            favoriteBtns.forEach((btn, index) => {
-                // 如果沒有 data-id，根據機台名稱設定 id
-                if (!btn.dataset.id) {
-                    const machineName = btn.getAttribute('data-machine');
-                    const machine = machineDatabase.find(m => m.name === machineName);
-                    if (machine) {
-                        btn.dataset.id = machine.id;
-                    } else {
-                        // 如果找不到，用 index+1 當作 id
-                        btn.dataset.id = index + 1;
+            // 顯示提示視窗 (強化版)
+            function showUrgentNotification(machineName, minutesLeft) {
+                // 檢查是否已經有相同機台的提示正在顯示
+                const existingToasts = document.querySelectorAll('.toast-notification');
+                for (let toast of existingToasts) {
+                    if (toast.innerHTML.includes(machineName)) {
+                        return; // 如果已經有相同機台的提示，就不重複顯示
                     }
                 }
-            });
-
-            // 初始化愛心按鈕狀態
-            syncFavoriteButtons();
-
-            // 綁定點擊事件
-            document.querySelectorAll('.favorite-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const machineId = parseInt(this.dataset.id);
-                    const machineName = this.getAttribute('data-machine');
-                    
-                    // 從資料庫找機器資料
-                    let machine = machineDatabase.find(m => m.id === machineId);
-                    if (!machine) {
-                        // 如果找不到，用按鈕上的資訊建立
-                        machine = {
-                            id: machineId,
-                            name: machineName,
-                            image: this.closest('.game-card-bg').querySelector('img').src,
-                            ratio: '1:2', // 預設值
-                            vendor: '未知'
-                        };
-                    }
-                    
-                    const added = toggleFavorite(machine);
-                    this.classList.toggle('active', added);
-                    
-                    // 顯示提示
-                    const toast = document.createElement('div');
-                    toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm py-2 px-4 rounded-full border border-blue-400 shadow-lg z-50 transition-opacity duration-300';
-                    toast.textContent = added ? `💖 已加入收藏：${machineName}` : `❤️ 已移除收藏：${machineName}`;
-                    document.body.appendChild(toast);
-                    
-                    setTimeout(() => {
-                        toast.style.opacity = '0';
-                        setTimeout(() => toast.remove(), 300);
-                    }, 2000);
-                });
-            });
-
-            // ===== 保留中倒數計時 =====
-            function updateAllCountdowns() {
-                const reserveCards = document.querySelectorAll('.reserve-card');
                 
-                reserveCards.forEach((card, index) => {
-                    const endTimeStr = card.getAttribute('data-reserve-end');
-                    if (!endTimeStr) return;
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.innerHTML = `
+                    <i class="fa fa-exclamation-triangle fa-shake"></i>
+                    <span><strong>${machineName}</strong> 剩餘 ${minutesLeft} 分鐘！</span>
+                    <i class="fa fa-bell"></i>
+                `;
+                document.body.appendChild(toast);
+                
+                // 震動效果 (如果支援)
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate([200, 100, 200]);
+                }
+                
+                // 3秒後淡出
+                setTimeout(() => {
+                    toast.classList.add('fade-out');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            // 用於記錄上次提示時間的物件
+            const lastNotificationTime = {};
+
+            // 動態生成保留中卡片 (全部設定為10分鐘倒數)
+            function generateReserveCards() {
+                const container = document.getElementById('reserveContainer');
+                if (!container) return;
+                
+                // 清空容器
+                container.innerHTML = '';
+                
+                const now = new Date();
+                const machines = [
+                    { name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:2', vendor: 'Daito', id: 3 },
+                    { name: '奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1:5', vendor: 'Rodeo', id: 7 },
+                    { name: '甲賀忍法帖', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1:4', vendor: 'Sammy', id: 4 },
+                    { name: '超級奇蹟', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1:1', vendor: 'Olympia', id: 8 },
+                    { name: '新甲賀', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1:4', vendor: 'Sammy', id: 9 },
+                    { name: '花月', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:4', vendor: 'Olympia', id: 6 }
+                ];
+                
+                machines.forEach(machine => {
+                    // 計算未來時間 (當前時間 + 10分鐘)
+                    const futureTime = new Date(now.getTime() + 10 * 60000);
+                    const timeStr = futureTime.toISOString().slice(0, 19).replace('T', ' ');
                     
-                    const countdownEl = card.querySelector('.reserve-countdown');
-                    if (!countdownEl) return;
+                    const card = document.createElement('div');
+                    card.className = 'vertical-card reserve-card urgent';
+                    card.setAttribute('data-reserve-end', timeStr);
+                    card.setAttribute('data-machine-name', machine.name);
+                    card.setAttribute('data-machine-id', machine.id);
                     
-                    const endTime = new Date(endTimeStr).getTime();
-                    const now = new Date().getTime();
-                    const diff = endTime - now;
-                    
-                    if (diff <= 0) {
-                        countdownEl.innerHTML = '<i class="fa fa-clock-o"></i> 保留已結束';
-                        countdownEl.style.color = '#ef4444';
-                        card.style.borderColor = '#ef4444';
-                        return;
-                    }
-                    
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                    
-                    let timeText = '';
-                    if (days > 0) {
-                        timeText = `${days}天 ${hours}小時`;
-                    } else if (hours > 0) {
-                        timeText = `${hours}小時 ${minutes}分`;
-                    } else if (minutes > 0) {
-                        timeText = `${minutes}分 ${seconds}秒`;
-                    } else {
-                        timeText = `${seconds}秒`;
-                    }
-                    
-                    if (diff < 30 * 60 * 1000) {
-                        countdownEl.style.color = '#ff6b6b';
-                    } else if (diff < 2 * 60 * 60 * 1000) {
-                        countdownEl.style.color = '#ffd93d';
-                    } else {
-                        countdownEl.style.color = '#fbbf24';
-                    }
-                    
-                    countdownEl.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${timeText}`;
+                    card.innerHTML = `
+                        <div class="reserve-badge">
+                            <i class="fa fa-exclamation-triangle"></i> 即將到期
+                        </div>
+                        <div class="vertical-card-content">
+                            <img src="${machine.image}" class="vertical-card-image">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title">${machine.name}</h3>
+                                <div class="vertical-card-tags">
+                                    <span class="vertical-card-tag">${machine.ratio}</span>
+                                    <span class="vertical-card-tag">${machine.vendor}</span>
+                                </div>
+                                <div class="vertical-card-stats">
+                                    <span class="vertical-card-stat"><i class="fa fa-users"></i> ${Math.floor(Math.random() * 8) + 1}人排隊</span>
+                                    <span class="vertical-card-stat"><i class="fa fa-trophy"></i> 最大${Math.floor(Math.random() * 5000) + 2000}</span>
+                                </div>
+                                <div class="reserve-countdown urgent-countdown">
+                                    <i class="fa fa-hourglass-half"></i> 剩餘 10分鐘
+                                </div>
+                                <div class="vertical-card-actions">
+                                    <button class="enter-btn available">立即進入</button>
+                                    <button class="favorite-btn" data-machine="${machine.name}" data-id="${machine.id}">
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+                
+                // 重新綁定愛心按鈕
+                document.querySelectorAll('.favorite-btn').forEach(btn => {
+                    btn.addEventListener('click', favoriteClickHandler);
                 });
             }
-            
-            updateAllCountdowns();
-            setInterval(updateAllCountdowns, 1000);
-            
-        })();
-    </script>
-</body>
+
+            (function() {
+                // 分類標籤切換 (我的最愛/保留中/維護中)
+                const categoryTabs = document.querySelectorAll('.category-tab');
+                
+                categoryTabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        // 移除所有active
+                        categoryTabs.forEach(t => t.classList.remove('active'));
+                        // 添加active到當前
+                        this.classList.add('active');
+                        
+                        const category = this.dataset.tab;
+                        
+                        // 隱藏所有
+                        document.querySelectorAll('.category-section').forEach(section => {
+                            section.classList.add('hidden');
+                        });
+                        
+                        // 顯示選中的分類
+                        document.querySelectorAll(`.category-section[data-category="${category}"]`).forEach(section => {
+                            section.classList.remove('hidden');
+                        });
+                    });
+                });
+
+                // 初始化愛心按鈕事件
+                document.querySelectorAll('.favorite-btn').forEach(btn => {
+                    btn.addEventListener('click', favoriteClickHandler);
+                });
+
+                // 初始化我的最愛容器
+                updateFavoriteContainer();
+
+                // 生成保留中卡片
+                generateReserveCards();
+
+                // 先立即顯示一次所有機台的提示（一進入頁面就彈出）
+                setTimeout(() => {
+                    document.querySelectorAll('.reserve-card').forEach((card) => {
+                        const machineName = card.getAttribute('data-machine-name');
+                        showUrgentNotification(machineName, 10);
+                    });
+                }, 500);
+
+                // 保留中倒數 + 每2分鐘提示
+                function updateAllCountdowns() {
+                    const now = Date.now();
+                    
+                    document.querySelectorAll('.reserve-card').forEach((card) => {
+                        const endTimeStr = card.getAttribute('data-reserve-end');
+                        if (!endTimeStr) return;
+                        
+                        const countdownEl = card.querySelector('.reserve-countdown');
+                        if (!countdownEl) return;
+                        
+                        const machineName = card.getAttribute('data-machine-name');
+                        const machineId = card.getAttribute('data-machine-id');
+                        const endTime = new Date(endTimeStr).getTime();
+                        const diff = endTime - now;
+                        
+                        const enterBtn = card.querySelector('.enter-btn');
+                        
+                        if (diff <= 0) {
+                            // 時間已到：按鈕不可點
+                            countdownEl.innerHTML = '<i class="fa fa-clock-o"></i> 保留已結束';
+                            countdownEl.style.color = '#ef4444';
+                            countdownEl.style.borderColor = '#ef4444';
+                            card.classList.add('expired');
+                            card.classList.remove('urgent');
+                            
+                            if (enterBtn) {
+                                enterBtn.disabled = true;
+                                enterBtn.classList.remove('available');
+                            }
+                            
+                            const badge = card.querySelector('.reserve-badge');
+                            if (badge) {
+                                badge.innerHTML = '<i class="fa fa-clock-o"></i> 保留已結束';
+                                badge.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
+                                badge.style.borderColor = '#9ca3af';
+                            }
+                            
+                            // 清除該機台的提示記錄
+                            delete lastNotificationTime[machineId];
+                        } else {
+                            // 時間未到：按鈕可點
+                            card.classList.remove('expired');
+                            
+                            if (enterBtn) {
+                                enterBtn.disabled = false;
+                                enterBtn.classList.add('available');
+                            }
+                            
+                            const minutes = Math.floor(diff / (1000 * 60));
+                            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                            
+                            // 格式化時間顯示
+                            let timeText = '';
+                            if (minutes > 0) {
+                                timeText = `${minutes}分 ${seconds}秒`;
+                            } else {
+                                timeText = `${seconds}秒`;
+                            }
+                            
+                            // 所有卡片都在10分鐘內，所以全部都會觸發提示
+                            card.classList.add('urgent');
+                            
+                            // 每2分鐘提示一次 (120000毫秒)
+                            const lastNotify = lastNotificationTime[machineId] || 0;
+                            
+                            if (now - lastNotify > 120000) {
+                                showUrgentNotification(machineName, minutes);
+                                lastNotificationTime[machineId] = now;
+                                
+                                // 加強視覺效果
+                                countdownEl.style.animation = 'none';
+                                countdownEl.offsetHeight;
+                                countdownEl.style.animation = 'textPulse 0.5s infinite';
+                            }
+                            
+                            // 倒數計時樣式
+                            countdownEl.style.color = '#ff6b6b';
+                            countdownEl.style.borderColor = '#ff6b6b';
+                            countdownEl.style.fontWeight = 'bold';
+                            countdownEl.style.fontSize = '0.85rem';
+                            
+                            // 更新badge
+                            const badge = card.querySelector('.reserve-badge');
+                            if (badge) {
+                                badge.innerHTML = '<i class="fa fa-exclamation-triangle"></i> 即將到期';
+                                badge.style.background = 'linear-gradient(135deg, #ff6b6b, #ff4444)';
+                                badge.style.borderColor = '#ff8888';
+                            }
+                            
+                            countdownEl.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${timeText}`;
+                        }
+                    });
+                }
+                
+                // 每秒更新倒數，提示每2分鐘一次
+                updateAllCountdowns();
+                setInterval(updateAllCountdowns, 1000);
+
+                // 重新整理按鈕功能
+                document.getElementById('refreshReserveBtn').addEventListener('click', function() {
+                    generateReserveCards();
+                    // 清除所有提示記錄
+                    for (let key in lastNotificationTime) {
+                        delete lastNotificationTime[key];
+                    }
+                    // 重新整理後立即顯示提示
+                    setTimeout(() => {
+                        document.querySelectorAll('.reserve-card').forEach((card) => {
+                            const machineName = card.getAttribute('data-machine-name');
+                            showUrgentNotification(machineName, 10);
+                        });
+                    }, 500);
+                });
+            })();
+        </script>
+    </div>
 </body>
 </html>
