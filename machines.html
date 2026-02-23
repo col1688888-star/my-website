@@ -3,1144 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>T-PACHIN · 機台頁面 - 愛心功能</title>
+    <title>T-PACHIN · 機台 - 單一保留倒數警示＋完整維護卡片</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- 引入 Orbitron 字型以配合 Logo 風格 -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
-        /* 自定義樣式 - 完整保留 + 新增首頁互動效果 */
-        .tech-gradient {
-            background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%);
-        }
-        .tech-border {
-            border: 1px solid rgba(0, 148, 255, 0.4);
-        }
-        .tech-tab-active {
-            background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%);
-            border: 1px solid #00ccff;
-            box-shadow: 0 0 8px rgba(0, 204, 255, 0.6);
-        }
-        .tab-click-effect:active {
-            transform: scale(0.92);
-            background: rgba(0, 153, 255, 0.7) !important;
-            transition: transform 0.1s, background 0.1s;
-        }
-        .game-card-bg {
-            background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%);
-        }
+        /* 基礎樣式 */
+        .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
+        .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
         
-        .new-machine-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            z-index: 10;
-            max-width: 100px;
-        }
-        
-        /* 分類標籤樣式 - 調整為置中平均分佈 */
-        .category-tabs-container {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            padding: 0.5rem 0;
-            width: 100%;
-        }
-        
+        /* 分類標籤置中 */
+        .category-tabs-container { display: flex; justify-content: center; gap: 1rem; padding: 0.5rem 0; width: 100%; }
         .category-tab {
-            background: rgba(0, 40, 70, 0.6);
-            border: 1px solid rgba(0, 153, 255, 0.3);
-            border-radius: 9999px;
-            padding: 0.6rem 1.8rem;
-            font-size: 0.95rem;
-            color: #cce6ff;
-            transition: all 0.2s;
-            cursor: pointer;
-            white-space: nowrap;
-            flex: 0 1 auto;
-            min-width: 100px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            background: rgba(0,40,70,0.6); border: 1px solid rgba(0,153,255,0.3); border-radius: 9999px;
+            padding: 0.6rem 1.8rem; font-size: 0.95rem; color: #cce6ff; transition: all 0.2s; cursor: pointer;
+            white-space: nowrap; flex: 0 1 auto; min-width: 100px; text-align: center;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
         }
-        
-        .category-tab:hover {
-            background: rgba(0, 119, 204, 0.5);
-            border-color: #00ccff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 153, 255, 0.3);
-        }
-        
-        .category-tab.active {
-            background: linear-gradient(90deg, #0066cc, #0099ff);
-            color: white;
-            border-color: #80e4ff;
-            box-shadow: 0 0 15px #00ccff;
-        }
-        
-        /* 垂直卡片樣式 */
+        .category-tab.active { background: linear-gradient(90deg,#0066cc,#0099ff); color: white; border-color: #80e4ff; box-shadow: 0 0 15px #00ccff; }
+
+        /* 垂直卡片 */
         .vertical-card {
-            background: linear-gradient(180deg, rgba(0, 40, 80, 0.9) 0%, rgba(0, 20, 40, 0.95) 100%);
-            border: 1px solid rgba(0, 153, 255, 0.3);
-            border-radius: 1rem;
-            overflow: hidden;
-            transition: all 0.2s ease;
-            position: relative;
-            margin-bottom: 1rem;
+            background: linear-gradient(180deg, rgba(0,40,80,0.9) 0%, rgba(0,20,40,0.95) 100%);
+            border: 1px solid rgba(0,153,255,0.3); border-radius: 1rem; overflow: hidden;
+            transition: all 0.2s ease; position: relative; margin-bottom: 1rem;
         }
+        .vertical-card:hover { transform: translateY(-4px); border-color: #0099ff; box-shadow: 0 8px 20px rgba(0,153,255,0.4); }
+        .vertical-card-content { display: flex; padding: 1rem; gap: 1rem; }
+        .vertical-card-image { width: 140px; height: 140px; object-fit: cover; border-radius: 0.75rem; border: 1px solid rgba(0,153,255,0.3); }
+        .vertical-card-info { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+        .vertical-card-title { font-size: 1.1rem; font-weight: 500; color: #80e4ff; }
+        .vertical-card-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .vertical-card-tag { background: rgba(0,50,100,0.8); border: 1px solid rgba(0,153,255,0.3); border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.75rem; color: #cce6ff; }
         
-        .vertical-card:hover {
-            transform: translateY(-4px);
-            border-color: #0099ff;
-            box-shadow: 0 8px 20px rgba(0, 153, 255, 0.4);
-        }
-        
-        .vertical-card-content {
-            display: flex;
-            padding: 1rem;
-            gap: 1rem;
-        }
-        
-        .vertical-card-image {
-            width: 140px;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(0, 153, 255, 0.3);
-        }
-        
-        .vertical-card-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .vertical-card-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #80e4ff;
-        }
-        
-        .vertical-card-tags {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .vertical-card-tag {
-            background: rgba(0, 50, 100, 0.8);
-            border: 1px solid rgba(0, 153, 255, 0.3);
-            border-radius: 9999px;
-            padding: 0.25rem 0.75rem;
-            font-size: 0.75rem;
-            color: #cce6ff;
-        }
-        
-        .vertical-card-actions {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 0.5rem;
-        }
-        
-        .vertical-card-stats {
-            display: flex;
-            gap: 1rem;
-            margin-top: 0.25rem;
-            font-size: 0.75rem;
-            color: #7aa3c2;
-        }
-        
-        .vertical-card-stat {
+        /* 橫式按鈕群組 */
+        .action-row {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
-        .scrollbar-thin::-webkit-scrollbar-track { background: rgba(0, 20, 40, 0.5); }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background: #0099ff; border-radius: 4px; }
-
-        /* 底部導覽 - 固定式 */
-        .bottom-nav {
-            position: sticky;
-            bottom: 0;
-            background: #001a33;
-            border-top: 2px solid #0066cc;
-            box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3);
+            gap: 8px;
+            margin-top: 0.5rem;
             width: 100%;
-            max-width: 448px;
-            padding: 0.75rem 1.5rem;
-            margin-top: 1rem;
-            z-index: 50;
         }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center; color: #4b9cd3;
-            transition: all 0.2s ease; border-radius: 8px; padding: 0.25rem 0.5rem;
-            text-decoration: none; outline: none;
-        }
-        .nav-item:hover {
-            color: #80e4ff; transform: translateY(-2px); text-shadow: 0 0 6px #00ccff;
-            background: rgba(0, 153, 255, 0.15);
-        }
-        .nav-item:active { transform: scale(0.95); color: white; background: rgba(0, 204, 255, 0.3); transition: transform 0.1s; }
-        .nav-item:focus-visible { outline: 2px solid #00ccff; outline-offset: 2px; background: rgba(0, 153, 255, 0.2); color: white; }
-        .nav-item.current-page {
-            color: white; background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%);
-            border: 1px solid #80e4ff; box-shadow: 0 0 12px #00ccff; transform: scale(1.02);
-        }
-        .nav-item.current-page i, .nav-item.current-page span { color: white; }
-
-        /* 保留中卡片樣式 */
-        .reserve-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            font-size: 0.75rem;
-            font-weight: bold;
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid #fbbf24;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
-            z-index: 15;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .reserve-countdown {
-            margin-top: 0.5rem;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fbbf24;
-            font-size: 0.75rem;
-            padding: 6px 12px;
-            border-radius: 20px;
-            text-align: center;
-            border: 1px solid #f59e0b;
-            backdrop-filter: blur(2px);
+        .leave-btn, .enter-btn {
+            flex: 1;
+            height: 40px;
+            border-radius: 40px;
+            font-size: 0.85rem;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
-        .reserve-countdown i {
-            color: #fbbf24;
+        .leave-btn {
+            background: rgba(255, 70, 70, 0.15);
+            border: 1px solid rgba(255, 80, 80, 0.6);
+            color: #ffb3b3;
         }
-        .reserve-card {
-            position: relative;
-            border: 1px solid #f59e0b;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .reserve-card.expired {
-            border-color: #ef4444;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
-        }
-        
-        .reserve-card.expired .reserve-badge {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-            border-color: #9ca3af;
-            box-shadow: none;
-        }
-        
-        .reserve-card.urgent {
-            border-color: #ff6b6b;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
-            animation: urgentPulse 1s infinite;
-        }
-        
-        .reserve-card.urgent .reserve-badge {
-            background: linear-gradient(135deg, #ff6b6b, #ff4444);
+        .leave-btn:hover {
+            background: rgba(220, 38, 38, 0.7);
+            color: white;
             border-color: #ff8888;
-            animation: badgePulse 1s infinite;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(255, 70, 70, 0.5);
         }
+        .leave-btn:active { transform: scale(0.96); background: #b91c1c; }
         
-        .reserve-card.urgent .reserve-countdown {
-            color: #ff6b6b;
-            border-color: #ff6b6b;
-            animation: textPulse 1s infinite;
+        .enter-btn {
+            background: linear-gradient(90deg, #10b981, #059669);
+            border: 1px solid #34d399;
+            color: white;
         }
-        
-        @keyframes urgentPulse {
-            0% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
-            50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.7); }
-            100% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
+        .enter-btn:hover {
+            background: linear-gradient(90deg, #34d399, #10b981);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(16, 185, 129, 0.6);
         }
-        
-        @keyframes badgePulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .enter-btn:active { transform: scale(0.96); background: #047857; }
+        .enter-btn:disabled { opacity: 0.4; pointer-events: none; }
+
+        .favorite-btn {
+            background: rgba(0,30,60,0.8);
+            border: 1px solid rgba(0,148,255,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            color: #aaa;
+            flex-shrink: 0;
         }
-        
-        @keyframes textPulse {
-            0% { opacity: 0.8; }
-            50% { opacity: 1; }
-            100% { opacity: 0.8; }
+        .favorite-btn:hover { transform: scale(1.1); border-color: #ff69b4; background: rgba(255,105,180,0.15); color: #ff69b4; box-shadow: 0 0 12px #ff69b4; }
+        .favorite-btn.active { background: rgba(255,105,180,0.25); border-color: #ff69b4; color: #ff69b4 !important; }
+        .favorite-btn.active i { color: #ff69b4; }
+
+        /* 保留中倒數 */
+        .reserve-countdown {
+            margin-top: 0.5rem; background: rgba(0,0,0,0.5); color: #fbbf24; font-size: 0.75rem;
+            padding: 6px 12px; border-radius: 20px; border: 1px solid #f59e0b; backdrop-filter: blur(2px);
+            font-weight: 500; display: inline-flex; align-items: center; gap: 6px; width: fit-content;
         }
-        
-        /* 維護中卡片樣式 - 所有標籤統一為一般維護 */
+        .reserve-card { border: 1px solid #f59e0b; box-shadow: 0 0 15px rgba(245,158,11,0.2); }
+        /* 只有 urgent 類別的卡片（即吉宗）會有閃爍紅框 */
+        .reserve-card.urgent { border-color: #ff6b6b; box-shadow: 0 0 20px rgba(255,107,107,0.5); animation: urgentPulse 1s infinite; }
+        .reserve-card.urgent .reserve-countdown { color: #ff6b6b; border-color: #ff6b6b; animation: textPulse 1s infinite; }
+        @keyframes urgentPulse { 0% { box-shadow: 0 0 15px rgba(255,107,107,0.3); } 50% { box-shadow: 0 0 25px rgba(255,107,107,0.7); } 100% { box-shadow: 0 0 15px rgba(255,107,107,0.3); } }
+        @keyframes textPulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+
+        /* 維護中卡片樣式 */
         .maintenance-card {
-            position: relative;
             border: 1px solid #6b7280;
             box-shadow: 0 0 15px rgba(107, 114, 128, 0.3);
             filter: grayscale(60%);
             opacity: 0.9;
             transition: all 0.3s ease;
         }
-        
         .maintenance-card:hover {
             filter: grayscale(40%);
             opacity: 1;
             transform: translateY(-4px);
             box-shadow: 0 8px 25px rgba(107, 114, 128, 0.5);
         }
-        
         .maintenance-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            border: 1px solid #9ca3af;
+            color: white;
             font-size: 0.75rem;
             font-weight: bold;
             padding: 4px 12px;
             border-radius: 20px;
-            z-index: 15;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-            border: 1px solid #9ca3af;
-            color: white;
+            width: fit-content;
+            margin-top: 0.25rem;
         }
-        
         .maintenance-time {
-            margin-top: 0.5rem;
             background: rgba(0, 0, 0, 0.5);
-            color: #ffaa00;
+            color: #9ca3af;
             font-size: 0.75rem;
             padding: 6px 12px;
             border-radius: 20px;
-            text-align: center;
-            border: 1px solid #ffaa00;
+            border: 1px solid #6b7280;
             backdrop-filter: blur(2px);
             font-weight: 500;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            width: fit-content;
         }
-        
-        .maintenance-progress {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-        
-        .maintenance-progress-bar {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.3s ease;
-            background: linear-gradient(90deg, #9ca3af, #6b7280);
-        }
-        
-        /* 愛心按鈕樣式 - 強化互動效果 */
-        .favorite-btn {
-            transition: all 0.2s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            background: rgba(0, 30, 60, 0.6);
-            border: 1px solid rgba(0, 148, 255, 0.5);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.75rem;
-        }
-        .favorite-btn:hover {
-            transform: scale(1.1);
-            border-color: #ff69b4 !important;
-            background: rgba(255, 105, 180, 0.15) !important;
-            box-shadow: 0 0 12px rgba(255, 105, 180, 0.6);
-        }
-        .favorite-btn:active {
-            transform: scale(0.85);
-            transition: transform 0.08s;
-        }
-        .favorite-btn.active {
-            background: rgba(255, 105, 180, 0.25) !important;
-            border-color: #ff69b4 !important;
-            box-shadow: 0 0 15px #ff1493;
-        }
-        .favorite-btn.active i {
-            color: #ff69b4 !important;
-            text-shadow: 0 0 12px #ff1493;
-        }
-        .favorite-btn i {
-            transition: all 0.2s ease;
-            font-size: 1.1rem;
-        }
-        
-        .favorite-btn.pulse i {
-            animation: heartBeat 0.3s ease-in-out;
-        }
-        @keyframes heartBeat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.4); color: #ff1493; }
-            100% { transform: scale(1); }
-        }
-        
-        .enter-btn {
-            transition: all 0.2s ease;
-            background: linear-gradient(90deg, rgba(0, 102, 204, 0.2), rgba(0, 153, 255, 0.2));
-            border: 1px solid rgba(0, 153, 255, 0.5);
-            padding: 0.5rem 1.5rem;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            color: #cce6ff;
-            flex: 1;
-            cursor: pointer;
-        }
-        .enter-btn:hover:not(:disabled) {
-            background: linear-gradient(90deg, #0066cc, #0099ff);
-            color: white;
-            transform: scale(1.02);
-            box-shadow: 0 0 12px #00ccff;
-            border-color: #80e4ff;
-        }
-        .enter-btn:active:not(:disabled) {
-            transform: scale(0.95);
-            background: #004499;
-        }
-        
-        .enter-btn:disabled {
-            opacity: 0.5;
-            transform: none !important;
-            box-shadow: none !important;
+        .maintenance-card .enter-btn,
+        .maintenance-card .favorite-btn {
+            opacity: 0.6;
             pointer-events: none;
-            background: rgba(75, 85, 99, 0.3);
-            border-color: #6b7280;
-            color: #9ca3af;
-            cursor: not-allowed;
         }
-        
-        .enter-btn.available {
-            background: linear-gradient(90deg, #10b981, #059669);
-            border-color: #34d399;
-            color: white;
-        }
-        
-        .toast-notification {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #ff6b6b, #ff4444);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 60px;
-            font-size: 1rem;
-            font-weight: 600;
-            box-shadow: 0 6px 25px rgba(255, 68, 68, 0.7);
-            border: 2px solid #ffaaaa;
-            z-index: 10001;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            animation: slideDown 0.3s ease, glowPulse 1.5s infinite;
-            max-width: 90%;
-            letter-spacing: 0.5px;
-        }
-        
-        .toast-notification i {
-            font-size: 1.5rem;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
-        }
-        
-        .toast-notification.fade-out {
-            animation: fadeOut 0.3s ease forwards;
-        }
-        
-        @keyframes slideDown {
-            from {
-                transform: translate(-50%, -100%);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, 0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-            to {
-                opacity: 0;
-                transform: translate(-50%, -20px);
-            }
-        }
-        
-        @keyframes glowPulse {
-            0% { box-shadow: 0 6px 25px rgba(255, 68, 68, 0.7); }
-            50% { box-shadow: 0 6px 35px rgba(255, 68, 68, 0.9), 0 0 20px rgba(255, 255, 255, 0.5); }
-            100% { box-shadow: 0 6px 25px rgba(255, 68, 68, 0.7); }
-        }
-        
-        .new-machine-badge img {
-            filter: drop-shadow(0 0 6px cyan);
-        }
-        
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(0, 153, 255, 0.3);
-        }
-        
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-        
-        .section-count {
-            background: rgba(0, 153, 255, 0.2);
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            color: #80e4ff;
-            border: 1px solid rgba(0, 153, 255, 0.3);
-        }
+        .maintenance-card .leave-btn { display: none; }
 
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 1rem;
+        /* 全頁彈跳視窗 */
+        .global-toast {
+            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff6b6b, #ff4444); color: white;
+            padding: 15px 30px; border-radius: 60px; font-size: 1rem; font-weight: 600;
+            box-shadow: 0 6px 25px rgba(255,68,68,0.7); border: 2px solid #ffaaaa;
+            z-index: 10001; display: flex; align-items: center; gap: 15px;
+            animation: slideDown 0.3s ease; max-width: 90%;
         }
+        .global-toast.fade-out { animation: fadeOut 0.3s ease forwards; }
+        @keyframes slideDown { from { transform: translate(-50%, -100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -20px); } }
 
-        .token-badge {
-            background: linear-gradient(135deg, #fbbf24, #d97706); 
-            color: #000; 
-            font-weight: bold; 
-            padding: 0.125rem 0.5rem; 
-            border-radius: 9999px; 
-            font-size: 0.7rem; 
-            border: 1px solid #f59e0b; 
-            box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); 
+        /* 離開確認對話框 */
+        .confirm-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            z-index: 10002; display: flex; align-items: center; justify-content: center;
         }
-        .token-badge.gold-enhanced {
-            background: linear-gradient(135deg, #fbbf24, #d97706);
-            border-color: #fbbf24;
-            box-shadow: 0 0 12px #fbbf24;
+        .confirm-dialog {
+            background: #001a33; border: 2px solid #ff6b6b; border-radius: 2rem;
+            padding: 2rem 1.5rem; max-width: 320px; width: 90%; box-shadow: 0 0 40px #ff4444;
+            text-align: center; color: white; animation: zoomIn 0.2s ease;
         }
-        
-        .maintenance-card .token-badge {
-            filter: grayscale(80%);
-            opacity: 0.7;
-        }
-        .maintenance-card .token-badge {
-            filter: grayscale(80%) brightness(1.2);
-        }
-        
-        @keyframes logoRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        @keyframes textShine {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-        
-        /* ===== 新 Logo 樣式 (移植自 logo.html，乾淨無外框) ===== */
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;               /* 手機上間距略縮 */
-            font-family: 'Orbitron', 'Russo One', sans-serif;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: transform 0.2s ease; /* 觸控微動畫 */
-            text-decoration: none;
-            color: inherit;
-            /* 移除所有背景、邊框、外框、陰影框 — 乾乾淨淨 */
-            background: transparent;
-            border: none;
-            backdrop-filter: none;
-            padding: 0;              /* 完全無內距 */
-            margin: 0;
-            -webkit-tap-highlight-color: transparent; /* 移除手機點擊閃塊 */
-        }
+        .confirm-dialog h3 { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #ffaaaa; }
+        .confirm-dialog p { margin-bottom: 2rem; font-size: 1.1rem; }
+        .confirm-actions { display: flex; gap: 1rem; justify-content: center; }
+        .confirm-btn { padding: 0.75rem 2rem; border-radius: 3rem; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
+        .confirm-btn.cancel { background: #334155; color: white; border: 1px solid #64748b; }
+        .confirm-btn.cancel:hover { background: #475569; }
+        .confirm-btn.confirm { background: #dc2626; color: white; border: 1px solid #ff8888; }
+        .confirm-btn.confirm:hover { background: #b91c1c; transform: scale(1.05); box-shadow: 0 0 15px #ff4444; }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* 觸控放大回饋 (保留原 hover 但改成 active 更適合觸控) */
-        .logo:active {
-            transform: scale(0.97);
-        }
+        .hidden { display: none !important; }
+        .token-badge { background: linear-gradient(135deg,#fbbf24,#d97706); color: #000; font-weight: bold; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.7rem; border: 1px solid #f59e0b; }
+        .token-badge.gold-enhanced { background: linear-gradient(135deg,#fbbf24,#d97706); border-color: #fbbf24; box-shadow: 0 0 12px #fbbf24; }
 
-        .logo-icon {
-            width: 40px;             /* 手機上稍微縮小，但依然醒目 */
-            height: 40px;
-            background: linear-gradient(135deg, #000, #111, #222);
-            border-radius: 8px;       /* 微調圓角 */
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                0 0 15px rgba(0, 224, 255, 0.5),
-                inset 0 0 10px rgba(255, 215, 0, 0.2);
-            overflow: hidden;
-            border: 2px solid #ffd700;
-            flex-shrink: 0;
-        }
-
-        .logo-icon::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: conic-gradient(
-                from 0deg,
-                transparent,
-                #00e0ff,
-                #c90a0a,
-                #ffd700,
-                transparent
-            );
-            animation: logoRotate 4s linear infinite;
-        }
-
-        .logo-icon::after {
-            content: '';
-            position: absolute;
-            width: 30px;             /* 配合小圖示調整 */
-            height: 30px;
-            background: #000;
-            border-radius: 5px;
-        }
-
-        .logo-icon-inner {
-            position: relative;
-            z-index: 2;
-            font-size: 16px;          /* 手機版字級微調 */
-            font-weight: 900;
-            background: linear-gradient(45deg, #ffdf00, #ffec8b, #00e0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 0.5px;
-            font-family: 'Orbitron', sans-serif;
-            text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
-        }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.1;
-        }
-
-        .logo-main {
-            font-size: 18px;          /* 手機適中大小 */
-            font-weight: 900;
-            background: linear-gradient(45deg, #ffdf00, #ffd700, #00e0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            background-size: 200% auto;
-            animation: textShine 3s ease-in-out infinite alternate;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-            white-space: nowrap;
-        }
-
-        .logo-sub {
-            font-size: 9px;           /* 手機上依然清楚 */
-            color: #00e0ff;
-            font-weight: 500;
-            letter-spacing: 0.8px;
-            opacity: 0.9;
-            text-shadow: 0 0 4px rgba(0, 224, 255, 0.5);
-            white-space: nowrap;
-        }
-
-        /* 手機上點擊反饋只用震動無外框 */
-        .logo:focus-visible {
-            outline: none;
-        }
+        /* Logo & 底部導覽 (簡潔) */
+        .logo { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron','Russo One',sans-serif; cursor: pointer; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg,#000,#111); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid #ffd700; box-shadow: 0 0 15px cyan; }
+        .logo-icon-inner { font-weight: 900; background: linear-gradient(45deg,#ffdf00,#00e0ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-main { font-size: 18px; font-weight: 900; background: linear-gradient(45deg,#ffdf00,#00e0ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-sub { font-size: 9px; color: #00e0ff; }
+        .bottom-nav { position: sticky; bottom: 0; background: #001a33; border-top: 2px solid #0066cc; width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #4b9cd3; transition: 0.2s; }
+        .nav-item.current-page { color: white; background: linear-gradient(90deg,#0066cc,#0099ff); border-radius: 8px; padding: 0.25rem 0.5rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,153,255,0.3); padding-bottom: 0.5rem; margin-bottom: 1rem; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
 
-    <!-- 主內容 -->
-    <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
+<div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
+    
+    <!-- 頂部導航 -->
+    <header class="px-4 py-3 bg-dark-200/90 tech-border">
+        <div class="flex items-center justify-between">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><div class="logo-icon-inner">TP</div></div>
+                <div><div class="logo-main">T-PACHIN</div><div class="logo-sub">CYBER PACHINKO SYSTEM</div></div>
+            </a>
+            <div class="flex flex-col items-end">
+                <a href="about.html" class="text-xs text-white hover:text-yellow-400">夫人會生氣</a>
+                <a href="token-history.html" class="font-bold text-lg text-yellow-400 flex items-center gap-1"><i class="fa fa-coin text-xs"></i>5.280</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 跑馬燈 -->
+    <div class="px-4 py-1 bg-dark-200/80 tech-border">
+        <marquee class="text-xs py-1" scrollamount="5">🎮 甲賀忍法帖 弐 新機上線 | 保留中「吉宗」倒數10分鐘提醒 ⏰ | 6台機台維護中 🔧</marquee>
+    </div>
+
+    <!-- 分類標籤 -->
+    <div class="px-4 py-4">
+        <div class="category-tabs-container">
+            <button class="category-tab active" data-tab="我的最愛"><i class="fa fa-heart text-pink-400"></i>我的最愛</button>
+            <button class="category-tab" data-tab="保留中"><i class="fa fa-clock-o text-yellow-400"></i>保留中</button>
+            <button class="category-tab" data-tab="維護中"><i class="fa fa-wrench text-gray-400"></i>維護中</button>
+        </div>
+    </div>
+
+    <!-- 機台列表 -->
+    <main class="flex-1 px-4 overflow-y-auto scrollbar-thin main-content pb-4">
+        <!-- 我的最愛 -->
+        <div class="mb-8 category-section" data-category="我的最愛">
+            <div class="section-header">
+                <h2 class="text-lg"><i class="fa fa-heart text-pink-400"></i> 我的最愛</h2>
+                <span class="bg-blue-900/30 px-3 py-1 rounded-full text-sm" id="favoriteCount">0 台</span>
+            </div>
+            <div class="favorite-container" id="favoriteContainer"></div>
+            <div class="text-center py-12 text-gray-400 hidden" id="noFavoriteMsg"><i class="fa fa-heart-o text-5xl mb-3"></i><p>尚未加入任何最愛</p></div>
+        </div>
+
+        <!-- 保留中 -->
+        <div class="mb-8 category-section hidden" data-category="保留中">
+            <div class="section-header">
+                <h2 class="text-lg"><i class="fa fa-clock-o text-yellow-400"></i> 保留中機台</h2>
+                <span class="bg-blue-900/30 px-3 py-1 rounded-full text-sm">6 台</span>
+            </div>
+            <div class="reserve-container" id="reserveContainer"></div>
+        </div>
         
-        <!-- 頂部導航 - 使用新的 Logo 樣式 (移植自 logo.html) -->
-        <header class="px-4 py-3 bg-dark-200/90 tech-border">
-            <div class="flex items-center justify-between">
-                <!-- 左邊：新的 LOGO 樣式 (點擊返回首頁) 完全移植自 logo.html -->
-                <a href="index.html" class="logo" id="mobileLogo">
-                    <div class="logo-icon">
-                        <div class="logo-icon-inner">TP</div>
-                    </div>
-                    <div class="logo-text">
-                        <div class="logo-main">T-PACHIN</div>
-                        <div class="logo-sub">CYBER PACHINKO SYSTEM</div>
-                    </div>
-                </a>
-                
-                <!-- 右邊：調整結構，讓夫人會生氣在代幣上方，且各自連結 -->
-                <div class="flex flex-col items-end gap-0">
-                    <!-- 夫人會生氣 - 在上方，連到 about.html -->
-                    <a href="about.html" class="group cursor-pointer text-right">
-                        <div class="text-xs text-white group-hover:text-yellow-400 transition-colors">夫人會生氣</div>
-                    </a>
-                    
-                    <!-- 代幣數字 - 在下方，連到 token-history.html -->
-                    <a href="token-history.html" class="group cursor-pointer text-right">
-                        <div class="font-bold text-lg text-yellow-400 group-hover:text-yellow-300 transition-colors flex items-center gap-1">
-                            <i class="fa fa-coin text-xs opacity-75"></i>
-                            5.280
-                        </div>
-                    </a>
-                </div>
+        <!-- 維護中 (完整卡片) -->
+        <div class="mb-8 category-section hidden" data-category="維護中">
+            <div class="section-header">
+                <h2 class="text-lg"><i class="fa fa-wrench text-gray-400"></i> 維護中機台</h2>
+                <span class="bg-blue-900/30 px-3 py-1 rounded-full text-sm">6 台</span>
             </div>
-        </header>
-
-        <!-- 跑馬燈 -->
-        <div class="px-4 py-1 bg-dark-200/80 tech-border">
-            <marquee class="text-secondary text-xs py-1" scrollamount="5">🎮 甲賀忍法帖 弐 新機上線 | 4號機吉宗限時優惠 | 超級奇蹟小丑人氣第一 | 多台機台維護中 🔧</marquee>
+            <div class="maintenance-container" id="maintenanceContainer"></div>
         </div>
+    </main>
 
-        <!-- 主要分類標籤 - 置中平均分佈 -->
-        <div class="px-4 py-4">
-            <div class="category-tabs-container">
-                <button class="category-tab flex items-center gap-1 active" data-tab="我的最愛">
-                    <i class="fa fa-heart text-pink-400"></i>
-                    我的最愛
-                </button>
-                <button class="category-tab flex items-center gap-1" data-tab="保留中">
-                    <i class="fa fa-clock-o text-yellow-400"></i>
-                    保留中
-                </button>
-                <button class="category-tab flex items-center gap-1" data-tab="維護中">
-                    <i class="fa fa-wrench text-gray-400"></i>
-                    維護中
-                </button>
+    <!-- 底部導航 -->
+    <nav class="bottom-nav">
+        <div class="flex justify-between items-center">
+            <a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs">首頁</span></a>
+            <a href="machines.html" class="nav-item current-page"><i class="fa fa-gamepad text-xl"></i><span class="text-xs">機台</span></a>
+            <a href="news.html" class="nav-item"><i class="fa fa-bell text-xl"></i><span class="text-xs">公告</span></a>
+            <a href="about.html" class="nav-item"><i class="fa fa-user text-xl"></i><span class="text-xs">我的</span></a>
+        </div>
+    </nav>
+
+    <!-- 離開確認對話框 -->
+    <div id="leaveConfirmDialog" class="confirm-overlay hidden">
+        <div class="confirm-dialog">
+            <h3><i class="fa fa-exclamation-triangle"></i> 放棄保留？</h3>
+            <p id="confirmMachineName">確定要離開此位置嗎？</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn cancel" id="cancelLeave">再想想</button>
+                <button class="confirm-btn confirm" id="confirmLeave">確定離開</button>
             </div>
         </div>
+    </div>
 
-        <!-- 機台列表區 - 可滾動內容 -->
-        <main class="flex-1 px-4 overflow-y-auto scrollbar-thin main-content" id="machineList">
-            
-            <!-- 新機入替 (預設隱藏) -->
-            <div class="mb-8 category-section hidden" data-category="新機">
-                <div class="section-header">
-                    <h2 class="section-title"><i class="fa fa-star text-secondary"></i> 新機入替</h2>
-                    <span class="section-count">2 台</span>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative">
-                        <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto object-contain"></div>
-                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge gold-enhanced">1枚=2</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 弐" data-id="1">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden relative">
-                        <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto object-contain"></div>
-                        <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">超級奇蹟小丑</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=1</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="超級奇蹟小丑" data-id="2">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 人氣機台 (預設隱藏) -->
-            <div class="mb-8 category-section hidden" data-category="人氣機台">
-                <div class="section-header">
-                    <h2 class="section-title"><i class="fa fa-fire text-secondary"></i> 人氣機台</h2>
-                    <span class="section-count">2 台</span>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden">
-                        <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">吉宗</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge gold-enhanced">1枚=2</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗" data-id="3">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden">
-                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">甲賀忍法帖</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=0.25</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖" data-id="4">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 4號機 (預設隱藏) -->
-            <div class="mb-8 category-section hidden" data-category="4號機">
-                <div class="section-header">
-                    <h2 class="section-title"><i class="fa fa-cube"></i> 4號機</h2>
-                    <span class="section-count">2 台</span>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden">
-                        <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">吉宗(4號)</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge gold-enhanced">1枚=2</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="吉宗(4號)" data-id="5">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden">
-                        <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">花月</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=0.25</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="花月" data-id="6">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 5號機 (預設隱藏) -->
-            <div class="mb-8 category-section hidden" data-category="5號機">
-                <div class="section-header">
-                    <h2 class="section-title"><i class="fa fa-cube"></i> 5號機</h2>
-                    <span class="section-count">2 台</span>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden">
-                        <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">奇蹟小丑</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=0.2</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Rodeo</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="奇蹟小丑" data-id="7">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden">
-                        <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">超級奇蹟</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=1</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Olympia</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="超級奇蹟" data-id="8">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 6號機 (預設隱藏) -->
-            <div class="mb-8 category-section hidden" data-category="6號機">
-                <div class="section-header">
-                    <h2 class="section-title"><i class="fa fa-cube"></i> 6號機</h2>
-                    <span class="section-count">2 台</span>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden">
-                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge gold-enhanced">1枚=2</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="甲賀忍法帖 弐" data-id="1">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="game-card-bg rounded-xl tech-border overflow-hidden">
-                        <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
-                        <div class="p-2">
-                            <h3 class="text-primary text-sm truncate">新甲賀</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=0.25</span>
-                                <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span>
-                            </div>
-                            <div class="flex gap-1 mt-2">
-                                <button class="flex-1 py-1 bg-primary/20 tech-border rounded text-primary text-xs">進入</button>
-                                <button class="w-7 h-7 flex items-center justify-center tech-border rounded text-gray-400 favorite-btn" data-machine="新甲賀" data-id="9">
-                                    <i class="fa fa-heart text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 我的最愛區塊 (初始顯示) -->
-            <div class="mb-8 category-section" data-category="我的最愛">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fa fa-heart text-pink-400"></i> 我的最愛
-                    </h2>
-                    <span class="section-count" id="favoriteCount">0 台</span>
-                </div>
-                
-                <div class="favorite-container" id="favoriteContainer"></div>
-                
-                <div class="text-center py-12 text-gray-400 hidden" id="noFavoriteMsg">
-                    <i class="fa fa-heart-o text-5xl mb-3 opacity-50"></i>
-                    <p class="text-lg">尚未加入任何最愛</p>
-                    <p class="text-sm mt-2 text-gray-500">點擊機台上的愛心❤️ 開始收藏</p>
-                </div>
-            </div>
-
-            <!-- 保留中區塊 -->
-            <div class="mb-8 category-section hidden" data-category="保留中">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fa fa-clock-o text-yellow-400"></i> 保留中機台
-                    </h2>
-                    <span class="section-count">6 台</span>
-                </div>
-                
-                <div class="reserve-container" id="reserveContainer"></div>
-            </div>
-            
-            <!-- 維護中區塊 (預設隱藏) 為節省篇幅，此處簡略，實際保留原有結構 -->
-            <div class="mb-8 category-section hidden" data-category="維護中">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fa fa-wrench text-gray-400"></i> 維護中機台
-                    </h2>
-                    <span class="section-count">12 台</span>
-                </div>
-                <!-- 維護中卡片內容 (略) 與之前相同 -->
-            </div>
-        </main>
-
-        <!-- 底部導航 -->
-        <nav class="bottom-nav">
-            <div class="flex justify-between items-center">
-                <a href="index.html" class="nav-item" id="nav-home"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-                <a href="machines.html" class="nav-item current-page" id="nav-game" aria-current="page"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-                <a href="news.html" class="nav-item" id="nav-bell"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
-                <a href="about.html" class="nav-item" id="nav-user"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
-            </div>
-        </nav>
-
-        <script>
-            // 定義 machineDatabase (內容同前，略)
+    <script>
+        (function() {
+            // 機台資料庫
             const machineDatabase = [
-                { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=2', vendor: 'Sammy' },
-                { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia' },
-                { id: 3, name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' },
-                { id: 4, name: '甲賀忍法帖', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' },
-                { id: 5, name: '吉宗(4號)', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' },
-                { id: 6, name: '花月', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.25', vendor: 'Olympia' },
-                { id: 7, name: '奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.2', vendor: 'Rodeo' },
-                { id: 8, name: '超級奇蹟', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia' },
-                { id: 9, name: '新甲賀', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' },
-                { id: 10, name: '吉宗 SP', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' },
-                { id: 11, name: '奇蹟小丑 EX', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.17', vendor: 'Rodeo' },
-                { id: 12, name: '甲賀忍法帖 極', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.33', vendor: 'Sammy' },
-                { id: 13, name: '花月 弐', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.2', vendor: 'Olympia' },
-                { id: 14, name: '吉宗 改', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' }
+                { id:1, name:'甲賀忍法帖 弐', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=2', vendor:'Sammy' },
+                { id:2, name:'超級奇蹟小丑', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
+                { id:3, name:'吉宗', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
+                { id:4, name:'甲賀忍法帖', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.25', vendor:'Sammy' },
+                { id:5, name:'吉宗(4號)', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
+                { id:6, name:'花月', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=0.25', vendor:'Olympia' },
+                { id:7, name:'奇蹟小丑', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=0.2', vendor:'Rodeo' },
+                { id:8, name:'超級奇蹟', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
+                { id:9, name:'新甲賀', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.25', vendor:'Sammy' },
+                { id:10, name:'押忍！番長', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
+                { id:11, name:'秘寶傳', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
+                { id:12, name:'北斗神拳', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.5', vendor:'Sammy' }
             ];
 
-            // 收藏相關函數 (同前，略)
+            // ========== 收藏功能 ==========
             let favoriteMachines = JSON.parse(localStorage.getItem('favoriteMachines')) || [];
             function saveFavorites() { localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines)); }
             function toggleFavorite(machine) {
-                const index = favoriteMachines.findIndex(m => m.id === machine.id);
-                if (index === -1) favoriteMachines.push(machine);
-                else favoriteMachines.splice(index, 1);
-                saveFavorites();
-                updateFavoriteContainer();
-                return index === -1;
+                const idx = favoriteMachines.findIndex(m => m.id === machine.id);
+                if (idx === -1) favoriteMachines.push(machine); else favoriteMachines.splice(idx,1);
+                saveFavorites(); updateFavoriteContainer(); return idx === -1;
             }
             function updateFavoriteContainer() {
                 const container = document.getElementById('favoriteContainer');
                 const noMsg = document.getElementById('noFavoriteMsg');
                 const countSpan = document.getElementById('favoriteCount');
-                if (!container) return;
-                container.innerHTML = '';
-                if (favoriteMachines.length === 0) {
-                    noMsg.classList.remove('hidden');
-                    if (countSpan) countSpan.textContent = '0 台';
-                    return;
-                }
-                noMsg.classList.add('hidden');
-                if (countSpan) countSpan.textContent = favoriteMachines.length + ' 台';
-                favoriteMachines.forEach(machine => {
-                    const tokenClass = machine.ratio === '1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
-                    const card = document.createElement('div');
-                    card.className = 'vertical-card';
-                    card.innerHTML = `
-                        <div class="vertical-card-content">
-                            <img src="${machine.image}" class="vertical-card-image">
-                            <div class="vertical-card-info">
-                                <h3 class="vertical-card-title">${machine.name}</h3>
-                                <div class="vertical-card-tags">
-                                    <span class="${tokenClass}">${machine.ratio}</span>
-                                    <span class="vertical-card-tag">${machine.vendor}</span>
-                                </div>
-                                <div class="vertical-card-stats">
-                                    <span class="vertical-card-stat"><i class="fa fa-users"></i> ${Math.floor(Math.random() * 10) + 1}人排隊</span>
-                                    <span class="vertical-card-stat"><i class="fa fa-trophy"></i> 最大${Math.floor(Math.random() * 5000) + 2000}</span>
-                                </div>
-                                <div class="vertical-card-actions">
-                                    <button class="enter-btn">進入</button>
-                                    <button class="favorite-btn active" data-machine="${machine.name}" data-id="${machine.id}">
-                                        <i class="fa fa-heart"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                if (!container) return; container.innerHTML = '';
+                if (favoriteMachines.length === 0) { noMsg.classList.remove('hidden'); countSpan.textContent = '0 台'; return; }
+                noMsg.classList.add('hidden'); countSpan.textContent = favoriteMachines.length + ' 台';
+                favoriteMachines.forEach(m => {
+                    const card = document.createElement('div'); card.className = 'vertical-card';
+                    card.innerHTML = `<div class="vertical-card-content"><img src="${m.image}" class="vertical-card-image"><div><h3 class="vertical-card-title">${m.name}</h3><div class="flex gap-1 mt-1"><span class="${m.ratio==='1枚=2'?'token-badge gold-enhanced':'token-badge'}">${m.ratio}</span><span class="vertical-card-tag">${m.vendor}</span></div><div class="flex gap-3 mt-1 text-xs text-gray-400"><span><i class="fa fa-users"></i> ${Math.floor(Math.random()*10)+1}人</span><span><i class="fa fa-trophy"></i> ${Math.floor(Math.random()*5000)+2000}</span></div><div class="action-row mt-2"><button class="enter-btn">進入</button><button class="favorite-btn active" data-machine="${m.name}" data-id="${m.id}"><i class="fa fa-heart"></i></button></div></div></div>`;
                     container.appendChild(card);
                 });
                 document.querySelectorAll('.favorite-btn').forEach(btn => btn.addEventListener('click', favoriteClickHandler));
             }
             function favoriteClickHandler(e) {
                 e.preventDefault(); e.stopPropagation();
-                const btn = this; const machineId = parseInt(btn.dataset.id); const machineName = btn.getAttribute('data-machine');
-                let machine = machineDatabase.find(m => m.id === machineId);
-                if (!machine) machine = { id: machineId, name: machineName, image: btn.closest('.vertical-card, .game-card-bg').querySelector('img').src, ratio: '1枚=2', vendor: '未知' };
+                const btn = e.currentTarget; const id = parseInt(btn.dataset.id); const name = btn.dataset.machine;
+                let machine = machineDatabase.find(m => m.id === id) || { id, name, image: btn.closest('.vertical-card')?.querySelector('img')?.src || '', ratio:'1枚=2', vendor:'未知' };
                 const added = toggleFavorite(machine);
-                btn.classList.toggle('active', added); btn.classList.add('pulse'); setTimeout(() => btn.classList.remove('pulse'), 300);
-                const toast = document.createElement('div');
-                toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm py-2 px-4 rounded-full border border-blue-400 shadow-lg z-50 transition-opacity duration-300';
-                toast.textContent = added ? `💖 已加入收藏：${machineName}` : `❤️ 已移除收藏：${machineName}`;
-                document.body.appendChild(toast);
-                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2000);
+                btn.classList.toggle('active', added); btn.classList.add('pulse'); setTimeout(()=>btn.classList.remove('pulse'),300);
+                const toast = document.createElement('div'); toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm py-2 px-4 rounded-full border border-blue-400 shadow-lg z-50 transition-opacity duration-300';
+                toast.textContent = added ? `💖 已加入收藏：${name}` : `❤️ 已移除收藏：${name}`;
+                document.body.appendChild(toast); setTimeout(()=>{ toast.style.opacity='0'; setTimeout(()=>toast.remove(),300); },2000);
             }
 
-            // 保留中卡片生成與倒數 (同前)
+            // ========== 保留卡片生成：只有第一個吉宗倒數10分鐘且會跳出警示 ==========
             function generateReserveCards() {
                 const container = document.getElementById('reserveContainer');
                 if (!container) return;
                 container.innerHTML = '';
                 const now = new Date();
                 const machines = [
-                    { name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito', id: 3 },
-                    { name: '奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.2', vendor: 'Rodeo', id: 7 },
-                    { name: '甲賀忍法帖', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy', id: 4 },
-                    { name: '超級奇蹟', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia', id: 8 },
-                    { name: '新甲賀', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy', id: 9 },
-                    { name: '花月', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.25', vendor: 'Olympia', id: 6 }
+                    { name:'吉宗', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito', id:3, customMs: 600000 },      // 10分鐘
+                    { name:'奇蹟小丑', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=0.2', vendor:'Rodeo', id:7, customMs: 25*60000 },
+                    { name:'甲賀忍法帖', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.25', vendor:'Sammy', id:4, customMs: 30*60000 },
+                    { name:'超級奇蹟', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia', id:8, customMs: 15*60000 },
+                    { name:'新甲賀', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.25', vendor:'Sammy', id:9, customMs: 45*60000 },
+                    { name:'花月', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=0.25', vendor:'Olympia', id:6, customMs: 60*60000 }
                 ];
-                machines.forEach(machine => {
-                    const futureTime = new Date(now.getTime() + 10 * 60000);
-                    const timeStr = futureTime.toISOString().slice(0, 19).replace('T', ' ');
+                machines.forEach(m => {
+                    const endTime = new Date(now.getTime() + m.customMs);
+                    const timeStr = endTime.toISOString().slice(0,19).replace('T',' ');
+                    // 只有吉宗 (id=3) 且剩餘時間<=10分鐘才加上urgent類別
+                    const isUrgent = (m.id === 3 && m.customMs <= 600000) ? true : false;
                     const card = document.createElement('div');
-                    card.className = 'vertical-card reserve-card urgent';
+                    card.className = `vertical-card reserve-card ${isUrgent ? 'urgent' : ''}`;
                     card.setAttribute('data-reserve-end', timeStr);
-                    card.setAttribute('data-machine-name', machine.name);
-                    card.setAttribute('data-machine-id', machine.id);
-                    const tokenClass = machine.ratio === '1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
+                    card.setAttribute('data-machine-name', m.name);
+                    card.setAttribute('data-machine-id', m.id);
+                    const tokenClass = m.ratio==='1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
                     card.innerHTML = `
-                        <div class="reserve-badge"><i class="fa fa-exclamation-triangle"></i> 即將到期</div>
                         <div class="vertical-card-content">
-                            <img src="${machine.image}" class="vertical-card-image">
+                            <img src="${m.image}" class="vertical-card-image">
                             <div class="vertical-card-info">
-                                <h3 class="vertical-card-title">${machine.name}</h3>
-                                <div class="vertical-card-tags">
-                                    <span class="${tokenClass}">${machine.ratio}</span>
-                                    <span class="vertical-card-tag">${machine.vendor}</span>
-                                </div>
-                                <div class="vertical-card-stats">
-                                    <span class="vertical-card-stat"><i class="fa fa-users"></i> ${Math.floor(Math.random() * 8) + 1}人排隊</span>
-                                    <span class="vertical-card-stat"><i class="fa fa-trophy"></i> 最大${Math.floor(Math.random() * 5000) + 2000}</span>
-                                </div>
-                                <div class="reserve-countdown urgent-countdown"><i class="fa fa-hourglass-half"></i> 剩餘 10分鐘</div>
-                                <div class="vertical-card-actions">
-                                    <button class="enter-btn available">立即進入</button>
-                                    <button class="favorite-btn" data-machine="${machine.name}" data-id="${machine.id}"><i class="fa fa-heart"></i></button>
+                                <h3 class="vertical-card-title">${m.name}</h3>
+                                <div class="vertical-card-tags"><span class="${tokenClass}">${m.ratio}</span><span class="vertical-card-tag">${m.vendor}</span></div>
+                                <div class="flex gap-3 text-xs text-gray-400"><span><i class="fa fa-users"></i> ${Math.floor(Math.random()*8)+1}人排隊</span><span><i class="fa fa-trophy"></i> 最大${Math.floor(Math.random()*5000)+2000}</span></div>
+                                <div class="reserve-countdown"><i class="fa fa-hourglass-half"></i> 計算中...</div>
+                                <div class="action-row">
+                                    <button class="leave-btn" data-machine="${m.name}" data-id="${m.id}"><i class="fa fa-sign-out"></i> 離開</button>
+                                    <button class="enter-btn">進入</button>
+                                    <button class="favorite-btn" data-machine="${m.name}" data-id="${m.id}"><i class="fa fa-heart"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -1148,59 +396,145 @@
                     container.appendChild(card);
                 });
                 document.querySelectorAll('.favorite-btn').forEach(btn => btn.addEventListener('click', favoriteClickHandler));
+                bindLeaveButtons();
             }
 
-            // 初始化
-            (function() {
-                const categoryTabs = document.querySelectorAll('.category-tab');
-                categoryTabs.forEach(tab => {
-                    tab.addEventListener('click', function() {
-                        categoryTabs.forEach(t => t.classList.remove('active'));
-                        this.classList.add('active');
-                        const category = this.dataset.tab;
-                        document.querySelectorAll('.category-section').forEach(section => section.classList.add('hidden'));
-                        document.querySelectorAll(`.category-section[data-category="${category}"]`).forEach(section => section.classList.remove('hidden'));
-                        if (category === '保留中') {
-                            setTimeout(() => {
-                                document.querySelectorAll('.reserve-card').forEach((card) => {
-                                    const machineName = card.getAttribute('data-machine-name');
-                                    // 簡化提示，避免干擾
-                                });
-                            }, 300);
-                        }
-                    });
+            // ========== 維護中卡片 ==========
+            function generateMaintenanceCards() {
+                const container = document.getElementById('maintenanceContainer');
+                if (!container) return;
+                container.innerHTML = '';
+                const maintMachines = [
+                    { name:'押忍！番長', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito', id:10 },
+                    { name:'秘寶傳', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia', id:11 },
+                    { name:'北斗神拳', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.5', vendor:'Sammy', id:12 },
+                    { name:'吉宗(4號)', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito', id:5 },
+                    { name:'花月', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=0.25', vendor:'Olympia', id:6 },
+                    { name:'新甲賀', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.25', vendor:'Sammy', id:9 }
+                ];
+                maintMachines.forEach(m => {
+                    const card = document.createElement('div');
+                    card.className = 'vertical-card maintenance-card';
+                    const tokenClass = m.ratio==='1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
+                    const now = new Date();
+                    const repairDate = new Date(now.getTime() + 3*60*60000); // 3小時後
+                    const year = repairDate.getFullYear();
+                    const month = String(repairDate.getMonth()+1).padStart(2,'0');
+                    const day = String(repairDate.getDate()).padStart(2,'0');
+                    const hour = String(repairDate.getHours()).padStart(2,'0');
+                    const minute = String(repairDate.getMinutes()).padStart(2,'0');
+                    const dateStr = `${year}/${month}/${day} ${hour}:${minute}`;
+                    
+                    card.innerHTML = `
+                        <div class="vertical-card-content">
+                            <img src="${m.image}" class="vertical-card-image">
+                            <div class="vertical-card-info">
+                                <h3 class="vertical-card-title">${m.name}</h3>
+                                <div class="vertical-card-tags"><span class="${tokenClass}">${m.ratio}</span><span class="vertical-card-tag">${m.vendor}</span></div>
+                                <div class="flex gap-3 text-xs text-gray-400"><span><i class="fa fa-users"></i> 0人排隊</span><span><i class="fa fa-trophy"></i> ---</span></div>
+                                <div class="maintenance-badge"><i class="fa fa-tools"></i> 一般維護</div>
+                                <div class="maintenance-time"><i class="fa fa-calendar"></i> 預計 ${dateStr} 恢復</div>
+                                <div class="action-row">
+                                    <button class="enter-btn" disabled>進入</button>
+                                    <button class="favorite-btn" data-machine="${m.name}" data-id="${m.id}" disabled><i class="fa fa-heart"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
                 });
+            }
 
-                document.querySelectorAll('.favorite-btn').forEach(btn => btn.addEventListener('click', favoriteClickHandler));
-                updateFavoriteContainer();
-                generateReserveCards();
+            // 離開按鈕綁定
+            function bindLeaveButtons() {
+                document.querySelectorAll('.leave-btn').forEach(btn => {
+                    btn.removeEventListener('click', leaveHandler);
+                    btn.addEventListener('click', leaveHandler);
+                });
+            }
+            function leaveHandler(e) {
+                e.stopPropagation();
+                const machineName = this.dataset.machine;
+                const dialog = document.getElementById('leaveConfirmDialog');
+                document.getElementById('confirmMachineName').innerText = `確定放棄「${machineName}」的保留？`;
+                dialog.classList.remove('hidden');
+                const confirmBtn = document.getElementById('confirmLeave');
+                const cancelBtn = document.getElementById('cancelLeave');
+                const closeDialog = () => dialog.classList.add('hidden');
+                const onConfirm = () => {
+                    const card = e.target.closest('.reserve-card');
+                    if (card) card.style.opacity = '0.3'; 
+                    const toast = document.createElement('div'); toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 bg-red-600 text-white py-2 px-4 rounded-full z-50';
+                    toast.innerText = `✅ 已放棄 ${machineName} 的保留`;
+                    document.body.appendChild(toast); setTimeout(()=>toast.remove(),2000);
+                    closeDialog();
+                };
+                const onCancel = () => { closeDialog(); };
+                confirmBtn.addEventListener('click', onConfirm, { once: true });
+                cancelBtn.addEventListener('click', onCancel, { once: true });
+            }
 
-                // 倒數更新 (略)
-                function updateAllCountdowns() {
-                    const now = Date.now();
-                    document.querySelectorAll('.reserve-card').forEach((card) => {
-                        const endTimeStr = card.getAttribute('data-reserve-end');
-                        if (!endTimeStr) return;
-                        const countdownEl = card.querySelector('.reserve-countdown');
-                        if (!countdownEl) return;
-                        const machineName = card.getAttribute('data-machine-name');
-                        const endTime = new Date(endTimeStr).getTime();
-                        const diff = endTime - now;
-                        if (diff <= 0) {
-                            countdownEl.innerHTML = '<i class="fa fa-clock-o"></i> 保留已結束';
-                            card.classList.add('expired'); card.classList.remove('urgent');
+            // ========== 全頁倒數 + 彈跳提醒 (只有吉宗會觸發) ==========
+            let lastToastMinute = -1;
+            function updateAllCountdowns() {
+                const now = Date.now();
+                document.querySelectorAll('.reserve-card').forEach(card => {
+                    const endStr = card.getAttribute('data-reserve-end');
+                    if (!endStr) return;
+                    const countEl = card.querySelector('.reserve-countdown');
+                    if (!countEl) return;
+                    const end = new Date(endStr).getTime();
+                    const diff = end - now;
+                    const machineId = card.getAttribute('data-machine-id');
+                    
+                    if (diff <= 0) {
+                        countEl.innerHTML = '<i class="fa fa-clock-o"></i> 保留已結束';
+                        card.classList.add('expired'); card.classList.remove('urgent');
+                    } else {
+                        const mins = Math.floor(diff / 60000);
+                        const secs = Math.floor((diff % 60000) / 1000);
+                        countEl.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${mins}分 ${secs}秒`;
+                        
+                        // 只有吉宗 (id=3) 且剩餘時間 <=10分鐘 才加上 urgent 並彈出視窗
+                        if (machineId === '3' && diff <= 600000) {
+                            card.classList.add('urgent');
+                            // 每分鐘變化時彈出一次 (避免過多)
+                            if (mins <= 9 && mins !== lastToastMinute) {
+                                lastToastMinute = mins;
+                                showGlobalToast(card.getAttribute('data-machine-name'), mins, secs);
+                            }
                         } else {
-                            const minutes = Math.floor(diff / (1000 * 60));
-                            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                            let timeText = minutes > 0 ? `${minutes}分 ${seconds}秒` : `${seconds}秒`;
-                            countdownEl.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${timeText}`;
+                            card.classList.remove('urgent');
                         }
-                    });
-                }
-                updateAllCountdowns();
-                setInterval(updateAllCountdowns, 1000);
-            })();
-        </script>
-    </div>
+                    }
+                });
+            }
+            function showGlobalToast(name, m, s) {
+                const t = document.createElement('div'); t.className = 'global-toast';
+                t.innerHTML = `<i class="fa fa-exclamation-circle"></i> ⏳ 「${name}」剩下 ${m}分${s}秒！`;
+                document.body.appendChild(t);
+                setTimeout(() => { t.classList.add('fade-out'); setTimeout(() => t.remove(), 400); }, 5000);
+            }
+
+            // 標籤切換
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    const cat = this.dataset.tab;
+                    document.querySelectorAll('.category-section').forEach(sec => sec.classList.add('hidden'));
+                    document.querySelectorAll(`.category-section[data-category="${cat}"]`).forEach(sec => sec.classList.remove('hidden'));
+                });
+            });
+
+            // 初始化
+            updateFavoriteContainer();
+            generateReserveCards();
+            generateMaintenanceCards();
+            updateAllCountdowns();
+            setInterval(updateAllCountdowns, 1000);
+        })();
+    </script>
+</div>
 </body>
 </html>
