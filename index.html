@@ -6,6 +6,7 @@
     <title>T-PACHIN · 完整分類標題＋完整篩選＋不重複機台</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
         /* ========== 所有樣式完全保留 ========== */
         .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
@@ -138,6 +139,97 @@
         .category-section {
             margin-bottom: 2rem;
         }
+
+        /* 新增 Logo 樣式 */
+        .new-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #000, #111, #222);
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 224, 255, 0.5), inset 0 0 10px rgba(255, 215, 0, 0.2);
+            overflow: hidden;
+            border: 2px solid #ffd700;
+            flex-shrink: 0;
+        }
+        .new-logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(from 0deg, transparent, #00e0ff, #c90a0a, #ffd700, transparent);
+            animation: newLogoRotate 4s linear infinite;
+        }
+        .new-logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #000;
+            border-radius: 5px;
+        }
+        @keyframes newLogoRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .new-logo-icon-inner {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffec8b, #00e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.5px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
+        }
+        .new-logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .new-logo-main {
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffd700, #00e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: newTextShine 3s ease-in-out infinite alternate;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+            white-space: nowrap;
+            font-family: 'Orbitron', 'Russo One', sans-serif;
+        }
+        .new-logo-sub {
+            font-size: 9px;
+            color: #00e0ff;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            opacity: 0.9;
+            text-shadow: 0 0 4px rgba(0, 224, 255, 0.5);
+            white-space: nowrap;
+            font-family: 'Orbitron', 'Russo One', sans-serif;
+        }
+        @keyframes newTextShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        #logoHomeBtn {
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+        }
+        #logoHomeBtn:active {
+            transform: scale(0.97);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
@@ -202,18 +294,21 @@
 
 <!-- 主內容 -->
 <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col relative">
-    <!-- 頂部導航 -->
+    <!-- 頂部導航 (已更新為霓虹旋轉 Logo) -->
     <header class="px-4 py-3 bg-dark-200/90 tech-border">
         <div class="flex items-center justify-between">
-            <!-- 左側 LOGO 區域 -->
-            <a href="https://col1688888-star.github.io/T-PACHIN/index.html" class="flex items-center gap-2 clickable" id="logoHomeBtn">
-                <img src="https://static.wixstatic.com/media/d5e540_e347f7f914a14623b91140a29b40cb08~mv2.png" class="w-10 h-10 object-contain" alt="T-PACHIN">
-                <div>
-                    <h1 class="text-yellow-400 font-bold text-lg">T-PACHIN</h1>
-                    <p class="text-primary text-xs">CYBER PACHINKO SYSTEM</p>
+            <!-- 左側 LOGO 區域 (更新為霓虹旋轉風格) -->
+            <a href="https://col1688888-star.github.io/T-PACHIN/index.html" class="flex items-center gap-2" id="logoHomeBtn">
+                <div class="new-logo-icon">
+                    <div class="new-logo-icon-inner">TP</div>
+                </div>
+                <div class="new-logo-text">
+                    <div class="new-logo-main">T-PACHIN</div>
+                    <div class="new-logo-sub">CYBER PACHINKO SYSTEM</div>
                 </div>
             </a>
-            <!-- 右側用戶資訊 -->
+            
+            <!-- 右側用戶資訊 (保持不變) -->
             <div class="text-right flex flex-col items-end">
                 <!-- 暱稱：點擊到「我的」頁面 -->
                 <a href="https://col1688888-star.github.io/T-PACHIN/about.html" class="text-xs text-white clickable hover-glow" id="nicknameBtn">夫人會生氣</a>
@@ -815,6 +910,14 @@
             this.style.transform = '';
         }, 200);
     });
+
+    // Logo 點擊效果
+    const logo = document.getElementById('logoHomeBtn');
+    if (logo) {
+        logo.addEventListener('click', function(e) {
+            // 保留原本的連結功能，不覆蓋
+        });
+    }
 })();
 </script>
 </body>
