@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>T-PACHIN · 機台 - 單一保留倒數警示＋完整維護卡片</title>
+    <title>T-PACHIN · 機台 - 修正倒數警示</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
@@ -112,7 +112,6 @@
             font-weight: 500; display: inline-flex; align-items: center; gap: 6px; width: fit-content;
         }
         .reserve-card { border: 1px solid #f59e0b; box-shadow: 0 0 15px rgba(245,158,11,0.2); }
-        /* 只有 urgent 類別的卡片（即吉宗）會有閃爍紅框 */
         .reserve-card.urgent { border-color: #ff6b6b; box-shadow: 0 0 20px rgba(255,107,107,0.5); animation: urgentPulse 1s infinite; }
         .reserve-card.urgent .reserve-countdown { color: #ff6b6b; border-color: #ff6b6b; animation: textPulse 1s infinite; }
         @keyframes urgentPulse { 0% { box-shadow: 0 0 15px rgba(255,107,107,0.3); } 50% { box-shadow: 0 0 25px rgba(255,107,107,0.7); } 100% { box-shadow: 0 0 15px rgba(255,107,107,0.3); } }
@@ -204,7 +203,7 @@
         .token-badge { background: linear-gradient(135deg,#fbbf24,#d97706); color: #000; font-weight: bold; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.7rem; border: 1px solid #f59e0b; }
         .token-badge.gold-enhanced { background: linear-gradient(135deg,#fbbf24,#d97706); border-color: #fbbf24; box-shadow: 0 0 12px #fbbf24; }
 
-        /* Logo & 底部導覽 (簡潔) */
+        /* Logo & 底部導覽 */
         .logo { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron','Russo One',sans-serif; cursor: pointer; }
         .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg,#000,#111); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid #ffd700; box-shadow: 0 0 15px cyan; }
         .logo-icon-inner { font-weight: 900; background: linear-gradient(45deg,#ffdf00,#00e0ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -236,7 +235,7 @@
 
     <!-- 跑馬燈 -->
     <div class="px-4 py-1 bg-dark-200/80 tech-border">
-        <marquee class="text-xs py-1" scrollamount="5">🎮 甲賀忍法帖 弐 新機上線 | 保留中「吉宗」倒數10分鐘提醒 ⏰ | 6台機台維護中 🔧</marquee>
+        <marquee class="text-xs py-1" scrollamount="5">🎮 保留中「吉宗」倒數10分鐘提醒 ⏰ | 6台機台維護中 🔧</marquee>
     </div>
 
     <!-- 分類標籤 -->
@@ -269,7 +268,7 @@
             <div class="reserve-container" id="reserveContainer"></div>
         </div>
         
-        <!-- 維護中 (完整卡片) -->
+        <!-- 維護中 -->
         <div class="mb-8 category-section hidden" data-category="維護中">
             <div class="section-header">
                 <h2 class="text-lg"><i class="fa fa-wrench text-gray-400"></i> 維護中機台</h2>
@@ -352,7 +351,7 @@
                 document.body.appendChild(toast); setTimeout(()=>{ toast.style.opacity='0'; setTimeout(()=>toast.remove(),300); },2000);
             }
 
-            // ========== 保留卡片生成：只有第一個吉宗倒數10分鐘且會跳出警示 ==========
+            // ========== 保留卡片生成：吉宗倒數10分鐘 ==========
             function generateReserveCards() {
                 const container = document.getElementById('reserveContainer');
                 if (!container) return;
@@ -369,10 +368,8 @@
                 machines.forEach(m => {
                     const endTime = new Date(now.getTime() + m.customMs);
                     const timeStr = endTime.toISOString().slice(0,19).replace('T',' ');
-                    // 只有吉宗 (id=3) 且剩餘時間<=10分鐘才加上urgent類別
-                    const isUrgent = (m.id === 3 && m.customMs <= 600000) ? true : false;
                     const card = document.createElement('div');
-                    card.className = `vertical-card reserve-card ${isUrgent ? 'urgent' : ''}`;
+                    card.className = 'vertical-card reserve-card';  // 不預設加urgent，由update決定
                     card.setAttribute('data-reserve-end', timeStr);
                     card.setAttribute('data-machine-name', m.name);
                     card.setAttribute('data-machine-id', m.id);
@@ -474,7 +471,7 @@
                 cancelBtn.addEventListener('click', onCancel, { once: true });
             }
 
-            // ========== 全頁倒數 + 彈跳提醒 (只有吉宗會觸發) ==========
+            // ========== 修正版倒數 + 彈跳提醒 (每分鐘彈出一次) ==========
             let lastToastMinute = -1;
             function updateAllCountdowns() {
                 const now = Date.now();
@@ -489,18 +486,21 @@
                     
                     if (diff <= 0) {
                         countEl.innerHTML = '<i class="fa fa-clock-o"></i> 保留已結束';
-                        card.classList.add('expired'); card.classList.remove('urgent');
+                        card.classList.add('expired'); 
+                        card.classList.remove('urgent');
                     } else {
                         const mins = Math.floor(diff / 60000);
                         const secs = Math.floor((diff % 60000) / 1000);
                         countEl.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${mins}分 ${secs}秒`;
                         
-                        // 只有吉宗 (id=3) 且剩餘時間 <=10分鐘 才加上 urgent 並彈出視窗
+                        // 修正：吉宗 (id=3) 且剩餘時間小於等於10分鐘 (600000ms)
                         if (machineId === '3' && diff <= 600000) {
                             card.classList.add('urgent');
-                            // 每分鐘變化時彈出一次 (避免過多)
-                            if (mins <= 9 && mins !== lastToastMinute) {
+                            
+                            // 每分鐘彈出一次 (當分鐘數變化時)
+                            if (mins !== lastToastMinute) {
                                 lastToastMinute = mins;
+                                // 立即彈出視窗
                                 showGlobalToast(card.getAttribute('data-machine-name'), mins, secs);
                             }
                         } else {
@@ -509,11 +509,18 @@
                     }
                 });
             }
+            
             function showGlobalToast(name, m, s) {
-                const t = document.createElement('div'); t.className = 'global-toast';
-                t.innerHTML = `<i class="fa fa-exclamation-circle"></i> ⏳ 「${name}」剩下 ${m}分${s}秒！`;
+                const t = document.createElement('div'); 
+                t.className = 'global-toast';
+                t.innerHTML = `<i class="fa fa-exclamation-circle"></i> ⏳ 保留機台「${name}」剩下 ${m}分${s}秒！`;
                 document.body.appendChild(t);
-                setTimeout(() => { t.classList.add('fade-out'); setTimeout(() => t.remove(), 400); }, 5000);
+                
+                // 5秒後自動消失
+                setTimeout(() => { 
+                    t.classList.add('fade-out'); 
+                    setTimeout(() => t.remove(), 400); 
+                }, 5000);
             }
 
             // 標籤切換
@@ -532,7 +539,7 @@
             generateReserveCards();
             generateMaintenanceCards();
             updateAllCountdowns();
-            setInterval(updateAllCountdowns, 1000);
+            setInterval(updateAllCountdowns, 1000); // 每秒更新倒數
         })();
     </script>
 </div>
