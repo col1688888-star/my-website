@@ -6,17 +6,15 @@
     <title>T-PACHIN · 機台頁面 - 完整整合版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入 Orbitron 字型以配合 Logo 風格 -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
-        /* 原有漂亮樣式 - 完全保留 */
+        /* ===== 原有樣式保持不變 ===== */
         .tech-gradient {
             background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%);
         }
         .tech-border {
             border: 1px solid rgba(0, 148, 255, 0.4);
-        }
-        .game-card-bg {
-            background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%);
         }
         
         /* 分類標籤樣式 */
@@ -120,18 +118,92 @@
             color: #cce6ff;
         }
         
+        /* 橫式按鈕群組 */
         .vertical-card-actions {
             display: flex;
             gap: 0.75rem;
             margin-top: 0.5rem;
         }
         
-        .vertical-card-stats {
+        .enter-btn {
+            transition: all 0.2s ease;
+            background: linear-gradient(90deg, rgba(0, 102, 204, 0.2), rgba(0, 153, 255, 0.2));
+            border: 1px solid rgba(0, 153, 255, 0.5);
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: #cce6ff;
+            flex: 1;
+            cursor: pointer;
+        }
+        .enter-btn:hover:not(:disabled) {
+            background: linear-gradient(90deg, #0066cc, #0099ff);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 0 12px #00ccff;
+            border-color: #80e4ff;
+        }
+        
+        .enter-btn.available {
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-color: #34d399;
+            color: white;
+        }
+        
+        .enter-btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .leave-btn {
+            transition: all 0.2s ease;
+            background: rgba(220, 38, 38, 0.2);
+            border: 1px solid rgba(255, 80, 80, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: #ffb3b3;
+            cursor: pointer;
+            white-space: nowrap;
             display: flex;
-            gap: 1rem;
-            margin-top: 0.25rem;
-            font-size: 0.75rem;
-            color: #7aa3c2;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+        }
+        .leave-btn:hover {
+            background: rgba(220, 38, 38, 0.5);
+            color: white;
+            border-color: #ff8888;
+            transform: scale(1.02);
+            box-shadow: 0 0 10px #ff4444;
+        }
+        
+        .favorite-btn {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: rgba(0, 30, 60, 0.6);
+            border: 1px solid rgba(0, 148, 255, 0.5);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            flex-shrink: 0;
+        }
+        .favorite-btn:hover {
+            transform: scale(1.1);
+            border-color: #ff69b4 !important;
+            background: rgba(255, 105, 180, 0.15) !important;
+            box-shadow: 0 0 12px rgba(255, 105, 180, 0.6);
+        }
+        .favorite-btn.active {
+            background: rgba(255, 105, 180, 0.25) !important;
+            border-color: #ff69b4 !important;
+            box-shadow: 0 0 15px #ff1493;
+        }
+        .favorite-btn.active i {
+            color: #ff69b4 !important;
         }
         
         /* 保留中倒數樣式 */
@@ -142,7 +214,6 @@
             font-size: 0.75rem;
             padding: 6px 12px;
             border-radius: 20px;
-            text-align: center;
             border: 1px solid #f59e0b;
             backdrop-filter: blur(2px);
             font-weight: 500;
@@ -229,86 +300,14 @@
             width: fit-content;
         }
         
-        /* 按鈕樣式 */
-        .enter-btn {
-            transition: all 0.2s ease;
-            background: linear-gradient(90deg, rgba(0, 102, 204, 0.2), rgba(0, 153, 255, 0.2));
-            border: 1px solid rgba(0, 153, 255, 0.5);
-            padding: 0.5rem 1.5rem;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            color: #cce6ff;
-            flex: 1;
-            cursor: pointer;
-        }
-        .enter-btn:hover:not(:disabled) {
-            background: linear-gradient(90deg, #0066cc, #0099ff);
-            color: white;
-            transform: scale(1.02);
-            box-shadow: 0 0 12px #00ccff;
-            border-color: #80e4ff;
-        }
-        
-        .enter-btn.available {
-            background: linear-gradient(90deg, #10b981, #059669);
-            border-color: #34d399;
-            color: white;
-        }
-        
-        .enter-btn:disabled {
-            opacity: 0.5;
+        .maintenance-card .enter-btn,
+        .maintenance-card .favorite-btn {
+            opacity: 0.6;
             pointer-events: none;
         }
         
-        .leave-btn {
-            transition: all 0.2s ease;
-            background: rgba(220, 38, 38, 0.2);
-            border: 1px solid rgba(255, 80, 80, 0.5);
-            padding: 0.5rem 1rem;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            color: #ffb3b3;
-            cursor: pointer;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex: 1;
-        }
-        .leave-btn:hover {
-            background: rgba(220, 38, 38, 0.5);
-            color: white;
-            border-color: #ff8888;
-            transform: scale(1.02);
-            box-shadow: 0 0 10px #ff4444;
-        }
-        
-        .favorite-btn {
-            transition: all 0.2s ease;
-            cursor: pointer;
-            background: rgba(0, 30, 60, 0.6);
-            border: 1px solid rgba(0, 148, 255, 0.5);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.75rem;
-            flex-shrink: 0;
-        }
-        .favorite-btn:hover {
-            transform: scale(1.1);
-            border-color: #ff69b4 !important;
-            background: rgba(255, 105, 180, 0.15) !important;
-            box-shadow: 0 0 12px rgba(255, 105, 180, 0.6);
-        }
-        .favorite-btn.active {
-            background: rgba(255, 105, 180, 0.25) !important;
-            border-color: #ff69b4 !important;
-            box-shadow: 0 0 15px #ff1493;
-        }
-        .favorite-btn.active i {
-            color: #ff69b4 !important;
+        .maintenance-card .leave-btn {
+            display: none;
         }
         
         /* 彈跳視窗 */
@@ -431,47 +430,15 @@
             box-shadow: 0 0 12px #fbbf24;
         }
         
-        /* Logo 樣式 */
-        .logo {
+        .section-header {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-family: 'Orbitron', 'Russo One', sans-serif;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 153, 255, 0.3);
         }
         
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #000, #111);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #ffd700;
-            box-shadow: 0 0 15px cyan;
-        }
-        
-        .logo-icon-inner {
-            font-weight: 900;
-            background: linear-gradient(45deg, #ffdf00, #00e0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .logo-main {
-            font-size: 18px;
-            font-weight: 900;
-            background: linear-gradient(45deg, #ffdf00, #00e0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .logo-sub {
-            font-size: 9px;
-            color: #00e0ff;
-        }
-        
-        /* 底部導覽 */
         .bottom-nav {
             position: sticky;
             bottom: 0;
@@ -500,14 +467,132 @@
             border-radius: 8px;
             padding: 0.25rem 0.5rem;
         }
-        
-        .section-header {
+
+        /* ===== 新 Logo 樣式 (移植自 logo.html，乾淨無外框) ===== */
+        .logo {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(0, 153, 255, 0.3);
+            gap: 8px;               /* 手機上間距略縮 */
+            font-family: 'Orbitron', 'Russo One', sans-serif;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 0.2s ease; /* 觸控微動畫 */
+            text-decoration: none;
+            color: inherit;
+            /* 移除所有背景、邊框、外框、陰影框 — 乾乾淨淨 */
+            background: transparent;
+            border: none;
+            backdrop-filter: none;
+            padding: 0;              /* 完全無內距 */
+            margin: 0;
+            -webkit-tap-highlight-color: transparent; /* 移除手機點擊閃塊 */
+        }
+
+        /* 觸控放大回饋 (保留原 hover 但改成 active 更適合觸控) */
+        .logo:active {
+            transform: scale(0.97);
+        }
+
+        .logo-icon {
+            width: 40px;             /* 手機上稍微縮小，但依然醒目 */
+            height: 40px;
+            background: linear-gradient(135deg, #000, #111, #222);
+            border-radius: 8px;       /* 微調圓角 */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 15px rgba(0, 224, 255, 0.5),
+                inset 0 0 10px rgba(255, 215, 0, 0.2);
+            overflow: hidden;
+            border: 2px solid #ffd700;
+            flex-shrink: 0;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                #00e0ff,
+                #c90a0a,
+                #ffd700,
+                transparent
+            );
+            animation: logoRotate 4s linear infinite;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 30px;             /* 配合小圖示調整 */
+            height: 30px;
+            background: #000;
+            border-radius: 5px;
+        }
+
+        @keyframes logoRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-icon-inner {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;          /* 手機版字級微調 */
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffec8b, #00e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.5px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .logo-main {
+            font-size: 18px;          /* 手機適中大小 */
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffd700, #00e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: textShine 3s ease-in-out infinite alternate;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        .logo-sub {
+            font-size: 9px;           /* 手機上依然清楚 */
+            color: #00e0ff;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            opacity: 0.9;
+            text-shadow: 0 0 4px rgba(0, 224, 255, 0.5);
+            white-space: nowrap;
+        }
+
+        @keyframes textShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* 手機上點擊反饋只用震動無外框 */
+        .logo:focus-visible {
+            outline: none;
         }
     </style>
 </head>
@@ -515,10 +600,11 @@
 
 <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
     
-    <!-- 頂部導航 -->
+    <!-- 頂部導航 - 使用新的 Logo 樣式 (移植自 logo.html) -->
     <header class="px-4 py-3 bg-dark-200/90 tech-border">
         <div class="flex items-center justify-between">
-            <a href="index.html" class="logo">
+            <!-- 左邊：新的 LOGO 樣式 (點擊返回首頁) 完全移植自 logo.html -->
+            <a href="index.html" class="logo" id="mobileLogo">
                 <div class="logo-icon">
                     <div class="logo-icon-inner">TP</div>
                 </div>
@@ -527,10 +613,16 @@
                     <div class="logo-sub">CYBER PACHINKO SYSTEM</div>
                 </div>
             </a>
-            <div class="flex flex-col items-end">
-                <a href="about.html" class="text-xs text-white hover:text-yellow-400">夫人會生氣</a>
-                <a href="token-history.html" class="font-bold text-lg text-yellow-400 flex items-center gap-1">
-                    <i class="fa fa-coin text-xs"></i>5.280
+            
+            <!-- 右邊：夫人會生氣和代幣 -->
+            <div class="flex flex-col items-end gap-0">
+                <a href="about.html" class="group cursor-pointer text-right">
+                    <div class="text-xs text-white group-hover:text-yellow-400 transition-colors">夫人會生氣</div>
+                </a>
+                <a href="token-history.html" class="group cursor-pointer text-right">
+                    <div class="font-bold text-lg text-yellow-400 group-hover:text-yellow-300 transition-colors flex items-center gap-1">
+                        <i class="fa fa-coin text-xs opacity-75"></i>5.280
+                    </div>
                 </a>
             </div>
         </div>
@@ -596,10 +688,10 @@
     <!-- 底部導航 -->
     <nav class="bottom-nav">
         <div class="flex justify-between items-center">
-            <a href="#" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-            <a href="#" class="nav-item current-page"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-            <a href="#" class="nav-item"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
-            <a href="#" class="nav-item"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
+            <a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
+            <a href="machines.html" class="nav-item current-page"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
+            <a href="news.html" class="nav-item"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
+            <a href="about.html" class="nav-item"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
         </div>
     </nav>
 
@@ -940,6 +1032,47 @@
                     }
                 });
             });
+
+            // ==================== Logo 點擊音效 ====================
+            const logo = document.getElementById('mobileLogo');
+            if (logo) {
+                logo.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 觸摸縮放回饋
+                    this.style.transform = 'scale(0.96)';
+                    setTimeout(() => { this.style.transform = ''; }, 120);
+                    
+                    // 輕微音效
+                    try {
+                        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        if (audioCtx.state === 'suspended') {
+                            audioCtx.resume().then(() => {
+                                playBeep(audioCtx);
+                            });
+                        } else {
+                            playBeep(audioCtx);
+                        }
+                    } catch (err) {
+                        // 忽略音效錯誤
+                    }
+                    
+                    function playBeep(ctx) {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.frequency.value = 720;
+                        osc.type = 'sine';
+                        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.08);
+                    }
+                });
+                
+                logo.addEventListener('contextmenu', (e) => e.preventDefault());
+            }
 
             // ==================== 初始化 ====================
             renderFavoriteList();
