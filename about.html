@@ -3,930 +3,1652 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>公告中心 · 初始系統公告 | T-PACHIN</title>
+    <title>我的 · T-PACHIN 個人中心 (交易記錄不収合)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- 引入 Google Fonts 以支援 logo 字型 (Orbitron / Russo One) -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
-        /* 基礎科技風格 */
-        .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
-        .tech-border { border: 1px solid rgba(0, 148, 255, 0.3); }
-        .bottom-nav { background: #001a33; border-top: 2px solid #0066cc; width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; margin-top: 1rem; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #4b9cd3; transition: 0.2s; border-radius: 8px; padding: 0.25rem 0.5rem; }
-        .nav-item.current-page { color: white; background: linear-gradient(90deg, #0066cc, #0099ff); border: 1px solid #80e4ff; box-shadow: 0 0 12px #00ccff; }
-        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background: #0099ff; border-radius: 4px; }
-        
-        /* 自定義顏色 - 完全移除光暈，純色設定 */
-        .player-nickname {
-            color: #ffffff;           /* 純白，無光暈 */
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            text-shadow: none;         /* 確保沒有發光 */
+        /* ===== 完整樣式表 ===== */
+        .tech-gradient {
+            background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%);
+            transition: background 0.3s ease;
         }
-        .player-credits {
-            color: #ffc800;            /* 金黃色底色，純色 */
-            font-weight: 900;
-            font-size: 1.4rem;
-            line-height: 1.2;
-            text-shadow: none;         /* 移除光暈 */
+        body.dark-mode .tech-gradient {
+            background: linear-gradient(180deg, #1a2a3a 0%, #1f3a5f 50%, #2c4c6b 100%);
+        }
+        body.dark-mode .game-card-bg {
+            background: linear-gradient(180deg, rgba(40, 70, 100, 0.8) 0%, rgba(20, 50, 80, 0.9) 100%);
+        }
+        body.dark-mode .filter-drawer {
+            background: linear-gradient(165deg, #2a3f5a 0%, #1b2b40 100%);
+        }
+        body.dark-mode .bottom-nav {
+            background: #2c4058;
+            border-top-color: #3399ff;
         }
         
-        /* Banner 輪播區域 */
-        .banner-area {
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(145deg, #002244, #001133);
+        .tech-border {
+            border: 1px solid rgba(0, 148, 255, 0.4);
+        }
+        .game-card-bg {
+            background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%);
+            transition: background 0.3s ease;
+        }
+        
+        .filter-drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            max-width: 340px;
+            height: 100vh;
+            background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
+            border-left: 2px solid #0099ff;
+            box-shadow: -5px 0 30px rgba(0, 153, 255, 0.5);
+            z-index: 10000;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .filter-drawer.open {
+            right: 0;
+        }
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+            display: none;
+        }
+        .drawer-overlay.open {
+            display: block;
+        }
+        
+        .filter-chip {
+            background: rgba(0, 40, 70, 0.8);
             border: 1px solid #0099ff60;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            touch-action: pan-y pinch-zoom;
-        }
-        .banner-slider {
-            display: flex;
-            height: 100%;
-            width: 100%;
-            transition: transform 0.3s ease-in-out;
-            cursor: grab;
-        }
-        .banner-slider:active { cursor: grabbing; }
-        .banner-slide {
-            flex: 0 0 100%;
-            height: 100%;
-            position: relative;
-            user-select: none;
-            pointer-events: none;
-        }
-        .banner-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            pointer-events: none;
-        }
-        .banner-dots {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 6px;
-            z-index: 20;
-            pointer-events: auto;
-        }
-        .banner-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.5);
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #0099ff60;
-        }
-        .banner-dot.active {
-            background: #0099ff;
-            transform: scale(1.2);
-            box-shadow: 0 0 10px #00ccff;
-            border-color: white;
-        }
-        .banner-touch-area {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 15;
-            background: transparent;
-            touch-action: none;
-        }
-
-        /* 公告標籤列 */
-        .announce-tab-bar {
-            display: flex;
-            gap: 2px;
-            background: rgba(0, 30, 60, 0.6);
-            border-radius: 40px;
-            padding: 4px;
-            border: 1px solid #0099ff40;
-            backdrop-filter: blur(4px);
-        }
-        .announce-tab {
-            flex: 1;
-            text-align: center;
-            padding: 0.6rem 0.2rem;
-            border-radius: 32px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #9bb8e0;
+            border-radius: 9999px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.75rem;
+            color: #cce6ff;
             transition: all 0.2s;
             cursor: pointer;
-            background: transparent;
-            border: none;
-            white-space: nowrap;
-        }
-        .announce-tab.active {
-            background: linear-gradient(145deg, #0066cc, #0099ff);
-            color: white;
-            box-shadow: 0 2px 10px #00aaff;
-        }
-
-        /* 系統公告卡片樣式 */
-        .system-card {
-            background: rgba(0, 31, 51, 0.8);
-            border: 1px solid #0099ff40;
-            border-radius: 20px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            backdrop-filter: blur(4px);
-        }
-        .system-badge {
-            background: #1e4b7c;
-            color: white;
-            padding: 0.2rem 1rem;
-            border-radius: 30px;
-            font-size: 0.7rem;
             display: inline-block;
         }
         
-        /* 信件列表專屬樣式 */
-        .letter-container {
-            background: #001f33;
-            border-radius: 24px;
-            padding: 0.5rem;
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: rgba(0, 20, 40, 0.5);
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #0099ff;
+            border-radius: 4px;
+        }
+
+        .bottom-nav {
+            background: #001a33;
+            border-top: 2px solid #0066cc;
+            box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3);
+            width: 100%;
+            max-width: 448px;
+            padding: 0.75rem 1.5rem;
+            margin-top: 1rem;
+            transition: background 0.3s ease, border-top-color 0.3s ease;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #4b9cd3;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            padding: 0.25rem 0.5rem;
+            text-decoration: none;
+            outline: none;
+        }
+        .nav-item:hover {
+            color: #80e4ff;
+            transform: translateY(-2px);
+            text-shadow: 0 0 6px #00ccff;
+            background: rgba(0, 153, 255, 0.15);
+        }
+        .nav-item:active {
+            transform: scale(0.95);
+            color: white;
+            background: rgba(0, 204, 255, 0.3);
+        }
+        .nav-item.current-page {
+            color: white;
+            background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%);
+            border: 1px solid #80e4ff;
+            box-shadow: 0 0 12px #00ccff;
+            transform: scale(1.02);
+        }
+        
+        .action-grid-btn {
+            background: rgba(0, 30, 60, 0.8);
+            border: 1px solid #0099ff60;
+            border-radius: 16px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            transition: all 0.2s;
+            color: #cce6ff;
+            font-size: 0.9rem;
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        .action-grid-btn i {
+            display: block;
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+            color: #ffd966;
+        }
+        .action-grid-btn:active {
+            transform: scale(0.94);
+            background: #0099ff60;
+            border-color: #00ccff;
+            box-shadow: 0 0 12px #00ccff;
+        }
+        
+        .count-badge {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: #ff4444;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            min-width: 22px;
+            height: 22px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6px;
+            border: 1px solid #ffd966;
+            box-shadow: 0 0 8px #ff4444;
+            animation: pulse 2s infinite;
+        }
+        .count-badge.keep {
+            background: #ff9900;
+            box-shadow: 0 0 8px #ff9900;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.9; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.9; transform: scale(1); }
+        }
+
+        .machine-card {
+            background: rgba(0, 40, 70, 0.7);
+            border: 1px solid #0099ff60;
+            border-radius: 12px;
+            padding: 0.8rem;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+            position: relative;
+        }
+        .machine-card:active {
+            transform: scale(0.98);
+            background: #0099ff30;
+        }
+        .machine-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #0099ff;
+        }
+        .machine-info {
+            flex: 1;
+        }
+        .machine-name {
+            font-weight: bold;
+            color: #ffd966;
+            font-size: 1rem;
+        }
+        .machine-meta {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            color: #b0d4ff;
+        }
+        .machine-meta span {
+            background: rgba(0, 153, 255, 0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
             border: 1px solid #0099ff40;
         }
-        .letter-row {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 0.5rem;
-            border-bottom: 1px solid #0099ff20;
-            transition: background 0.1s;
-            cursor: pointer;
-        }
-        .letter-row:last-child { border-bottom: none; }
-        .letter-row.selected-for-delete {
-            background: rgba(0, 80, 120, 0.6);
-            border-radius: 18px;
-        }
-        .letter-avatar {
-            width: 44px; height: 44px; border-radius: 50%;
-            background: #003c6c; display: flex; align-items: center; justify-content: center;
-            border: 1px solid #0099ff; margin: 0 12px 0 8px;
-            flex-shrink: 0;
-        }
-        .letter-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .letter-info h4 {
-            font-weight: 600;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .letter-info p {
-            font-size: 0.75rem;
-            color: #b3d4f0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .checkbox {
-            width: 22px; height: 22px;
-            border: 2px solid #0099ff;
-            border-radius: 6px;
-            margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            flex-shrink: 0;
-            transition: 0.1s;
-            pointer-events: auto;
-        }
-        .checkbox.checked {
-            background: #0099ff;
-            border-color: white;
-        }
-        .checkbox.checked i { display: block; color: white; font-size: 14px; }
-        .checkbox i { display: none; }
-
-        /* 全選列 */
-        .select-all-bar {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 0.5rem;
-            background: #002b4a;
-            border-radius: 40px;
-            margin-bottom: 10px;
-            border: 1px solid #0099ff60;
-        }
-        .select-all-checkbox {
-            width: 22px; height: 22px;
-            border: 2px solid #0099ff;
-            border-radius: 6px;
-            margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            cursor: pointer;
-        }
-        .select-all-checkbox.checked {
-            background: #0099ff;
-            border-color: white;
-        }
-        .select-all-checkbox.checked i { display: block; color: white; font-size: 14px; }
-        .select-all-checkbox i { display: none; }
-
-        /* 刪除工具列 */
-        .delete-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding: 0 6px;
-        }
-        .delete-btn {
-            background: #aa2222;
-            border: none;
+        
+        .countdown-timer {
+            font-size: 0.7rem;
+            color: #ffaa00;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.2rem 0.6rem;
             border-radius: 30px;
-            padding: 0.3rem 1.2rem;
+            border: 1px solid #ffaa00;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+            width: fit-content;
+        }
+        .countdown-timer i {
+            color: #ffaa00;
+            font-size: 0.6rem;
+        }
+        .countdown-timer.warning {
+            color: #ff6666;
+            border-color: #ff6666;
+            animation: blink 1s infinite;
+        }
+        .countdown-timer.warning i {
+            color: #ff6666;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .machine-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-left: 4px;
+        }
+        .play-btn {
+            background: linear-gradient(135deg, #00cc66, #009933);
+            border: 1px solid #80ff80;
             color: white;
-            font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 8px #00ff80;
+            transition: 0.15s;
+            white-space: nowrap;
+        }
+        .play-btn:active {
+            transform: scale(0.9);
+            background: #00ff80;
+            color: #000;
+        }
+        .play-btn i {
+            font-size: 0.7rem;
+        }
+        
+        .remove-btn {
+            color: #ff6666;
+            font-size: 1rem;
+            padding: 4px 8px;
+            cursor: pointer;
+            text-align: center;
+            background: rgba(255, 0, 0, 0.1);
+            border-radius: 30px;
+            border: 1px solid #ff6666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .remove-btn:active {
+            transform: scale(0.9);
+            background: #ff0000;
+            color: white;
+        }
+
+        .machine-list-container {
+            margin-top: 1rem;
+            display: none;
+        }
+        .machine-list-container.show {
+            display: block;
+        }
+        .machine-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .list-title {
+            color: #80e4ff;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        .nickname-edit {
             cursor: pointer;
-            box-shadow: 0 0 8px #ff4444;
             transition: 0.1s;
+            border-bottom: 1px dashed #aaa;
         }
-        .delete-btn:active { transform: scale(0.92); }
-        .delete-btn.disabled { opacity: 0.3; pointer-events: none; }
-
-        /* 詳細內容模態框 */
-        .modal {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(6px);
-            z-index: 1000;
+        .home-return-btn {
+            background: rgba(0, 153, 255, 0.25);
+            border: 1.5px solid #80e4ff;
+            color: #ffd966;
+            width: 44px;
+            height: 44px;
+            border-radius: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s;
-        }
-        .modal.show {
-            visibility: visible;
-            opacity: 1;
-        }
-        .modal-card {
-            background: linear-gradient(165deg, #001f33, #000f1f);
-            border: 2px solid #0099ff;
-            border-radius: 32px;
-            width: 85%;
-            max-width: 360px;
-            padding: 1.8rem 1.5rem;
-            box-shadow: 0 0 30px #00ccff;
-            color: white;
-        }
-
-        /* Q&A卡片樣式 */
-        .qa-card {
-            background: rgba(0, 31, 51, 0.8);
-            border: 1px solid #0099ff40;
-            border-radius: 20px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-        }
-        .qa-question {
-            color: #aad0ff;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .qa-answer {
-            color: #cce5ff;
-            padding-left: 1rem;
-            border-left: 2px solid #0099ff;
-            font-size: 0.9rem;
-        }
-
-        /* ===== 從 logo.html 移植的 Logo 樣式 (純淨無外框) ===== */
-        :root {
-            --primary-color: #ffd700;
-            --secondary-color: #c90a0a;
-            --dark-bg: #0a0a16;
-            --darker-bg: #050510;
-            --card-bg: rgba(20, 20, 40, 0.9);
-            --text-light: #f0f0f0;
-            --text-gold: #ffd700;
-            --neon-blue: #00e5ff;
-            --neon-pink: #ff00ff;
-            --neon-green: #00ff9d;
-            --neon-purple: #9d00ff;
-            --menu-height: 55px;
-            --border-radius: 10px;
-            --logo-accent: #00e0ff;
-            --logo-gold: #ffd700;
-            --logo-gold-light: #ffec8b;
-            --logo-neon-gold: #ffdf00;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;               /* 手機上間距略縮 */
-            font-family: 'Orbitron', 'Russo One', sans-serif;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: transform 0.2s ease; /* 觸控微動畫 */
+            font-size: 1.6rem;
+            box-shadow: 0 0 12px #00aaff;
+            backdrop-filter: blur(4px);
+            transition: 0.15s;
             text-decoration: none;
-            color: inherit;
-            /* 移除所有背景、邊框、外框、陰影框 — 乾乾淨淨 */
-            background: transparent;
-            border: none;
-            backdrop-filter: none;
-            padding: 0;              /* 完全無內距 */
-            margin: 0;
-            -webkit-tap-highlight-color: transparent; /* 移除手機點擊閃塊 */
         }
-
-        /* 觸控放大回饋 (保留原 hover 但改成 active 更適合觸控) */
-        .logo:active {
-            transform: scale(0.97);
-        }
-
-        .logo-icon {
-            width: 40px;             /* 手機上稍微縮小，但依然醒目 */
-            height: 40px;
-            background: linear-gradient(135deg, #000, #111, #222);
-            border-radius: 8px;       /* 微調圓角 */
+        .avatar-container {
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                0 0 15px rgba(0, 224, 255, 0.5),
-                inset 0 0 10px rgba(255, 215, 0, 0.2);
+            width: 70px;
+            height: 70px;
+            border-radius: 9999px;
+            border: 3px solid #0099ff;
+            box-shadow: 0 0 15px #00ccff;
+            background: #001d3d;
             overflow: hidden;
-            border: 2px solid var(--logo-gold);
-            flex-shrink: 0;
+            cursor: pointer;
         }
-
-        .logo-icon::before {
-            content: '';
-            position: absolute;
+        .avatar-container img {
             width: 100%;
             height: 100%;
-            background: conic-gradient(
-                from 0deg,
-                transparent,
-                var(--logo-accent),
-                var(--secondary-color),
-                var(--logo-gold),
-                transparent
-            );
-            animation: logoRotate 4s linear infinite;
+            object-fit: cover;
         }
-
-        .logo-icon::after {
-            content: '';
+        .avatar-overlay {
             position: absolute;
-            width: 30px;             /* 配合小圖示調整 */
-            height: 30px;
-            background: #000;
-            border-radius: 5px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 100, 200, 0.8);
+            color: white;
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 3px 0;
+            backdrop-filter: blur(2px);
         }
-
-        @keyframes logoRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .logo-icon-inner {
-            position: relative;
-            z-index: 2;
-            font-size: 16px;          /* 手機版字級微調 */
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--logo-neon-gold), var(--logo-gold-light), var(--logo-accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 0.5px;
-            font-family: 'Orbitron', sans-serif;
-            text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
-        }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.1;
-        }
-
-        .logo-main {
-            font-size: 18px;          /* 手機適中大小 */
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--logo-neon-gold), var(--logo-gold), var(--logo-accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            background-size: 200% auto;
-            animation: textShine 3s ease-in-out infinite alternate;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-            white-space: nowrap;
-        }
-
-        .logo-sub {
-            font-size: 9px;           /* 手機上依然清楚 */
-            color: var(--logo-accent);
+        .profile-tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.7rem 0;
+            border-radius: 40px;
+            background: transparent;
+            border: 1px solid #0099ff40;
+            color: #b0d4ff;
             font-weight: 500;
-            letter-spacing: 0.8px;
-            opacity: 0.9;
-            text-shadow: 0 0 4px rgba(0, 224, 255, 0.5);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .profile-tab.active {
+            background: #0066cc;
+            border-color: #80e4ff;
+            color: white;
+            box-shadow: 0 0 10px #00ccff;
+        }
+        .lang-select {
+            background: rgba(0, 30, 60, 0.9);
+            border: 1px solid #0099ff;
+            border-radius: 40px;
+            padding: 0.6rem 2rem 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            color: #e0f0ff;
+            width: 100%;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230099ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            background-size: 1.2rem;
+            cursor: pointer;
+        }
+        .theme-switch {
+            width: 48px;
+            height: 24px;
+            background-color: #1e3a5f;
+            border-radius: 40px;
+            border: 1px solid #0099ff;
+            position: relative;
+            cursor: pointer;
+        }
+        .theme-switch .thumb {
+            width: 20px;
+            height: 20px;
+            background-color: #ffd966;
+            border-radius: 50%;
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            transition: left 0.2s;
+        }
+        body.dark-mode .theme-switch .thumb {
+            left: 26px;
+            background-color: #cce6ff;
+        }
+        .vip-badge {
+            background: linear-gradient(135deg, #b8860b, #ffd700);
+            color: #000;
+            font-weight: bold;
+            padding: 0.15rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            box-shadow: 0 0 8px #ffaa00;
+            cursor: pointer;
+        }
+        .exp-text {
+            font-size: 0.7rem;
+            color: #b0d4ff;
+            cursor: pointer;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 50, 100, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #0099ff60;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 68%;
+            background: linear-gradient(90deg, #ffd966, #ffaa33);
+            border-radius: 10px;
+        }
+        .vip-info-panel {
+            background: rgba(0, 20, 40, 0.95);
+            border: 2px solid #ffd966;
+            border-radius: 16px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            box-shadow: 0 0 20px #ffaa33;
+            backdrop-filter: blur(8px);
+            display: none;
+        }
+        .vip-info-panel.show {
+            display: block;
+        }
+        .vip-tier {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #0099ff60;
+            padding: 0.5rem 0;
+        }
+        .banner-area {
+            width: 100%;
+            height: auto;
+            background: linear-gradient(145deg, #002244, #001133);
+            border: 1px solid #0099ff60;
+            border-radius: 12px;
+            padding: 0.75rem 0.5rem;
+        }
+        .sub-tab {
+            background: rgba(0, 30, 60, 0.5);
+            border: 1px solid #0099ff40;
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            font-size: 0.75rem;
+            color: #b0d4ff;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+        }
+        .sub-tab.active {
+            background: #0066cc;
+            border-color: #80e4ff;
+            color: white;
+            box-shadow: 0 0 6px #00ccff;
+        }
+        .bet-id {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #aad0ff;
+            letter-spacing: 0.5px;
+        }
+        .detail-bb {
+            color: #ffaa33;
+            font-weight: bold;
+            border-bottom: 1px dashed #ffaa33;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 6px;
             white-space: nowrap;
         }
-
-        @keyframes textShine {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
         }
-
-        .logo:focus-visible {
-            outline: none;
+        .page-btn {
+            background: rgba(0, 40, 70, 0.8);
+            border: 1px solid #0099ff60;
+            border-radius: 30px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            color: #cce6ff;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 36px;
+            text-align: center;
         }
-        /* ===== Logo樣式結束 ===== */
+        .page-btn.active {
+            background: #0066cc;
+            border-color: #80e4ff;
+            color: white;
+            box-shadow: 0 0 6px #00ccff;
+        }
+        .page-btn:active {
+            transform: scale(0.92);
+        }
+        
+        .platform-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1f4a7a;
+            padding: 10px 0;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border-radius: 8px;
+            padding-left: 6px;
+            position: relative;
+        }
+        .platform-item:hover {
+            background: rgba(0, 153, 255, 0.15);
+        }
+        .platform-item .chevron-icon {
+            transition: transform 0.2s;
+        }
+        .platform-item.expanded .chevron-icon {
+            transform: rotate(90deg);
+        }
+        .platform-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .platform-tag {
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            min-width: 45px;
+            text-align: center;
+        }
+        .platform-tag.out {
+            background: #00a86b20;
+            border: 1px solid #00cc88;
+            color: #a0ffc0;
+        }
+        .platform-tag.in {
+            background: #cc555020;
+            border: 1px solid #ff6666;
+            color: #ffb0b0;
+        }
+        .platform-machine {
+            color: #ffd966;
+            background: rgba(0, 153, 255, 0.15);
+            border-radius: 16px;
+            padding: 0.1rem 0.6rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .platform-amount {
+            font-weight: 600;
+            margin-left: auto;
+            padding-right: 8px;
+        }
+        .platform-detail {
+            background: rgba(0, 20, 40, 0.9);
+            border-left: 3px solid #0099ff;
+            border-radius: 0 0 12px 12px;
+            padding: 12px 15px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            display: none;
+        }
+        .platform-item.expanded + .platform-detail {
+            display: block;
+        }
+        .platform-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 6px 0;
+        }
+        .platform-detail-label {
+            color: #aaccff;
+        }
+        .platform-detail-value {
+            font-weight: 600;
+            color: #ffd966;
+        }
+        .platform-detail-change {
+            font-weight: 600;
+        }
+        .platform-detail-change.positive { color: #88ff88; }
+        .platform-detail-change.negative { color: #ff8888; }
+        
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0 15px 0;
+            flex-wrap: wrap;
+        }
+        .filter-select, .filter-date {
+            background: #003366 !important;
+            border: 2px solid #66ccff !important;
+            border-radius: 30px;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            color: #ffffff !important;
+            cursor: pointer;
+            flex: 1 1 auto;
+            font-weight: 500;
+            box-shadow: 0 0 8px #3399ff;
+        }
+        .filter-date {
+            min-width: 130px;
+        }
+        .filter-select option {
+            background: #004488;
+            color: white;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.8;
+            cursor: pointer;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+        
+        .current-balance {
+            background: rgba(0, 153, 255, 0.15);
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 15px;
+            border: 1px solid #0099ff60;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .balance-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd966;
+            text-shadow: 0 0 5px #ffaa00;
+        }
+        .formula-box {
+            background: rgba(0, 20, 40, 0.7);
+            border: 1px solid #0099ff60;
+            border-radius: 16px;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        .formula-highlight {
+            color: #ffd966;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        /* 統一區塊樣式 (僅用於兌換來源) */
+        .uniform-section {
+            margin-bottom: 8px;
+        }
+        .uniform-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 50, 80, 0.6);
+            border: 1px solid #0099ff60;
+            border-radius: 30px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .uniform-header:hover {
+            background: rgba(0, 80, 120, 0.8);
+        }
+        .uniform-header .chevron {
+            transition: transform 0.3s;
+        }
+        .uniform-header.collapsed .chevron {
+            transform: rotate(-90deg);
+        }
+        .uniform-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .uniform-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .uniform-content {
+            transition: all 0.3s;
+            overflow: hidden;
+            padding: 5px 0;
+        }
+        .uniform-content.collapsed {
+            display: none;
+        }
+        
+        /* 交易記錄列表標題 - 純文字不収合 */
+        .records-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #b0d4ff;
+            margin: 15px 0 10px 0;
+            padding-left: 5px;
+            border-left: 3px solid #0099ff;
+            padding-left: 10px;
+        }
+        
+        .source-detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #1f4a7a;
+            font-size: 0.85rem;
+            background: rgba(0, 30, 50, 0.4);
+        }
+        .source-detail-item:last-child {
+            border-bottom: none;
+        }
+        .source-detail-date {
+            color: #aaccff;
+        }
+        .source-detail-amount {
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
-
-    <!-- 篩選側欄 (保留) -->
-    <div id="drawerOverlay" class="fixed inset-0 bg-black/70 backdrop-filter backdrop-blur-sm z-50 hidden"></div>
-    <div id="filterDrawer" class="fixed top-0 right-[-100%] w-[85%] max-w-sm h-full bg-[#001a33] border-l-2 border-blue-500 z-[60] p-5 transition-all duration-300 scrollbar-thin overflow-y-auto">
+    <!-- 篩選側拉欄 -->
+    <div id="drawerOverlay" class="drawer-overlay"></div>
+    <div id="filterDrawer" class="filter-drawer scrollbar-thin">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-blue-400 text-lg font-bold flex items-center gap-2"><i class="fa fa-sliders"></i> 篩選</h3>
-            <button id="closeDrawer" class="text-gray-400 text-2xl"><i class="fa fa-times-circle"></i></button>
-        </div>
-        <div class="text-gray-300 text-sm mb-2">比率 / 機種 / 廠商 (示範)</div>
-        <div class="flex flex-wrap gap-2 mt-2">
-            <span class="filter-chip px-3 py-1 bg-[#003355] rounded-full text-xs border border-blue-400">2:1</span>
-            <span class="filter-chip px-3 py-1 bg-[#003355] rounded-full text-xs border border-blue-400">1:1</span>
-        </div>
-        <div class="flex gap-2 mt-8">
-            <button id="resetFilters" class="flex-1 py-2 border border-blue-500 rounded-xl text-blue-400">重置</button>
-            <button id="applyFilters" class="flex-1 py-2 bg-blue-600 rounded-xl text-white">套用</button>
+            <h3 class="text-primary text-lg font-bold flex items-center gap-2"><i class="fa fa-sliders text-secondary"></i> 進階篩選</h3>
+            <button id="closeDrawer" class="text-gray-400 hover:text-primary text-2xl"><i class="fa fa-times-circle"></i></button>
         </div>
     </div>
 
-    <!-- 信件詳細內容 Modal -->
-    <div id="letterModal" class="modal">
-        <div class="modal-card">
-            <div id="modalContent" class="text-center">
-                <div class="w-16 h-16 mx-auto rounded-full bg-[#004488] flex items-center justify-center border-2 border-blue-400 mb-3">
-                    <i class="fa fa-envelope-open text-3xl text-blue-300"></i>
-                </div>
-                <h3 id="modalTitle" class="text-xl font-bold">寄件人</h3>
-                <div id="modalTime" class="text-blue-300 text-xs my-2">時間</div>
-                <p id="modalBody" class="text-gray-200 text-sm leading-relaxed mt-4">信件完整內容顯示於此處。</p>
-            </div>
-            <button id="closeModalBtn" class="mt-6 w-full py-2 bg-blue-700 rounded-full border border-blue-300">關閉</button>
-        </div>
-    </div>
-
+    <!-- 主內容 -->
     <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
 
-        <!-- 頂部標頭 — 替換為來自 logo.html 的 Logo (點擊返回首頁) + 右側玩家資訊 -->
-        <header class="px-4 py-3 bg-dark-200/90 tech-border flex items-center justify-between">
-            <!-- 左側：全新 Logo (移植自 logo.html，點擊返回 index.html) -->
-            <a href="index.html" class="logo" id="mobileLogoHeader">
-                <div class="logo-icon">
-                    <div class="logo-icon-inner">TP</div>
+        <!-- ========= 頂部導航 ========= -->
+        <header class="px-4 py-3 bg-dark-200/90 tech-border">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="avatar-container" id="avatarContainer">
+                        <img id="avatarImage" src="https://i.pravatar.cc/150?img=7" alt="user avatar">
+                        <div class="avatar-overlay">更換</div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-1" id="nicknameEditBlock">
+                            <span id="displayNickname" class="nickname-edit text-white text-xl font-bold">夫人會生氣</span>
+                            <i class="fa fa-pencil-square-o text-blue-400 text-sm ml-1"></i>
+                        </div>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="vip-badge" id="vipBadge">VIP 3</span>
+                            <span class="exp-text" id="expText">經驗值 2,480/3,600</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="logo-text">
-                    <div class="logo-main">T-PACHIN</div>
-                    <div class="logo-sub">CYBER PACHINKO SYSTEM</div>
-                </div>
-            </a>
-            <!-- 右邊玩家資訊：純白暱稱 + 金黃代幣 (無光暈) -->
-            <div class="text-right">
-                <div class="text-xs player-nickname">夫人會生氣</div>
-                <div class="font-bold player-credits">5.280</div>
+                <a href="#" id="exitToHomeBtn" class="home-return-btn" title="回到首頁">
+                    <i class="fa fa-home"></i>
+                </a>
+            </div>
+            <div class="mt-2 pl-16 pr-2">
+                <div class="progress-bar"><div class="progress-fill"></div></div>
             </div>
         </header>
 
-        <!-- 首頁Banner完整移植 -->
-        <div class="px-4 mt-3">
-            <div class="banner-area" id="bannerArea">
-                <div class="banner-slider" id="bannerSlider">
-                    <div class="banner-slide"><img src="https://static.wixstatic.com/media/d5e540_e351cf64c0eb4ea18ed0bf5aa982a3f4~mv2.jpg" alt="促銷1"></div>
-                    <div class="banner-slide"><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" alt="促銷2"></div>
-                    <div class="banner-slide"><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" alt="促銷3"></div>
-                </div>
-                <div class="banner-touch-area" id="bannerTouchArea"></div>
-                <div class="banner-dots" id="bannerDots">
-                    <span class="banner-dot active" data-slide="0"></span>
-                    <span class="banner-dot" data-slide="1"></span>
-                    <span class="banner-dot" data-slide="2"></span>
-                </div>
-            </div>
+        <!-- VIP 功能說明浮層 -->
+        <div id="vipInfoPanel" class="vip-info-panel mx-4 mt-2">
+            <h3 class="text-amber-400 font-bold text-sm mb-2"><i class="fa fa-crown"></i> VIP 特權說明</h3>
+            <div class="vip-tier"><span class="level">VIP 1</span><span class="benefit">每日紅利 +50</span></div>
+            <div class="vip-tier"><span class="level">VIP 2</span><span class="benefit">保留機台 +2 台</span></div>
+            <div class="vip-tier"><span class="level">VIP 3 (當前)</span><span class="benefit">返水 0.5% + 專屬客服</span></div>
+            <div class="vip-tier"><span class="level">VIP 4</span><span class="benefit">生日禮金 1000</span></div>
+            <div class="vip-tier"><span class="level">VIP 5</span><span class="benefit">提領手續費全免</span></div>
         </div>
 
-        <!-- 公告標籤區塊 (初始無active class，由JS控制) -->
+        <!-- 三大功能按鈕區 -->
         <div class="px-4 mt-4">
-            <div class="announce-tab-bar">
-                <button class="announce-tab" id="tabSystemBtn">📋 系統公告</button>
-                <button class="announce-tab" id="tabLetterBtn">✉️ 信件</button>
-                <button class="announce-tab" id="tabQaBtn">❓ 玩家Q&A</button>
-            </div>
-        </div>
-
-        <!-- 公告動態面板 -->
-        <div class="px-4 mt-4 pb-4 flex-1 overflow-y-auto scrollbar-thin" style="max-height: 60vh;">
-
-            <!-- 系統公告面板 (預設顯示) -->
-            <div id="panelSystem" class="space-y-3">
-                <div class="system-card">
-                    <span class="system-badge">系統公告</span>
-                    <div class="text-white text-lg font-bold mt-2">📌 2/18 伺服器維護</div>
-                    <div class="text-blue-300 text-sm mt-1">2025/02/18 14:00 - 16:00</div>
-                    <div class="text-gray-300 text-sm mt-2">進行資料庫優化，期間配分功能暫停。</div>
+            <div class="banner-area grid grid-cols-3 gap-2 items-center">
+                <div class="action-grid-btn" id="favMachinesBtn">
+                    <span class="count-badge" id="favCount">3</span>
+                    <i class="fa fa-heart" style="color: #ff6680;"></i>
+                    <span class="text-xs block mt-1">我收藏的機台</span>
                 </div>
-                <div class="system-card">
-                    <span class="system-badge">活動公告</span>
-                    <div class="text-white text-lg font-bold mt-2">🎁 新機「甲賀忍法帖 参」上線</div>
-                    <div class="text-blue-300 text-sm mt-1">即日起 ~ 2/28</div>
-                    <div class="text-gray-300 text-sm mt-2">活動期間獲得雙倍點數</div>
+                <div class="action-grid-btn" id="keepMachinesBtn">
+                    <span class="count-badge keep" id="keepCount">2</span>
+                    <i class="fa fa-bookmark" style="color: #ffb347;"></i>
+                    <span class="text-xs block mt-1">我保留的機台</span>
                 </div>
-                <div class="system-card">
-                    <span class="system-badge">補償說明</span>
-                    <div class="text-white text-lg font-bold mt-2">🔧 維護補償發放</div>
-                    <div class="text-blue-300 text-sm mt-1">已發放 500 點</div>
-                    <div class="text-gray-300 text-sm mt-2">補償可於「信件」領取</div>
-                </div>
-                <div class="system-card">
-                    <span class="system-badge">活動預告</span>
-                    <div class="text-white text-lg font-bold mt-2">🌙 元宵節限定活動</div>
-                    <div class="text-blue-300 text-sm mt-1">2/24 敬請期待</div>
-                    <div class="text-gray-300 text-sm mt-2">特殊獎勵機台登場</div>
-                </div>
-            </div>
-
-            <!-- 信件面板 (初始隱藏) -->
-            <div id="panelLetter" class="hidden space-y-3">
-                <!-- 刪除工具列 + 全選整合 -->
-                <div class="delete-bar">
-                    <div class="flex items-center gap-3">
-                        <!-- 全選核取方塊 -->
-                        <div class="select-all-checkbox" id="selectAllCheckbox">
-                            <i class="fa fa-check"></i>
-                        </div>
-                        <span class="text-blue-300 text-sm"><span id="selectedCount">0</span> / <span id="totalCount">4</span></span>
-                    </div>
-                    <button id="deleteSelectedBtn" class="delete-btn disabled"><i class="fa fa-trash"></i> 刪除</button>
-                </div>
-
-                <!-- 信件列表容器 -->
-                <div class="letter-container" id="letterListContainer">
-                    <!-- 信件1 -->
-                    <div class="letter-row" data-id="1" data-sender="系統管理員" data-time="2分鐘前" data-content="您的帳號於今日下午進行安全驗證，若未操作請盡速變更密碼。">
-                        <div class="checkbox" data-letter-id="1"><i class="fa fa-check"></i></div>
-                        <div class="letter-avatar"><i class="fa fa-envelope text-blue-300"></i></div>
-                        <div class="letter-info">
-                            <h4>系統管理員 <span class="text-blue-400 text-[0.55rem] ml-1">官方</span></h4>
-                            <p>安全驗證通知</p>
-                            <span class="text-gray-500 text-[0.6rem]">2分鐘前</span>
-                        </div>
-                        <i class="fa fa-circle text-blue-400 text-xs"></i>
-                    </div>
-                    <!-- 信件2 -->
-                    <div class="letter-row" data-id="2" data-sender="柏青哥達人" data-time="昨天" data-content="關於甲賀忍法帖的設定，我記得是1:2比率，你可以再確認機台資訊。">
-                        <div class="checkbox" data-letter-id="2"><i class="fa fa-check"></i></div>
-                        <div class="letter-avatar"><i class="fa fa-user text-blue-300"></i></div>
-                        <div class="letter-info">
-                            <h4>柏青哥達人</h4>
-                            <p>回覆: 甲賀忍法帖設定</p>
-                            <span class="text-gray-500 text-[0.6rem]">昨天</span>
-                        </div>
-                    </div>
-                    <!-- 信件3 -->
-                    <div class="letter-row" data-id="3" data-sender="禮物中心" data-time="2/15" data-content="恭喜獲得新春紅包500點，請於一週內至機台領取。">
-                        <div class="checkbox" data-letter-id="3"><i class="fa fa-check"></i></div>
-                        <div class="letter-avatar"><i class="fa fa-gift text-blue-300"></i></div>
-                        <div class="letter-info">
-                            <h4>禮物中心</h4>
-                            <p>新春紅包500點</p>
-                            <span class="text-gray-500 text-[0.6rem]">2/15</span>
-                        </div>
-                        <i class="fa fa-circle text-blue-400 text-xs"></i>
-                    </div>
-                    <!-- 信件4 -->
-                    <div class="letter-row" data-id="4" data-sender="通知中心" data-time="2/14" data-content="吉宗維護已完成，現在可以正常遊玩。">
-                        <div class="checkbox" data-letter-id="4"><i class="fa fa-check"></i></div>
-                        <div class="letter-avatar"><i class="fa fa-bell text-blue-300"></i></div>
-                        <div class="letter-info">
-                            <h4>通知中心</h4>
-                            <p>吉宗維護完成</p>
-                            <span class="text-gray-500 text-[0.6rem]">2/14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-xs text-blue-400 text-center pt-2" id="letterStats">✉️ 共 4 封信件</div>
-            </div>
-
-            <!-- Q&A面板 (初始隱藏) -->
-            <div id="panelQa" class="hidden space-y-3">
-                <div class="qa-card">
-                    <div class="qa-question"><i class="fa fa-question-circle text-blue-400 mr-1"></i> 如何查詢機台即時比率？</div>
-                    <div class="qa-answer">點選機台卡片上的「進入」，即可在機台頁面看到目前設定值與即時模擬比率。</div>
-                </div>
-                <div class="qa-card">
-                    <div class="qa-question"><i class="fa fa-question-circle text-blue-400 mr-1"></i> 維護中的機台何時恢復？</div>
-                    <div class="qa-answer">維護卡上會有預計時間，也可至公告區查看系統公告。</div>
-                </div>
-                <div class="qa-card">
-                    <div class="qa-question"><i class="fa fa-question-circle text-blue-400 mr-1"></i> 「夫人會生氣」點數如何累積？</div>
-                    <div class="qa-answer">遊玩任何機台每投入10枚代幣可獲得1點，特殊活動加乘。</div>
-                </div>
-                <div class="qa-card">
-                    <div class="qa-question"><i class="fa fa-question-circle text-blue-400 mr-1"></i> 新機入替的標籤代表什麼？</div>
-                    <div class="qa-answer">上架兩週內的機台會標示「新機入替」，通常有機率加成。</div>
+                <div class="action-grid-btn" id="supportBtn">
+                    <i class="fa fa-headphones" style="color: #7ec8ff;"></i>
+                    <span class="text-xs block mt-1">客服與幫助</span>
                 </div>
             </div>
         </div>
+
+        <!-- 收藏機台列表容器 -->
+        <div id="favMachineList" class="machine-list-container px-4">
+            <div class="list-title"><i class="fa fa-heart text-pink-400"></i> 我收藏的機台 (<span id="favCountDisplay">3</span>)</div>
+            <div class="machine-list" id="favMachineItems"></div>
+        </div>
+
+        <!-- 保留機台列表容器 -->
+        <div id="keepMachineList" class="machine-list-container px-4">
+            <div class="list-title"><i class="fa fa-bookmark text-amber-400"></i> 我保留的機台 (<span id="keepCountDisplay">2</span>)</div>
+            <div class="machine-list" id="keepMachineItems"></div>
+        </div>
+
+        <!-- 跑馬燈 -->
+        <div class="px-4 py-1 bg-dark-200/80 tech-border mt-3">
+            <marquee class="text-secondary text-xs py-1" scrollamount="5">⚙️ 交易記錄列表改為純文字標題 | 點擊記錄展開明細 ⚙️</marquee>
+        </div>
+
+        <!-- 標籤欄 -->
+        <div class="px-4 py-3">
+            <div class="flex gap-2" id="profileTabContainer">
+                <button class="profile-tab active" data-tab="settings">⚙️ 設定</button>
+                <button class="profile-tab" data-tab="token">💰 代幣</button>
+                <button class="profile-tab" data-tab="betHistory">📋 注單紀錄</button>
+            </div>
+        </div>
+
+        <!-- 動態內容區域 -->
+        <main class="flex-1 px-4 pb-4 overflow-y-auto scrollbar-thin" id="profileContentArea">
+            <!-- 設定面板 -->
+            <div id="settingsPanel" class="tab-panel">
+                <div class="game-card-bg tech-border rounded-xl p-4 space-y-4">
+                    <h3 class="text-primary text-md border-b border-primary/20 pb-2"><i class="fa fa-cog mr-2"></i>偏好設定</h3>
+                    <div>
+                        <div class="text-sm text-gray-300 mb-2">語言 / Language</div>
+                        <select id="languageSelect" class="lang-select">
+                            <option value="zh-hant" selected>繁體中文</option>
+                            <option value="zh-hans">簡體中文</option>
+                            <option value="ja">日本語</option>
+                            <option value="ko">한국어</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-300">接收通知</span>
+                        <div class="w-12 h-6 bg-blue-800 rounded-full flex items-center p-1 border border-blue-400">
+                            <div class="w-4 h-4 bg-blue-300 rounded-full ml-auto shadow"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-300">暗色模式</span>
+                        <div id="themeToggle" class="theme-switch"><div class="thumb"></div></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-300">帳號綁定</span>
+                        <span class="text-xs text-green-400">已綁定手機</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 代幣面板 -->
+            <div id="tokenPanel" class="tab-panel hidden">
+                <div class="game-card-bg tech-border rounded-xl p-3">
+                    <div class="flex gap-2 mb-3 border-b border-blue-900 pb-2">
+                        <span class="sub-tab active" id="tokenExchangeSub">兌換</span>
+                        <span class="sub-tab" id="tokenPlatformSub">平台帶出帶入</span>
+                    </div>
+                    <!-- 兌換內容 - 三種來源 (保留收合) -->
+                    <div id="exchangeContent">
+                        <h3 class="text-primary text-md mb-3"><i class="fa fa-gift mr-2"></i>代幣來源</h3>
+                        
+                        <!-- 儲值區塊 -->
+                        <div class="uniform-section">
+                            <div class="uniform-header" id="toggleRecharge">
+                                <div class="uniform-header-left">
+                                    <i class="fa fa-credit-card text-green-400"></i>
+                                    <span class="uniform-title">儲值</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="uniform-value" id="rechargeAmount">3,000</span>
+                                    <i class="fa fa-chevron-down chevron"></i>
+                                </div>
+                            </div>
+                            <div class="uniform-content" id="rechargeDetails">
+                                <div class="source-detail-item">
+                                    <span class="source-detail-date">2025-02-15 14:30</span>
+                                    <span class="source-detail-amount text-green-400">+1,000</span>
+                                </div>
+                                <div class="source-detail-item">
+                                    <span class="source-detail-date">2025-02-10 09:20</span>
+                                    <span class="source-detail-amount text-green-400">+2,000</span>
+                                </div>
+                                <div class="source-detail-item" onclick="alert('更多儲值記錄...')" style="cursor: pointer; color: #66ccff; justify-content: center;">
+                                    <span>查看完整記錄 <i class="fa fa-arrow-right ml-1"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 平台贈送區塊 -->
+                        <div class="uniform-section">
+                            <div class="uniform-header" id="toggleBonus">
+                                <div class="uniform-header-left">
+                                    <i class="fa fa-gift text-yellow-400"></i>
+                                    <span class="uniform-title">平台贈送</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="uniform-value" id="bonusAmount">2,000</span>
+                                    <i class="fa fa-chevron-down chevron"></i>
+                                </div>
+                            </div>
+                            <div class="uniform-content" id="bonusDetails">
+                                <div class="source-detail-item">
+                                    <span class="source-detail-date">2025-02-18 10:15</span>
+                                    <span class="source-detail-amount text-green-400">+500</span>
+                                    <span class="text-xs text-blue-300">(註冊禮)</span>
+                                </div>
+                                <div class="source-detail-item">
+                                    <span class="source-detail-date">2025-02-20 16:40</span>
+                                    <span class="source-detail-amount text-green-400">+1,000</span>
+                                    <span class="text-xs text-blue-300">(儲值回饋)</span>
+                                </div>
+                                <div class="source-detail-item">
+                                    <span class="source-detail-date">2025-02-25 09:30</span>
+                                    <span class="source-detail-amount text-green-400">+500</span>
+                                    <span class="text-xs text-blue-300">(每日紅利)</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 遊戲裡獲得區塊 -->
+                        <div class="uniform-section">
+                            <div class="uniform-header" id="toggleGame">
+                                <div class="uniform-header-left">
+                                    <i class="fa fa-gamepad text-purple-400"></i>
+                                    <span class="uniform-title">遊戲裡獲得</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="uniform-value" id="gameAmount">1,740</span>
+                                    <i class="fa fa-chevron-down chevron"></i>
+                                </div>
+                            </div>
+                            <div class="uniform-content" id="gameDetails">
+                                <div class="source-detail-item">
+                                    <span class="source-detail-date">2025-02-16 20:30</span>
+                                    <span class="source-detail-amount text-green-400">+800</span>
+                                    <span class="text-xs text-blue-300">(甲賀忍法帖)</span>
+                                </div>
+                                <div class="source-detail-item">
+                                    <span class="source-detail-date">2025-02-19 22:15</span>
+                                    <span class="source-detail-amount text-green-400">+640</span>
+                                    <span class="text-xs text-blue-300">(超級奇蹟小丑)</span>
+                                </div>
+                                <div class="source-detail-item">
+                                    <span class="source-detail-date">2025-02-22 19:40</span>
+                                    <span class="source-detail-amount text-green-400">+300</span>
+                                    <span class="text-xs text-blue-300">(吉宗)</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 pt-2 border-t border-blue-800 text-xs text-blue-300 text-right">
+                            <span class="mr-2">總獲得代幣:</span>
+                            <span class="text-amber-400 font-bold" id="totalSourceDisplay">6,740</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 平台帶出帶入內容 - 交易記錄列表改為純文字標題 -->
+                    <div id="platformContent" class="hidden">
+                        <h3 class="text-primary text-md"><i class="fa fa-arrows-h mr-2"></i>平台帶出/帶入</h3>
+                        
+                        <div class="current-balance">
+                            <span>💰 當前身上代幣</span>
+                            <span class="balance-number" id="currentTokenBalance">5,520</span>
+                        </div>
+                        
+                        <!-- 公式區塊 -->
+                        <div class="formula-box">
+                            <div class="text-blue-300 mb-1 text-xs">計算公式：</div>
+                            <div class="formula-highlight">總獲得 6,740 + (帶出+ 2,000) - (帶入- 780) = 5,520</div>
+                            <div class="text-xs text-blue-300 mt-2">
+                                <span class="text-green-400">帶出+</span> = 從平台提出的總額 (2,000)<br>
+                                <span class="text-red-400">帶入-</span> = 存入平台的總額 (780)
+                            </div>
+                        </div>
+
+                        <!-- 明顯顏色的篩選列 -->
+                        <div class="filter-row">
+                            <input type="date" id="startDateFilter" class="filter-date" value="2025-01-01">
+                            <span class="text-blue-300">至</span>
+                            <input type="date" id="endDateFilter" class="filter-date" value="2025-04-01">
+                            <select id="platformFilter" class="filter-select">
+                                <option value="all">全部</option>
+                                <option value="out">僅帶出 (+)</option>
+                                <option value="in">僅帶入 (-)</option>
+                            </select>
+                        </div>
+
+                        <!-- 純文字標題 - 不収合 -->
+                        <div class="records-title">
+                            <i class="fa fa-list-ul text-blue-400 mr-2"></i>交易記錄列表
+                        </div>
+                        
+                        <div id="platformList" class="mt-1"></div>
+                        <div id="platformPagination" class="pagination mt-3"></div>
+                        
+                        <div class="text-xs text-blue-300 mt-2 text-center">* 點擊任一筆記錄展開查看詳細計算</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注單紀錄面板 (保留收合) -->
+            <div id="betHistoryPanel" class="tab-panel hidden">
+                <div class="game-card-bg tech-border rounded-xl p-3">
+                    <h3 class="text-primary text-md"><i class="fa fa-list-alt mr-2"></i>最近注單</h3>
+                    
+                    <div class="uniform-section">
+                        <div class="uniform-header" id="toggleBetBtn">
+                            <div class="uniform-header-left">
+                                <i class="fa fa-list-ul text-blue-400"></i>
+                                <span class="uniform-title">注單記錄列表</span>
+                            </div>
+                            <i class="fa fa-chevron-down chevron"></i>
+                        </div>
+                        <div class="uniform-content" id="betSection">
+                            <div id="betListContainer" class="mt-2 space-y-2 text-xs min-h-[180px]"></div>
+                            <div id="betPagination" class="pagination mt-3">
+                                <span class="page-btn active" data-page="1">1</span>
+                                <span class="page-btn" data-page="2">2</span>
+                                <span class="page-btn" data-page="3">3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
 
         <!-- 底部導航 -->
-<nav class="bottom-nav">
-    <div class="flex justify-between items-center">
-        <a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-        <a href="machines.html" class="nav-item"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-        <a href="news.html" class="nav-item current-page" aria-current="page"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
-        <a href="about.html" class="nav-item"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
+        <nav class="bottom-nav">
+            <div class="flex justify-between items-center">
+                <a href="#" class="nav-item" id="nav-home"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
+                <a href="#" class="nav-item" id="nav-game"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
+                <a href="#" class="nav-item" id="nav-bell"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
+                <a href="#" class="nav-item current-page" id="nav-user" aria-current="page"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
+            </div>
+        </nav>
     </div>
-</nav>
 
     <script>
         (function() {
-            // 公告標籤切換 - 預設顯示系統公告
-            const tabSystem = document.getElementById('tabSystemBtn');
-            const tabLetter = document.getElementById('tabLetterBtn');
-            const tabQa = document.getElementById('tabQaBtn');
-            const panelSystem = document.getElementById('panelSystem');
-            const panelLetter = document.getElementById('panelLetter');
-            const panelQa = document.getElementById('panelQa');
-
-            function setActiveTab(active) {
-                // 移除所有標籤的active class
-                [tabSystem, tabLetter, tabQa].forEach(t => t.classList.remove('active'));
-                // 隱藏所有面板
-                [panelSystem, panelLetter, panelQa].forEach(p => p.classList.add('hidden'));
-                
-                // 根據active參數顯示對應面板並添加active class
-                if (active === 'system') {
-                    tabSystem.classList.add('active');
-                    panelSystem.classList.remove('hidden');
-                } else if (active === 'letter') {
-                    tabLetter.classList.add('active');
-                    panelLetter.classList.remove('hidden');
-                } else if (active === 'qa') {
-                    tabQa.classList.add('active');
-                    panelQa.classList.remove('hidden');
-                }
-            }
-
-            // 綁定點擊事件
-            tabSystem.addEventListener('click', () => setActiveTab('system'));
-            tabLetter.addEventListener('click', () => setActiveTab('letter'));
-            tabQa.addEventListener('click', () => setActiveTab('qa'));
+            // ===== 核心數據模型 =====
+            const recharge = 3000;
+            const bonus = 2000;
+            const game = 1740;
+            const totalSource = recharge + bonus + game; // 6740
             
-            // 初始化：顯示系統公告
-            setActiveTab('system');
+            // 平台交易記錄
+            const correctedTransactions = [
+                { date: '2025-02-17 09:05', machine: '花月', impact: -200, type: 'out' },
+                { date: '2025-02-17 10:05', machine: '花月', impact: 300, type: 'in' },
+                { date: '2025-02-18 22:10', machine: '吉宗', impact: 150, type: 'in' },
+                { date: '2025-02-19 09:20', machine: '超級奇蹟小丑', impact: -500, type: 'out' },
+                { date: '2025-02-20 13:45', machine: '甲賀忍法帖', impact: 80, type: 'in' },
+                { date: '2025-02-16 14:30', machine: '新甲賀', impact: -1000, type: 'out' },
+                { date: '2025-02-15 20:15', machine: '花月', impact: 200, type: 'in' },
+                { date: '2025-01-25 11:30', machine: '吉宗', impact: -300, type: 'out' },
+                { date: '2025-03-01 14:20', machine: '甲賀忍法帖', impact: 50, type: 'in' },
+                { date: '2025-03-02 10:30', machine: '新甲賀', impact: -150, type: 'out' },
+                { date: '2025-03-03 15:45', machine: '花月', impact: 400, type: 'in' },
+                { date: '2025-03-04 09:20', machine: '吉宗', impact: -80, type: 'out' },
+                { date: '2025-03-05 14:10', machine: '超級奇蹟小丑', impact: 600, type: 'in' } // 帶入 +600
+            ];
 
-            // ----- 全選 + 勾選刪除 + 詳細內容 (僅在信件面板作用) -----
-            const letterRows = document.querySelectorAll('.letter-row');
-            const checkboxes = document.querySelectorAll('.checkbox');
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            const deleteBtn = document.getElementById('deleteSelectedBtn');
-            const selectedCountSpan = document.getElementById('selectedCount');
-            const totalCountSpan = document.getElementById('totalCount');
-            const modal = document.getElementById('letterModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalTime = document.getElementById('modalTime');
-            const modalBody = document.getElementById('modalBody');
-            const closeModalBtn = document.getElementById('closeModalBtn');
+            // 計算總帶出和總帶入
+            const totalOut = correctedTransactions.filter(t => t.type === 'out').reduce((sum, t) => sum + Math.abs(t.impact), 0);
+            const totalIn = correctedTransactions.filter(t => t.type === 'in').reduce((sum, t) => sum + t.impact, 0);
+            
+            // 計算淨影響和當前代幣
+            const netImpact = correctedTransactions.reduce((sum, t) => sum + t.impact, 0);
+            const currentTokens = totalSource + netImpact;
 
-            let selectedSet = new Set();
-            const totalLetters = letterRows.length;
-            if (totalCountSpan) totalCountSpan.innerText = totalLetters;
-
-            // 更新全選核取方塊狀態
-            function updateSelectAll() {
-                if (!selectAllCheckbox) return;
-                if (selectedSet.size === totalLetters) {
-                    selectAllCheckbox.classList.add('checked');
-                } else {
-                    selectAllCheckbox.classList.remove('checked');
-                }
-                if (selectedCountSpan) selectedCountSpan.innerText = selectedSet.size;
-                // 刪除按鈕啟用/禁用
-                if (deleteBtn) {
-                    if (selectedSet.size === 0) {
-                        deleteBtn.classList.add('disabled');
-                    } else {
-                        deleteBtn.classList.remove('disabled');
-                    }
-                }
+            // 更新UI顯示
+            document.getElementById('rechargeAmount').textContent = recharge.toLocaleString();
+            document.getElementById('bonusAmount').textContent = bonus.toLocaleString();
+            document.getElementById('gameAmount').textContent = game.toLocaleString();
+            document.getElementById('totalSourceDisplay').textContent = totalSource.toLocaleString();
+            document.getElementById('currentTokenBalance').textContent = currentTokens.toLocaleString();
+            
+            // 更新公式區塊
+            const formulaBox = document.querySelector('.formula-box .formula-highlight');
+            if (formulaBox) {
+                formulaBox.innerHTML = `總獲得 ${totalSource.toLocaleString()} + (帶出+ ${totalOut.toLocaleString()}) - (帶入- ${totalIn.toLocaleString()}) = ${currentTokens.toLocaleString()}`;
             }
 
-            // 單個checkbox點擊
-            if (checkboxes.length > 0) {
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const letterId = this.getAttribute('data-letter-id');
-                        if (!letterId) return;
+            // 收藏機台、保留機台資料
+            let favoriteMachines = [
+                { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1:2', vendor: 'Sammy' },
+                { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1:1', vendor: 'Olympia' },
+                { id: 3, name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:2', vendor: 'Daito' }
+            ];
+            
+            let keepMachines = [
+                { 
+                    id: 4, 
+                    name: '花月', 
+                    image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', 
+                    ratio: '1:4', 
+                    vendor: 'Olympia',
+                    endTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+                },
+                { 
+                    id: 5, 
+                    name: '新甲賀', 
+                    image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', 
+                    ratio: '1:4', 
+                    vendor: 'Sammy',
+                    endTime: new Date(Date.now() + 5 * 60 * 60 * 1000)
+                }
+            ];
 
-                        this.classList.toggle('checked');
-                        const row = this.closest('.letter-row');
-                        if (this.classList.contains('checked')) {
-                            selectedSet.add(letterId);
-                            if (row) row.classList.add('selected-for-delete');
-                        } else {
-                            selectedSet.delete(letterId);
-                            if (row) row.classList.remove('selected-for-delete');
-                        }
-                        updateSelectAll();
-                    });
-                });
-            }
+            // DOM 元素
+            const favBtn = document.getElementById('favMachinesBtn');
+            const keepBtn = document.getElementById('keepMachinesBtn');
+            const favListContainer = document.getElementById('favMachineList');
+            const keepListContainer = document.getElementById('keepMachineList');
+            const favItemsEl = document.getElementById('favMachineItems');
+            const keepItemsEl = document.getElementById('keepMachineItems');
+            const favCountEl = document.getElementById('favCount');
+            const keepCountEl = document.getElementById('keepCount');
+            const favCountDisplay = document.getElementById('favCountDisplay');
+            const keepCountDisplay = document.getElementById('keepCountDisplay');
 
-            // 全選點擊
-            if (selectAllCheckbox) {
-                selectAllCheckbox.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const isChecking = !this.classList.contains('checked');
+            // 倒數計時
+            function updateCountdowns() {
+                const countdownElements = document.querySelectorAll('.countdown-timer[data-endtime]');
+                countdownElements.forEach(el => {
+                    const endTime = new Date(el.dataset.endtime).getTime();
+                    const now = new Date().getTime();
+                    const diff = endTime - now;
                     
-                    if (isChecking) {
-                        // 全選：所有checkbox加上checked，selectedSet加入所有id
-                        checkboxes.forEach(cb => {
-                            const id = cb.getAttribute('data-letter-id');
-                            if (id) selectedSet.add(id);
-                            cb.classList.add('checked');
-                        });
-                        letterRows.forEach(row => row.classList.add('selected-for-delete'));
-                    } else {
-                        // 取消全選
-                        checkboxes.forEach(cb => {
-                            const id = cb.getAttribute('data-letter-id');
-                            if (id) selectedSet.delete(id);
-                            cb.classList.remove('checked');
-                        });
-                        letterRows.forEach(row => row.classList.remove('selected-for-delete'));
+                    if (diff <= 0) {
+                        el.innerHTML = '<i class="fa fa-hourglass-end"></i> 已到期';
+                        el.classList.add('warning');
+                        return;
                     }
-                    updateSelectAll();
+                    
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    let timeText = '';
+                    if (days > 0) timeText = `${days}天 ${hours}小時`;
+                    else if (hours > 0) timeText = `${hours}小時 ${minutes}分`;
+                    else timeText = `${minutes}分`;
+                    
+                    if (hours === 0 && days === 0) el.classList.add('warning');
+                    else el.classList.remove('warning');
+                    
+                    el.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${timeText}`;
                 });
             }
 
-            // 點擊信件列開啟詳細
-            if (letterRows.length > 0) {
-                letterRows.forEach(row => {
-                    row.addEventListener('click', function(e) {
-                        // 如果點擊的是checkbox，不觸發 (已stopPropagation)
-                        const sender = this.getAttribute('data-sender') || '未知';
-                        const time = this.getAttribute('data-time') || '';
-                        const content = this.getAttribute('data-content') || '無內容';
-                        if (modalTitle) modalTitle.innerText = sender;
-                        if (modalTime) modalTime.innerText = time;
-                        if (modalBody) modalBody.innerText = content;
-                        if (modal) modal.classList.add('show');
-                    });
-                });
+            function formatEndTime(date) {
+                return date.toLocaleString('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }).replace(/\//g,'/');
             }
 
-            // 關閉modal
-            if (closeModalBtn) {
-                closeModalBtn.addEventListener('click', () => {
-                    if (modal) modal.classList.remove('show');
-                });
-            }
-            if (modal) {
-                modal.addEventListener('click', (e) => { 
-                    if (e.target === modal) modal.classList.remove('show'); 
-                });
-            }
+            window.playGame = function(machineName) {
+                alert(`🎮 進入遊戲：${machineName}\n(示範功能)`);
+            };
 
-            // 刪除所選信件
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', function() {
-                    if (selectedSet.size === 0) return;
-                    // 遍歷所有信件列，移除data-id在selectedSet中的
-                    letterRows.forEach(row => {
-                        const id = row.getAttribute('data-id');
-                        if (selectedSet.has(id)) {
-                            row.remove();
-                        }
-                    });
-                    // 清空selectedSet，更新計數
-                    selectedSet.clear();
-                    // 重新取得剩餘信件列和checkbox
-                    const remainingRows = document.querySelectorAll('.letter-row');
-                    // 更新總數顯示
-                    if (totalCountSpan) totalCountSpan.innerText = remainingRows.length;
-                    const statsEl = document.getElementById('letterStats');
-                    if (statsEl) statsEl.innerText = `✉️ 共 ${remainingRows.length} 封信件`;
-                    // 若全選核取方塊狀態重置
-                    if (selectAllCheckbox) selectAllCheckbox.classList.remove('checked');
-                    updateSelectAll();
+            function renderFavoriteMachines() {
+                let html = '';
+                favoriteMachines.forEach(machine => {
+                    html += `
+                        <div class="machine-card" data-id="${machine.id}">
+                            <img src="${machine.image}" alt="${machine.name}">
+                            <div class="machine-info">
+                                <div class="machine-name">${machine.name}</div>
+                                <div class="machine-meta"><span>${machine.ratio}</span><span>${machine.vendor}</span></div>
+                            </div>
+                            <div class="machine-actions">
+                                <div class="play-btn" onclick="playGame('${machine.name}')"><i class="fa fa-play"></i> 進入</div>
+                                <div class="remove-btn" onclick="removeFavorite(${machine.id})"><i class="fa fa-times"></i></div>
+                            </div>
+                        </div>
+                    `;
                 });
+                favItemsEl.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無收藏機台</div>';
+                favCountEl.textContent = favoriteMachines.length;
+                if (favCountDisplay) favCountDisplay.textContent = favoriteMachines.length;
             }
 
-            // 初始化更新
-            updateSelectAll();
+            function renderKeepMachines() {
+                let html = '';
+                keepMachines.forEach(machine => {
+                    const endDate = new Date(machine.endTime);
+                    const endTimeStr = formatEndTime(endDate);
+                    
+                    html += `
+                        <div class="machine-card" data-id="${machine.id}">
+                            <img src="${machine.image}" alt="${machine.name}">
+                            <div class="machine-info">
+                                <div class="machine-name">${machine.name}</div>
+                                <div class="machine-meta"><span>${machine.ratio}</span><span>${machine.vendor}</span></div>
+                                <div class="countdown-timer" data-endtime="${endDate.toISOString()}"><i class="fa fa-hourglass-half"></i> 計算中...</div>
+                                <div style="font-size: 0.6rem; color: #aaa; margin-top: 2px;">結束於 ${endTimeStr}</div>
+                            </div>
+                            <div class="machine-actions">
+                                <div class="play-btn" onclick="playGame('${machine.name}')"><i class="fa fa-play"></i> 進入</div>
+                                <div class="remove-btn" onclick="removeKeep(${machine.id})"><i class="fa fa-times"></i></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                keepItemsEl.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無保留機台</div>';
+                keepCountEl.textContent = keepMachines.length;
+                if (keepCountDisplay) keepCountDisplay.textContent = keepMachines.length;
+                updateCountdowns();
+            }
 
-            // ----- Banner 輪播 (移植) -----
-            (function banner() {
-                let currentSlide = 0;
-                const slider = document.getElementById('bannerSlider');
-                const dots = document.querySelectorAll('.banner-dot');
-                const touchArea = document.getElementById('bannerTouchArea');
-                const totalSlides = 3;
-                let slideInterval;
-                let startX = 0, isDragging = false, threshold = 30;
+            window.removeFavorite = function(id) {
+                favoriteMachines = favoriteMachines.filter(m => m.id !== id);
+                renderFavoriteMachines();
+                alert('已從收藏移除 (示範)');
+            };
+            window.removeKeep = function(id) {
+                keepMachines = keepMachines.filter(m => m.id !== id);
+                renderKeepMachines();
+                alert('已從保留移除 (示範)');
+            };
 
-                function updateSlide(index) {
-                    currentSlide = (index + totalSlides) % totalSlides;
-                    if (slider) slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-                    dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+            favBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isShowing = favListContainer.classList.contains('show');
+                favListContainer.classList.remove('show');
+                keepListContainer.classList.remove('show');
+                if (!isShowing) favListContainer.classList.add('show');
+            });
+            keepBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isShowing = keepListContainer.classList.contains('show');
+                favListContainer.classList.remove('show');
+                keepListContainer.classList.remove('show');
+                if (!isShowing) {
+                    keepListContainer.classList.add('show');
+                    updateCountdowns();
                 }
-                if (dots.length > 0) {
-                    dots.forEach(dot => dot.addEventListener('click', function() {
-                        const slideIndex = parseInt(this.getAttribute('data-slide'));
-                        if (!isNaN(slideIndex)) updateSlide(slideIndex);
-                        resetAutoSlide();
-                    }));
+            });
+            document.addEventListener('click', function(e) {
+                if (!favBtn.contains(e.target) && !keepBtn.contains(e.target) && 
+                    !favListContainer.contains(e.target) && !keepListContainer.contains(e.target)) {
+                    favListContainer.classList.remove('show');
+                    keepListContainer.classList.remove('show');
                 }
+            });
+            setInterval(() => { if (keepListContainer.classList.contains('show')) updateCountdowns(); }, 1000);
+            renderFavoriteMachines();
+            renderKeepMachines();
 
-                if (touchArea) {
-                    touchArea.addEventListener('touchstart', (e) => { 
-                        startX = e.touches[0].clientX; isDragging = true; clearInterval(slideInterval); e.preventDefault(); 
-                    }, { passive: false });
-                    touchArea.addEventListener('touchmove', (e) => { if (!isDragging) return; e.preventDefault(); }, { passive: false });
-                    touchArea.addEventListener('touchend', (e) => {
-                        if (!isDragging) return;
-                        const endX = e.changedTouches[0].clientX;
-                        const diff = endX - startX;
-                        if (Math.abs(diff) > threshold) diff > 0 ? updateSlide(currentSlide-1) : updateSlide(currentSlide+1);
-                        isDragging = false;
-                        startAutoSlide();
+            // ===== 展開/收合功能 (僅用於兌換來源和注單) =====
+            function setupToggle(btnId, sectionId) {
+                const btn = document.getElementById(btnId);
+                const section = document.getElementById(sectionId);
+                if (btn && section) {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        btn.classList.toggle('collapsed');
+                        section.classList.toggle('collapsed');
+                    });
+                }
+            }
+            
+            setupToggle('toggleRecharge', 'rechargeDetails');
+            setupToggle('toggleBonus', 'bonusDetails');
+            setupToggle('toggleGame', 'gameDetails');
+            setupToggle('toggleBetBtn', 'betSection');
+
+            // ===== 平台列表渲染 + 點擊展開明細 =====
+            const ITEMS_PER_PAGE = 5;
+            let currentPlatformPage = 1;
+            let filteredPlatformTransactions = [];
+
+            // 儲存當前展開的記錄ID (使用索引)
+            let expandedIndex = null;
+
+            function togglePlatformDetail(index) {
+                if (expandedIndex === index) {
+                    expandedIndex = null; // 收合
+                } else {
+                    expandedIndex = index; // 展開新的
+                }
+                renderPlatformList(); // 重新渲染
+            }
+
+            function renderPlatformList() {
+                const filterType = document.getElementById('platformFilter').value;
+                const startDate = new Date(document.getElementById('startDateFilter').value);
+                const endDate = new Date(document.getElementById('endDateFilter').value);
+                endDate.setHours(23, 59, 59, 999);
+
+                filteredPlatformTransactions = correctedTransactions.filter(t => {
+                    const tDate = new Date(t.date.split(' ')[0]);
+                    if (tDate < startDate || tDate > endDate) return false;
+                    if (filterType === 'out') return t.type === 'out';
+                    if (filterType === 'in') return t.type === 'in';
+                    return true;
+                });
+
+                filteredPlatformTransactions.sort((a,b) => new Date(b.date) - new Date(a.date));
+                
+                const allSorted = [...correctedTransactions].sort((a,b) => new Date(a.date) - new Date(b.date));
+                let balanceMap = new Map();
+                let runningBalance = totalSource;
+                for (let i = 0; i < allSorted.length; i++) {
+                    const trans = allSorted[i];
+                    const key = trans.date + trans.machine + trans.impact;
+                    balanceMap.set(key, runningBalance);
+                    runningBalance += trans.impact;
+                }
+                
+                const totalPages = Math.ceil(filteredPlatformTransactions.length / ITEMS_PER_PAGE) || 1;
+                if (currentPlatformPage > totalPages) currentPlatformPage = totalPages;
+                
+                const startIdx = (currentPlatformPage - 1) * ITEMS_PER_PAGE;
+                const pageItems = filteredPlatformTransactions.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+                
+                const listContainer = document.getElementById('platformList');
+                let html = '';
+                
+                pageItems.forEach((t, idx) => {
+                    const globalIndex = startIdx + idx; // 全域索引
+                    const tagClass = t.type === 'out' ? 'platform-tag out' : 'platform-tag in';
+                    const tagText = t.type === 'out' ? '帶出' : '帶入';
+                    const amountClass = t.type === 'in' ? 'text-green-400' : 'text-red-400';
+                    const amountSign = t.type === 'in' ? `+${t.impact}` : `-${Math.abs(t.impact)}`;
+                    const key = t.date + t.machine + t.impact;
+                    const prevBal = balanceMap.get(key) || totalSource;
+                    const afterBal = prevBal + t.impact;
+                    
+                    const isExpanded = (expandedIndex === globalIndex);
+                    const expandedClass = isExpanded ? 'expanded' : '';
+                    
+                    html += `
+                        <div class="platform-item ${expandedClass}" onclick="togglePlatformDetail(${globalIndex})">
+                            <div class="platform-left">
+                                <span class="${tagClass}">${tagText}</span>
+                                <span class="text-blue-200">${t.date}</span>
+                                <span class="platform-machine">${t.machine}</span>
+                            </div>
+                            <span class="platform-amount ${amountClass}">${amountSign}</span>
+                            <span class="detail-icon"><i class="fa fa-chevron-right chevron-icon"></i></span>
+                        </div>
+                        <div class="platform-detail" id="detail-${globalIndex}" style="${isExpanded ? 'display: block;' : 'display: none;'}">
+                            <div class="platform-detail-row">
+                                <span class="platform-detail-label">原身上代幣：</span>
+                                <span class="platform-detail-value">${prevBal.toLocaleString()}</span>
+                            </div>
+                            <div class="platform-detail-row">
+                                <span class="platform-detail-label">交易變動：</span>
+                                <span class="platform-detail-change ${t.type === 'in' ? 'positive' : 'negative'}">${t.type === 'in' ? '+' : '-'}${Math.abs(t.impact)}</span>
+                            </div>
+                            <div class="platform-detail-row">
+                                <span class="platform-detail-label">當前身上代幣：</span>
+                                <span class="platform-detail-value">${afterBal.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                listContainer.innerHTML = html || '<div class="text-gray-400 text-sm p-2 text-center">無符合記錄</div>';
+                
+                renderPlatformPagination(totalPages);
+            }
+
+            function renderPlatformPagination(totalPages) {
+                const paginationContainer = document.getElementById('platformPagination');
+                let btns = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    btns += `<span class="page-btn ${i === currentPlatformPage ? 'active' : ''}" data-platform-page="${i}">${i}</span>`;
+                }
+                paginationContainer.innerHTML = btns;
+                
+                document.querySelectorAll('[data-platform-page]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
                         e.preventDefault();
-                    }, { passive: false });
-                    touchArea.addEventListener('touchcancel', () => { isDragging = false; startAutoSlide(); });
-                }
-                function startAutoSlide() { clearInterval(slideInterval); slideInterval = setInterval(() => updateSlide(currentSlide+1), 5000); }
-                function resetAutoSlide() { clearInterval(slideInterval); startAutoSlide(); }
-                startAutoSlide();
-            })();
+                        currentPlatformPage = parseInt(e.target.dataset.platformPage);
+                        expandedIndex = null; // 換頁時收起所有展開
+                        renderPlatformList();
+                    });
+                });
+            }
 
-            // 篩選側欄功能
-            const openBtn = document.getElementById('openDrawerBtn');
-            const closeBtn = document.getElementById('closeDrawer');
-            const drawer = document.getElementById('filterDrawer');
-            const overlay = document.getElementById('drawerOverlay');
+            // 定義全域函數供 onclick 使用
+            window.togglePlatformDetail = function(index) {
+                if (expandedIndex === index) {
+                    expandedIndex = null;
+                } else {
+                    expandedIndex = index;
+                }
+                renderPlatformList();
+            };
+
+            // 子標籤切換
+            const exchangeSub = document.getElementById('tokenExchangeSub');
+            const platformSub = document.getElementById('tokenPlatformSub');
+            const exchangeContent = document.getElementById('exchangeContent');
+            const platformContent = document.getElementById('platformContent');
             
-            function openDrawerFunc() { if (drawer) drawer.style.right = '0'; if (overlay) overlay.classList.remove('hidden'); }
-            function closeDrawerFunc() { if (drawer) drawer.style.right = '-100%'; if (overlay) overlay.classList.add('hidden'); }
-            
-            if (openBtn) openBtn.addEventListener('click', openDrawerFunc);
-            if (closeBtn) closeBtn.addEventListener('click', closeDrawerFunc);
-            if (overlay) overlay.addEventListener('click', closeDrawerFunc);
-            
-            const resetBtn = document.getElementById('resetFilters');
-            const applyBtn = document.getElementById('applyFilters');
-            
-            if (resetBtn) resetBtn.addEventListener('click', ()=> {});
-            if (applyBtn) applyBtn.addEventListener('click', ()=> { 
-                closeDrawerFunc(); 
-                alert('示範篩選套用'); 
+            if (exchangeSub && platformSub) {
+                exchangeSub.addEventListener('click', () => {
+                    exchangeSub.classList.add('active');
+                    platformSub.classList.remove('active');
+                    exchangeContent.classList.remove('hidden');
+                    platformContent.classList.add('hidden');
+                });
+                platformSub.addEventListener('click', () => {
+                    platformSub.classList.add('active');
+                    exchangeSub.classList.remove('active');
+                    platformContent.classList.remove('hidden');
+                    exchangeContent.classList.add('hidden');
+                    
+                    const today = new Date();
+                    const threeMonthsAgo = new Date();
+                    threeMonthsAgo.setDate(today.getDate() - 90);
+                    document.getElementById('startDateFilter').value = threeMonthsAgo.toISOString().split('T')[0];
+                    document.getElementById('endDateFilter').value = today.toISOString().split('T')[0];
+                    
+                    currentPlatformPage = 1;
+                    expandedIndex = null;
+                    renderPlatformList();
+                });
+            }
+
+            document.getElementById('platformFilter')?.addEventListener('change', () => {
+                currentPlatformPage = 1;
+                expandedIndex = null;
+                renderPlatformList();
+            });
+            document.getElementById('startDateFilter')?.addEventListener('change', () => {
+                currentPlatformPage = 1;
+                expandedIndex = null;
+                renderPlatformList();
+            });
+            document.getElementById('endDateFilter')?.addEventListener('change', () => {
+                currentPlatformPage = 1;
+                expandedIndex = null;
+                renderPlatformList();
             });
 
-            // 為新Logo添加觸覺反饋 (可選，與原本a連結行為共存)
-            const headerLogo = document.getElementById('mobileLogoHeader');
-            if (headerLogo) {
-                headerLogo.addEventListener('click', function(e) {
-                    // 讓瀏覽器自然導向 index.html，但可以加一點微互動
-                    this.style.transform = 'scale(0.96)';
-                    setTimeout(() => { this.style.transform = ''; }, 120);
+            // 注單分頁
+            const betPages = {
+                1: [
+                    { id: 'BB20250221-001', machine: '甲賀忍法帖', amount: '+1,200', amountClass: 'text-amber-400' },
+                    { id: 'BB20250220-045', machine: '超級奇蹟小丑', amount: '-500', amountClass: 'text-red-400' },
+                    { id: 'BB20250219-112', machine: '吉宗', amount: '+3,200', amountClass: 'text-amber-400' }
+                ],
+                2: [
+                    { id: 'BB20250218-089', machine: '花月', amount: '+800', amountClass: 'text-amber-400' },
+                    { id: 'BB20250217-033', machine: '新甲賀', amount: '+2,100', amountClass: 'text-amber-400' },
+                    { id: 'BB20250216-077', machine: '甲賀忍法帖', amount: '-150', amountClass: 'text-red-400' }
+                ],
+                3: [
+                    { id: 'BB20250215-120', machine: '超級奇蹟小丑', amount: '+4,500', amountClass: 'text-amber-400' },
+                    { id: 'BB20250214-056', machine: '吉宗', amount: '-300', amountClass: 'text-red-400' },
+                    { id: 'BB20250213-099', machine: '花月', amount: '+1,050', amountClass: 'text-amber-400' },
+                    { id: 'BB20250212-222', machine: '新甲賀', amount: '+600', amountClass: 'text-amber-400' }
+                ]
+            };
+            
+            const betContainer = document.getElementById('betListContainer');
+            const betPageBtns = document.querySelectorAll('#betPagination .page-btn');
+            
+            function renderBetPage(page) {
+                const bets = betPages[page] || [];
+                let html = '';
+                bets.forEach(b => {
+                    html += `
+                        <div class="flex justify-between items-center border-b border-blue-900 pb-1">
+                            <span class="bet-id">#${b.id}</span>
+                            <span class="text-xs text-blue-300">${b.machine}</span>
+                            <span class="${b.amountClass}">${b.amount}</span>
+                            <span class="detail-bb" onclick="alert('🎬 播放BB影片 (示範)  \\n注單號: ${b.id}')">📽️ 詳細</span>
+                        </div>
+                    `;
+                });
+                betContainer.innerHTML = html;
+                
+                betPageBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.page == page) btn.classList.add('active');
                 });
             }
+
+            betPageBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = e.target.dataset.page;
+                    if (page) renderBetPage(parseInt(page));
+                });
+            });
+            renderBetPage(1);
+
+            // 其他功能
+            const closeBtn = document.getElementById('closeDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            if(closeBtn) closeBtn.addEventListener('click', ()=> {
+                document.getElementById('filterDrawer')?.classList.remove('open');
+                overlay?.classList.remove('open');
+            });
+            if(overlay) overlay.addEventListener('click', ()=> {
+                document.getElementById('filterDrawer')?.classList.remove('open');
+                overlay.classList.remove('open');
+            });
+
+            const avatarImg = document.getElementById('avatarImage');
+            const avatarContainer = document.getElementById('avatarContainer');
+            const avatars = ['https://i.pravatar.cc/150?img=7','https://i.pravatar.cc/150?img=5','https://i.pravatar.cc/150?img=9','https://i.pravatar.cc/150?img=12'];
+            let idx = 0;
+            avatarContainer.addEventListener('click', ()=>{
+                idx = (idx+1)%avatars.length;
+                avatarImg.src = avatars[idx];
+                alert('大頭照已更換 (示範)');
+            });
+
+            const displayName = document.getElementById('displayNickname');
+            let currentName = '夫人會生氣';
+            displayName.addEventListener('click', ()=>{
+                let newName = prompt('修改暱稱', currentName);
+                if(newName && newName.trim()) {
+                    currentName = newName.trim();
+                    displayName.textContent = currentName;
+                }
+            });
+
+            document.getElementById('exitToHomeBtn').addEventListener('click', (e)=>{
+                e.preventDefault();
+                alert('返回首頁 (示範)');
+            });
+            document.getElementById('supportBtn').addEventListener('click', ()=> alert('📞 客服與幫助 (示範)'));
+            document.getElementById('languageSelect').addEventListener('change', function(e){
+                alert(`語言切換至：${this.options[this.selectedIndex].text} (示範)`);
+            });
+
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            if(localStorage.getItem('theme')==='dark') body.classList.add('dark-mode');
+            themeToggle.addEventListener('click', ()=>{
+                body.classList.toggle('dark-mode');
+                localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+            });
+
+            const vipPanel = document.getElementById('vipInfoPanel');
+            const vipBadge = document.getElementById('vipBadge');
+            const expText = document.getElementById('expText');
+            function toggleVipPanel(e) {
+                e.stopPropagation();
+                vipPanel.classList.toggle('show');
+            }
+            vipBadge.addEventListener('click', toggleVipPanel);
+            expText.addEventListener('click', toggleVipPanel);
+            document.addEventListener('click', function(e) {
+                if (!vipPanel.contains(e.target) && !vipBadge.contains(e.target) && !expText.contains(e.target)) {
+                    vipPanel.classList.remove('show');
+                }
+            });
+
+            const tabs = document.querySelectorAll('.profile-tab');
+            const panels = {
+                settings: document.getElementById('settingsPanel'),
+                token: document.getElementById('tokenPanel'),
+                betHistory: document.getElementById('betHistoryPanel')
+            };
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e)=>{
+                    e.preventDefault();
+                    const tabId = tab.dataset.tab;
+                    tabs.forEach(t=>t.classList.remove('active'));
+                    tab.classList.add('active');
+                    Object.keys(panels).forEach(key => panels[key].classList.add('hidden'));
+                    if(panels[tabId]) panels[tabId].classList.remove('hidden');
+                });
+            });
+
+            document.querySelectorAll('.nav-item').forEach(item=>{
+                item.addEventListener('click', function(e){
+                    e.preventDefault();
+                    alert('導航示範：' + this.innerText);
+                });
+            });
         })();
     </script>
-    <!-- 為了確保沒有遺漏任何光暈，覆寫所有text-shadow (某些瀏覽器可能繼承) -->
-    <style>
-        .player-nickname, .player-credits {
-            text-shadow: none !important;
-        }
-    </style>
 </body>
 </html>
