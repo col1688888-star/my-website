@@ -283,7 +283,7 @@
             100% { opacity: 0.8; }
         }
         
-        /* 維護中卡片樣式 */
+        /* 維護中卡片樣式 - 所有標籤統一為一般維護 */
         .maintenance-card {
             position: relative;
             border: 1px solid #6b7280;
@@ -312,23 +312,9 @@
             display: flex;
             align-items: center;
             gap: 4px;
-        }
-        
-        .maintenance-badge.general {
+            /* 統一為一般維護樣式 (原本.general) */
             background: linear-gradient(135deg, #6b7280, #4b5563);
             border: 1px solid #9ca3af;
-            color: white;
-        }
-        
-        .maintenance-badge.routine {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            border: 1px solid #60a5fa;
-            color: white;
-        }
-        
-        .maintenance-badge.emergency {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            border: 1px solid #f87171;
             color: white;
         }
         
@@ -361,19 +347,11 @@
             height: 100%;
             border-radius: 2px;
             transition: width 0.3s ease;
-        }
-        
-        .maintenance-progress-bar.general {
+            /* 統一為一般維護樣式 */
             background: linear-gradient(90deg, #9ca3af, #6b7280);
         }
         
-        .maintenance-progress-bar.routine {
-            background: linear-gradient(90deg, #60a5fa, #3b82f6);
-        }
-        
-        .maintenance-progress-bar.emergency {
-            background: linear-gradient(90deg, #f87171, #ef4444);
-        }
+        /* 移除其他維護進度條樣式，統一使用一般維護 */
         
         /* 愛心按鈕樣式 - 強化互動效果 */
         .favorite-btn {
@@ -566,8 +544,8 @@
             padding-bottom: 1rem;
         }
 
-        /* 代幣標籤樣式 */
-        .token-badge { 
+        /* 代幣標籤樣式 - 金色版本專用 (1枚=2) */
+        .token-badge {
             background: linear-gradient(135deg, #fbbf24, #d97706); 
             color: #000; 
             font-weight: bold; 
@@ -577,11 +555,21 @@
             border: 1px solid #f59e0b; 
             box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); 
         }
+        /* 1枚=2 專用金色強化 (保留原有金色，更突出) */
+        .token-badge.gold-enhanced {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            border-color: #fbbf24;
+            box-shadow: 0 0 12px #fbbf24;
+        }
         
         /* 維護中卡片的代幣標籤 - 灰階版本 */
         .maintenance-card .token-badge {
             filter: grayscale(80%);
             opacity: 0.7;
+        }
+        /* 確保維護中卡片內的1枚=2標籤仍為金色但帶灰階 */
+        .maintenance-card .token-badge {
+            filter: grayscale(80%) brightness(1.2);
         }
     </style>
 </head>
@@ -649,7 +637,7 @@
                         <div class="p-2">
                             <h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3>
                             <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=2</span>
+                                <span class="token-badge gold-enhanced">1枚=2</span>
                                 <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span>
                             </div>
                             <div class="flex gap-1 mt-2">
@@ -692,7 +680,7 @@
                         <div class="p-2">
                             <h3 class="text-primary text-sm truncate">吉宗</h3>
                             <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=2</span>
+                                <span class="token-badge gold-enhanced">1枚=2</span>
                                 <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span>
                             </div>
                             <div class="flex gap-1 mt-2">
@@ -734,7 +722,7 @@
                         <div class="p-2">
                             <h3 class="text-primary text-sm truncate">吉宗(4號)</h3>
                             <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=2</span>
+                                <span class="token-badge gold-enhanced">1枚=2</span>
                                 <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Daito</span>
                             </div>
                             <div class="flex gap-1 mt-2">
@@ -818,7 +806,7 @@
                         <div class="p-2">
                             <h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3>
                             <div class="flex items-center gap-1 mt-1 text-xs">
-                                <span class="token-badge">1枚=2</span>
+                                <span class="token-badge gold-enhanced">1枚=2</span>
                                 <span class="bg-blue-900/50 px-1.5 py-0.5 rounded">Sammy</span>
                             </div>
                             <div class="flex gap-1 mt-2">
@@ -894,12 +882,12 @@
                     <span class="section-count">12 台</span>
                 </div>
                 
-                <!-- 維護中卡片容器 -->
+                <!-- 維護中卡片容器 - 所有標籤已統一為「一般維護」，金色標籤保留 -->
                 <div class="grid grid-cols-1 gap-4">
                     
-                    <!-- 一般維護 4台 -->
+                    <!-- 一般維護 4台 (原一般) -->
                     <div class="vertical-card maintenance-card">
-                        <div class="maintenance-badge general">
+                        <div class="maintenance-badge">
                             <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
@@ -907,7 +895,7 @@
                             <div class="vertical-card-info">
                                 <h3 class="vertical-card-title text-gray-400">吉宗</h3>
                                 <div class="vertical-card-tags">
-                                    <span class="token-badge">1枚=2</span>
+                                    <span class="token-badge gold-enhanced">1枚=2</span>
                                     <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Daito</span>
                                     <span class="vertical-card-tag bg-gray-700/50 text-gray-400">4號機</span>
                                 </div>
@@ -918,7 +906,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/23 18:00 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar general" style="width: 75%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 75%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -931,7 +919,7 @@
                     </div>
                     
                     <div class="vertical-card maintenance-card">
-                        <div class="maintenance-badge general">
+                        <div class="maintenance-badge">
                             <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
@@ -950,7 +938,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/23 14:00 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar general" style="width: 45%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 45%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -963,7 +951,7 @@
                     </div>
                     
                     <div class="vertical-card maintenance-card">
-                        <div class="maintenance-badge general">
+                        <div class="maintenance-badge">
                             <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
@@ -982,7 +970,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/24 10:00 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar general" style="width: 30%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 30%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -995,7 +983,7 @@
                     </div>
                     
                     <div class="vertical-card maintenance-card">
-                        <div class="maintenance-badge general">
+                        <div class="maintenance-badge">
                             <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
@@ -1014,7 +1002,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/24 15:00 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar general" style="width: 20%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 20%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -1026,10 +1014,10 @@
                         </div>
                     </div>
                     
-                    <!-- 例行維護 4台 -->
+                    <!-- 原例行維護 4台 - 標籤統一為一般維護 -->
                     <div class="vertical-card maintenance-card">
-                        <div class="maintenance-badge routine">
-                            <i class="fa fa-calendar-check"></i> 例行維護
+                        <div class="maintenance-badge">
+                            <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
                             <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="vertical-card-image opacity-60">
@@ -1047,7 +1035,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/23 09:30 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar routine" style="width: 45%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 45%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -1060,8 +1048,8 @@
                     </div>
                     
                     <div class="vertical-card maintenance-card">
-                        <div class="maintenance-badge routine">
-                            <i class="fa fa-calendar-check"></i> 例行維護
+                        <div class="maintenance-badge">
+                            <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
                             <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="vertical-card-image opacity-60">
@@ -1079,7 +1067,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/23 16:20 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar routine" style="width: 40%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 40%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -1092,8 +1080,8 @@
                     </div>
                     
                     <div class="vertical-card maintenance-card">
-                        <div class="maintenance-badge routine">
-                            <i class="fa fa-calendar-check"></i> 例行維護
+                        <div class="maintenance-badge">
+                            <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
                             <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="vertical-card-image opacity-60">
@@ -1111,7 +1099,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/23 11:00 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar routine" style="width: 50%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 50%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -1124,15 +1112,15 @@
                     </div>
                     
                     <div class="vertical-card maintenance-card">
-                        <div class="maintenance-badge routine">
-                            <i class="fa fa-calendar-check"></i> 例行維護
+                        <div class="maintenance-badge">
+                            <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
                             <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="vertical-card-image opacity-60">
                             <div class="vertical-card-info">
                                 <h3 class="vertical-card-title text-gray-400">吉宗 改</h3>
                                 <div class="vertical-card-tags">
-                                    <span class="token-badge">1枚=2</span>
+                                    <span class="token-badge gold-enhanced">1枚=2</span>
                                     <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Daito</span>
                                     <span class="vertical-card-tag bg-gray-700/50 text-gray-400">4號機</span>
                                 </div>
@@ -1143,7 +1131,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/24 09:00 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar routine" style="width: 25%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 25%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -1155,10 +1143,10 @@
                         </div>
                     </div>
                     
-                    <!-- 緊急維護 4台 -->
+                    <!-- 原緊急維護 4台 - 標籤統一為一般維護 -->
                     <div class="vertical-card maintenance-card" style="border-color: #ef4444;">
-                        <div class="maintenance-badge emergency">
-                            <i class="fa fa-exclamation-triangle"></i> 緊急維護
+                        <div class="maintenance-badge">
+                            <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
                             <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="vertical-card-image opacity-60">
@@ -1176,7 +1164,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/22 22:30 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar emergency" style="width: 85%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 85%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -1189,15 +1177,15 @@
                     </div>
                     
                     <div class="vertical-card maintenance-card" style="border-color: #ef4444;">
-                        <div class="maintenance-badge emergency">
-                            <i class="fa fa-exclamation-triangle"></i> 緊急維護
+                        <div class="maintenance-badge">
+                            <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
                             <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="vertical-card-image opacity-60">
                             <div class="vertical-card-info">
                                 <h3 class="vertical-card-title text-gray-400">吉宗 改</h3>
                                 <div class="vertical-card-tags">
-                                    <span class="token-badge">1枚=2</span>
+                                    <span class="token-badge gold-enhanced">1枚=2</span>
                                     <span class="vertical-card-tag bg-gray-700/50 text-gray-400">Daito</span>
                                     <span class="vertical-card-tag bg-gray-700/50 text-gray-400">4號機</span>
                                 </div>
@@ -1208,7 +1196,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/22 21:30 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar emergency" style="width: 70%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 70%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -1221,8 +1209,8 @@
                     </div>
                     
                     <div class="vertical-card maintenance-card" style="border-color: #ef4444;">
-                        <div class="maintenance-badge emergency">
-                            <i class="fa fa-exclamation-triangle"></i> 緊急維護
+                        <div class="maintenance-badge">
+                            <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
                             <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="vertical-card-image opacity-60">
@@ -1240,7 +1228,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/22 23:45 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar emergency" style="width: 60%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 60%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -1253,8 +1241,8 @@
                     </div>
                     
                     <div class="vertical-card maintenance-card" style="border-color: #ef4444;">
-                        <div class="maintenance-badge emergency">
-                            <i class="fa fa-exclamation-triangle"></i> 緊急維護
+                        <div class="maintenance-badge">
+                            <i class="fa fa-wrench"></i> 一般維護
                         </div>
                         <div class="vertical-card-content">
                             <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="vertical-card-image opacity-60">
@@ -1272,7 +1260,7 @@
                                     <i class="fa fa-calendar"></i> 預計 2/23 20:00 恢復
                                 </div>
                                 <div class="maintenance-progress">
-                                    <div class="maintenance-progress-bar emergency" style="width: 35%"></div>
+                                    <div class="maintenance-progress-bar" style="width: 35%"></div>
                                 </div>
                                 <div class="vertical-card-actions">
                                     <button class="enter-btn" disabled>維護中</button>
@@ -1357,6 +1345,8 @@
                 if (countSpan) countSpan.textContent = favoriteMachines.length + ' 台';
                 
                 favoriteMachines.forEach(machine => {
+                    // 動態生成卡片時，根據 ratio 決定是否套用金色加強樣式
+                    const tokenClass = machine.ratio === '1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
                     const card = document.createElement('div');
                     card.className = 'vertical-card';
                     card.innerHTML = `
@@ -1365,7 +1355,7 @@
                             <div class="vertical-card-info">
                                 <h3 class="vertical-card-title">${machine.name}</h3>
                                 <div class="vertical-card-tags">
-                                    <span class="vertical-card-tag">${machine.ratio}</span>
+                                    <span class="${tokenClass}">${machine.ratio}</span>
                                     <span class="vertical-card-tag">${machine.vendor}</span>
                                 </div>
                                 <div class="vertical-card-stats">
@@ -1489,6 +1479,8 @@
                     card.setAttribute('data-machine-name', machine.name);
                     card.setAttribute('data-machine-id', machine.id);
                     
+                    const tokenClass = machine.ratio === '1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
+                    
                     card.innerHTML = `
                         <div class="reserve-badge">
                             <i class="fa fa-exclamation-triangle"></i> 即將到期
@@ -1498,7 +1490,7 @@
                             <div class="vertical-card-info">
                                 <h3 class="vertical-card-title">${machine.name}</h3>
                                 <div class="vertical-card-tags">
-                                    <span class="vertical-card-tag">${machine.ratio}</span>
+                                    <span class="${tokenClass}">${machine.ratio}</span>
                                     <span class="vertical-card-tag">${machine.vendor}</span>
                                 </div>
                                 <div class="vertical-card-stats">
@@ -1548,6 +1540,16 @@
                         document.querySelectorAll(`.category-section[data-category="${category}"]`).forEach(section => {
                             section.classList.remove('hidden');
                         });
+                        
+                        // 如果切換到保留中頁面，顯示所有機台的彈跳視窗
+                        if (category === '保留中') {
+                            setTimeout(() => {
+                                document.querySelectorAll('.reserve-card').forEach((card) => {
+                                    const machineName = card.getAttribute('data-machine-name');
+                                    showUrgentNotification(machineName, 10);
+                                });
+                            }, 300); // 稍微延遲一下，確保卡片已經顯示
+                        }
                     });
                 });
 
@@ -1629,7 +1631,11 @@
                             const lastNotify = lastNotificationTime[machineId] || 0;
                             
                             if (now - lastNotify > 120000) {
-                                showUrgentNotification(machineName, minutes);
+                                // 只有在保留中頁面顯示時才彈出提示
+                                const activeTab = document.querySelector('.category-tab.active').dataset.tab;
+                                if (activeTab === '保留中') {
+                                    showUrgentNotification(machineName, minutes);
+                                }
                                 lastNotificationTime[machineId] = now;
                                 
                                 // 加強視覺效果
