@@ -1096,13 +1096,13 @@
             </div>
         </main>
 
-        <!-- 底部導航 -->
+        <!-- 底部導航 - 修正為正確的連結 -->
         <nav class="bottom-nav">
             <div class="flex justify-between items-center">
-                <a href="#" class="nav-item" id="nav-home"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-                <a href="#" class="nav-item" id="nav-game"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-                <a href="#" class="nav-item" id="nav-bell"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
-                <a href="#" class="nav-item current-page" id="nav-user" aria-current="page"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
+                <a href="index.html" class="nav-item" id="nav-home"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
+                <a href="machines.html" class="nav-item" id="nav-game"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
+                <a href="news.html" class="nav-item" id="nav-bell"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
+                <a href="about.html" class="nav-item current-page" id="nav-user" aria-current="page"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
             </div>
         </nav>
     </div>
@@ -1642,12 +1642,7 @@
                 });
             });
 
-            document.querySelectorAll('.nav-item').forEach(item=>{
-                item.addEventListener('click', function(e){
-                    e.preventDefault();
-                    alert('導航示範：' + this.innerText);
-                });
-            });
+            // 導航示範功能已移除 - 現在可以正常連結了！
         })();
     </script>
 </body>
