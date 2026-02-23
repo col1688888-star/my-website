@@ -6,6 +6,8 @@
     <title>公告中心 · 初始系統公告 | T-PACHIN</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入 Google Fonts 以支援 logo 字型 (Orbitron / Russo One) -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
         /* 基礎科技風格 */
         .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
@@ -310,6 +312,153 @@
             border-left: 2px solid #0099ff;
             font-size: 0.9rem;
         }
+
+        /* ===== 從 logo.html 移植的 Logo 樣式 (純淨無外框) ===== */
+        :root {
+            --primary-color: #ffd700;
+            --secondary-color: #c90a0a;
+            --dark-bg: #0a0a16;
+            --darker-bg: #050510;
+            --card-bg: rgba(20, 20, 40, 0.9);
+            --text-light: #f0f0f0;
+            --text-gold: #ffd700;
+            --neon-blue: #00e5ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff9d;
+            --neon-purple: #9d00ff;
+            --menu-height: 55px;
+            --border-radius: 10px;
+            --logo-accent: #00e0ff;
+            --logo-gold: #ffd700;
+            --logo-gold-light: #ffec8b;
+            --logo-neon-gold: #ffdf00;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;               /* 手機上間距略縮 */
+            font-family: 'Orbitron', 'Russo One', sans-serif;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 0.2s ease; /* 觸控微動畫 */
+            text-decoration: none;
+            color: inherit;
+            /* 移除所有背景、邊框、外框、陰影框 — 乾乾淨淨 */
+            background: transparent;
+            border: none;
+            backdrop-filter: none;
+            padding: 0;              /* 完全無內距 */
+            margin: 0;
+            -webkit-tap-highlight-color: transparent; /* 移除手機點擊閃塊 */
+        }
+
+        /* 觸控放大回饋 (保留原 hover 但改成 active 更適合觸控) */
+        .logo:active {
+            transform: scale(0.97);
+        }
+
+        .logo-icon {
+            width: 40px;             /* 手機上稍微縮小，但依然醒目 */
+            height: 40px;
+            background: linear-gradient(135deg, #000, #111, #222);
+            border-radius: 8px;       /* 微調圓角 */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 15px rgba(0, 224, 255, 0.5),
+                inset 0 0 10px rgba(255, 215, 0, 0.2);
+            overflow: hidden;
+            border: 2px solid var(--logo-gold);
+            flex-shrink: 0;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                var(--logo-accent),
+                var(--secondary-color),
+                var(--logo-gold),
+                transparent
+            );
+            animation: logoRotate 4s linear infinite;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 30px;             /* 配合小圖示調整 */
+            height: 30px;
+            background: #000;
+            border-radius: 5px;
+        }
+
+        @keyframes logoRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-icon-inner {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;          /* 手機版字級微調 */
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--logo-neon-gold), var(--logo-gold-light), var(--logo-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.5px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .logo-main {
+            font-size: 18px;          /* 手機適中大小 */
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--logo-neon-gold), var(--logo-gold), var(--logo-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: textShine 3s ease-in-out infinite alternate;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        .logo-sub {
+            font-size: 9px;           /* 手機上依然清楚 */
+            color: var(--logo-accent);
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            opacity: 0.9;
+            text-shadow: 0 0 4px rgba(0, 224, 255, 0.5);
+            white-space: nowrap;
+        }
+
+        @keyframes textShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .logo:focus-visible {
+            outline: none;
+        }
+        /* ===== Logo樣式結束 ===== */
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
@@ -349,15 +498,18 @@
 
     <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
 
-        <!-- 頂部標頭 — 白色暱稱 + 金黃代幣 (無光暈) -->
+        <!-- 頂部標頭 — 替換為來自 logo.html 的 Logo (點擊返回首頁) + 右側玩家資訊 -->
         <header class="px-4 py-3 bg-dark-200/90 tech-border flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <img src="https://static.wixstatic.com/media/d5e540_e347f7f914a14623b91140a29b40cb08~mv2.png" class="w-10 h-10 object-contain" alt="T-PACHIN">
-                <div>
-                    <h1 class="text-yellow-400 font-bold text-lg">T-PACHIN</h1>
-                    <p class="text-primary text-xs">CYBER PACHINKO SYSTEM</p>
+            <!-- 左側：全新 Logo (移植自 logo.html，點擊返回 index.html) -->
+            <a href="index.html" class="logo" id="mobileLogoHeader">
+                <div class="logo-icon">
+                    <div class="logo-icon-inner">TP</div>
                 </div>
-            </div>
+                <div class="logo-text">
+                    <div class="logo-main">T-PACHIN</div>
+                    <div class="logo-sub">CYBER PACHINKO SYSTEM</div>
+                </div>
+            </a>
             <!-- 右邊玩家資訊：純白暱稱 + 金黃代幣 (無光暈) -->
             <div class="text-right">
                 <div class="text-xs player-nickname">夫人會生氣</div>
@@ -515,7 +667,6 @@
     </div>
 </nav>
 
-        <script src="shared.js"></script>
     <script>
         (function() {
             // 公告標籤切換 - 預設顯示系統公告
@@ -527,9 +678,12 @@
             const panelQa = document.getElementById('panelQa');
 
             function setActiveTab(active) {
+                // 移除所有標籤的active class
                 [tabSystem, tabLetter, tabQa].forEach(t => t.classList.remove('active'));
+                // 隱藏所有面板
                 [panelSystem, panelLetter, panelQa].forEach(p => p.classList.add('hidden'));
                 
+                // 根據active參數顯示對應面板並添加active class
                 if (active === 'system') {
                     tabSystem.classList.add('active');
                     panelSystem.classList.remove('hidden');
@@ -542,10 +696,12 @@
                 }
             }
 
+            // 綁定點擊事件
             tabSystem.addEventListener('click', () => setActiveTab('system'));
             tabLetter.addEventListener('click', () => setActiveTab('letter'));
             tabQa.addEventListener('click', () => setActiveTab('qa'));
             
+            // 初始化：顯示系統公告
             setActiveTab('system');
 
             // ----- 全選 + 勾選刪除 + 詳細內容 (僅在信件面板作用) -----
@@ -565,6 +721,7 @@
             const totalLetters = letterRows.length;
             if (totalCountSpan) totalCountSpan.innerText = totalLetters;
 
+            // 更新全選核取方塊狀態
             function updateSelectAll() {
                 if (!selectAllCheckbox) return;
                 if (selectedSet.size === totalLetters) {
@@ -573,6 +730,7 @@
                     selectAllCheckbox.classList.remove('checked');
                 }
                 if (selectedCountSpan) selectedCountSpan.innerText = selectedSet.size;
+                // 刪除按鈕啟用/禁用
                 if (deleteBtn) {
                     if (selectedSet.size === 0) {
                         deleteBtn.classList.add('disabled');
@@ -582,6 +740,7 @@
                 }
             }
 
+            // 單個checkbox點擊
             if (checkboxes.length > 0) {
                 checkboxes.forEach(checkbox => {
                     checkbox.addEventListener('click', function(e) {
@@ -603,12 +762,14 @@
                 });
             }
 
+            // 全選點擊
             if (selectAllCheckbox) {
                 selectAllCheckbox.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const isChecking = !this.classList.contains('checked');
                     
                     if (isChecking) {
+                        // 全選：所有checkbox加上checked，selectedSet加入所有id
                         checkboxes.forEach(cb => {
                             const id = cb.getAttribute('data-letter-id');
                             if (id) selectedSet.add(id);
@@ -616,6 +777,7 @@
                         });
                         letterRows.forEach(row => row.classList.add('selected-for-delete'));
                     } else {
+                        // 取消全選
                         checkboxes.forEach(cb => {
                             const id = cb.getAttribute('data-letter-id');
                             if (id) selectedSet.delete(id);
@@ -627,9 +789,11 @@
                 });
             }
 
+            // 點擊信件列開啟詳細
             if (letterRows.length > 0) {
                 letterRows.forEach(row => {
                     row.addEventListener('click', function(e) {
+                        // 如果點擊的是checkbox，不觸發 (已stopPropagation)
                         const sender = this.getAttribute('data-sender') || '未知';
                         const time = this.getAttribute('data-time') || '';
                         const content = this.getAttribute('data-content') || '無內容';
@@ -641,6 +805,7 @@
                 });
             }
 
+            // 關閉modal
             if (closeModalBtn) {
                 closeModalBtn.addEventListener('click', () => {
                     if (modal) modal.classList.remove('show');
@@ -652,28 +817,35 @@
                 });
             }
 
+            // 刪除所選信件
             if (deleteBtn) {
                 deleteBtn.addEventListener('click', function() {
                     if (selectedSet.size === 0) return;
+                    // 遍歷所有信件列，移除data-id在selectedSet中的
                     letterRows.forEach(row => {
                         const id = row.getAttribute('data-id');
                         if (selectedSet.has(id)) {
                             row.remove();
                         }
                     });
+                    // 清空selectedSet，更新計數
                     selectedSet.clear();
+                    // 重新取得剩餘信件列和checkbox
                     const remainingRows = document.querySelectorAll('.letter-row');
+                    // 更新總數顯示
                     if (totalCountSpan) totalCountSpan.innerText = remainingRows.length;
                     const statsEl = document.getElementById('letterStats');
                     if (statsEl) statsEl.innerText = `✉️ 共 ${remainingRows.length} 封信件`;
+                    // 若全選核取方塊狀態重置
                     if (selectAllCheckbox) selectAllCheckbox.classList.remove('checked');
                     updateSelectAll();
                 });
             }
 
+            // 初始化更新
             updateSelectAll();
 
-            // ----- Banner 輪播 -----
+            // ----- Banner 輪播 (移植) -----
             (function banner() {
                 let currentSlide = 0;
                 const slider = document.getElementById('bannerSlider');
@@ -738,6 +910,16 @@
                 closeDrawerFunc(); 
                 alert('示範篩選套用'); 
             });
+
+            // 為新Logo添加觸覺反饋 (可選，與原本a連結行為共存)
+            const headerLogo = document.getElementById('mobileLogoHeader');
+            if (headerLogo) {
+                headerLogo.addEventListener('click', function(e) {
+                    // 讓瀏覽器自然導向 index.html，但可以加一點微互動
+                    this.style.transform = 'scale(0.96)';
+                    setTimeout(() => { this.style.transform = ''; }, 120);
+                });
+            }
         })();
     </script>
     <!-- 為了確保沒有遺漏任何光暈，覆寫所有text-shadow (某些瀏覽器可能繼承) -->
@@ -746,6 +928,5 @@
             text-shadow: none !important;
         }
     </style>
-</body>
 </body>
 </html>
