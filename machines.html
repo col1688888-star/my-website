@@ -6,6 +6,8 @@
     <title>T-PACHIN · 機台頁面 - 愛心功能</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入 Orbitron 字型以配合 Logo 風格 -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
         /* 自定義樣式 - 完整保留 + 新增首頁互動效果 */
         .tech-gradient {
@@ -566,17 +568,121 @@
             100% { background-position: 200% center; }
         }
         
-        #mobileLogo {
-            -webkit-tap-highlight-color: transparent;
-            transition: transform 0.2s ease;
+        /* ===== 新 Logo 樣式 (移植自 logo.html，乾淨無外框) ===== */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;               /* 手機上間距略縮 */
+            font-family: 'Orbitron', 'Russo One', sans-serif;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 0.2s ease; /* 觸控微動畫 */
+            text-decoration: none;
+            color: inherit;
+            /* 移除所有背景、邊框、外框、陰影框 — 乾乾淨淨 */
+            background: transparent;
+            border: none;
+            backdrop-filter: none;
+            padding: 0;              /* 完全無內距 */
+            margin: 0;
+            -webkit-tap-highlight-color: transparent; /* 移除手機點擊閃塊 */
         }
-        
-        #mobileLogo:active {
+
+        /* 觸控放大回饋 (保留原 hover 但改成 active 更適合觸控) */
+        .logo:active {
             transform: scale(0.97);
         }
-        
-        .bg-gradient-to-r {
+
+        .logo-icon {
+            width: 40px;             /* 手機上稍微縮小，但依然醒目 */
+            height: 40px;
+            background: linear-gradient(135deg, #000, #111, #222);
+            border-radius: 8px;       /* 微調圓角 */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 15px rgba(0, 224, 255, 0.5),
+                inset 0 0 10px rgba(255, 215, 0, 0.2);
+            overflow: hidden;
+            border: 2px solid #ffd700;
+            flex-shrink: 0;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                #00e0ff,
+                #c90a0a,
+                #ffd700,
+                transparent
+            );
+            animation: logoRotate 4s linear infinite;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 30px;             /* 配合小圖示調整 */
+            height: 30px;
+            background: #000;
+            border-radius: 5px;
+        }
+
+        .logo-icon-inner {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;          /* 手機版字級微調 */
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffec8b, #00e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.5px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .logo-main {
+            font-size: 18px;          /* 手機適中大小 */
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffd700, #00e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             background-size: 200% auto;
+            animation: textShine 3s ease-in-out infinite alternate;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        .logo-sub {
+            font-size: 9px;           /* 手機上依然清楚 */
+            color: #00e0ff;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            opacity: 0.9;
+            text-shadow: 0 0 4px rgba(0, 224, 255, 0.5);
+            white-space: nowrap;
+        }
+
+        /* 手機上點擊反饋只用震動無外框 */
+        .logo:focus-visible {
+            outline: none;
         }
     </style>
 </head>
@@ -585,20 +691,17 @@
     <!-- 主內容 -->
     <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
         
-        <!-- 頂部導航 - 夫人會生氣在代幣上方 -->
+        <!-- 頂部導航 - 使用新的 Logo 樣式 (移植自 logo.html) -->
         <header class="px-4 py-3 bg-dark-200/90 tech-border">
             <div class="flex items-center justify-between">
-                <!-- 左邊：新的 LOGO 樣式 (點擊返回首頁) -->
-                <a href="index.html" class="flex items-center gap-2 group" id="mobileLogo">
-                    <div class="w-10 h-10 relative flex items-center justify-center overflow-hidden rounded-lg border-2 border-yellow-400 shadow-[0_0_15px_rgba(0,224,255,0.5)]"
-                         style="background: linear-gradient(135deg, #000, #111, #222);">
-                        <div class="absolute inset-0" style="background: conic-gradient(from 0deg, transparent, #00e0ff, #c90a0a, #ffd700, transparent); animation: logoRotate 4s linear infinite;"></div>
-                        <div class="absolute inset-[3px] bg-black rounded"></div>
-                        <span class="relative z-10 font-['Orbitron'] font-black text-sm bg-gradient-to-r from-yellow-400 via-yellow-300 to-cyan-400 bg-clip-text text-transparent animate-[textShine_3s_ease-in-out_infinite_alternate]">TP</span>
+                <!-- 左邊：新的 LOGO 樣式 (點擊返回首頁) 完全移植自 logo.html -->
+                <a href="index.html" class="logo" id="mobileLogo">
+                    <div class="logo-icon">
+                        <div class="logo-icon-inner">TP</div>
                     </div>
-                    <div class="flex flex-col leading-tight">
-                        <span class="text-base font-black bg-gradient-to-r from-yellow-400 via-yellow-300 to-cyan-400 bg-clip-text text-transparent animate-[textShine_3s_ease-in-out_infinite_alternate] uppercase tracking-wider">T-PACHIN</span>
-                        <span class="text-[9px] text-cyan-400 tracking-wider opacity-90 drop-shadow-[0_0_4px_rgba(0,224,255,0.5)]">CYBER PACHINKO SYSTEM</span>
+                    <div class="logo-text">
+                        <div class="logo-main">T-PACHIN</div>
+                        <div class="logo-sub">CYBER PACHINKO SYSTEM</div>
                     </div>
                 </a>
                 
