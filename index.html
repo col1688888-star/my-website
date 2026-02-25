@@ -171,6 +171,144 @@
         .category-section {
             margin-bottom: 2rem;
         }
+
+        /* ===== 子機種彈窗樣式 ===== */
+        .machine-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.25s;
+            padding: 1rem;
+        }
+        .machine-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: linear-gradient(165deg, #001e3c, #00102a);
+            border: 2px solid #0099ff;
+            border-radius: 2rem;
+            max-width: 480px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 153, 255, 0.5);
+            padding: 1.5rem 1rem;
+            transform: scale(0.9);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .machine-modal.show .modal-content {
+            transform: scale(1);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #0099ff60;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.2rem;
+        }
+        .modal-header h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #ffd966;
+            text-shadow: 0 0 8px #fbbf24;
+        }
+        .modal-close {
+            background: rgba(0,102,204,0.3);
+            border: 1px solid #0099ff;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-close:hover {
+            background: #ff3b3b;
+            border-color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px red;
+        }
+        
+        /* 子機種卡片網格 */
+        .submachine-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+        
+        /* 子機種卡片樣式 */
+        .sub-item-card {
+            background: linear-gradient(145deg, rgba(0,40,70,0.9), rgba(0,20,45,0.95));
+            border: 1px solid rgba(0, 153, 255, 0.5);
+            border-radius: 1rem;
+            padding: 0.7rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0,153,255,0.3);
+            transition: 0.15s;
+        }
+        .sub-item-card:hover {
+            transform: translateY(-2px);
+            border-color: #00ccff;
+            box-shadow: 0 0 18px #0099ff;
+        }
+        
+        /* 上半部：名稱＋代幣比率 */
+        .sub-name-ratio {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .sub-name {
+            font-weight: 600;
+            color: #b3e0ff;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80px;
+        }
+        .sub-ratio {
+            background: #001c3a;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            border: 1px solid #fbbf24;
+            color: #ffd966;
+            font-weight: 500;
+            font-size: 0.7rem;
+            box-shadow: 0 0 6px #fbbf24;
+        }
+        
+        /* 下半部：兩個按鈕 */
+        .sub-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 0.3rem;
+        }
+        .sub-actions .enter-btn {
+            font-size: 0.7rem;
+            padding: 0.2rem 0;
+            flex: 1;
+        }
+        .sub-actions .favorite-btn {
+            width: 1.8rem;
+            height: 1.8rem;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
@@ -567,7 +705,7 @@
         <a href="https://col1688888-star.github.io/T-PACHIN/news.html" class="nav-item" id="nav-bell" data-page="bell">
             <i class="fa fa-bell text-xl"></i>
             <span class="text-xs mt-1">公告</span>
-            <span class="nav-badge" id="newsBadge"></span>  <!-- 加上這行 -->
+            <span class="nav-badge" id="newsBadge"></span>
         </a>
         <a href="https://col1688888-star.github.io/T-PACHIN/about.html" class="nav-item" id="nav-user" data-page="user">
             <i class="fa fa-user text-xl"></i>
@@ -579,6 +717,18 @@
 <!-- 浮動回到頂部按鈕 -->
 <div class="back-to-top" id="backToTop">
     <i class="fa fa-arrow-up"></i>
+</div>
+
+<!-- ===== 子機種彈窗 ===== -->
+<div class="machine-modal" id="machineModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalMachineName">吉宗</h2>
+            <span class="modal-close" id="modalCloseBtn"><i class="fa fa-times"></i></span>
+        </div>
+        <!-- 子機種將動態渲染到這裡 -->
+        <div id="modalSubmachineList" class="submachine-grid"></div>
+    </div>
 </div>
 
 <script>
@@ -646,38 +796,20 @@
         });
     });
 
-    // 卡片本身點擊
-    const cards = document.querySelectorAll('.game-card-bg:not(.maintenance-card)');
-    cards.forEach(card => {
-        card.addEventListener('click', function(e) {
-            if (e.target.closest('button')) return;
-            
-            this.style.transform = 'scale(0.97)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 100);
-            
-            const titleElem = this.querySelector('h3');
-            const machineName = titleElem ? titleElem.textContent : '機台';
-            alert(`📋 查看 ${machineName} 詳細資訊 (示範)`);
-        });
-    });
-
-    // ===== 底部導航 - 讓當前頁面顯示 active 狀態（修正版）=====
+    // ===== 底部導航 - 讓當前頁面顯示 active 狀態 =====
     const navItems = document.querySelectorAll('.nav-item');
     const currentPath = window.location.pathname;
     const currentUrl = window.location.href;
     
     navItems.forEach(nav => nav.classList.remove('current-page'));
     
-    // 更準確的判斷：只要是 index.html 或根目錄，就是首頁
     if (currentPath.endsWith('index.html') || 
         currentPath.endsWith('/') || 
         currentPath.endsWith('T-PACHIN') ||
         currentPath === '' ||
         currentPath === '/' ||
-        !currentPath.includes('.html') ||  // 如果路徑中沒有任何 .html，就是首頁
-        currentUrl.includes('index.html')) {  // 網址包含 index.html 就是首頁
+        !currentPath.includes('.html') ||
+        currentUrl.includes('index.html')) {
         document.getElementById('nav-home')?.classList.add('current-page');
     } 
     else if (currentPath.includes('machines.html') || currentUrl.includes('machines.html')) {
@@ -690,11 +822,10 @@
         document.getElementById('nav-user')?.classList.add('current-page');
     }
     else {
-        // 預設高亮首頁
         document.getElementById('nav-home')?.classList.add('current-page');
     }
 
-    // 分類標籤切換 (維護中標籤已移除，所以索引自動對齊)
+    // 分類標籤切換
     const tabBtns = document.querySelectorAll('.tab-btn');
     const categorySections = document.querySelectorAll('.category-section');
     const tabsWrapper = document.getElementById('tabsWrapper');
@@ -847,6 +978,194 @@
         setTimeout(() => {
             this.style.transform = '';
         }, 200);
+    });
+
+    // ===== 子機種彈窗功能 =====
+    // 子機種資料庫 - 為每個主機台定義子機種
+    const subMachineDB = {
+        // 預設資料（給沒有定義的機台使用）
+        'default': [
+            { name: '大盤振舞', ratio: '2' },
+            { name: '大盤振舞', ratio: '0.33' },
+            { name: '雙姬', ratio: '0.5' },
+            { name: '雙姬', ratio: '0.1' },
+            { name: '爺', ratio: '3' },
+            { name: '爺', ratio: '0.2' }
+        ],
+        
+        // 吉宗的子機種
+        '吉宗': [
+            { name: '大盤振舞#1', ratio: '2' },
+            { name: '大盤振舞#2', ratio: '0.33' },
+            { name: '雙姬#3', ratio: '0.5' },
+            { name: '雙姬#4', ratio: '0.1' },
+            { name: '爺#5', ratio: '3' },
+            { name: '爺#6', ratio: '0.2' }
+        ],
+        
+        // 甲賀忍法帖 絆
+        '甲賀忍法帖 絆': [
+            { name: '甲賀忍法帖 絆#1', ratio: '2.5' },
+            { name: '甲賀忍法帖 絆#2', ratio: '0.4' },
+            { name: '甲賀忍法帖 絆#3', ratio: '0.8' },
+            { name: '甲賀忍法帖 絆#4', ratio: '0.12' },
+            { name: '甲賀忍法帖 絆#5', ratio: '4' },
+            { name: '甲賀忍法帖 絆#6', ratio: '0.18' }
+        ],
+        
+        // 超級奇蹟小丑
+        '超級奇蹟小丑': [
+            { name: '超級奇蹟小丑#1', ratio: '1' },
+            { name: '超級奇蹟小丑#2', ratio: '0.5' },
+            { name: '超級奇蹟小丑#3', ratio: '2' },
+            { name: '超級奇蹟小丑#4', ratio: '0.25' },
+            { name: '超級奇蹟小丑#5', ratio: '4' },
+            { name: '超級奇蹟小丑#6', ratio: '0.15' }
+        ],
+        
+        // 押忍！番長4
+        '押忍！番長4': [
+            { name: '押忍！番長4#1', ratio: '2.5' },
+            { name: '押忍！番長4#2', ratio: '0.4' },
+            { name: '押忍！番長4#3', ratio: '0.8' },
+            { name: '押忍！番長4#4', ratio: '0.12' },
+            { name: '押忍！番長4#5', ratio: '5' },
+            { name: '押忍！番長4#6', ratio: '0.18' }
+        ],
+        
+        // 革命機ヴァルヴレイヴ
+        '革命機ヴァルヴレイヴ': [
+            { name: '革命機ヴァルヴレイヴ#1', ratio: '3' },
+            { name: '革命機ヴァルヴレイヴ#2', ratio: '0.3' },
+            { name: '革命機ヴァルヴレイヴ#3', ratio: '0.6' },
+            { name: '革命機ヴァルヴレイヴ#4', ratio: '0.15' },
+            { name: '革命機ヴァルヴレイヴ#5', ratio: '2.5' },
+            { name: '革命機ヴァルヴレイヴ#6', ratio: '0.25' }
+        ],
+        
+        // 花月
+        '花月': [
+            { name: '花月#1', ratio: '2' },
+            { name: '花月#2', ratio: '0.33' },
+            { name: '花月#3', ratio: '0.5' },
+            { name: '花月#4', ratio: '0.1' },
+            { name: '花月#5', ratio: '3' },
+            { name: '花月#6', ratio: '0.2' }
+        ],
+        
+        // 大花火
+        '大花火': [
+            { name: '火花#1', ratio: '1.5' },
+            { name: '火花#2', ratio: '0.25' },
+            { name: '火花#3', ratio: '0.4' },
+            { name: '火花#4', ratio: '0.08' },
+            { name: '火花#5', ratio: '2' },
+            { name: '火花#6', ratio: '0.15' }
+        ],
+        
+        // 奇蹟小丑
+        '奇蹟小丑': [
+            { name: '奇蹟小丑#1', ratio: '1.8' },
+            { name: '奇蹟小丑#2', ratio: '0.28' },
+            { name: '奇蹟小丑#3', ratio: '0.45' },
+            { name: '奇蹟小丑#4', ratio: '0.09' },
+            { name: '奇蹟小丑#5', ratio: '2.2' },
+            { name: '奇蹟小丑#6', ratio: '0.16' }
+        ]
+    };
+
+    // 獲取子機種資料的函數
+    function getSubMachines(machineName) {
+        return subMachineDB[machineName] || subMachineDB['default'];
+    }
+
+    // 彈窗元素
+    const modal = document.getElementById('machineModal');
+    const modalTitle = document.getElementById('modalMachineName');
+    const modalSubList = document.getElementById('modalSubmachineList');
+    const modalClose = document.getElementById('modalCloseBtn');
+
+    // 打開彈窗
+    function openModal(machineName) {
+        modalTitle.innerText = machineName;
+        const subList = getSubMachines(machineName);
+        
+        // 生成子機種HTML
+        let html = '';
+        subList.forEach((sub, index) => {
+            html += `
+                <div class="sub-item-card">
+                    <div class="sub-name-ratio">
+                        <span class="sub-name">${sub.name}</span>
+                        <span class="sub-ratio">1枚=${sub.ratio}</span>
+                    </div>
+                    <div class="sub-actions">
+                        <button class="enter-btn sub-enter" data-machine="${machineName}" data-sub="${sub.name}" data-ratio="${sub.ratio}">進入</button>
+                        <button class="favorite-btn sub-fav" data-machine="${machineName}" data-sub="${sub.name}" data-ratio="${sub.ratio}"><i class="fa fa-heart text-xs"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+        modalSubList.innerHTML = html;
+        modal.classList.add('show');
+        
+        // 綁定彈窗內新產生的按鈕事件
+        modalSubList.querySelectorAll('.sub-fav').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.classList.toggle('active');
+                this.style.animation = 'none';
+                this.offsetHeight;
+                this.style.animation = 'heartPop 0.3s ease';
+                const sub = this.dataset.sub;
+                const machine = this.dataset.machine;
+                console.log(`❤️ ${machine} - ${sub} 比率:${this.dataset.ratio}`);
+            });
+        });
+        
+        modalSubList.querySelectorAll('.sub-enter').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const machine = this.dataset.machine;
+                const sub = this.dataset.sub;
+                const ratio = this.dataset.ratio;
+                alert(`🚀 進入 ${machine} - ${sub} (1枚=${ratio})`);
+            });
+        });
+    }
+
+    // 關閉彈窗
+    function closeModal() {
+        modal.classList.remove('show');
+    }
+
+    // 關閉事件
+    if (modalClose) {
+        modalClose.addEventListener('click', closeModal);
+    }
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // 卡片點擊事件 - 打開彈窗
+    const cards = document.querySelectorAll('.game-card-bg:not(.maintenance-card)');
+    cards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('button')) return;
+            
+            // 按壓效果
+            this.style.transform = 'scale(0.97)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 100);
+            
+            // 獲取機台名稱
+            const titleElem = this.querySelector('h3');
+            const machineName = titleElem ? titleElem.textContent.trim() : '機台';
+            
+            // 打開彈窗
+            openModal(machineName);
+        });
     });
 })();
 </script>
