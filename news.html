@@ -18,17 +18,19 @@
         .scrollbar-thin::-webkit-scrollbar { width: 4px; }
         .scrollbar-thin::-webkit-scrollbar-thumb { background: #0099ff; border-radius: 4px; }
         
-        /* 自定義顏色 - 完全移除光暈，純色設定 */
+        /* 自定義顏色 - 完全移除光暈，純色設定 - 與 index.html 一致 */
         .player-nickname {
             color: #ffffff;           /* 純白，無光暈 */
-            font-weight: 800;
-            letter-spacing: 0.5px;
+            font-size: 0.75rem;       /* text-xs (12px) - 與 index.html 一致 */
+            font-weight: 400;
+            letter-spacing: normal;
             text-shadow: none;         /* 確保沒有發光 */
+            line-height: 1.5;
         }
         .player-credits {
             color: #ffc800;            /* 金黃色底色，純色 */
-            font-weight: 900;
-            font-size: 1.4rem;
+            font-weight: 700;          /* font-bold */
+            font-size: 1.125rem;       /* text-lg (18px) - 與 index.html 一致 */
             line-height: 1.2;
             text-shadow: none;         /* 移除光暈 */
         }
@@ -531,10 +533,12 @@
                     <div class="logo-sub">CYBER PACHINKO SYSTEM</div>
                 </div>
             </a>
-            <!-- 右邊玩家資訊：純白暱稱 + 金黃代幣 (無光暈) -->
-            <div class="text-right">
-                <div class="text-xs player-nickname">夫人會生氣</div>
-                <div class="font-bold player-credits">5.280</div>
+            <!-- 右邊玩家資訊：純白暱稱 + 金黃代幣 - 修正為連結到 about.html 並統一字体大小 -->
+            <div class="text-right flex flex-col items-end">
+                <!-- 暱稱：點擊到「我的」頁面 -->
+                <a href="about.html" class="text-xs text-white hover:text-yellow-400 transition-colors player-nickname">夫人會生氣</a>
+                <!-- 代幣：點擊到「我的」頁面（原本是 news.html） -->
+                <a href="about.html" class="font-bold text-lg text-amber-400 hover:text-yellow-300 transition-colors player-credits">5.280</a>
             </div>
         </header>
 
