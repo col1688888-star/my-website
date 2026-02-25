@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>T-PACHIN · 機台頁面 - 完整整合版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入 Orbitron 字型以配合 Logo 風格 -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
+    <style>
+<style>
+    /* ========== 所有樣式完全保留 ========== */
+    .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
+    .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
+    
+    /* ... 中間有很多原本的樣式 ... */
+    
+    /* ========== 倒數第二個樣式 ========== */
+    .category-section {
+        margin-bottom: 2rem;
+    }
+    
+    /* ===== 在這裡加入小紅點樣式 ===== */
+    .nav-item {
+        position: relative;
+    }
+    .nav-badge {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 10px;
+        height: 10px;
+        background-color: #ff3b3b;
+        border-radius: 50%;
+        border: 2px solid #001a33;
+        box-shadow: 0 0 8px #ff0000;
+        display: none;
+        z-index: 25;
+    }
+    .nav-item.current-page .nav-badge {
+        border-color: #0066cc;
+    }
+</style>
+        /* ===== 原有樣式保持不變 ===== */
+        .tech-gradient {
+            background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%);
+        }
+        .tech-border {
+            border: 1px solid rgba(0, 148, 255, 0.4);
+        }
+        
+        /* 分類標籤樣式 */
+        .category-tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            width: 100%;
+        }
+        
+        .category-tab {
+            background: rgba(0, 40, 70, 0.6);
+            border: 1px solid rgba(0, 153, 255, 0.3);
+            border-radius: 9999px;
+            padding: 0.6rem 1.8rem;
+            font-size: 0.95rem;
+            color: #cce6ff;
+            transition: all 0.2s;
+            cursor: pointer;
+            white-space: nowrap;
+            flex: 0 1 auto;
+            min-width: 100px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .category-tab:hover {
+            background: rgba(0, 119, 204, 0.5);
+            border-color: #00ccff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 153, 255, 0.3);
+        }
+        
+        .category-tab.active {
+            background: linear-gradient(90deg, #0066cc, #0099ff);
+            color: white;
+            border-color: #80e4ff;
+            box-shadow: 0 0 15px #00ccff;
+        }
+        
+        /* 垂直卡片樣式 */
+        .vertical-card {
+            background: linear-gradient(180deg, rgba(0, 40, 80, 0.9) 0%, rgba(0, 20, 40, 0.95) 100%);
+            border: 1px solid rgba(0, 153, 255, 0.3);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .vertical-card:hover {
+            transform: translateY(-4px);
+            border-color: #0099ff;
+            box-shadow: 0 8px 20px rgba(0, 153, 255, 0.4);
+        }
+        
+        .vertical-card-content {
+            display: flex;
+            padding: 1rem;
+            gap: 1rem;
+        }
+        
+        .vertical-card-image {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0, 153, 255, 0.3);
+        }
+        
+        .vertical-card-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .vertical-card-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #80e4ff;
+        }
+        
+        .vertical-card-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .vertical-card-tag {
+            background: rgba(0, 50, 100, 0.8);
+            border: 1px solid rgba(0, 153, 255, 0.3);
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            color: #cce6ff;
+        }
+        
+        /* 橫式按鈕群組 */
+        .vertical-card-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .enter-btn {
+            transition: all 0.2s ease;
+            background: linear-gradient(90deg, rgba(0, 102, 204, 0.2), rgba(0, 153, 255, 0.2));
+            border: 1px solid rgba(0, 153, 255, 0.5);
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: #cce6ff;
+            flex: 1;
+            cursor: pointer;
+        }
+        .enter-btn:hover:not(:disabled) {
+            background: linear-gradient(90deg, #0066cc, #0099ff);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 0 12px #00ccff;
+            border-color: #80e4ff;
+        }
+        
+        .enter-btn.available {
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-color: #34d399;
+            color: white;
+        }
+        
+        .enter-btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .leave-btn {
+            transition: all 0.2s ease;
+            background: rgba(220, 38, 38, 0.2);
+            border: 1px solid rgba(255, 80, 80, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: #ffb3b3;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+        }
+        .leave-btn:hover {
+            background: rgba(220, 38, 38, 0.5);
+            color: white;
+            border-color: #ff8888;
+            transform: scale(1.02);
+            box-shadow: 0 0 10px #ff4444;
+        }
+        
+        .favorite-btn {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: rgba(0, 30, 60, 0.6);
+            border: 1px solid rgba(0, 148, 255, 0.5);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            flex-shrink: 0;
+        }
+        .favorite-btn:hover {
+            transform: scale(1.1);
+            border-color: #ff69b4 !important;
+            background: rgba(255, 105, 180, 0.15) !important;
+            box-shadow: 0 0 12px rgba(255, 105, 180, 0.6);
+        }
+        .favorite-btn.active {
+            background: rgba(255, 105, 180, 0.25) !important;
+            border-color: #ff69b4 !important;
+            box-shadow: 0 0 15px #ff1493;
+        }
+        .favorite-btn.active i {
+            color: #ff69b4 !important;
+        }
+        
+        /* 保留中倒數樣式 */
+        .reserve-countdown {
+            margin-top: 0.5rem;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fbbf24;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #f59e0b;
+            backdrop-filter: blur(2px);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .reserve-card {
+            position: relative;
+            border: 1px solid #f59e0b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .reserve-card.urgent {
+            border-color: #ff6b6b !important;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            animation: urgentPulse 1s infinite;
+        }
+        
+        .reserve-card.urgent .reserve-countdown {
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+            animation: textPulse 1s infinite;
+        }
+        
+        @keyframes urgentPulse {
+            0% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.7); }
+            100% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
+        }
+        
+        @keyframes textPulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        /* 維護中卡片樣式 */
+        .maintenance-card {
+            border: 1px solid #6b7280;
+            box-shadow: 0 0 15px rgba(107, 114, 128, 0.3);
+            filter: grayscale(60%);
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+        
+        .maintenance-card:hover {
+            filter: grayscale(40%);
+            opacity: 1;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.5);
+        }
+        
+        .maintenance-badge {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            border: 1px solid #9ca3af;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            width: fit-content;
+            margin: 0.25rem 0;
+        }
+        
+        .maintenance-time {
+            background: rgba(0, 0, 0, 0.5);
+            color: #9ca3af;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #6b7280;
+            backdrop-filter: blur(2px);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: fit-content;
+        }
+        
+        .maintenance-card .enter-btn,
+        .maintenance-card .favorite-btn {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .maintenance-card .leave-btn {
+            display: none;
+        }
+        
+        /* 彈跳視窗 */
+        .toast-notification {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff6b6b, #ff4444);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 6px 25px rgba(255, 68, 68, 0.7);
+            border: 2px solid #ffaaaa;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideDown 0.3s ease;
+            max-width: 90%;
+        }
+        
+        .toast-notification.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translate(-50%, 0); }
+            to { opacity: 0; transform: translate(-50%, -20px); }
+        }
+        
+        /* 離開確認對話框 */
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 10002;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .confirm-dialog {
+            background: #001a33;
+            border: 2px solid #ff6b6b;
+            border-radius: 2rem;
+            padding: 2rem 1.5rem;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 0 40px #ff4444;
+            text-align: center;
+            color: white;
+            animation: zoomIn 0.2s ease;
+        }
+        
+        .confirm-dialog h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #ffaaaa;
+        }
+        
+        .confirm-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .confirm-btn {
+            padding: 0.75rem 2rem;
+            border-radius: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+        
+        .confirm-btn.cancel {
+            background: #334155;
+            color: white;
+        }
+        
+        .confirm-btn.confirm {
+            background: #dc2626;
+            color: white;
+        }
+        
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .token-badge {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #000;
+            font-weight: bold;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            border: 1px solid #f59e0b;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+        }
+        
+        .token-badge.gold-enhanced {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            border-color: #fbbf24;
+            box-shadow: 0 0 12px #fbbf24;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 153, 255, 0.3);
+        }
+        
+        .bottom-nav {
+            position: sticky;
+            bottom: 0;
+            background: #001a33;
+            border-top: 2px solid #0066cc;
+            box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3);
+            width: 100%;
+            max-width: 448px;
+            padding: 0.75rem 1.5rem;
+            margin-top: 1rem;
+            z-index: 50;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #4b9cd3;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .nav-item.current-page {
+            color: white;
+            background: linear-gradient(90deg, #0066cc, #0099ff);
+            border-radius: 8px;
+            padding: 0.25rem 0.5rem;
+        }
+
+        /* ===== 新 Logo 樣式 (移植自 logo.html，乾淨無外框) ===== */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;               /* 手機上間距略縮 */
+            font-family: 'Orbitron', 'Russo One', sans-serif;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 0.2s ease; /* 觸控微動畫 */
+            text-decoration: none;
+            color: inherit;
+            /* 移除所有背景、邊框、外框、陰影框 — 乾乾淨淨 */
+            background: transparent;
+            border: none;
+            backdrop-filter: none;
+            padding: 0;              /* 完全無內距 */
+            margin: 0;
+            -webkit-tap-highlight-color: transparent; /* 移除手機點擊閃塊 */
+        }
+
+        /* 觸控放大回饋 (保留原 hover 但改成 active 更適合觸控) */
+        .logo:active {
+            transform: scale(0.97);
+        }
+
+        .logo-icon {
+            width: 40px;             /* 手機上稍微縮小，但依然醒目 */
+            height: 40px;
+            background: linear-gradient(135deg, #000, #111, #222);
+            border-radius: 8px;       /* 微調圓角 */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 15px rgba(0, 224, 255, 0.5),
+                inset 0 0 10px rgba(255, 215, 0, 0.2);
+            overflow: hidden;
+            border: 2px solid #ffd700;
+            flex-shrink: 0;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                #00e0ff,
+                #c90a0a,
+                #ffd700,
+                transparent
+            );
+            animation: logoRotate 4s linear infinite;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 30px;             /* 配合小圖示調整 */
+            height: 30px;
+            background: #000;
+            border-radius: 5px;
+        }
+
+        @keyframes logoRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-icon-inner {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;          /* 手機版字級微調 */
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffec8b, #00e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.5px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .logo-main {
+            font-size: 18px;          /* 手機適中大小 */
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffd700, #00e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: textShine 3s ease-in-out infinite alternate;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        .logo-sub {
+            font-size: 9px;           /* 手機上依然清楚 */
+            color: #00e0ff;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            opacity: 0.9;
+            text-shadow: 0 0 4px rgba(0, 224, 255, 0.5);
+            white-space: nowrap;
+        }
+
+        @keyframes textShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* 手機上點擊反饋只用震動無外框 */
+        .logo:focus-visible {
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
+
+<div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
+    
+    <!-- 頂部導航 - 使用新的 Logo 樣式 (移植自 logo.html) -->
+    <header class="px-4 py-3 bg-dark-200/90 tech-border">
+        <div class="flex items-center justify-between">
+            <!-- 左邊：新的 LOGO 樣式 (點擊返回首頁) 完全移植自 logo.html -->
+            <a href="index.html" class="logo" id="mobileLogo">
+                <div class="logo-icon">
+                    <div class="logo-icon-inner">TP</div>
+                </div>
+                <div class="logo-text">
+                    <div class="logo-main">T-PACHIN</div>
+                    <div class="logo-sub">CYBER PACHINKO SYSTEM</div>
+                </div>
+            </a>
+            
+            <!-- 右邊：夫人會生氣和代幣 -->
+            <div class="flex flex-col items-end gap-0">
+                <a href="about.html" class="group cursor-pointer text-right">
+                    <div class="text-xs text-white group-hover:text-yellow-400 transition-colors">夫人會生氣</div>
+                </a>
+                <a href="token-history.html" class="group cursor-pointer text-right">
+                    <div class="font-bold text-lg text-yellow-400 group-hover:text-yellow-300 transition-colors flex items-center gap-1">
+                        <i class="fa fa-coin text-xs opacity-75"></i>5.280
+                    </div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 跑馬燈 -->
+    <div class="px-4 py-1 bg-dark-200/80 tech-border">
+        <marquee class="text-secondary text-xs py-1" scrollamount="5">
+            🎮 吉宗保留倒數10分鐘中 | 6台機台維護中 | 新機上線甲賀忍法帖 弐
+        </marquee>
+    </div>
+
+    <!-- 分類標籤 -->
+    <div class="px-4 py-4">
+        <div class="category-tabs-container">
+            <button class="category-tab active" data-tab="favorite">
+                <i class="fa fa-heart text-pink-400"></i>我的最愛
+            </button>
+            <button class="category-tab" data-tab="reserve">
+                <i class="fa fa-clock-o text-yellow-400"></i>保留中
+            </button>
+            <button class="category-tab" data-tab="maintenance">
+                <i class="fa fa-wrench text-gray-400"></i>維護中
+            </button>
+        </div>
+    </div>
+
+    <!-- 主要內容 -->
+    <main class="flex-1 px-4 overflow-y-auto main-content pb-4">
+        <!-- 我的最愛區塊 -->
+        <div id="favorite-section" class="category-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa fa-heart text-pink-400"></i> 我的最愛</h2>
+                <span class="section-count" id="favoriteCount">0 台</span>
+            </div>
+            <div id="favoriteContainer"></div>
+            <div id="noFavoriteMsg" class="text-center py-12 text-gray-400 hidden">
+                <i class="fa fa-heart-o text-5xl mb-3 opacity-50"></i>
+                <p class="text-lg">尚未加入任何最愛</p>
+                <p class="text-sm mt-2 text-gray-500">點擊機台上的愛心❤️ 開始收藏</p>
+            </div>
+        </div>
+
+        <!-- 保留中區塊 -->
+        <div id="reserve-section" class="category-section hidden">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa fa-clock-o text-yellow-400"></i> 保留中機台</h2>
+                <span class="section-count">6 台</span>
+            </div>
+            <div id="reserveContainer"></div>
+        </div>
+
+        <!-- 維護中區塊 -->
+        <div id="maintenance-section" class="category-section hidden">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa fa-wrench text-gray-400"></i> 維護中機台</h2>
+                <span class="section-count">6 台</span>
+            </div>
+            <div id="maintenanceContainer"></div>
+        </div>
+    </main>
+
+    <!-- 底部导航 -->
+<nav class="bottom-nav">
+    <div class="flex justify-between items-center">
+        <a href="https://col1688888-star.github.io/T-PACHIN/index.html" class="nav-item" id="nav-home" data-page="home">
+            <i class="fa fa-home text-xl"></i>
+            <span class="text-xs mt-1">首页</span>
+        </a>
+        <a href="https://col1688888-star.github.io/T-PACHIN/machines.html" class="nav-item" id="nav-game" data-page="game">
+            <i class="fa fa-gamepad text-xl"></i>
+            <span class="text-xs mt-1">后台</span>
+        </a>
+        <a href="https://col1688888-star.github.io/T-PACHIN/news.html" class="nav-item" id="nav-bell" data-page="bell">
+            <i class="fa fa-bell text-xl"></i>
+            <span class="text-xs mt-1">公告</span>
+            <span class="nav-badge" id="newsBadge"></span>
+        </a>
+        <a href="https://col1688888-star.github.io/T-PACHIN/about.html" class="nav-item" id="nav-user" data-page="user">
+            <i class="fa fa-user text-xl"></i>
+            <span class="text-xs mt-1">我的</span>
+        </a>
+    </div>
+</nav>
+
+    <!-- 離開確認對話框 -->
+    <div id="leaveConfirmDialog" class="confirm-overlay hidden">
+        <div class="confirm-dialog">
+            <h3><i class="fa fa-exclamation-triangle"></i> 放棄保留？</h3>
+            <p id="confirmMachineName">確定要離開此位置嗎？</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn cancel" id="cancelLeave">再想想</button>
+                <button class="confirm-btn confirm" id="confirmLeave">確定離開</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ==================== 資料庫 ====================
+            const machineDatabase = [
+                { id:1, name:'甲賀忍法帖 弐', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=2', vendor:'Sammy' },
+                { id:2, name:'超級奇蹟小丑', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
+                { id:3, name:'吉宗', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
+                { id:4, name:'甲賀忍法帖', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.25', vendor:'Sammy' },
+                { id:5, name:'吉宗(4號)', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
+                { id:6, name:'花月', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=0.25', vendor:'Olympia' },
+                { id:7, name:'奇蹟小丑', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=0.2', vendor:'Rodeo' },
+                { id:8, name:'超級奇蹟', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
+                { id:9, name:'新甲賀', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.25', vendor:'Sammy' }
+            ];
+
+            // 保留中機台設定
+            const reserveMachines = [
+                { id:3, name:'吉宗', minutes:10 },
+                { id:7, name:'奇蹟小丑', minutes:25 },
+                { id:4, name:'甲賀忍法帖', minutes:30 },
+                { id:8, name:'超級奇蹟', minutes:15 },
+                { id:9, name:'新甲賀', minutes:45 },
+                { id:6, name:'花月', minutes:60 }
+            ];
+
+            // 維護中機台
+            const maintenanceMachines = [
+                { id:1, name:'甲賀忍法帖 弐' },
+                { id:2, name:'超級奇蹟小丑' },
+                { id:5, name:'吉宗(4號)' },
+                { id:10, name:'押忍！番長', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
+                { id:11, name:'秘寶傳', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
+                { id:12, name:'北斗神拳', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.5', vendor:'Sammy' }
+            ];
+
+            // ==================== 我的最愛功能 ====================
+            let favoriteMachines = JSON.parse(localStorage.getItem('favoriteMachines')) || [];
+            
+            function saveFavorites() {
+                localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
+            }
+            
+            function toggleFavorite(machine) {
+                const index = favoriteMachines.findIndex(m => m.id === machine.id);
+                if (index === -1) {
+                    favoriteMachines.push(machine);
+                } else {
+                    favoriteMachines.splice(index, 1);
+                }
+                saveFavorites();
+                renderFavoriteList();
+                updateFavoriteButtons();
+            }
+
+            function renderFavoriteList() {
+                const container = document.getElementById('favoriteContainer');
+                const noMsg = document.getElementById('noFavoriteMsg');
+                const countSpan = document.getElementById('favoriteCount');
+                
+                if (!container) return;
+                
+                if (favoriteMachines.length === 0) {
+                    container.innerHTML = '';
+                    noMsg.classList.remove('hidden');
+                    countSpan.textContent = '0 台';
+                    return;
+                }
+                
+                noMsg.classList.add('hidden');
+                countSpan.textContent = favoriteMachines.length + ' 台';
+                
+                let html = '';
+                favoriteMachines.forEach(machine => {
+                    const tokenClass = machine.ratio === '1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
+                    html += `
+                        <div class="vertical-card">
+                            <div class="vertical-card-content">
+                                <img src="${machine.image}" class="vertical-card-image">
+                                <div class="vertical-card-info">
+                                    <h3 class="vertical-card-title">${machine.name}</h3>
+                                    <div class="vertical-card-tags">
+                                        <span class="${tokenClass}">${machine.ratio}</span>
+                                        <span class="vertical-card-tag">${machine.vendor}</span>
+                                    </div>
+                                    <div class="vertical-card-stats">
+                                        <span class="vertical-card-stat"><i class="fa fa-users"></i> ${Math.floor(Math.random()*10)+1}人排隊</span>
+                                        <span class="vertical-card-stat"><i class="fa fa-trophy"></i> 最大${Math.floor(Math.random()*5000)+2000}</span>
+                                    </div>
+                                    <div class="vertical-card-actions">
+                                        <button class="enter-btn available" onclick="alert('進入遊戲')">進入</button>
+                                        <button class="favorite-btn active" onclick="toggleFavoriteFromCard(${machine.id})">
+                                            <i class="fa fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            // ==================== 保留中功能 ====================
+            function getEndTime(minutes) {
+                return new Date(Date.now() + minutes * 60000);
+            }
+
+            function renderReserveList() {
+                const container = document.getElementById('reserveContainer');
+                if (!container) return;
+                
+                let html = '';
+                reserveMachines.forEach(item => {
+                    const machine = machineDatabase.find(m => m.id === item.id) || {
+                        id: item.id,
+                        name: item.name,
+                        image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png',
+                        ratio: '1枚=1',
+                        vendor: '未知'
+                    };
+                    
+                    const endTime = getEndTime(item.minutes);
+                    const tokenClass = machine.ratio === '1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
+                    const isFavorite = favoriteMachines.some(m => m.id === machine.id);
+                    
+                    html += `
+                        <div class="vertical-card reserve-card" data-id="${machine.id}" data-end="${endTime.toISOString()}" data-name="${machine.name}">
+                            <div class="vertical-card-content">
+                                <img src="${machine.image}" class="vertical-card-image">
+                                <div class="vertical-card-info">
+                                    <h3 class="vertical-card-title">${machine.name}</h3>
+                                    <div class="vertical-card-tags">
+                                        <span class="${tokenClass}">${machine.ratio}</span>
+                                        <span class="vertical-card-tag">${machine.vendor}</span>
+                                    </div>
+                                    <div class="vertical-card-stats">
+                                        <span class="vertical-card-stat"><i class="fa fa-users"></i> ${Math.floor(Math.random()*8)+1}人排隊</span>
+                                        <span class="vertical-card-stat"><i class="fa fa-trophy"></i> 最大${Math.floor(Math.random()*5000)+2000}</span>
+                                    </div>
+                                    <div class="reserve-countdown" id="count-${machine.id}">⏳ 計算中...</div>
+                                    <div class="vertical-card-actions">
+                                        <button class="leave-btn" onclick="openConfirm('${machine.name}', ${machine.id})">
+                                            <i class="fa fa-sign-out"></i> 離開
+                                        </button>
+                                        <button class="enter-btn available" onclick="alert('進入遊戲')">進入</button>
+                                        <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavoriteFromCard(${machine.id})">
+                                            <i class="fa fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            // ==================== 維護中功能 ====================
+            function renderMaintenanceList() {
+                const container = document.getElementById('maintenanceContainer');
+                if (!container) return;
+                
+                let html = '';
+                maintenanceMachines.forEach(item => {
+                    const machine = machineDatabase.find(m => m.id === item.id) || {
+                        id: item.id,
+                        name: item.name,
+                        image: item.image || 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png',
+                        ratio: item.ratio || '1枚=1',
+                        vendor: item.vendor || '未知'
+                    };
+                    
+                    const tokenClass = machine.ratio === '1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
+                    
+                    // 預計修復時間（3小時後）
+                    const repairTime = new Date(Date.now() + 3 * 60 * 60000);
+                    const timeStr = `${repairTime.getFullYear()}/${String(repairTime.getMonth()+1).padStart(2,'0')}/${String(repairTime.getDate()).padStart(2,'0')} ${String(repairTime.getHours()).padStart(2,'0')}:${String(repairTime.getMinutes()).padStart(2,'0')}`;
+                    
+                    html += `
+                        <div class="vertical-card maintenance-card">
+                            <div class="vertical-card-content">
+                                <img src="${machine.image}" class="vertical-card-image">
+                                <div class="vertical-card-info">
+                                    <h3 class="vertical-card-title">${machine.name}</h3>
+                                    <div class="vertical-card-tags">
+                                        <span class="${tokenClass}">${machine.ratio}</span>
+                                        <span class="vertical-card-tag">${machine.vendor}</span>
+                                    </div>
+                                    <div class="maintenance-badge"><i class="fa fa-tools"></i> 一般維護</div>
+                                    <div class="maintenance-time"><i class="fa fa-calendar"></i> 預計 ${timeStr} 恢復</div>
+                                    <div class="vertical-card-actions">
+                                        <button class="enter-btn" disabled>進入</button>
+                                        <button class="favorite-btn" disabled><i class="fa fa-heart"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            // ==================== 通用功能 ====================
+            function toggleFavoriteFromCard(id) {
+                const machine = machineDatabase.find(m => m.id === id);
+                if (machine) {
+                    toggleFavorite(machine);
+                }
+            }
+
+            function updateFavoriteButtons() {
+                document.querySelectorAll('.favorite-btn').forEach(btn => {
+                    const card = btn.closest('.vertical-card');
+                    if (!card) return;
+                    
+                    const idAttr = card.getAttribute('data-id');
+                    if (!idAttr) return;
+                    
+                    const machineId = parseInt(idAttr);
+                    if (favoriteMachines.some(m => m.id === machineId)) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // ==================== 離開位置功能 ====================
+            let currentLeaveMachine = null;
+            
+            window.openConfirm = function(name, id) {
+                currentLeaveMachine = { name, id };
+                document.getElementById('confirmMachineName').innerText = `確定放棄「${name}」的保留？`;
+                document.getElementById('leaveConfirmDialog').classList.remove('hidden');
+            };
+
+            document.getElementById('cancelLeave').addEventListener('click', function() {
+                document.getElementById('leaveConfirmDialog').classList.add('hidden');
+                currentLeaveMachine = null;
+            });
+
+            document.getElementById('confirmLeave').addEventListener('click', function() {
+                if (currentLeaveMachine) {
+                    const card = document.querySelector(`.reserve-card[data-id="${currentLeaveMachine.id}"]`);
+                    if (card) {
+                        card.style.opacity = '0.5';
+                    }
+                    showToast(`✅ 已放棄 ${currentLeaveMachine.name} 的保留`);
+                    document.getElementById('leaveConfirmDialog').classList.add('hidden');
+                    currentLeaveMachine = null;
+                }
+            });
+
+            // ==================== 倒數與警示 ====================
+            let lastToastMinute = -1;
+            
+            function updateAllCountdowns() {
+                const now = Date.now();
+                
+                document.querySelectorAll('.reserve-card').forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    const endStr = card.getAttribute('data-end');
+                    const countEl = document.getElementById(`count-${id}`);
+                    
+                    if (!countEl || !endStr) return;
+                    
+                    const endTime = new Date(endStr).getTime();
+                    const diff = endTime - now;
+                    
+                    if (diff <= 0) {
+                        countEl.innerHTML = '⏰ 保留已結束';
+                        card.classList.remove('urgent');
+                    } else {
+                        const mins = Math.floor(diff / 60000);
+                        const secs = Math.floor((diff % 60000) / 1000);
+                        countEl.innerHTML = `⏳ 剩餘 ${mins}分 ${secs}秒`;
+                        
+                        // 吉宗 (id=3) 且剩餘時間 <= 10分鐘
+                        if (id === '3' && diff <= 600000) {
+                            card.classList.add('urgent');
+                            
+                            // 每分鐘彈出提醒
+                            if (mins !== lastToastMinute) {
+                                lastToastMinute = mins;
+                                showToast(`⚠️ 保留機台「吉宗」剩下 ${mins}分 ${secs}秒！`);
+                            }
+                        } else {
+                            card.classList.remove('urgent');
+                        }
+                    }
+                });
+            }
+
+            function showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.innerHTML = `<i class="fa fa-exclamation-circle"></i> ${message}`;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('fade-out');
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+
+            // ==================== 標籤切換 ====================
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const target = this.dataset.tab;
+                    document.querySelectorAll('.category-section').forEach(section => {
+                        section.classList.add('hidden');
+                    });
+                    
+                    if (target === 'favorite') {
+                        document.getElementById('favorite-section').classList.remove('hidden');
+                    } else if (target === 'reserve') {
+                        document.getElementById('reserve-section').classList.remove('hidden');
+                    } else if (target === 'maintenance') {
+                        document.getElementById('maintenance-section').classList.remove('hidden');
+                    }
+                });
+            });
+
+            // ==================== Logo 點擊音效 ====================
+            const logo = document.getElementById('mobileLogo');
+            if (logo) {
+                logo.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 觸摸縮放回饋
+                    this.style.transform = 'scale(0.96)';
+                    setTimeout(() => { this.style.transform = ''; }, 120);
+                    
+                    // 輕微音效
+                    try {
+                        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        if (audioCtx.state === 'suspended') {
+                            audioCtx.resume().then(() => {
+                                playBeep(audioCtx);
+                            });
+                        } else {
+                            playBeep(audioCtx);
+                        }
+                    } catch (err) {
+                        // 忽略音效錯誤
+                    }
+                    
+                    function playBeep(ctx) {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.frequency.value = 720;
+                        osc.type = 'sine';
+                        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.08);
+                    }
+                });
+                
+                logo.addEventListener('contextmenu', (e) => e.preventDefault());
+            }
+
+            // ==================== 初始化 ====================
+            renderFavoriteList();
+            renderReserveList();
+            renderMaintenanceList();
+            
+            // 啟動倒數
+            updateAllCountdowns();
+            setInterval(updateAllCountdowns, 1000);
+        })();
+    </script>
+</div>
+<!-- ⭐ 加入這行引入 shared.js ⭐ -->
+    <script src="shared.js"></script>
+</body>
+</html>
