@@ -9,6 +9,39 @@
     <!-- 引入 Orbitron 字型以配合 Logo 風格 -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
+<style>
+    /* ========== 所有樣式完全保留 ========== */
+    .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
+    .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
+    
+    /* ... 中間有很多原本的樣式 ... */
+    
+    /* ========== 倒數第二個樣式 ========== */
+    .category-section {
+        margin-bottom: 2rem;
+    }
+    
+    /* ===== 在這裡加入小紅點樣式 ===== */
+    .nav-item {
+        position: relative;
+    }
+    .nav-badge {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 10px;
+        height: 10px;
+        background-color: #ff3b3b;
+        border-radius: 50%;
+        border: 2px solid #001a33;
+        box-shadow: 0 0 8px #ff0000;
+        display: none;
+        z-index: 25;
+    }
+    .nav-item.current-page .nav-badge {
+        border-color: #0066cc;
+    }
+</style>
         /* ===== 原有樣式保持不變 ===== */
         .tech-gradient {
             background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%);
@@ -685,15 +718,28 @@
         </div>
     </main>
 
-    <!-- 底部導航 -->
-    <nav class="bottom-nav">
-        <div class="flex justify-between items-center">
-            <a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-            <a href="machines.html" class="nav-item current-page"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-            <a href="news.html" class="nav-item"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
-            <a href="about.html" class="nav-item"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
-        </div>
-    </nav>
+    <!-- 底部导航 -->
+<nav class="bottom-nav">
+    <div class="flex justify-between items-center">
+        <a href="https://col1688888-star.github.io/T-PACHIN/index.html" class="nav-item" id="nav-home" data-page="home">
+            <i class="fa fa-home text-xl"></i>
+            <span class="text-xs mt-1">首页</span>
+        </a>
+        <a href="https://col1688888-star.github.io/T-PACHIN/machines.html" class="nav-item" id="nav-game" data-page="game">
+            <i class="fa fa-gamepad text-xl"></i>
+            <span class="text-xs mt-1">后台</span>
+        </a>
+        <a href="https://col1688888-star.github.io/T-PACHIN/news.html" class="nav-item" id="nav-bell" data-page="bell">
+            <i class="fa fa-bell text-xl"></i>
+            <span class="text-xs mt-1">公告</span>
+            <span class="nav-badge" id="newsBadge"></span>
+        </a>
+        <a href="https://col1688888-star.github.io/T-PACHIN/about.html" class="nav-item" id="nav-user" data-page="user">
+            <i class="fa fa-user text-xl"></i>
+            <span class="text-xs mt-1">我的</span>
+        </a>
+    </div>
+</nav>
 
     <!-- 離開確認對話框 -->
     <div id="leaveConfirmDialog" class="confirm-overlay hidden">
@@ -1085,5 +1131,7 @@
         })();
     </script>
 </div>
+<!-- ⭐ 加入這行引入 shared.js ⭐ -->
+    <script src="shared.js"></script>
 </body>
 </html>
