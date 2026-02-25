@@ -459,6 +459,27 @@
             outline: none;
         }
         /* ===== Logo樣式結束 ===== */
+
+        /* ===== 新增大通知紅點 ===== */
+        .nav-item {
+            position: relative;
+        }
+        .nav-badge {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            width: 10px;
+            height: 10px;
+            background-color: #ff3b3b;
+            border-radius: 50%;
+            border: 2px solid #001a33; /* 與導航底色融合，略為凸顯 */
+            box-shadow: 0 0 8px #ff0000;
+            display: none; /* 預設隱藏 */
+            z-index: 25;
+        }
+        .nav-item.current-page .nav-badge {
+            border-color: #0066cc; /* 當前頁籤的邊框顏色適配 */
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
@@ -590,7 +611,7 @@
 
                 <!-- 信件列表容器 -->
                 <div class="letter-container" id="letterListContainer">
-                    <!-- 信件1 -->
+                    <!-- 信件1 (未讀：有藍色圓點) -->
                     <div class="letter-row" data-id="1" data-sender="系統管理員" data-time="2分鐘前" data-content="您的帳號於今日下午進行安全驗證，若未操作請盡速變更密碼。">
                         <div class="checkbox" data-letter-id="1"><i class="fa fa-check"></i></div>
                         <div class="letter-avatar"><i class="fa fa-envelope text-blue-300"></i></div>
@@ -599,9 +620,9 @@
                             <p>安全驗證通知</p>
                             <span class="text-gray-500 text-[0.6rem]">2分鐘前</span>
                         </div>
-                        <i class="fa fa-circle text-blue-400 text-xs"></i>
+                        <i class="fa fa-circle text-blue-400 text-xs" style="opacity: 1;"></i> <!-- 未讀藍點 -->
                     </div>
-                    <!-- 信件2 -->
+                    <!-- 信件2 (未讀) -->
                     <div class="letter-row" data-id="2" data-sender="柏青哥達人" data-time="昨天" data-content="關於甲賀忍法帖的設定，我記得是1:2比率，你可以再確認機台資訊。">
                         <div class="checkbox" data-letter-id="2"><i class="fa fa-check"></i></div>
                         <div class="letter-avatar"><i class="fa fa-user text-blue-300"></i></div>
@@ -610,8 +631,9 @@
                             <p>回覆: 甲賀忍法帖設定</p>
                             <span class="text-gray-500 text-[0.6rem]">昨天</span>
                         </div>
+                        <i class="fa fa-circle text-blue-400 text-xs"></i> <!-- 未讀藍點 -->
                     </div>
-                    <!-- 信件3 -->
+                    <!-- 信件3 (未讀) -->
                     <div class="letter-row" data-id="3" data-sender="禮物中心" data-time="2/15" data-content="恭喜獲得新春紅包500點，請於一週內至機台領取。">
                         <div class="checkbox" data-letter-id="3"><i class="fa fa-check"></i></div>
                         <div class="letter-avatar"><i class="fa fa-gift text-blue-300"></i></div>
@@ -620,9 +642,9 @@
                             <p>新春紅包500點</p>
                             <span class="text-gray-500 text-[0.6rem]">2/15</span>
                         </div>
-                        <i class="fa fa-circle text-blue-400 text-xs"></i>
+                        <i class="fa fa-circle text-blue-400 text-xs"></i> <!-- 未讀藍點 -->
                     </div>
-                    <!-- 信件4 -->
+                    <!-- 信件4 (已讀：無藍點，保留灰色圓點或無) 為了示範紅點，我們讓第四封已讀，不顯示藍點。但若完全無點不好看，故維持無點 -->
                     <div class="letter-row" data-id="4" data-sender="通知中心" data-time="2/14" data-content="吉宗維護已完成，現在可以正常遊玩。">
                         <div class="checkbox" data-letter-id="4"><i class="fa fa-check"></i></div>
                         <div class="letter-avatar"><i class="fa fa-bell text-blue-300"></i></div>
@@ -631,6 +653,7 @@
                             <p>吉宗維護完成</p>
                             <span class="text-gray-500 text-[0.6rem]">2/14</span>
                         </div>
+                        <!-- 沒有藍色圓點，代表已讀 -->
                     </div>
                 </div>
                 <div class="text-xs text-blue-400 text-center pt-2" id="letterStats">✉️ 共 4 封信件</div>
@@ -657,12 +680,16 @@
             </div>
         </div>
 
-        <!-- 底部導航 -->
+        <!-- 底部導航 (增加小紅點結構) -->
 <nav class="bottom-nav">
     <div class="flex justify-between items-center">
         <a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
         <a href="machines.html" class="nav-item"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-        <a href="news.html" class="nav-item current-page" aria-current="page"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
+        <a href="news.html" class="nav-item current-page" aria-current="page">
+            <i class="fa fa-bell text-xl"></i>
+            <span class="text-xs mt-1">公告</span>
+            <span class="nav-badge" id="newsBadge" style="display: none;"></span> <!-- 小紅點 -->
+        </a>
         <a href="about.html" class="nav-item"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
     </div>
 </nav>
@@ -716,6 +743,29 @@
             const modalTime = document.getElementById('modalTime');
             const modalBody = document.getElementById('modalBody');
             const closeModalBtn = document.getElementById('closeModalBtn');
+
+            // *** 小紅點元素 ***
+            const newsBadge = document.getElementById('newsBadge');
+
+            // 判斷是否有未讀信件 (只看藍色圓點圖示)
+            function hasUnreadLetters() {
+                const unreadIcons = document.querySelectorAll('.letter-row i.fa-circle.text-blue-400');
+                return unreadIcons.length > 0;
+            }
+
+            // 更新導航小紅點顯示
+            function updateNewsBadge() {
+                if (newsBadge) {
+                    if (hasUnreadLetters()) {
+                        newsBadge.style.display = 'block';
+                    } else {
+                        newsBadge.style.display = 'none';
+                    }
+                }
+            }
+
+            // 初始檢查未讀
+            updateNewsBadge();
 
             let selectedSet = new Set();
             const totalLetters = letterRows.length;
@@ -789,11 +839,19 @@
                 });
             }
 
-            // 點擊信件列開啟詳細
+            // 點擊信件列開啟詳細 (並將該信標記為已讀)
             if (letterRows.length > 0) {
                 letterRows.forEach(row => {
                     row.addEventListener('click', function(e) {
                         // 如果點擊的是checkbox，不觸發 (已stopPropagation)
+                        // 標記已讀：移除藍色圓點
+                        const blueDot = this.querySelector('i.fa-circle.text-blue-400');
+                        if (blueDot) {
+                            blueDot.remove(); // 直接移除未讀標記
+                        }
+                        // 更新小紅點狀態
+                        updateNewsBadge();
+
                         const sender = this.getAttribute('data-sender') || '未知';
                         const time = this.getAttribute('data-time') || '';
                         const content = this.getAttribute('data-content') || '無內容';
@@ -817,7 +875,7 @@
                 });
             }
 
-            // 刪除所選信件
+            // 刪除所選信件 (並更新小紅點)
             if (deleteBtn) {
                 deleteBtn.addEventListener('click', function() {
                     if (selectedSet.size === 0) return;
@@ -830,14 +888,64 @@
                     });
                     // 清空selectedSet，更新計數
                     selectedSet.clear();
-                    // 重新取得剩餘信件列和checkbox
+                    // 重新取得剩餘信件列和checkbox (但刪除後DOM元素已改變，需重新查詢)
                     const remainingRows = document.querySelectorAll('.letter-row');
+                    const remainingCheckboxes = document.querySelectorAll('.checkbox');
                     // 更新總數顯示
                     if (totalCountSpan) totalCountSpan.innerText = remainingRows.length;
                     const statsEl = document.getElementById('letterStats');
                     if (statsEl) statsEl.innerText = `✉️ 共 ${remainingRows.length} 封信件`;
                     // 若全選核取方塊狀態重置
                     if (selectAllCheckbox) selectAllCheckbox.classList.remove('checked');
+                    
+                    // 重要：更新小紅點
+                    updateNewsBadge();
+
+                    // 重新綁定checkbox事件? 不用，因為checkbox的監聽是掛在原有的上面，但刪除後原有的checkbox也被移除了
+                    // 但點擊刪除後，新生成的列表沒有事件？ 因為我們沒有重新綁定事件到新checkbox。
+                    // 為了節省複雜度且維持demo可運行，我們重新執行事件綁定(簡易方式：重新執行部分初始化)
+                    // 實務上會用事件代理，但這裡作為展示，重新綁定點擊給新的checkbox
+                    function rebindCheckboxes() {
+                        document.querySelectorAll('.checkbox').forEach(cb => {
+                            cb.removeEventListener('click', window.checkboxHandler); // 避免重複
+                            cb.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                const letterId = this.getAttribute('data-letter-id');
+                                if (!letterId) return;
+                                this.classList.toggle('checked');
+                                const row = this.closest('.letter-row');
+                                if (this.classList.contains('checked')) {
+                                    selectedSet.add(letterId);
+                                    if (row) row.classList.add('selected-for-delete');
+                                } else {
+                                    selectedSet.delete(letterId);
+                                    if (row) row.classList.remove('selected-for-delete');
+                                }
+                                updateSelectAll();
+                            });
+                        });
+                    }
+                    rebindCheckboxes();
+
+                    // 重新綁定row點擊 (未讀標記)
+                    document.querySelectorAll('.letter-row').forEach(row => {
+                        row.removeEventListener('click', window.rowHandler);
+                        row.addEventListener('click', function(e) {
+                            const blueDot = this.querySelector('i.fa-circle.text-blue-400');
+                            if (blueDot) {
+                                blueDot.remove();
+                                updateNewsBadge();
+                            }
+                            const sender = this.getAttribute('data-sender') || '未知';
+                            const time = this.getAttribute('data-time') || '';
+                            const content = this.getAttribute('data-content') || '無內容';
+                            if (modalTitle) modalTitle.innerText = sender;
+                            if (modalTime) modalTime.innerText = time;
+                            if (modalBody) modalBody.innerText = content;
+                            if (modal) modal.classList.add('show');
+                        });
+                    });
+
                     updateSelectAll();
                 });
             }
