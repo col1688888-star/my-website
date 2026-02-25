@@ -144,3 +144,56 @@ function updateCountdowns() {
 
 // 啟動定時器
 setInterval(updateCountdowns, 1000);
+
+// ========== 從這裡開始加入小紅點功能 ==========
+
+// ========== 公告未讀狀態管理 ==========
+
+// 檢查是否有未讀信件
+function hasUnreadLetters() {
+    // 從 localStorage 讀取未讀狀態，預設為 true（表示有未讀）
+    return localStorage.getItem('hasUnreadLetters') !== 'false';
+}
+
+// 設定未讀狀態（給 news.html 呼叫）
+function setUnreadStatus(hasUnread) {
+    localStorage.setItem('hasUnreadLetters', hasUnread);
+    
+    // 更新當前頁面的小紅點
+    updateNewsBadge();
+}
+
+// 更新所有頁面的小紅點顯示
+function updateNewsBadge() {
+    const newsBadge = document.getElementById('newsBadge');
+    if (!newsBadge) return;
+    
+    const hasUnread = hasUnreadLetters();
+    newsBadge.style.display = hasUnread ? 'block' : 'none';
+    console.log('小紅點狀態:', hasUnread ? '顯示' : '隱藏');
+}
+
+// 監聽其他頁面的變更
+window.addEventListener('storage', function(e) {
+    if (e.key === 'hasUnreadLetters') {
+        updateNewsBadge();
+    }
+});
+
+// 頁面載入時初始化
+document.addEventListener('DOMContentLoaded', function() {
+    updateNewsBadge();
+    
+    // 如果是在 news.html，設定初始未讀狀態
+    if (window.location.pathname.includes('news.html')) {
+        setTimeout(function() {
+            const hasUnreadDots = document.querySelectorAll('.letter-row i.fa-circle.text-blue-400').length > 0;
+            setUnreadStatus(hasUnreadDots);
+        }, 500);
+    }
+});
+
+// 初始化未讀狀態（如果完全沒有設定過）
+if (localStorage.getItem('hasUnreadLetters') === null) {
+    localStorage.setItem('hasUnreadLetters', 'true'); // 預設有未讀
+}
