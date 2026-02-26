@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>T-PACHIN · 機台頁面 - 完整整合版</title>
+    <title>T-PACHIN · 機台頁面 - 滑動手勢版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
@@ -500,7 +500,7 @@
             display: none;
         }
         
-        /* ===== 彈跳視窗 ===== */
+        /* ===== 彈跳視窗 - 滑動手勢優化（無文字版） ===== */
         .toast-notification {
             position: fixed;
             top: 80px;
@@ -520,6 +520,14 @@
             gap: 15px;
             animation: slideDown 0.3s ease;
             max-width: 90%;
+            cursor: grab;
+            user-select: none;
+            touch-action: pan-y;
+            will-change: transform;
+        }
+        
+        .toast-notification:active {
+            cursor: grabbing;
         }
         
         .toast-notification.fade-out {
@@ -1095,15 +1103,85 @@
                 });
             }
 
+            // ==================== 彈跳視窗（純滑動手勢，無文字提示） ====================
             function showToast(message) {
                 const toast = document.createElement('div');
                 toast.className = 'toast-notification';
                 toast.innerHTML = `<i class="fa fa-exclamation-circle"></i> ${message}`;
                 document.body.appendChild(toast);
                 
-                setTimeout(() => {
-                    toast.classList.add('fade-out');
-                    setTimeout(() => toast.remove(), 300);
+                // 滑動手勢相關變數
+                let startY = 0;
+                let currentY = 0;
+                let isDragging = false;
+                let autoCloseTimer;
+                
+                // 觸控開始
+                toast.addEventListener('touchstart', function(e) {
+                    startY = e.touches[0].clientY;
+                    isDragging = true;
+                    toast.style.transition = 'none';
+                    
+                    // 清除自動關閉計時器
+                    if (autoCloseTimer) {
+                        clearTimeout(autoCloseTimer);
+                    }
+                }, { passive: true });
+                
+                // 觸控移動
+                toast.addEventListener('touchmove', function(e) {
+                    if (!isDragging) return;
+                    
+                    currentY = e.touches[0].clientY;
+                    const diff = currentY - startY;
+                    
+                    // 只允許向上滑動（負值表示向上）
+                    if (diff < 0) {
+                        toast.style.transform = `translate(calc(-50% + 0px), ${diff}px)`;
+                    }
+                }, { passive: true });
+                
+                // 觸控結束
+                toast.addEventListener('touchend', function(e) {
+                    if (!isDragging) return;
+                    
+                    isDragging = false;
+                    const diff = currentY - startY;
+                    
+                    // 恢復過渡效果
+                    toast.style.transition = 'all 0.3s ease';
+                    
+                    // 如果向上滑動超過 30px，則關閉通知
+                    if (diff < -30) {
+                        toast.classList.add('fade-out');
+                        setTimeout(() => {
+                            if (toast.parentNode) toast.remove();
+                        }, 300);
+                    } else {
+                        // 否則回到原位
+                        toast.style.transform = 'translateX(-50%)';
+                        
+                        // 重新設定自動關閉計時器（5秒）
+                        autoCloseTimer = setTimeout(() => {
+                            if (toast.parentNode && !isDragging) {
+                                toast.classList.add('fade-out');
+                                setTimeout(() => toast.remove(), 300);
+                            }
+                        }, 5000);
+                    }
+                    
+                    // 重置變數
+                    startY = 0;
+                    currentY = 0;
+                });
+                
+                // 原本的自動關閉計時器
+                autoCloseTimer = setTimeout(() => {
+                    if (toast.parentNode && !isDragging) {
+                        toast.style.transition = 'all 0.3s ease';
+                        toast.classList.add('fade-out');
+                        setTimeout(() => toast.remove(), 300);
+                    }
                 }, 5000);
             }
 
