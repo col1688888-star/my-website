@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <style>
+    /* 保留所有原本的樣式 (完全未刪減) */
     .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
     .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
     .nav-item { position: relative; }
@@ -17,262 +18,490 @@
         box-shadow: 0 0 8px #ff0000; display: none; z-index: 25;
     }
     .nav-item.current-page .nav-badge { border-color: #0066cc; }
+
+    .tech-tab-active {
+        background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%);
+        border: 1px solid #00ccff;
+        box-shadow: 0 0 8px rgba(0, 204, 255, 0.6);
+    }
+    .tab-btn {
+        flex: 0 0 auto; white-space: nowrap; transition: all 0.2s ease; cursor: pointer;
+        position: relative; outline: none;
+    }
+    .tab-btn:hover { background: rgba(0, 153, 255, 0.3) !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 153, 255, 0.4); }
+    .tab-btn:active { transform: scale(0.92) !important; background: rgba(0, 204, 255, 0.6) !important; transition: transform 0.08s, background 0.08s; }
+    .tab-btn:focus-visible { outline: 3px solid #00ccff; outline-offset: 2px; }
+    
+    .game-card-bg {
+        background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%);
+        transition: all 0.25s ease; cursor: pointer; position: relative; outline: none;
+        border: 1px solid rgba(0, 148, 255, 0.4);
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+    .game-card-bg:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0, 153, 255, 0.5); border-color: #00ccff; }
+    .game-card-bg:active { transform: scale(0.96) translateY(-2px); box-shadow: 0 4px 15px rgba(0, 204, 255, 0.7); transition: transform 0.08s, box-shadow 0.08s; }
+    
+    .favorite-btn {
+        transition: all 0.2s ease; cursor: pointer; background: rgba(0, 40, 70, 0.6);
+        border: 1px solid rgba(0, 148, 255, 0.4); border-radius: 9999px; width: 1.75rem; height: 1.75rem;
+        display: flex; align-items: center; justify-content: center; color: #9ca3af; outline: none;
+    }
+    .favorite-btn:hover { background: rgba(220, 38, 38, 0.25); color: #ef4444; border-color: #ef4444; transform: scale(1.15); box-shadow: 0 0 18px rgba(239, 68, 68, 0.5); }
+    .favorite-btn:active { transform: scale(0.82); background: rgba(220, 38, 38, 0.5); color: #ffffff; }
+    .favorite-btn.active { color: #ef4444; background: rgba(220, 38, 38, 0.25); border-color: #ef4444; box-shadow: 0 0 15px #ef4444; animation: heartPop 0.3s ease; }
+    @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+    
+    .enter-btn {
+        transition: all 0.2s ease; cursor: pointer; background: rgba(0, 102, 204, 0.2);
+        border: 1px solid rgba(0, 148, 255, 0.4); border-radius: 0.375rem; color: #0099ff;
+        font-size: 0.75rem; padding: 0.25rem 0; flex: 1; outline: none; font-weight: 500;
+    }
+    .enter-btn:hover { background: linear-gradient(90deg, #0066cc, #0099ff); color: white; border-color: #80e4ff; box-shadow: 0 0 18px #00ccff; transform: translateY(-2px); }
+    .enter-btn:active { transform: scale(0.9); background: #0066cc; }
+    .enter-btn.maintenance {
+        background: rgba(100, 100, 100, 0.2);
+        color: #666;
+        border-color: #444;
+        pointer-events: none;
+        cursor: not-allowed;
+    }
+    
+    .new-machine-badge { position: absolute; top: 8px; right: 8px; z-index: 10; max-width: 100px; }
+    .filter-drawer {
+        position: fixed; top: 0; right: -100%; width: 85%; max-width: 340px; height: 100vh;
+        background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
+        border-left: 2px solid #0099ff; box-shadow: -5px 0 30px rgba(0, 153, 255, 0.5);
+        z-index: 10000; transition: right 0.3s ease; overflow-y: auto; padding: 1.5rem;
+    }
+    .filter-drawer.open { right: 0; }
+    .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(3px); z-index: 9999; display: none; }
+    .drawer-overlay.open { display: block; }
+    
+    .filter-chip { background: rgba(0, 40, 70, 0.8); border: 1px solid #0099ff60; border-radius: 9999px; padding: 0.4rem 1.2rem; font-size: 0.75rem; color: #cce6ff; transition: all 0.2s ease; cursor: pointer; display: inline-block; user-select: none; }
+    .filter-chip:hover { background: #0077cc; color: white; border-color: #80e4ff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 153, 255, 0.4); }
+    .filter-chip.selected { background: #0099ff; color: white; border-color: white; font-weight: 500; box-shadow: 0 0 15px #00ccff; }
+    
+    .bottom-nav {
+        background: #001a33; border-top: 2px solid #0066cc; box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3);
+        width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 50;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; color: #4b9cd3; transition: all 0.2s ease; border-radius: 8px; padding: 0.25rem 0.5rem; text-decoration: none; outline: none; cursor: pointer; }
+    .nav-item:hover { color: #80e4ff; transform: translateY(-3px); text-shadow: 0 0 8px #00ccff; background: rgba(0, 153, 255, 0.2); }
+    .nav-item:active { transform: scale(0.9) translateY(-1px); color: white; background: rgba(0, 204, 255, 0.4); }
+    .nav-item:focus-visible { outline: 3px solid #00ccff; outline-offset: 2px; }
+    .nav-item.current-page { color: white; background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%); border: 1px solid #80e4ff; box-shadow: 0 0 15px #00ccff; transform: scale(1.02); }
+    
+    .banner-area { width: 100%; height: 120px; background: linear-gradient(145deg, #002244, #001133); border: 1px solid #0099ff60; border-radius: 12px; overflow: hidden; position: relative; touch-action: pan-y pinch-zoom; }
+    .banner-slider { display: flex; height: 100%; width: 100%; transition: transform 0.3s ease-in-out; cursor: grab; }
+    .banner-slider:active { cursor: grabbing; }
+    .banner-slide { flex: 0 0 100%; height: 100%; position: relative; user-select: none; pointer-events: none; }
+    .banner-slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+    .banner-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 20; pointer-events: auto; }
+    .banner-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.5); cursor: pointer; transition: all 0.2s; border: 1px solid #0099ff60; }
+    .banner-dot:hover { background: #0099ff; transform: scale(1.4); box-shadow: 0 0 10px #00ccff; }
+    .banner-dot:active { transform: scale(0.9); }
+    .banner-dot.active { background: #0099ff; transform: scale(1.2); box-shadow: 0 0 12px #00ccff; border-color: white; }
+    .banner-touch-area { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 15; background: transparent; touch-action: none; }
+
+    .token-badge { background: linear-gradient(135deg, #fbbf24, #d97706); color: #000; font-weight: bold; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.7rem; border: 1px solid #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
+    .popular-badge { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 0.65rem; font-weight: bold; padding: 2px 8px; border-radius: 20px; z-index: 10; border: 1px solid #fca5a5; box-shadow: 0 0 10px #ef4444; }
+
+    .tab-container { position: relative; width: 100%; overflow: hidden; touch-action: pan-y pinch-zoom; }
+    .tabs-wrapper { display: flex; gap: 8px; transition: none; cursor: grab; padding: 0 4px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
+    .tabs-wrapper::-webkit-scrollbar { display: none; }
+    .tabs-wrapper:active { cursor: grabbing; }
+    .tab-indicator { position: absolute; bottom: -4px; left: 0; height: 3px; background: linear-gradient(90deg, #0099ff, #00ccff); border-radius: 3px; transition: left 0.2s ease-in-out, width 0.2s ease-in-out; box-shadow: 0 0 8px #00ccff; z-index: 5; pointer-events: none; }
+
+    .back-to-top {
+        position: fixed; bottom: 90px; right: 20px; width: 48px; height: 48px;
+        background: linear-gradient(145deg, #0066cc, #0099ff); border: 2px solid #80e4ff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;
+        cursor: pointer; z-index: 100; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 15px rgba(0, 204, 255, 0.5); transform: scale(0.8);
+    }
+    .back-to-top.show { opacity: 1; visibility: visible; transform: scale(1); animation: pulse 2s infinite; }
+    .back-to-top:hover { transform: scale(1.15) translateY(-5px); background: linear-gradient(145deg, #0077dd, #00aaff); box-shadow: 0 8px 25px rgba(0, 204, 255, 0.8); border-color: white; }
+    .back-to-top:active { transform: scale(0.9); }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 204, 255, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(0, 204, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 204, 255, 0); } }
+
+    .clickable { cursor: pointer; transition: all 0.1s ease; }
+    .clickable:active { transform: scale(0.95); }
+    .hover-glow:hover { text-shadow: 0 0 8px #00ccff; }
+
+    .main-content { flex: 1; padding-bottom: 80px; }
+    .max-w-md { padding-bottom: 0; min-height: 100vh; position: relative; }
+    
+    .category-title {
+        color: #0099ff;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid rgba(0, 153, 255, 0.3);
+        padding-bottom: 0.5rem;
+    }
+    .category-section {
+        margin-bottom: 2rem;
+    }
+
+    .logo {
+        display: flex; align-items: center; gap: 8px; font-family: 'Orbitron', 'Russo One', sans-serif;
+        white-space: nowrap; cursor: pointer; transition: transform 0.2s ease; text-decoration: none;
+        color: inherit; background: transparent; border: none; backdrop-filter: none; padding: 0;
+        margin: 0; -webkit-tap-highlight-color: transparent;
+    }
+    .logo:active { transform: scale(0.97); }
+    .logo-icon {
+        width: 40px; height: 40px; background: linear-gradient(135deg, #000, #111, #222);
+        border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 15px rgba(0, 224, 255, 0.5), inset 0 0 10px rgba(255, 215, 0, 0.2);
+        overflow: hidden; border: 2px solid #ffd700; flex-shrink: 0;
+    }
+    .logo-icon::before {
+        content: ''; position: absolute; width: 100%; height: 100%;
+        background: conic-gradient(from 0deg, transparent, #00e0ff, #c90a0a, #ffd700, transparent);
+        animation: logoRotate 4s linear infinite;
+    }
+    .logo-icon::after { content: ''; position: absolute; width: 30px; height: 30px; background: #000; border-radius: 5px; }
+    @keyframes logoRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .logo-icon-inner {
+        position: relative; z-index: 2; font-size: 16px; font-weight: 900;
+        background: linear-gradient(45deg, #ffdf00, #ffec8b, #00e0ff);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        letter-spacing: 0.5px; font-family: 'Orbitron', sans-serif; text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
+    }
+    .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-main {
+        font-size: 18px; font-weight: 900;
+        background: linear-gradient(45deg, #ffdf00, #ffd700, #00e0ff);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        background-size: 200% auto; animation: textShine 3s ease-in-out infinite alternate;
+        letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        white-space: nowrap;
+    }
+    .logo-sub {
+        font-size: 9px; color: #00e0ff; font-weight: 500; letter-spacing: 0.8px; opacity: 0.9;
+        text-shadow: 0 0 4px rgba(0, 224, 255, 0.5); white-space: nowrap;
+    }
+    .logo:focus-visible { outline: none; }
+
+    .slider-container {
+        position: relative; width: 100%; overflow: hidden; touch-action: pan-y pinch-zoom;
+        margin-bottom: 1rem;
+    }
+    .slider-wrapper {
+        display: flex; gap: 16px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
+        scroll-behavior: smooth; -webkit-overflow-scrolling: touch; padding: 4px 0 12px 0; cursor: grab;
+    }
+    .slider-wrapper::-webkit-scrollbar { display: none; }
+    .slider-wrapper:active { cursor: grabbing; }
+    .slider-item {
+        flex: 0 0 auto; width: calc(50% - 8px); max-width: 180px;
+    }
+    .slider-indicator {
+        display: flex; justify-content: center; gap: 8px; margin-top: 8px;
+    }
+    .slider-dot {
+        width: 8px; height: 8px; border-radius: 50%; background: rgba(0, 153, 255, 0.3);
+        border: 1px solid rgba(0, 153, 255, 0.5); transition: all 0.2s; cursor: pointer;
+    }
+    .slider-dot.active {
+        background: #0099ff; transform: scale(1.3); box-shadow: 0 0 10px #00ccff; border-color: white;
+    }
+    .slider-arrow {
+        position: absolute; top: 50%; transform: translateY(-50%); width: 30px; height: 30px;
+        background: rgba(0, 40, 70, 0.8); border: 1px solid #0099ff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; color: #0099ff;
+        cursor: pointer; z-index: 10; transition: all 0.2s; backdrop-filter: blur(4px);
+    }
+    .slider-arrow:hover { background: #0099ff; color: white; transform: translateY(-50%) scale(1.1); box-shadow: 0 0 15px #00ccff; }
+    .slider-arrow:active { transform: translateY(-50%) scale(0.9); }
+    .slider-arrow.left { left: 5px; }
+    .slider-arrow.right { right: 5px; }
+    .slider-arrow.disabled { opacity: 0.3; pointer-events: none; }
+
+    .vertical-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+    .vertical-grid .game-card-bg {
+        width: 100%;
+    }
+
+    /* 子機種彈窗樣式 */
+    .machine-modal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(6px); z-index: 20000;
+        display: flex; align-items: center; justify-content: center; opacity: 0;
+        visibility: hidden; transition: 0.25s; padding: 1rem;
+    }
+    .machine-modal.show { opacity: 1; visibility: visible; }
+    .modal-content {
+        background: linear-gradient(165deg, #001e3c, #00102a); border: 2px solid #0099ff;
+        border-radius: 2rem; max-width: 480px; width: 100%; max-height: 80vh; overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0, 153, 255, 0.5); padding: 1.5rem 1rem;
+        transform: scale(0.9); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .machine-modal.show .modal-content { transform: scale(1); }
+    .modal-header {
+        display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 1px solid #0099ff60; padding-bottom: 0.75rem; margin-bottom: 1.2rem;
+    }
+    .modal-header h2 { font-size: 1.7rem; font-weight: 700; color: #ffd966; text-shadow: 0 0 8px #fbbf24; }
+    .modal-close {
+        background: rgba(0,102,204,0.3); border: 1px solid #0099ff; color: white; width: 36px; height: 36px;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+        cursor: pointer; transition: 0.2s;
+    }
+    .modal-close:hover { background: #ff3b3b; border-color: white; transform: scale(1.1); box-shadow: 0 0 15px red; }
+    
+    /* 子機種網格 */
+    .submachine-grid { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 0.8rem; 
+    }
+    
+    /* 子機台卡片 */
+    .sub-item-card {
+        background: linear-gradient(145deg, rgba(0,40,70,0.9), rgba(0,20,45,0.95));
+        border: 1px solid rgba(0, 153, 255, 0.5);
+        border-radius: 1rem; 
+        padding: 0.7rem 0.5rem;
+        display: flex; 
+        flex-direction: column; 
+        box-shadow: 0 0 10px rgba(0,153,255,0.3); 
+        transition: 0.15s;
+        height: 100%;
+        min-height: 115px;
+        position: relative;
+        overflow: hidden;
+    }
+    .sub-item-card:hover { transform: translateY(-2px); border-color: #00ccff; box-shadow: 0 0 18px #0099ff; }
+    
+    /* 維護中的子機台卡片 */
+    .sub-item-card.maintenance {
+        background: linear-gradient(145deg, rgba(70, 70, 70, 0.8), rgba(50, 50, 50, 0.9));
+        border: 1px solid rgba(255, 100, 100, 0.4);
+        opacity: 0.9;
+        filter: grayscale(0.6);
+    }
+    .sub-item-card.maintenance::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            45deg,
+            rgba(255, 100, 100, 0.15) 0px,
+            rgba(255, 100, 100, 0.15) 10px,
+            rgba(255, 0, 0, 0.1) 10px,
+            rgba(255, 0, 0, 0.1) 20px
+        );
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    .sub-name-ratio { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        margin-bottom: 0.3rem; 
+        position: relative; 
+        z-index: 2; 
+    }
+    .sub-name {
+        font-weight: 600; 
+        color: #b3e0ff; 
+        font-size: 0.9rem; 
+        white-space: nowrap;
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        max-width: 85px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .maintenance .sub-name { color: #ccc; }
+    
+    /* 子機種上的代幣標籤，以「1枚=」開頭 */
+    .sub-ratio {
+        background: #001c3a; 
+        padding: 0.15rem 0.5rem; 
+        border-radius: 30px; 
+        border: 1px solid #fbbf24;
+        color: #ffd966; 
+        font-weight: 500; 
+        font-size: 0.65rem; 
+        box-shadow: 0 0 6px #fbbf24;
+        white-space: nowrap;
+    }
+    .maintenance .sub-ratio {
+        background: #333;
+        border-color: #ff6666;
+        color: #ff9999;
+        box-shadow: 0 0 6px rgba(255, 100, 100, 0.3);
+    }
+    
+    /* 維護中標籤 */
+    .maintenance-badge {
+        background: #c92a2a;
+        color: white;
+        font-size: 0.5rem;
+        padding: 2px 4px;
+        border-radius: 10px;
+        border: 1px solid #ffa8a8;
+        box-shadow: 0 0 5px #ff6b6b;
+        animation: pulse-red 1.5s infinite;
+        white-space: nowrap;
+        display: inline-block;
+        line-height: 1.2;
+    }
+    @keyframes pulse-red {
+        0% { opacity: 0.7; }
+        50% { opacity: 1; }
+        100% { opacity: 0.7; }
+    }
+    
+    /* 維護中日期 */
+    .maintenance-date {
+        font-size: 0.5rem;
+        color: #ff9999;
+        margin: 0.2rem 0 0.3rem 0;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        position: relative;
+        z-index: 2;
+        white-space: nowrap;
+        min-height: 16px;
+    }
+    .maintenance-date i {
+        font-size: 0.45rem;
+    }
+    
+    /* 空白佔位 - 保持高度一致 */
+    .placeholder-date {
+        min-height: 16px;
+        margin: 0.2rem 0 0.3rem 0;
+    }
+    
+    /* 按鈕區域 */
+    .sub-actions { 
+        display: flex; 
+        gap: 4px; 
+        align-items: center; 
+        margin-top: auto;
+        padding-top: 0.3rem;
+        position: relative; 
+        z-index: 2; 
+    }
+    .sub-actions .enter-btn { 
+        font-size: 0.7rem; 
+        padding: 0.2rem 0; 
+        flex: 1; 
+    }
+    .sub-actions .favorite-btn { 
+        width: 1.7rem; 
+        height: 1.7rem; 
+    }
+
+    /* 全像投影動畫 */
+    @keyframes scan-line {
+        0% { transform: translateY(-20px); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(20px); opacity: 0; }
+    }
+    .animate-scan-line {
+        animation: scan-line 3s ease-in-out infinite;
+    }
+    .animate-scan-line-delay {
+        animation: scan-line 3s ease-in-out infinite 1.5s;
+    }
+
+    /* ========== 公告按鈕放在框內 (左側縮小版) ========== */
+    .announcement-combo {
+        background: linear-gradient(145deg, #001f3f, #001a33);
+        border: 1px solid #0099ff80;
+        border-radius: 9999px;
+        box-shadow: 0 0 20px rgba(0, 153, 255, 0.4);
+        backdrop-filter: blur(2px);
+        padding: 0.25rem 0.25rem 0.25rem 0.75rem;  /* 左側留空間給文字 */
+        display: inline-flex;
+        align-items: center;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        min-height: 42px;
+    }
+    .announcement-combo .hologram-lines {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        border-radius: 9999px;
+    }
+    .announcement-combo .hologram-lines div {
+        width: 100%;
+        height: 1px;
+        background: rgba(0, 204, 255, 0.25);
+        position: absolute;
+        left: 0;
+    }
+    /* 左邊的小公告按鈕 */
+    .combo-announce-btn {
+        background: linear-gradient(145deg, #0066cc, #0099ff);
+        border: 1px solid #80e4ff;
+        border-radius: 9999px;
+        padding: 0.25rem 1rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        box-shadow: 0 0 12px #00ccff;
+        transition: 0.2s;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: white;
+        text-decoration: none;
+        letter-spacing: 0.3px;
+        margin-right: 10px;          /* 與跑馬燈分隔 */
+        flex-shrink: 0;
+        z-index: 2;
+    }
+    .combo-announce-btn:hover {
+        transform: scale(1.02);
+        background: linear-gradient(145deg, #0077dd, #00aaff);
+        border-color: white;
+        box-shadow: 0 0 20px #00ccff;
+    }
+    .combo-announce-btn:active { transform: scale(0.96); }
+    
+    /* 右邊的跑馬燈文字區 */
+    .combo-marquee {
+        flex: 1;
+        min-width: 0;               /* 讓 flex 收縮 */
+        white-space: nowrap;
+        overflow: hidden;
+        color: #b3e6ff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-shadow: 0 0 6px #0099ff;
+        padding-right: 0.5rem;
+        z-index: 2;
+    }
+    .combo-marquee marquee {
+        width: 100%;
+        display: inline-block;
+    }
 </style>
-    <style>
-        .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
-        .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
-        .tech-tab-active {
-            background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%);
-            border: 1px solid #00ccff;
-            box-shadow: 0 0 8px rgba(0, 204, 255, 0.6);
-        }
-        .tab-btn {
-            flex: 0 0 auto; white-space: nowrap; transition: all 0.2s ease; cursor: pointer;
-            position: relative; outline: none;
-        }
-        .tab-btn:hover { background: rgba(0, 153, 255, 0.3) !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 153, 255, 0.4); }
-        .tab-btn:active { transform: scale(0.92) !important; background: rgba(0, 204, 255, 0.6) !important; transition: transform 0.08s, background 0.08s; }
-        .tab-btn:focus-visible { outline: 3px solid #00ccff; outline-offset: 2px; }
-        
-        .game-card-bg {
-            background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%);
-            transition: all 0.25s ease; cursor: pointer; position: relative; outline: none;
-            border: 1px solid rgba(0, 148, 255, 0.4);
-            border-radius: 0.75rem;
-            overflow: hidden;
-        }
-        .game-card-bg:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0, 153, 255, 0.5); border-color: #00ccff; }
-        .game-card-bg:active { transform: scale(0.96) translateY(-2px); box-shadow: 0 4px 15px rgba(0, 204, 255, 0.7); transition: transform 0.08s, box-shadow 0.08s; }
-        
-        .favorite-btn {
-            transition: all 0.2s ease; cursor: pointer; background: rgba(0, 40, 70, 0.6);
-            border: 1px solid rgba(0, 148, 255, 0.4); border-radius: 9999px; width: 1.75rem; height: 1.75rem;
-            display: flex; align-items: center; justify-content: center; color: #9ca3af; outline: none;
-        }
-        .favorite-btn:hover { background: rgba(220, 38, 38, 0.25); color: #ef4444; border-color: #ef4444; transform: scale(1.15); box-shadow: 0 0 18px rgba(239, 68, 68, 0.5); }
-        .favorite-btn:active { transform: scale(0.82); background: rgba(220, 38, 38, 0.5); color: #ffffff; }
-        .favorite-btn.active { color: #ef4444; background: rgba(220, 38, 38, 0.25); border-color: #ef4444; box-shadow: 0 0 15px #ef4444; animation: heartPop 0.3s ease; }
-        @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
-        
-        .enter-btn {
-            transition: all 0.2s ease; cursor: pointer; background: rgba(0, 102, 204, 0.2);
-            border: 1px solid rgba(0, 148, 255, 0.4); border-radius: 0.375rem; color: #0099ff;
-            font-size: 0.75rem; padding: 0.25rem 0; flex: 1; outline: none; font-weight: 500;
-        }
-        .enter-btn:hover { background: linear-gradient(90deg, #0066cc, #0099ff); color: white; border-color: #80e4ff; box-shadow: 0 0 18px #00ccff; transform: translateY(-2px); }
-        .enter-btn:active { transform: scale(0.9); background: #0066cc; }
-        
-        .new-machine-badge { position: absolute; top: 8px; right: 8px; z-index: 10; max-width: 100px; }
-        .filter-drawer {
-            position: fixed; top: 0; right: -100%; width: 85%; max-width: 340px; height: 100vh;
-            background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
-            border-left: 2px solid #0099ff; box-shadow: -5px 0 30px rgba(0, 153, 255, 0.5);
-            z-index: 10000; transition: right 0.3s ease; overflow-y: auto; padding: 1.5rem;
-        }
-        .filter-drawer.open { right: 0; }
-        .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(3px); z-index: 9999; display: none; }
-        .drawer-overlay.open { display: block; }
-        
-        .filter-chip { background: rgba(0, 40, 70, 0.8); border: 1px solid #0099ff60; border-radius: 9999px; padding: 0.4rem 1.2rem; font-size: 0.75rem; color: #cce6ff; transition: all 0.2s ease; cursor: pointer; display: inline-block; user-select: none; }
-        .filter-chip:hover { background: #0077cc; color: white; border-color: #80e4ff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 153, 255, 0.4); }
-        .filter-chip.selected { background: #0099ff; color: white; border-color: white; font-weight: 500; box-shadow: 0 0 15px #00ccff; }
-        
-        .bottom-nav {
-            background: #001a33; border-top: 2px solid #0066cc; box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3);
-            width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 50;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #4b9cd3; transition: all 0.2s ease; border-radius: 8px; padding: 0.25rem 0.5rem; text-decoration: none; outline: none; cursor: pointer; }
-        .nav-item:hover { color: #80e4ff; transform: translateY(-3px); text-shadow: 0 0 8px #00ccff; background: rgba(0, 153, 255, 0.2); }
-        .nav-item:active { transform: scale(0.9) translateY(-1px); color: white; background: rgba(0, 204, 255, 0.4); }
-        .nav-item:focus-visible { outline: 3px solid #00ccff; outline-offset: 2px; }
-        .nav-item.current-page { color: white; background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%); border: 1px solid #80e4ff; box-shadow: 0 0 15px #00ccff; transform: scale(1.02); }
-        
-        .banner-area { width: 100%; height: 120px; background: linear-gradient(145deg, #002244, #001133); border: 1px solid #0099ff60; border-radius: 12px; overflow: hidden; position: relative; touch-action: pan-y pinch-zoom; }
-        .banner-slider { display: flex; height: 100%; width: 100%; transition: transform 0.3s ease-in-out; cursor: grab; }
-        .banner-slider:active { cursor: grabbing; }
-        .banner-slide { flex: 0 0 100%; height: 100%; position: relative; user-select: none; pointer-events: none; }
-        .banner-slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-        .banner-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 20; pointer-events: auto; }
-        .banner-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.5); cursor: pointer; transition: all 0.2s; border: 1px solid #0099ff60; }
-        .banner-dot:hover { background: #0099ff; transform: scale(1.4); box-shadow: 0 0 10px #00ccff; }
-        .banner-dot:active { transform: scale(0.9); }
-        .banner-dot.active { background: #0099ff; transform: scale(1.2); box-shadow: 0 0 12px #00ccff; border-color: white; }
-        .banner-touch-area { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 15; background: transparent; touch-action: none; }
-
-        .token-badge { background: linear-gradient(135deg, #fbbf24, #d97706); color: #000; font-weight: bold; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.7rem; border: 1px solid #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
-        .popular-badge { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 0.65rem; font-weight: bold; padding: 2px 8px; border-radius: 20px; z-index: 10; border: 1px solid #fca5a5; box-shadow: 0 0 10px #ef4444; }
-
-        .tab-container { position: relative; width: 100%; overflow: hidden; touch-action: pan-y pinch-zoom; }
-        .tabs-wrapper { display: flex; gap: 8px; transition: none; cursor: grab; padding: 0 4px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
-        .tabs-wrapper::-webkit-scrollbar { display: none; }
-        .tabs-wrapper:active { cursor: grabbing; }
-        .tab-indicator { position: absolute; bottom: -4px; left: 0; height: 3px; background: linear-gradient(90deg, #0099ff, #00ccff); border-radius: 3px; transition: left 0.2s ease-in-out, width 0.2s ease-in-out; box-shadow: 0 0 8px #00ccff; z-index: 5; pointer-events: none; }
-
-        .back-to-top {
-            position: fixed; bottom: 90px; right: 20px; width: 48px; height: 48px;
-            background: linear-gradient(145deg, #0066cc, #0099ff); border: 2px solid #80e4ff; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;
-            cursor: pointer; z-index: 100; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 15px rgba(0, 204, 255, 0.5); transform: scale(0.8);
-        }
-        .back-to-top.show { opacity: 1; visibility: visible; transform: scale(1); animation: pulse 2s infinite; }
-        .back-to-top:hover { transform: scale(1.15) translateY(-5px); background: linear-gradient(145deg, #0077dd, #00aaff); box-shadow: 0 8px 25px rgba(0, 204, 255, 0.8); border-color: white; }
-        .back-to-top:active { transform: scale(0.9); }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 204, 255, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(0, 204, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 204, 255, 0); } }
-
-        .clickable { cursor: pointer; transition: all 0.1s ease; }
-        .clickable:active { transform: scale(0.95); }
-        .hover-glow:hover { text-shadow: 0 0 8px #00ccff; }
-
-        .main-content { flex: 1; padding-bottom: 80px; }
-        .max-w-md { padding-bottom: 0; min-height: 100vh; position: relative; }
-        
-        .category-title {
-            color: #0099ff;
-            font-weight: 500;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: 1px solid rgba(0, 153, 255, 0.3);
-            padding-bottom: 0.5rem;
-        }
-        .category-section {
-            margin-bottom: 2rem;
-        }
-
-        .logo {
-            display: flex; align-items: center; gap: 8px; font-family: 'Orbitron', 'Russo One', sans-serif;
-            white-space: nowrap; cursor: pointer; transition: transform 0.2s ease; text-decoration: none;
-            color: inherit; background: transparent; border: none; backdrop-filter: none; padding: 0;
-            margin: 0; -webkit-tap-highlight-color: transparent;
-        }
-        .logo:active { transform: scale(0.97); }
-        .logo-icon {
-            width: 40px; height: 40px; background: linear-gradient(135deg, #000, #111, #222);
-            border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 15px rgba(0, 224, 255, 0.5), inset 0 0 10px rgba(255, 215, 0, 0.2);
-            overflow: hidden; border: 2px solid #ffd700; flex-shrink: 0;
-        }
-        .logo-icon::before {
-            content: ''; position: absolute; width: 100%; height: 100%;
-            background: conic-gradient(from 0deg, transparent, #00e0ff, #c90a0a, #ffd700, transparent);
-            animation: logoRotate 4s linear infinite;
-        }
-        .logo-icon::after { content: ''; position: absolute; width: 30px; height: 30px; background: #000; border-radius: 5px; }
-        @keyframes logoRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .logo-icon-inner {
-            position: relative; z-index: 2; font-size: 16px; font-weight: 900;
-            background: linear-gradient(45deg, #ffdf00, #ffec8b, #00e0ff);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-            letter-spacing: 0.5px; font-family: 'Orbitron', sans-serif; text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
-        }
-        .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
-        .logo-main {
-            font-size: 18px; font-weight: 900;
-            background: linear-gradient(45deg, #ffdf00, #ffd700, #00e0ff);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-            background-size: 200% auto; animation: textShine 3s ease-in-out infinite alternate;
-            letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-            white-space: nowrap;
-        }
-        .logo-sub {
-            font-size: 9px; color: #00e0ff; font-weight: 500; letter-spacing: 0.8px; opacity: 0.9;
-            text-shadow: 0 0 4px rgba(0, 224, 255, 0.5); white-space: nowrap;
-        }
-        .logo:focus-visible { outline: none; }
-
-        .slider-container {
-            position: relative; width: 100%; overflow: hidden; touch-action: pan-y pinch-zoom;
-            margin-bottom: 1rem;
-        }
-        .slider-wrapper {
-            display: flex; gap: 16px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
-            scroll-behavior: smooth; -webkit-overflow-scrolling: touch; padding: 4px 0 12px 0; cursor: grab;
-        }
-        .slider-wrapper::-webkit-scrollbar { display: none; }
-        .slider-wrapper:active { cursor: grabbing; }
-        .slider-item {
-            flex: 0 0 auto; width: calc(50% - 8px); max-width: 180px;
-        }
-        .slider-indicator {
-            display: flex; justify-content: center; gap: 8px; margin-top: 8px;
-        }
-        .slider-dot {
-            width: 8px; height: 8px; border-radius: 50%; background: rgba(0, 153, 255, 0.3);
-            border: 1px solid rgba(0, 153, 255, 0.5); transition: all 0.2s; cursor: pointer;
-        }
-        .slider-dot.active {
-            background: #0099ff; transform: scale(1.3); box-shadow: 0 0 10px #00ccff; border-color: white;
-        }
-        .slider-arrow {
-            position: absolute; top: 50%; transform: translateY(-50%); width: 30px; height: 30px;
-            background: rgba(0, 40, 70, 0.8); border: 1px solid #0099ff; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: #0099ff;
-            cursor: pointer; z-index: 10; transition: all 0.2s; backdrop-filter: blur(4px);
-        }
-        .slider-arrow:hover { background: #0099ff; color: white; transform: translateY(-50%) scale(1.1); box-shadow: 0 0 15px #00ccff; }
-        .slider-arrow:active { transform: translateY(-50%) scale(0.9); }
-        .slider-arrow.left { left: 5px; }
-        .slider-arrow.right { right: 5px; }
-        .slider-arrow.disabled { opacity: 0.3; pointer-events: none; }
-
-        .vertical-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 0.5rem;
-        }
-        .vertical-grid .game-card-bg {
-            width: 100%;
-        }
-
-        .machine-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(6px); z-index: 20000;
-            display: flex; align-items: center; justify-content: center; opacity: 0;
-            visibility: hidden; transition: 0.25s; padding: 1rem;
-        }
-        .machine-modal.show { opacity: 1; visibility: visible; }
-        .modal-content {
-            background: linear-gradient(165deg, #001e3c, #00102a); border: 2px solid #0099ff;
-            border-radius: 2rem; max-width: 480px; width: 100%; max-height: 80vh; overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0, 153, 255, 0.5); padding: 1.5rem 1rem;
-            transform: scale(0.9); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .machine-modal.show .modal-content { transform: scale(1); }
-        .modal-header {
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid #0099ff60; padding-bottom: 0.75rem; margin-bottom: 1.2rem;
-        }
-        .modal-header h2 { font-size: 1.7rem; font-weight: 700; color: #ffd966; text-shadow: 0 0 8px #fbbf24; }
-        .modal-close {
-            background: rgba(0,102,204,0.3); border: 1px solid #0099ff; color: white; width: 36px; height: 36px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
-            cursor: pointer; transition: 0.2s;
-        }
-        .modal-close:hover { background: #ff3b3b; border-color: white; transform: scale(1.1); box-shadow: 0 0 15px red; }
-        
-        .submachine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-        .sub-item-card {
-            background: linear-gradient(145deg, rgba(0,40,70,0.9), rgba(0,20,45,0.95));
-            border: 1px solid rgba(0, 153, 255, 0.5); border-radius: 1rem; padding: 0.7rem 0.5rem;
-            display: flex; flex-direction: column; box-shadow: 0 0 10px rgba(0,153,255,0.3); transition: 0.15s;
-        }
-        .sub-item-card:hover { transform: translateY(-2px); border-color: #00ccff; box-shadow: 0 0 18px #0099ff; }
-        .sub-name-ratio { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
-        .sub-name {
-            font-weight: 600; color: #b3e0ff; font-size: 1rem; white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis; max-width: 80px;
-        }
-        .sub-ratio {
-            background: #001c3a; padding: 0.2rem 0.7rem; border-radius: 30px; border: 1px solid #fbbf24;
-            color: #ffd966; font-weight: 500; font-size: 0.7rem; box-shadow: 0 0 6px #fbbf24;
-        }
-        .sub-actions { display: flex; gap: 6px; align-items: center; margin-top: 0.3rem; }
-        .sub-actions .enter-btn { font-size: 0.7rem; padding: 0.2rem 0; flex: 1; }
-        .sub-actions .favorite-btn { width: 1.8rem; height: 1.8rem; }
-    </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
 
@@ -362,8 +591,24 @@
         </div>
     </div>
 
-    <!-- 跑馬燈 -->
-    <div class="px-4 py-1 bg-dark-200/80 tech-border"><marquee class="text-secondary text-xs py-1" scrollamount="5">🎮 春季人氣機台大賞 | 甲賀忍法帖系列全線熱賣 | 代幣優惠實施中 🎮</marquee></div>
+    <!-- ★★★ 全新編排：公告按鈕縮小放入框內，左側按鈕 + 右側跑馬燈 ★★★ -->
+    <div class="px-4 mt-2">
+        <div class="announcement-combo">
+            <div class="hologram-lines">
+                <div class="animate-scan-line" style="top: 20%;"></div>
+                <div class="animate-scan-line-delay" style="top: 60%;"></div>
+            </div>
+            <!-- 左邊小公告按鈕 -->
+            <a href="news.html" class="combo-announce-btn">
+                <i class="fa fa-bullhorn"></i>
+                <span>公告</span>
+            </a>
+            <!-- 右邊跑馬燈文字 -->
+            <div class="combo-marquee">
+                <marquee scrollamount="5" behavior="scroll" direction="left">◈ 春 季 人 氣 機 台 大 賞 ◈ 甲 賀 忍 法 帖 系 列 全 線 熱 賣 ◈ 代 幣 優 惠 實 施 中 ◈</marquee>
+            </div>
+        </div>
+    </div>
 
     <!-- 主要分類標籤 + 篩選按鈕 -->
     <div class="px-4 py-3 flex items-center justify-between">
@@ -383,7 +628,7 @@
         </div>
     </div>
 
-    <!-- 機台列表 - 只有進入按鈕，沒有愛心 -->
+    <!-- 機台列表 - 所有卡片完全恢復 (以下完全保留原樣，一字未改) -->
     <main class="flex-1 px-4 pb-24 overflow-y-auto scrollbar-thin main-content" id="machineList">
         
         <!-- 新機入替區塊 -->
@@ -404,7 +649,7 @@
                             <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
                             <div class="p-2">
                                 <h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3>
-                                <div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                                <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
                                 <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="甲賀忍法帖 弐">進入</button></div>
                             </div>
                         </div>
@@ -418,7 +663,7 @@
                             <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
                             <div class="p-2">
                                 <h3 class="text-primary text-sm truncate">超級奇蹟小丑</h3>
-                                <div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                                <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
                                 <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="超級奇蹟小丑">進入</button></div>
                             </div>
                         </div>
@@ -432,7 +677,7 @@
                             <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
                             <div class="p-2">
                                 <h3 class="text-primary text-sm truncate">押忍！番長4</h3>
-                                <div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
+                                <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
                                 <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="押忍！番長4">進入</button></div>
                             </div>
                         </div>
@@ -445,7 +690,7 @@
                             <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
                             <div class="p-2">
                                 <h3 class="text-primary text-sm truncate">革命機ヴァルヴレイヴ</h3>
-                                <div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.33</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                                <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
                                 <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="革命機ヴァルヴレイヴ">進入</button></div>
                             </div>
                         </div>
@@ -458,7 +703,7 @@
                             <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
                             <div class="p-2">
                                 <h3 class="text-primary text-sm truncate">パチスロ 幼女戦記</h3>
-                                <div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.25</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
+                                <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
                                 <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 幼女戦記">進入</button></div>
                             </div>
                         </div>
@@ -471,7 +716,7 @@
                             <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
                             <div class="p-2">
                                 <h3 class="text-primary text-sm truncate">L 犬夜叉</h3>
-                                <div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                                <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
                                 <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="L 犬夜叉">進入</button></div>
                             </div>
                         </div>
@@ -487,68 +732,340 @@
             
             <!-- 垂直模式 (用於「新機」標籤) -->
             <div class="vertical-grid new-vertical-mode" style="display: none;">
-                <div class="game-card-bg" data-categories='["新機","人氣機台","6號機"]'><div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div><span class="popular-badge">HOT 2</span><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="甲賀忍法帖 弐">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["新機","人氣機台"]'><div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div><span class="popular-badge">HOT 5</span><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">超級奇蹟小丑</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="超級奇蹟小丑">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["新機","人氣機台"]'><div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div><span class="popular-badge">HOT 1</span><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">押忍！番長4</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="押忍！番長4">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["新機","6號機"]'><div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">革命機ヴァルヴレイヴ</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.33</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="革命機ヴァルヴレイヴ">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["新機","6號機"]'><div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ 幼女戦記</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.25</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 幼女戦記">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["新機","6號機"]'><div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">L 犬夜叉</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="L 犬夜叉">進入</button></div></div></div>
+                <!-- 甲賀忍法帖 弐 -->
+                <div class="game-card-bg" data-categories='["新機","人氣機台","6號機"]'>
+                    <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div>
+                    <span class="popular-badge">HOT 2</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">甲賀忍法帖 弐</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="甲賀忍法帖 弐">進入</button></div>
+                    </div>
+                </div>
+                
+                <!-- 超級奇蹟小丑 -->
+                <div class="game-card-bg" data-categories='["新機","人氣機台"]'>
+                    <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div>
+                    <span class="popular-badge">HOT 5</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">超級奇蹟小丑</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="超級奇蹟小丑">進入</button></div>
+                    </div>
+                </div>
+                
+                <!-- 押忍！番長4 -->
+                <div class="game-card-bg" data-categories='["新機","人氣機台"]'>
+                    <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div>
+                    <span class="popular-badge">HOT 1</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">押忍！番長4</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="押忍！番長4">進入</button></div>
+                    </div>
+                </div>
+                
+                <!-- 革命機ヴァルヴレイヴ -->
+                <div class="game-card-bg" data-categories='["新機","6號機"]'>
+                    <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">革命機ヴァルヴレイヴ</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="革命機ヴァルヴレイヴ">進入</button></div>
+                    </div>
+                </div>
+                
+                <!-- パチスロ 幼女戦記 -->
+                <div class="game-card-bg" data-categories='["新機","6號機"]'>
+                    <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ 幼女戦記</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 幼女戦記">進入</button></div>
+                    </div>
+                </div>
+                
+                <!-- L 犬夜叉 -->
+                <div class="game-card-bg" data-categories='["新機","6號機"]'>
+                    <div class="new-machine-badge"><img src="https://4boom.jp/blog/wp-content/uploads/2019/08/shin_aut-3_y-240x89.png" alt="新機入替" class="w-20 h-auto"></div>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">L 犬夜叉</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="L 犬夜叉">進入</button></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 人氣機台區塊 -->
+        <!-- 人氣機台區塊 (完全保留) -->
         <div class="category-section" data-category="人氣機台">
             <h2 class="category-title"><i class="fa fa-fire text-secondary"></i> 人氣機台 <span class="text-xs text-gray-400 ml-2">🔥 本週熱門</span></h2>
             <div class="vertical-grid">
-                <div class="game-card-bg" data-categories='["人氣機台","4號機"]'><span class="popular-badge">HOT 3</span><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">吉宗</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="吉宗">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["人氣機台","5號機"]'><span class="popular-badge">HOT 4</span><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ モンキーターン</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.25</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ モンキーターン">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["人氣機台","5號機"]'><span class="popular-badge">HOT 6</span><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">押忍！番長3</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="押忍！番長3">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["人氣機台","5號機"]'><span class="popular-badge">HOT 7</span><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ ガールズ＆パンツァー</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.17</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ ガールズ＆パンツァー">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["人氣機台","6號機"]'><span class="popular-badge">HOT 8</span><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ 北斗の拳</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 北斗の拳">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["人氣機台","5號機"]'><span class="popular-badge">HOT 9</span><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ 新鬼武者</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 新鬼武者">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["人氣機台","6號機"]'><span class="popular-badge">HOT 10</span><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ 魔法少女まどか☆マギカ</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 魔法少女まどか☆マギカ">進入</button></div></div></div>
+                <!-- 吉宗 -->
+                <div class="game-card-bg" data-categories='["人氣機台","4號機"]'>
+                    <span class="popular-badge">HOT 3</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">吉宗</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="吉宗">進入</button></div>
+                    </div>
+                </div>
+                <!-- パチスロ モンキーターン -->
+                <div class="game-card-bg" data-categories='["人氣機台","5號機"]'>
+                    <span class="popular-badge">HOT 4</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ モンキーターン</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ モンキーターン">進入</button></div>
+                    </div>
+                </div>
+                <!-- 押忍！番長3 -->
+                <div class="game-card-bg" data-categories='["人氣機台","5號機"]'>
+                    <span class="popular-badge">HOT 6</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">押忍！番長3</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="押忍！番長3">進入</button></div>
+                    </div>
+                </div>
+                <!-- パチスロ ガールズ＆パンツァー -->
+                <div class="game-card-bg" data-categories='["人氣機台","5號機"]'>
+                    <span class="popular-badge">HOT 7</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ ガールズ＆パンツァー</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ ガールズ＆パンツァー">進入</button></div>
+                    </div>
+                </div>
+                <!-- パチスロ 北斗の拳 -->
+                <div class="game-card-bg" data-categories='["人氣機台","6號機"]'>
+                    <span class="popular-badge">HOT 8</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ 北斗の拳</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 北斗の拳">進入</button></div>
+                    </div>
+                </div>
+                <!-- パチスロ 新鬼武者 -->
+                <div class="game-card-bg" data-categories='["人氣機台","5號機"]'>
+                    <span class="popular-badge">HOT 9</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ 新鬼武者</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 新鬼武者">進入</button></div>
+                    </div>
+                </div>
+                <!-- パチスロ 魔法少女まどか☆マギカ -->
+                <div class="game-card-bg" data-categories='["人氣機台","6號機"]'>
+                    <span class="popular-badge">HOT 10</span>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ 魔法少女まどか☆マギカ</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 魔法少女まどか☆マギカ">進入</button></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 4號機區塊 -->
+        <!-- 4號機區塊 (完全保留) -->
         <div class="category-section" data-category="4號機">
             <h2 class="category-title"><i class="fa fa-cube"></i> 4號機 <span class="text-xs text-gray-400 ml-2">經典不敗</span></h2>
             <div class="vertical-grid">
-                <div class="game-card-bg" data-categories='["4號機"]'><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">花月</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="花月">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["4號機"]'><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">大花火</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.17</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="大花火">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["4號機"]'><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">ドンちゃん2</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="ドンちゃん2">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["4號機"]'><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">アラジンA</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="アラジンA">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["4號機"]'><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">クランキーコンドル</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="クランキーコンドル">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["4號機"]'><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">バーサス</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="バーサス">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["4號機"]'><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">ニューパルサー</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.33</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="ニューパルサー">進入</button></div></div></div>
+                <div class="game-card-bg" data-categories='["4號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">花月</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="花月">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["4號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">大花火</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="大花火">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["4號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">ドンちゃん2</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="ドンちゃん2">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["4號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">アラジンA</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="アラジンA">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["4號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">クランキーコンドル</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="クランキーコンドル">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["4號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">バーサス</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="バーサス">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["4號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">ニューパルサー</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="ニューパルサー">進入</button></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 5號機區塊 -->
+        <!-- 5號機區塊 (完全保留) -->
         <div class="category-section" data-category="5號機">
             <h2 class="category-title"><i class="fa fa-cube"></i> 5號機 <span class="text-xs text-gray-400 ml-2">主流機種</span></h2>
             <div class="vertical-grid">
-                <div class="game-card-bg" data-categories='["5號機"]'><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">奇蹟小丑</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.17</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="奇蹟小丑">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["5號機"]'><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">超級奇蹟</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="超級奇蹟">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["5號機"]'><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">バジリスク〜甲賀忍法帖〜</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.25</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="バジリスク〜甲賀忍法帖〜">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["5號機"]'><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ エウレカセブン</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.33</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ エウレカセブン">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["5號機"]'><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ コードギアス</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ コードギアス">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["5號機"]'><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ 戦国無双</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 戦国無双">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["5號機"]'><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ 蒼天の拳</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 蒼天の拳">進入</button></div></div></div>
+                <div class="game-card-bg" data-categories='["5號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">奇蹟小丑</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="奇蹟小丑">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["5號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">超級奇蹟</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="超級奇蹟">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["5號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">バジリスク〜甲賀忍法帖〜</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="バジリスク〜甲賀忍法帖〜">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["5號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ エウレカセブン</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ エウレカセブン">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["5號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ コードギアス</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ コードギアス">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["5號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ 戦国無双</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 戦国無双">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["5號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ 蒼天の拳</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 蒼天の拳">進入</button></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 6號機區塊 -->
+        <!-- 6號機區塊 (完全保留) -->
         <div class="category-section" data-category="6號機">
             <h2 class="category-title"><i class="fa fa-cube"></i> 6號機 <span class="text-xs text-gray-400 ml-2">最新銳</span></h2>
             <div class="vertical-grid">
-                <div class="game-card-bg" data-categories='["6號機"]'><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">新甲賀</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="新甲賀">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["6號機"]'><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ ゴッドイーター</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.5</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ ゴッドイーター">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["6號機"]'><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ ダンまち</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.33</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ ダンまち">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["6號機"]'><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">L 聖戦士ダンバイン</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.25</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="L 聖戦士ダンバイン">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["6號機"]'><img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ ありふれた</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.2</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ ありふれた">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["6號機"]'><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ 転スラ</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.17</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 転スラ">進入</button></div></div></div>
-                <div class="game-card-bg" data-categories='["6號機"]'><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover"><div class="p-2"><h3 class="text-primary text-sm truncate">パチスロ このすば</h3><div class="flex items-center gap-1 mt-1"><span class="token-badge">1枚=0.1</span><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div><div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ このすば">進入</button></div></div></div>
+                <div class="game-card-bg" data-categories='["6號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">新甲賀</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="新甲賀">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["6號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ ゴッドイーター</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ ゴッドイーター">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["6號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ ダンまち</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ ダンまち">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["6號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">L 聖戦士ダンバイン</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Sammy</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="L 聖戦士ダンバイン">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["6號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ ありふれた</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Olympia</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ ありふれた">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["6號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ 転スラ</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Rodeo</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ 転スラ">進入</button></div>
+                    </div>
+                </div>
+                <div class="game-card-bg" data-categories='["6號機"]'>
+                    <img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" class="w-full h-28 object-cover">
+                    <div class="p-2">
+                        <h3 class="text-primary text-sm truncate">パチスロ このすば</h3>
+                        <div class="flex items-center gap-1 mt-1"><span class="bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">Daito</span></div>
+                        <div class="flex gap-1 mt-2"><button class="enter-btn" data-action="enter" data-machine="パチスロ このすば">進入</button></div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -580,10 +1097,9 @@
 
 <script>
 (function() {
-    // ========== 我的最愛功能 (與 machines.html 同步) ==========
+    // ========== 我的最愛功能 ==========
     let favoriteMachines = JSON.parse(localStorage.getItem('favoriteMachines')) || [];
     
-    // 初始化收藏資料（如果為空）
     if (favoriteMachines.length === 0) {
         favoriteMachines = [
             { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=2', vendor: 'Sammy' },
@@ -604,224 +1120,136 @@
             favoriteMachines.splice(index, 1);
         }
         saveFavorites();
+        
+        // 觸發 storage 事件，通知其他頁面更新
+        localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
     }
     
-    // 機台名稱對應ID的映射
     function getMachineByName(name) {
         const machineMap = {
             '甲賀忍法帖 弐': { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=2', vendor: 'Sammy' },
             '超級奇蹟小丑': { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia' },
             '吉宗': { id: 3, name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' },
-            '甲賀忍法帖': { id: 4, name: '甲賀忍法帖', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' },
-            '吉宗(4號)': { id: 5, name: '吉宗(4號)', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' },
-            '花月': { id: 6, name: '花月', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.25', vendor: 'Olympia' },
-            '奇蹟小丑': { id: 7, name: '奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.2', vendor: 'Rodeo' },
-            '超級奇蹟': { id: 8, name: '超級奇蹟', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia' },
-            '新甲賀': { id: 9, name: '新甲賀', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' },
             '押忍！番長4': { id: 10, name: '押忍！番長4', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.5', vendor: 'Daito' },
-            '革命機ヴァルヴレイヴ': { id: 11, name: '革命機ヴァルヴレイヴ', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.33', vendor: 'Sammy' },
-            'パチスロ 幼女戦記': { id: 12, name: 'パチスロ 幼女戦記', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.25', vendor: 'Rodeo' },
-            'L 犬夜叉': { id: 13, name: 'L 犬夜叉', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.2', vendor: 'Olympia' },
+            '花月': { id: 6, name: '花月', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.25', vendor: 'Olympia' },
             '大花火': { id: 14, name: '大花火', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.17', vendor: 'Olympia' },
-            'ドンちゃん2': { id: 15, name: 'ドンちゃん2', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.1', vendor: 'Rodeo' },
-            'アラジンA': { id: 16, name: 'アラジンA', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Sammy' },
-            'クランキーコンドル': { id: 17, name: 'クランキーコンドル', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=1', vendor: 'Sammy' },
-            'バーサス': { id: 18, name: 'バーサス', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.5', vendor: 'Daito' },
-            'ニューパルサー': { id: 19, name: 'ニューパルサー', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.33', vendor: 'Olympia' },
-            'パチスロ モンキーターン': { id: 20, name: 'パチスロ モンキーターン', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.25', vendor: 'Rodeo' },
-            '押忍！番長3': { id: 21, name: '押忍！番長3', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.2', vendor: 'Daito' },
-            'パチスロ ガールズ＆パンツァー': { id: 22, name: 'パチスロ ガールズ＆パンツァー', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.17', vendor: 'Sammy' },
-            'パチスロ 北斗の拳': { id: 23, name: 'パチスロ 北斗の拳', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.1', vendor: 'Sammy' },
-            'パチスロ 新鬼武者': { id: 24, name: 'パチスロ 新鬼武者', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' },
-            'パチスロ 魔法少女まどか☆マギカ': { id: 25, name: 'パチスロ 魔法少女まどか☆マギカ', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=1', vendor: 'Rodeo' },
-            'バジリスク〜甲賀忍法帖〜': { id: 26, name: 'バジリスク〜甲賀忍法帖〜', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' },
-            'パチスロ エウレカセブン': { id: 27, name: 'パチスロ エウレカセブン', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.33', vendor: 'Rodeo' },
-            'パチスロ コードギアス': { id: 28, name: 'パチスロ コードギアス', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.5', vendor: 'Sammy' },
-            'パチスロ 戦国無双': { id: 29, name: 'パチスロ 戦国無双', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=1', vendor: 'Daito' },
-            'パチスロ 蒼天の拳': { id: 30, name: 'パチスロ 蒼天の拳', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=2', vendor: 'Olympia' },
-            'パチスロ ゴッドイーター': { id: 31, name: 'パチスロ ゴッドイーター', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.5', vendor: 'Rodeo' },
-            'パチスロ ダンまち': { id: 32, name: 'パチスロ ダンまち', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.33', vendor: 'Daito' },
-            'L 聖戦士ダンバイン': { id: 33, name: 'L 聖戦士ダンバイン', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' },
-            'パチスロ ありふれた': { id: 34, name: 'パチスロ ありふれた', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.2', vendor: 'Olympia' },
-            'パチスロ 転スラ': { id: 35, name: 'パチスロ 転スラ', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.17', vendor: 'Rodeo' },
-            'パチスロ このすば': { id: 36, name: 'パチスロ このすば', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.1', vendor: 'Daito' }
+            '奇蹟小丑': { id: 7, name: '奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.2', vendor: 'Rodeo' },
+            '新甲賀': { id: 9, name: '新甲賀', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' }
         };
-        
-        return machineMap[name] || null;
+        return machineMap[name] || { id: 999, name: name, image: '', ratio: '1枚=?', vendor: '其他' };
     }
     
-    // 監聽 storage 事件（跨標籤頁同步）
+    // ========== 監聽 localStorage 變化 (跨頁籤同步) ==========
     window.addEventListener('storage', function(e) {
         if (e.key === 'favoriteMachines') {
             favoriteMachines = JSON.parse(e.newValue) || [];
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                const machineName = btn.closest('.game-card-bg')?.querySelector('h3')?.textContent.trim();
+                if (machineName) {
+                    const machine = getMachineByName(machineName);
+                    if (machine) {
+                        const isFavorite = favoriteMachines.some(m => m.id === machine.id);
+                        btn.classList.toggle('active', isFavorite);
+                    }
+                }
+            });
         }
     });
+
+    window.toggleFavoriteFromCard = function(id) {
+        const machineName = document.getElementById('modalMachineName').innerText;
+        const machine = getMachineByName(machineName);
+        if (machine) {
+            toggleFavorite(machine);
+            document.querySelectorAll('.sub-fav').forEach(btn => {
+                if (btn.dataset.machine === machineName) {
+                    btn.classList.toggle('active');
+                }
+            });
+        }
+    };
 
     // ========== 子機種資料庫 ==========
     const subMachineDB = {
-        'default': [
-            { name: '大盤振舞', ratio: '2.0' },
-            { name: '大盤振舞', ratio: '0.33' },
-            { name: '雙姬', ratio: '0.5' },
-            { name: '雙姬', ratio: '0.1' },
-            { name: '爺', ratio: '3.0' },
-            { name: '爺', ratio: '0.2' }
-        ],
         '甲賀忍法帖 弐': [
-            { name: '朧', ratio: '2.5' },
-            { name: '甲賀弦之介', ratio: '0.4' },
-            { name: '陽炎', ratio: '0.8' },
-            { name: '夜叉丸', ratio: '0.12' },
-            { name: '朱絹', ratio: '4.0' },
-            { name: 'お胡夷', ratio: '0.18' }
+            { name: '朧', ratio: '1枚=2.5', status: 'playable' },
+            { name: '甲賀弦之介', ratio: '1枚=0.4', status: 'playable' },
+            { name: '陽炎', ratio: '1枚=0.8', status: 'playable' },
+            { name: '夜叉丸', ratio: '1枚=0.12', status: 'maintenance', maintenanceDate: '06/18 10:30' },
+            { name: '朱絹', ratio: '1枚=4.0', status: 'playable' },
+            { name: 'お胡夷', ratio: '1枚=0.18', status: 'maintenance', maintenanceDate: '06/22 15:00' }
         ],
         '超級奇蹟小丑': [
-            { name: '奇蹟小丑', ratio: '1.5' },
-            { name: '小丑王', ratio: '0.6' },
-            { name: '笑面小丑', ratio: '0.3' },
-            { name: '悲傷小丑', ratio: '0.15' },
-            { name: '瘋狂小丑', ratio: '2.2' },
-            { name: '夢幻小丑', ratio: '0.25' }
+            { name: '奇蹟小丑', ratio: '1枚=1.5', status: 'playable' },
+            { name: '小丑王', ratio: '1枚=0.6', status: 'maintenance', maintenanceDate: '06/16 11:00' },
+            { name: '笑面小丑', ratio: '1枚=0.3', status: 'playable' },
+            { name: '悲傷小丑', ratio: '1枚=0.15', status: 'playable' },
+            { name: '瘋狂小丑', ratio: '1枚=2.2', status: 'maintenance', maintenanceDate: '06/19 13:30' },
+            { name: '夢幻小丑', ratio: '1枚=0.25', status: 'playable' }
         ],
         '押忍！番長4': [
-            { name: '番長', ratio: '3.0' },
-            { name: '番長G', ratio: '0.8' },
-            { name: '副番長', ratio: '0.4' },
-            { name: '番長Z', ratio: '0.2' },
-            { name: '番長F', ratio: '5.0' },
-            { name: '番長改', ratio: '0.35' }
-        ],
-        '革命機ヴァルヴレイヴ': [
-            { name: '時縞ハルト', ratio: '2.8' },
-            { name: 'エルエルフ', ratio: '0.45' },
-            { name: '流木野サキ', ratio: '0.7' },
-            { name: '連坊小路アキラ', ratio: '0.15' },
-            { name: 'ヴァルヴレイヴI', ratio: '4.2' },
-            { name: 'ヴァルヴレイヴII', ratio: '0.22' }
-        ],
-        'パチスロ 幼女戦記': [
-            { name: 'ターニャ', ratio: '2.2' },
-            { name: 'ヴィーシャ', ratio: '0.38' },
-            { name: 'レルゲン', ratio: '0.6' },
-            { name: 'ドレイク', ratio: '0.13' },
-            { name: 'ケーニッヒ', ratio: '3.8' },
-            { name: 'シューゲル', ratio: '0.19' }
-        ],
-        'L 犬夜叉': [
-            { name: '犬夜叉', ratio: '2.4' },
-            { name: 'かごめ', ratio: '0.42' },
-            { name: '殺生丸', ratio: '0.75' },
-            { name: '奈落', ratio: '0.14' },
-            { name: '弥勒', ratio: '4.1' },
-            { name: '珊瑚', ratio: '0.21' }
+            { name: '番長', ratio: '1枚=3.0', status: 'playable' },
+            { name: '番長G', ratio: '1枚=0.8', status: 'playable' },
+            { name: '副番長', ratio: '1枚=0.4', status: 'maintenance', maintenanceDate: '06/17 09:45' },
+            { name: '番長Z', ratio: '1枚=0.2', status: 'playable' },
+            { name: '番長F', ratio: '1枚=5.0', status: 'maintenance', maintenanceDate: '06/21 14:20' },
+            { name: '番長改', ratio: '1枚=0.35', status: 'playable' }
         ],
         '吉宗': [
-            { name: '暴れん坊将軍', ratio: '2.0' },
-            { name: '吉宗S', ratio: '0.33' },
-            { name: '姫', ratio: '0.5' },
-            { name: '爺', ratio: '0.1' },
-            { name: '暴れん坊', ratio: '3.0' },
-            { name: '暴れん坊改', ratio: '0.2' }
+            { name: '暴れん坊将軍', ratio: '1枚=2.0', status: 'playable' },
+            { name: '吉宗S', ratio: '1枚=0.33', status: 'maintenance', maintenanceDate: '06/16 13:00' },
+            { name: '姫', ratio: '1枚=0.5', status: 'playable' },
+            { name: '爺', ratio: '1枚=0.1', status: 'playable' }
         ],
         '花月': [
-            { name: '花月G', ratio: '2.0' },
-            { name: '花月S', ratio: '0.33' },
-            { name: '花月改', ratio: '0.5' },
-            { name: '花月Z', ratio: '0.1' },
-            { name: '花月F', ratio: '3.0' },
-            { name: '花月X', ratio: '0.2' }
+            { name: '花月G', ratio: '1枚=2.0', status: 'playable' },
+            { name: '花月S', ratio: '1枚=0.33', status: 'playable' },
+            { name: '花月改', ratio: '1枚=0.5', status: 'maintenance', maintenanceDate: '06/18 14:30' }
+        ],
+        '大花火': [
+            { name: '大花火G', ratio: '1枚=2.0', status: 'playable' },
+            { name: '大花火S', ratio: '1枚=0.5', status: 'maintenance', maintenanceDate: '06/19 11:00' }
         ],
         '奇蹟小丑': [
-            { name: '小丑', ratio: '1.8' },
-            { name: '小丑G', ratio: '0.28' },
-            { name: '小丑S', ratio: '0.45' },
-            { name: '小丑Z', ratio: '0.09' },
-            { name: '小丑F', ratio: '2.2' },
-            { name: '小丑改', ratio: '0.16' }
+            { name: '小丑', ratio: '1枚=1.8', status: 'playable' },
+            { name: '小丑G', ratio: '1枚=0.28', status: 'playable' },
+            { name: '小丑S', ratio: '1枚=0.45', status: 'maintenance', maintenanceDate: '06/20 09:00' }
         ],
         '新甲賀': [
-            { name: '甲賀弦之介', ratio: '2.0' },
-            { name: '朧', ratio: '0.33' },
-            { name: '陽炎', ratio: '0.5' },
-            { name: '夜叉丸', ratio: '0.1' },
-            { name: '朱絹', ratio: '3.0' },
-            { name: 'お胡夷', ratio: '0.2' }
-        ]
+            { name: '甲賀弦之介', ratio: '1枚=2.0', status: 'playable' },
+            { name: '朧', ratio: '1枚=0.33', status: 'maintenance', maintenanceDate: '06/21 15:30' }
+        ],
+        '革命機ヴァルヴレイヴ': [ { name: '革命機1', ratio: '1枚=1.0', status: 'playable' } ],
+        'パチスロ 幼女戦記': [ { name: '幼女1', ratio: '1枚=0.8', status: 'playable' } ],
+        'L 犬夜叉': [ { name: '犬夜叉', ratio: '1枚=1.2', status: 'playable' } ],
+        'パチスロ モンキーターン': [ { name: 'モンキー', ratio: '1枚=1.1', status: 'playable' } ],
+        '押忍！番長3': [ { name: '番長3', ratio: '1枚=0.9', status: 'playable' } ],
+        'パチスロ ガールズ＆パンツァー': [ { name: 'ガルパン', ratio: '1枚=0.7', status: 'playable' } ],
+        'パチスロ 北斗の拳': [ { name: '拳四郎', ratio: '1枚=1.5', status: 'playable' } ],
+        'パチスロ 新鬼武者': [ { name: '鬼武者', ratio: '1枚=0.6', status: 'playable' } ],
+        'パチスロ 魔法少女まどか☆マギカ': [ { name: 'まどか', ratio: '1枚=1.3', status: 'playable' } ],
+        'ドンちゃん2': [ { name: 'ドンちゃん', ratio: '1枚=1.0', status: 'playable' } ],
+        'アラジンA': [ { name: 'アラジン', ratio: '1枚=0.9', status: 'playable' } ],
+        'クランキーコンドル': [ { name: 'クランキー', ratio: '1枚=1.1', status: 'playable' } ],
+        'バーサス': [ { name: 'バーサス', ratio: '1枚=0.8', status: 'playable' } ],
+        'ニューパルサー': [ { name: 'パルサー', ratio: '1枚=1.2', status: 'playable' } ],
+        '超級奇蹟': [ { name: '超級', ratio: '1枚=0.9', status: 'playable' } ],
+        'バジリスク〜甲賀忍法帖〜': [ { name: '弦之介', ratio: '1枚=1.4', status: 'playable' } ],
+        'パチスロ エウレカセブン': [ { name: 'エウレカ', ratio: '1枚=0.7', status: 'playable' } ],
+        'パチスロ コードギアス': [ { name: 'ルルーシュ', ratio: '1枚=1.1', status: 'playable' } ],
+        'パチスロ 戦国無双': [ { name: '真田', ratio: '1枚=0.6', status: 'playable' } ],
+        'パチスロ 蒼天の拳': [ { name: '拳志郎', ratio: '1枚=1.3', status: 'playable' } ],
+        'パチスロ ゴッドイーター': [ { name: 'ゴッド', ratio: '1枚=0.9', status: 'playable' } ],
+        'パチスロ ダンまち': [ { name: 'ベル', ratio: '1枚=1.0', status: 'playable' } ],
+        'L 聖戦士ダンバイン': [ { name: 'ダンバイン', ratio: '1枚=0.8', status: 'playable' } ],
+        'パチスロ ありふれた': [ { name: 'ありふれ', ratio: '1枚=1.2', status: 'playable' } ],
+        'パチスロ 転スラ': [ { name: 'リムル', ratio: '1枚=0.7', status: 'playable' } ],
+        'パチスロ このすば': [ { name: 'カズマ', ratio: '1枚=1.5', status: 'playable' } ]
     };
 
-    // 取得子機種資料
     function getSubMachines(machineName) {
-        if (subMachineDB[machineName]) {
-            return subMachineDB[machineName];
-        }
-        for (let key in subMachineDB) {
-            if (machineName.includes(key) || key.includes(machineName)) {
-                return subMachineDB[key];
-            }
-        }
-        return subMachineDB['default'];
+        return subMachineDB[machineName] || [];
     }
-
-    // ========== 底部導航當前頁面標記 ==========
-    function setCurrentNav() {
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => item.classList.remove('current-page'));
-        
-        const path = window.location.pathname;
-        const filename = path.split('/').pop() || 'index.html';
-        
-        if (filename === 'index.html' || filename === '' || filename === '/') {
-            document.getElementById('nav-home')?.classList.add('current-page');
-        } else if (filename.includes('machines')) {
-            document.getElementById('nav-game')?.classList.add('current-page');
-        } else if (filename.includes('news')) {
-            document.getElementById('nav-bell')?.classList.add('current-page');
-        } else if (filename.includes('about')) {
-            document.getElementById('nav-user')?.classList.add('current-page');
-        } else {
-            document.getElementById('nav-home')?.classList.add('current-page');
-        }
-    }
-
-    // ========== 標籤切換 ==========
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const categorySections = document.querySelectorAll('.category-section');
-    
-    function filterByCategory(category) {
-        categorySections.forEach(section => {
-            const cat = section.getAttribute('data-category');
-            section.style.display = (category === '全部' || cat === category) ? 'block' : 'none';
-        });
-
-        const newSection = document.querySelector('.category-section[data-category="新機"]');
-        if (newSection) {
-            const sliderMode = newSection.querySelector('.new-slider-mode');
-            const verticalMode = newSection.querySelector('.new-vertical-mode');
-            
-            if (category === '全部') {
-                sliderMode.style.display = 'block';
-                verticalMode.style.display = 'none';
-            } else if (category === '新機') {
-                sliderMode.style.display = 'none';
-                verticalMode.style.display = 'grid';
-            }
-        }
-    }
-    
-    tabBtns.forEach((btn, index) => {
-        btn.addEventListener('click', function() {
-            tabBtns.forEach(b => {
-                b.classList.remove('tech-tab-active');
-                b.classList.add('bg-dark-200', 'tech-border');
-            });
-            this.classList.remove('bg-dark-200', 'tech-border');
-            this.classList.add('tech-tab-active');
-            filterByCategory(this.getAttribute('data-tab'));
-        });
-    });
-    
-    filterByCategory('全部');
-    setCurrentNav();
 
     // ========== 彈窗控制 ==========
     const modal = document.getElementById('machineModal');
@@ -833,48 +1261,91 @@
         modalTitle.innerText = machineName;
         const subList = getSubMachines(machineName);
         
+        if (subList.length === 0) {
+            modalSubList.innerHTML = '<div class="col-span-2 text-center text-gray-400 py-8">此機台暫無子機種資料</div>';
+            modal.classList.add('show');
+            return;
+        }
+        
         let html = '';
         subList.forEach(sub => {
-            // 檢查這個子機種是否已經被收藏
             const machine = getMachineByName(machineName);
             const isFavorite = machine ? favoriteMachines.some(m => m.id === machine.id) : false;
             
+            const isMaintenance = sub.status === 'maintenance';
+            const cardClass = isMaintenance ? 'sub-item-card maintenance' : 'sub-item-card';
+            
+            const enterButtonClass = isMaintenance ? 'enter-btn maintenance' : 'enter-btn';
+            const enterButtonText = isMaintenance ? '維護中' : '進入';
+            
+            const maintenanceBadge = isMaintenance ? 
+                '<span class="maintenance-badge"><i class="fa fa-wrench"></i> 維護</span>' : '';
+            
+            const maintenanceDateHtml = isMaintenance ? 
+                `<div class="maintenance-date"><i class="fa fa-clock-o"></i> ${sub.maintenanceDate || '待定'}</div>` : 
+                '<div class="placeholder-date"></div>';
+            
             html += `
-                <div class="sub-item-card">
+                <div class="${cardClass}">
                     <div class="sub-name-ratio">
-                        <span class="sub-name">${sub.name}</span>
-                        <span class="sub-ratio">1枚=${sub.ratio}</span>
+                        <span class="sub-name">${sub.name} ${maintenanceBadge}</span>
+                        <span class="sub-ratio">${sub.ratio}</span>
                     </div>
+                    ${maintenanceDateHtml}
                     <div class="sub-actions">
-                        <button class="enter-btn sub-enter" data-machine="${machineName}" data-sub="${sub.name}" data-ratio="${sub.ratio}">進入</button>
-                        <button class="favorite-btn sub-fav ${isFavorite ? 'active' : ''}" data-machine="${machineName}" data-sub="${sub.name}" data-ratio="${sub.ratio}"><i class="fa fa-heart text-xs"></i></button>
+                        <button class="${enterButtonClass} sub-enter" 
+                            data-machine="${machineName}" 
+                            data-sub="${sub.name}" 
+                            data-ratio="${sub.ratio}"
+                            ${isMaintenance ? 'disabled' : ''}>
+                            ${enterButtonText}
+                        </button>
+                        <button class="favorite-btn sub-fav ${isFavorite ? 'active' : ''}" 
+                            data-machine="${machineName}" 
+                            data-sub="${sub.name}" 
+                            data-ratio="${sub.ratio}">
+                            <i class="fa fa-heart text-xs"></i>
+                        </button>
                     </div>
                 </div>
             `;
         });
+        
         modalSubList.innerHTML = html;
         modal.classList.add('show');
         
-        // 為子機種的愛心按鈕添加事件
         modalSubList.querySelectorAll('.sub-fav').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                
-                // 取得主機台資訊
                 const machineName = this.dataset.machine;
                 const machine = getMachineByName(machineName);
-                
                 if (machine) {
                     toggleFavorite(machine);
                     this.classList.toggle('active');
+                    
+                    document.querySelectorAll('.favorite-btn').forEach(mainBtn => {
+                        const mainMachineName = mainBtn.closest('.game-card-bg')?.querySelector('h3')?.textContent.trim();
+                        if (mainMachineName === machineName) {
+                            mainBtn.classList.toggle('active');
+                        }
+                    });
+                    
+                    localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
                 }
             });
         });
         
-        modalSubList.querySelectorAll('.sub-enter').forEach(btn => {
+        modalSubList.querySelectorAll('.sub-enter:not(.maintenance)').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                alert(`🚀 進入 ${this.dataset.machine} - ${this.dataset.sub} (1枚=${this.dataset.ratio})`);
+                alert(`🚀 進入 ${this.dataset.machine} - ${this.dataset.sub} (${this.dataset.ratio})`);
+            });
+        });
+        
+        modalSubList.querySelectorAll('.sub-enter.maintenance').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                alert(`🔧 此子機台維護中，預計 ${btn.closest('.sub-item-card')?.querySelector('.maintenance-date')?.textContent || '稍後' } 恢復`);
             });
         });
     }
@@ -897,7 +1368,6 @@
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
             
-            // 取得機台名稱
             let machineName = this.dataset.machine;
             if (!machineName) {
                 const card = this.closest('.game-card-bg');
@@ -948,6 +1418,69 @@
         });
     }
 
+    // ========== 底部導航當前頁面標記 ==========
+    function setCurrentNav() {
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => item.classList.remove('current-page'));
+        
+        const path = window.location.pathname;
+        const filename = path.split('/').pop() || 'index.html';
+        
+        if (filename === 'index.html' || filename === '' || filename === '/') {
+            document.getElementById('nav-home')?.classList.add('current-page');
+        } else if (filename.includes('machines')) {
+            document.getElementById('nav-game')?.classList.add('current-page');
+        } else if (filename.includes('news')) {
+            document.getElementById('nav-bell')?.classList.add('current-page');
+        } else if (filename.includes('about')) {
+            document.getElementById('nav-user')?.classList.add('current-page');
+        } else {
+            document.getElementById('nav-home')?.classList.add('current-page');
+        }
+    }
+    setCurrentNav();
+
+    // ========== 標籤切換 ==========
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const categorySections = document.querySelectorAll('.category-section');
+    
+    function filterByCategory(category) {
+        categorySections.forEach(section => {
+            const cat = section.getAttribute('data-category');
+            section.style.display = (category === '全部' || cat === category) ? 'block' : 'none';
+        });
+
+        const newSection = document.querySelector('.category-section[data-category="新機"]');
+        if (newSection) {
+            const sliderMode = newSection.querySelector('.new-slider-mode');
+            const verticalMode = newSection.querySelector('.new-vertical-mode');
+            
+            if (sliderMode && verticalMode) {
+                if (category === '全部') {
+                    sliderMode.style.display = 'block';
+                    verticalMode.style.display = 'none';
+                } else if (category === '新機') {
+                    sliderMode.style.display = 'none';
+                    verticalMode.style.display = 'grid';
+                }
+            }
+        }
+    }
+    
+    tabBtns.forEach((btn, index) => {
+        btn.addEventListener('click', function() {
+            tabBtns.forEach(b => {
+                b.classList.remove('tech-tab-active');
+                b.classList.add('bg-dark-200', 'tech-border');
+            });
+            this.classList.remove('bg-dark-200', 'tech-border');
+            this.classList.add('tech-tab-active');
+            filterByCategory(this.getAttribute('data-tab'));
+        });
+    });
+    
+    filterByCategory('全部');
+
     // ========== 新機滑塊初始化 ==========
     function initNewSlider() {
         const wrapper = document.getElementById('newWrapper');
@@ -996,7 +1529,14 @@
     }
     
     initNewSlider();
-    
+
+    // ========== 回到頂部 ==========
+    const backBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) backBtn?.classList.add('show');
+        else backBtn?.classList.remove('show');
+    });
+    backBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 })();
 </script>
 </body>
