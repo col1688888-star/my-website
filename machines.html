@@ -727,12 +727,12 @@
         <div id="favorite-section" class="category-section">
             <div class="section-header">
                 <h2 class="section-title"><i class="fa fa-heart text-pink-400"></i> 我的最愛</h2>
-                <span class="section-count" id="favoriteCount">3 台</span>
+                <span class="section-count" id="favoriteCount">0 台</span>
             </div>
             <div id="favoriteContainer">
                 <!-- 最愛卡片會由 JavaScript 動態產生 -->
             </div>
-            <div id="noFavoriteMsg" class="text-center py-12 text-gray-400 hidden">
+            <div id="noFavoriteMsg" class="text-center py-12 text-gray-400">
                 <i class="fa fa-heart-o text-5xl mb-3 opacity-50"></i>
                 <p class="text-lg">尚未加入任何最愛</p>
                 <p class="text-sm mt-2 text-gray-500">點擊機台上的愛心❤️ 開始收藏</p>
@@ -820,11 +820,11 @@
                 { id:6, name:'花月', minutes:60 }
             ];
 
-            // 維護中機台
+            // 維護中機台 - 已補上圖片
             const maintenanceMachines = [
-                { id:1, name:'甲賀忍法帖 弐' },
-                { id:2, name:'超級奇蹟小丑' },
-                { id:5, name:'吉宗(4號)' },
+                { id:1, name:'甲賀忍法帖 弐', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=2', vendor:'Sammy' },
+                { id:2, name:'超級奇蹟小丑', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
+                { id:5, name:'吉宗(4號)', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
                 { id:10, name:'押忍！番長', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
                 { id:11, name:'秘寶傳', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
                 { id:12, name:'北斗神拳', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=0.5', vendor:'Sammy' }
@@ -833,12 +833,9 @@
             // ==================== 我的最愛功能 ====================
             let favoriteMachines = JSON.parse(localStorage.getItem('favoriteMachines')) || [];
             
-            // 初始化收藏資料
+            // 初始化收藏資料 - 預設為空
             if (favoriteMachines.length === 0) {
-                favoriteMachines = [
-                    { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=2', vendor: 'Sammy' },
-                    { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia' }
-                ];
+                favoriteMachines = [];
                 localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
             }
             
@@ -968,13 +965,7 @@
                 
                 let html = '';
                 maintenanceMachines.forEach(item => {
-                    const machine = machineDatabase.find(m => m.id === item.id) || {
-                        id: item.id,
-                        name: item.name,
-                        image: item.image || 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png',
-                        ratio: item.ratio || '1枚=1',
-                        vendor: item.vendor || '未知'
-                    };
+                    const machine = machineDatabase.find(m => m.id === item.id) || item;
                     
                     const tokenClass = machine.ratio === '1枚=2' ? 'token-badge gold-enhanced' : 'token-badge';
                     
@@ -1135,6 +1126,15 @@
                         document.getElementById('maintenance-section').classList.remove('hidden');
                     }
                 });
+            });
+
+            // ==================== ★★★ 新增：監聽 storage 事件 (跨頁籤同步) ★★★ ====================
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'favoriteMachines') {
+                    favoriteMachines = JSON.parse(e.newValue) || [];
+                    renderFavoriteList();
+                    updateFavoriteButtons();
+                }
             });
 
             // ==================== 初始化 ====================
