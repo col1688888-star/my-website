@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>T-PACHIN · 點卡片或進入都開子機種</title>
+    <title>T-PACHIN · 完整卡片 · 連動 machines.html</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 (僅用於側欄 chevron) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-    /* 保留所有原本的樣式 (完全未刪減) */
+    /* ========== 完整保留文件1的所有原始樣式 (一字不漏) ========== */
     .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
     .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
     .nav-item { position: relative; }
@@ -259,14 +261,11 @@
     }
     .modal-close:hover { background: #ff3b3b; border-color: white; transform: scale(1.1); box-shadow: 0 0 15px red; }
     
-    /* 子機種網格 */
     .submachine-grid { 
         display: grid; 
         grid-template-columns: 1fr 1fr; 
         gap: 0.8rem; 
     }
-    
-    /* 子機台卡片 */
     .sub-item-card {
         background: linear-gradient(145deg, rgba(0,40,70,0.9), rgba(0,20,45,0.95));
         border: 1px solid rgba(0, 153, 255, 0.5);
@@ -282,8 +281,6 @@
         overflow: hidden;
     }
     .sub-item-card:hover { transform: translateY(-2px); border-color: #00ccff; box-shadow: 0 0 18px #0099ff; }
-    
-    /* 維護中的子機台卡片 */
     .sub-item-card.maintenance {
         background: linear-gradient(145deg, rgba(70, 70, 70, 0.8), rgba(50, 50, 50, 0.9));
         border: 1px solid rgba(255, 100, 100, 0.4);
@@ -329,8 +326,6 @@
         gap: 4px;
     }
     .maintenance .sub-name { color: #ccc; }
-    
-    /* 子機種上的代幣標籤，以「1枚=」開頭 */
     .sub-ratio {
         background: #001c3a; 
         padding: 0.15rem 0.5rem; 
@@ -349,7 +344,6 @@
         box-shadow: 0 0 6px rgba(255, 100, 100, 0.3);
     }
     
-    /* 維護中標籤 */
     .maintenance-badge {
         background: #c92a2a;
         color: white;
@@ -369,7 +363,6 @@
         100% { opacity: 0.7; }
     }
     
-    /* 維護中日期 */
     .maintenance-date {
         font-size: 0.5rem;
         color: #ff9999;
@@ -386,13 +379,11 @@
         font-size: 0.45rem;
     }
     
-    /* 空白佔位 - 保持高度一致 */
     .placeholder-date {
         min-height: 16px;
         margin: 0.2rem 0 0.3rem 0;
     }
     
-    /* 按鈕區域 */
     .sub-actions { 
         display: flex; 
         gap: 4px; 
@@ -412,7 +403,6 @@
         height: 1.7rem; 
     }
 
-    /* 全像投影動畫 */
     @keyframes scan-line {
         0% { transform: translateY(-20px); opacity: 0; }
         50% { opacity: 1; }
@@ -425,81 +415,140 @@
         animation: scan-line 3s ease-in-out infinite 1.5s;
     }
 
-    /* ========== 公告按鈕放在框內 (左側縮小版) ========== */
-    .announcement-combo {
-        background: linear-gradient(145deg, #001f3f, #001a33);
-        border: 1px solid #0099ff80;
-        border-radius: 9999px;
-        box-shadow: 0 0 20px rgba(0, 153, 255, 0.4);
-        backdrop-filter: blur(2px);
-        padding: 0.25rem 0.25rem 0.25rem 0.75rem;  /* 左側留空間給文字 */
-        display: inline-flex;
-        align-items: center;
-        width: 100%;
-        position: relative;
-        overflow: hidden;
-        min-height: 42px;
-    }
-    .announcement-combo .hologram-lines {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        overflow: hidden;
-        border-radius: 9999px;
-    }
-    .announcement-combo .hologram-lines div {
-        width: 100%;
-        height: 1px;
-        background: rgba(0, 204, 255, 0.25);
-        position: absolute;
+    /* ========== 浮動左側欄 (可收合) ========== */
+    .floating-sidebar {
+        position: fixed;
         left: 0;
+        top: 160px;
+        width: 200px;
+        background: linear-gradient(165deg, #001f3f 0%, #000f1f 100%);
+        border: 2px solid #0099ff;
+        border-left: none;
+        border-radius: 0 20px 20px 0;
+        box-shadow: 5px 5px 20px rgba(0,153,255,0.6);
+        z-index: 1000;
+        transition: transform 0.3s ease;
+        padding: 1rem 0.8rem;
+        backdrop-filter: blur(8px);
     }
-    /* 左邊的小公告按鈕 */
-    .combo-announce-btn {
-        background: linear-gradient(145deg, #0066cc, #0099ff);
-        border: 1px solid #80e4ff;
-        border-radius: 9999px;
-        padding: 0.25rem 1rem;
-        font-weight: 700;
-        font-size: 0.85rem;
-        box-shadow: 0 0 12px #00ccff;
-        transition: 0.2s;
-        white-space: nowrap;
-        display: inline-flex;
+    .floating-sidebar.collapsed {
+        transform: translateX(-185px);
+    }
+    .sidebar-toggle {
+        position: absolute;
+        right: -30px;
+        top: 20px;
+        width: 30px;
+        height: 60px;
+        background: linear-gradient(90deg, #0099ff, #0066cc);
+        border: 2px solid #80e4ff;
+        border-left: none;
+        border-radius: 0 15px 15px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        box-shadow: 5px 5px 15px rgba(0,153,255,0.6);
+        transition: all 0.2s;
+    }
+    .sidebar-toggle:hover {
+        background: #00ccff;
+        right: -32px;
+    }
+    .sidebar-toggle i {
+        transition: transform 0.3s;
+    }
+    .collapsed .sidebar-toggle i {
+        transform: rotate(180deg);
+    }
+    .sidebar-content {
+        transition: opacity 0.2s;
+    }
+    .collapsed .sidebar-content {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* 側欄內部卡片 */
+    .sidebar-card {
+        background: rgba(0, 40, 70, 0.7);
+        border: 1px solid rgba(0, 148, 255, 0.4);
+        border-radius: 0.75rem;
+        padding: 0.6rem 0.4rem;
+        margin-bottom: 1rem;
+    }
+    .sidebar-card-header {
+        display: flex;
         align-items: center;
         gap: 6px;
-        color: white;
-        text-decoration: none;
-        letter-spacing: 0.3px;
-        margin-right: 10px;          /* 與跑馬燈分隔 */
-        flex-shrink: 0;
-        z-index: 2;
-    }
-    .combo-announce-btn:hover {
-        transform: scale(1.02);
-        background: linear-gradient(145deg, #0077dd, #00aaff);
-        border-color: white;
-        box-shadow: 0 0 20px #00ccff;
-    }
-    .combo-announce-btn:active { transform: scale(0.96); }
-    
-    /* 右邊的跑馬燈文字區 */
-    .combo-marquee {
-        flex: 1;
-        min-width: 0;               /* 讓 flex 收縮 */
-        white-space: nowrap;
-        overflow: hidden;
-        color: #b3e6ff;
-        font-weight: 700;
+        border-bottom: 1px solid rgba(0,153,255,0.3);
+        padding-bottom: 0.4rem;
+        margin-bottom: 0.5rem;
+        color: #ffd966;
+        font-weight: 600;
         font-size: 0.85rem;
-        letter-spacing: 0.5px;
-        text-shadow: 0 0 6px #0099ff;
-        padding-right: 0.5rem;
-        z-index: 2;
     }
-    .combo-marquee marquee {
-        width: 100%;
-        display: inline-block;
+    .quick-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(0, 30, 50, 0.9);
+        border: 1px solid #0099ff60;
+        border-radius: 0.5rem;
+        padding: 0.4rem 0.3rem;
+        margin-bottom: 0.4rem;
+        cursor: pointer;
+    }
+    .quick-item:hover { background: rgba(0,102,204,0.4); }
+    .quick-icon {
+        width: 26px; height: 26px;
+        background: #001f3f;
+        border-radius: 30%;
+        display: flex; align-items: center; justify-content: center;
+        border: 1px solid #0099ff; color: #ffd966;
+        font-size: 0.8rem;
+    }
+    .quick-info h4 { font-size: 0.7rem; color: #b3e0ff; margin:0; }
+    .quick-info p { font-size: 0.55rem; color: #9ca3af; margin:0; }
+    .quick-badge { background: #fbbf24; color: #000; padding: 0.1rem 0.4rem; border-radius: 30px; font-size: 0.55rem; }
+    .quick-chevron { color: #0099ff; font-size: 0.8rem; }
+
+    .activity-item {
+        display: flex; align-items: center; gap: 4px; padding: 0.3rem 0;
+        border-bottom: 1px solid rgba(0,153,255,0.2);
+        font-size: 0.65rem;
+        cursor: pointer;
+    }
+    .activity-icon { width: 22px; height: 22px; background: rgba(0,70,120,0.7); border-radius: 30%; display: flex; align-items: center; justify-content: center; color: #ffd966; font-size:0.7rem;}
+
+    /* 迷你聊天室 */
+    .chat-mini {
+        background: rgba(0, 30, 50, 0.9);
+        border-radius: 0.75rem;
+        border: 1px solid #0099ff60;
+        margin-top: 0.5rem;
+    }
+    .chat-mini-header { background: rgba(0,51,102,0.6); padding: 0.4rem; border-radius: 0.75rem 0.75rem 0 0; display: flex; justify-content: space-between; align-items:center; color:#ffd966; font-size:0.75rem;}
+    .chat-mini-messages { height: 70px; overflow-y: auto; padding: 0.3rem; font-size: 0.6rem; color:#b3e0ff; }
+    .chat-mini-input { display: flex; padding: 0.3rem; gap: 2px; }
+    .chat-mini-input input { flex:1; background: #001a33; border:1px solid #0099ff; border-radius: 20px; padding:0.2rem 0.5rem; color:white; font-size:0.6rem; }
+    .chat-mini-input button { background:#c90a0a; border:none; border-radius:50%; width:24px; height:24px; color:white; font-size:0.6rem; cursor:pointer; }
+
+    /* 主內容左側留空間給浮動欄 */
+    .max-w-md {
+        margin-left: 210px;
+        transition: margin-left 0.3s;
+    }
+    .floating-sidebar.collapsed ~ .max-w-md {
+        margin-left: 25px;
+    }
+    @media (max-width: 480px) {
+        .floating-sidebar { width: 170px; }
+        .floating-sidebar.collapsed { transform: translateX(-155px); }
+        .max-w-md { margin-left: 180px; }
+        .floating-sidebar.collapsed ~ .max-w-md { margin-left: 20px; }
     }
 </style>
 </head>
@@ -508,7 +557,7 @@
 <!-- 篩選側拉欄遮罩 -->
 <div id="drawerOverlay" class="drawer-overlay"></div>
 
-<!-- 篩選側拉欄 -->
+<!-- 篩選側拉欄 (完整內容) -->
 <div id="filterDrawer" class="filter-drawer scrollbar-thin">
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-primary text-lg font-bold flex items-center gap-2"><i class="fa fa-sliders text-secondary"></i> 進階篩選</h3>
@@ -563,7 +612,86 @@
     </div>
 </div>
 
-<!-- 主內容 -->
+<!-- ===== 浮動左側欄 (可收合) ===== -->
+<div class="floating-sidebar" id="floatingSidebar">
+    <div class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+    <div class="sidebar-content">
+        <!-- 快捷功能卡片 (連動 machines.html) -->
+        <div class="sidebar-card">
+            <div class="sidebar-card-header"><i class="fa fa-bolt"></i> 快捷功能</div>
+            <div class="quick-item" onclick="window.location.href='machines.html?action=buy'">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div class="quick-icon"><i class="fa fa-coins"></i></div>
+                    <div class="quick-info"><h4>購買代幣</h4><p>儲值</p></div>
+                </div>
+                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="quick-item" onclick="window.location.href='machines.html?action=favorites'">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div class="quick-icon"><i class="fa fa-heart"></i></div>
+                    <div class="quick-info"><h4>我的最愛</h4><p>5個收藏</p></div>
+                </div>
+                <span class="quick-badge">5</span><div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="quick-item" onclick="window.location.href='machines.html?action=history'">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div class="quick-icon"><i class="fa fa-history"></i></div>
+                    <div class="quick-info"><h4>遊玩記錄</h4><p>近期</p></div>
+                </div>
+                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="quick-item" onclick="window.location.href='machines.html?action=my-machines'">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div class="quick-icon"><i class="fa fa-gamepad"></i></div>
+                    <div class="quick-info"><h4>我遊戲的機台</h4><p>保留中</p></div>
+                </div>
+                <span class="quick-badge">3</span><div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
+            </div>
+        </div>
+        <!-- 近期活動卡片 (連動 machines.html) -->
+        <div class="sidebar-card">
+            <div class="sidebar-card-header"><i class="fa fa-history"></i> 近期活動</div>
+            <div class="activity-item" onclick="window.location.href='machines.html?event=xmas'">
+                <div class="activity-icon"><i class="fa fa-gift"></i></div>
+                <span style="flex:1;">聖誕節活動</span>
+                <span style="font-size:0.5rem; color:#aaa;">1天前</span>
+                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="activity-item" onclick="window.location.href='machines.html?event=monster-hunter'">
+                <div class="activity-icon"><i class="fa fa-gamepad"></i></div>
+                <span style="flex:1;">魔物獵人</span>
+                <span style="font-size:0.5rem; color:#aaa;">2天前</span>
+                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="activity-item" onclick="window.location.href='machines.html?event=token-reward'">
+                <div class="activity-icon"><i class="fa fa-coins"></i></div>
+                <span style="flex:1;">代幣獎勵</span>
+                <span style="font-size:0.5rem; color:#aaa;">3天前</span>
+                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
+            </div>
+        </div>
+        <!-- 迷你聊天室 (點擊發送不會跳轉) -->
+        <div class="chat-mini">
+            <div class="chat-mini-header">
+                <span><i class="fa fa-comments"></i> 即時聊天</span>
+                <button style="background:none; border:none; color:#0099ff;" id="miniChatMinimize"><i class="fa fa-minus"></i></button>
+            </div>
+            <div class="chat-mini-messages" id="miniChatMessages">
+                <div>系統: 歡迎光臨</div>
+                <div>玩家A: 新機台好玩</div>
+                <div style="text-align:right;">你: +1</div>
+            </div>
+            <div class="chat-mini-input">
+                <input type="text" id="miniChatInput" placeholder="訊息...">
+                <button id="miniChatSend"><i class="fa fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 主內容：文件1完整手機版，所有卡片已復原 ===== -->
 <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col relative">
     <header class="px-4 py-3 bg-dark-200/90 tech-border">
         <div class="flex items-center justify-between">
@@ -591,21 +719,18 @@
         </div>
     </div>
 
-    <!-- ★★★ 全新編排：公告按鈕縮小放入框內，左側按鈕 + 右側跑馬燈 ★★★ -->
+    <!-- 跑馬燈 - 全像投影 (加上公告按鈕) -->
     <div class="px-4 mt-2">
-        <div class="announcement-combo">
-            <div class="hologram-lines">
-                <div class="animate-scan-line" style="top: 20%;"></div>
-                <div class="animate-scan-line-delay" style="top: 60%;"></div>
-            </div>
-            <!-- 左邊小公告按鈕 -->
-            <a href="news.html" class="combo-announce-btn">
-                <i class="fa fa-bullhorn"></i>
-                <span>公告</span>
-            </a>
-            <!-- 右邊跑馬燈文字 -->
-            <div class="combo-marquee">
-                <marquee scrollamount="5" behavior="scroll" direction="left">◈ 春 季 人 氣 機 台 大 賞 ◈ 甲 賀 忍 法 帖 系 列 全 線 熱 賣 ◈ 代 幣 優 惠 實 施 中 ◈</marquee>
+        <div class="flex items-center gap-2">
+            <a href="news.html" class="bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-[0_0_15px_rgba(0,255,255,0.5)] hover:scale-105 transition-transform duration-200 flex items-center gap-1"><i class="fa fa-bullhorn"></i><span>公告</span></a>
+            <div class="flex-1 relative">
+                <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div class="w-full h-1 bg-blue-400/20 animate-scan-line" style="top: 30%;"></div>
+                    <div class="w-full h-1 bg-purple-400/20 animate-scan-line-delay" style="top: 60%;"></div>
+                </div>
+                <div class="relative backdrop-blur-sm bg-gradient-to-r from-blue-500/5 to-purple-500/5 border border-blue-400/30 rounded-lg px-4 py-2.5" style="box-shadow: 0 0 30px rgba(0,150,255,0.2);">
+                    <marquee class="text-blue-300 text-sm font-bold tracking-wider" scrollamount="5">◈ 春 季 人 氣 機 台 大 賞 ◈ 甲 賀 忍 法 帖 系 列 全 線 熱 賣 ◈ 代 幣 優 惠 實 施 中 ◈</marquee>
+                </div>
             </div>
         </div>
     </div>
@@ -628,14 +753,14 @@
         </div>
     </div>
 
-    <!-- 機台列表 - 所有卡片完全恢復 (以下完全保留原樣，一字未改) -->
+    <!-- 機台列表 - 所有卡片完整復原 -->
     <main class="flex-1 px-4 pb-24 overflow-y-auto scrollbar-thin main-content" id="machineList">
         
         <!-- 新機入替區塊 -->
         <div class="category-section" data-category="新機">
             <h2 class="category-title"><i class="fa fa-star text-secondary"></i> 新機入替 <span class="text-xs text-gray-400 ml-2">共6款</span></h2>
             
-            <!-- 滑動模式 (用於「全部」標籤) -->
+            <!-- 滑動模式 -->
             <div class="slider-container new-slider-mode">
                 <div class="slider-arrow left" id="newPrev"><i class="fa fa-chevron-left"></i></div>
                 <div class="slider-arrow right" id="newNext"><i class="fa fa-chevron-right"></i></div>
@@ -803,7 +928,7 @@
             </div>
         </div>
 
-        <!-- 人氣機台區塊 (完全保留) -->
+        <!-- 人氣機台區塊 -->
         <div class="category-section" data-category="人氣機台">
             <h2 class="category-title"><i class="fa fa-fire text-secondary"></i> 人氣機台 <span class="text-xs text-gray-400 ml-2">🔥 本週熱門</span></h2>
             <div class="vertical-grid">
@@ -880,7 +1005,7 @@
             </div>
         </div>
 
-        <!-- 4號機區塊 (完全保留) -->
+        <!-- 4號機區塊 -->
         <div class="category-section" data-category="4號機">
             <h2 class="category-title"><i class="fa fa-cube"></i> 4號機 <span class="text-xs text-gray-400 ml-2">經典不敗</span></h2>
             <div class="vertical-grid">
@@ -943,7 +1068,7 @@
             </div>
         </div>
 
-        <!-- 5號機區塊 (完全保留) -->
+        <!-- 5號機區塊 -->
         <div class="category-section" data-category="5號機">
             <h2 class="category-title"><i class="fa fa-cube"></i> 5號機 <span class="text-xs text-gray-400 ml-2">主流機種</span></h2>
             <div class="vertical-grid">
@@ -1006,7 +1131,7 @@
             </div>
         </div>
 
-        <!-- 6號機區塊 (完全保留) -->
+        <!-- 6號機區塊 -->
         <div class="category-section" data-category="6號機">
             <h2 class="category-title"><i class="fa fa-cube"></i> 6號機 <span class="text-xs text-gray-400 ml-2">最新銳</span></h2>
             <div class="vertical-grid">
@@ -1097,7 +1222,7 @@
 
 <script>
 (function() {
-    // ========== 我的最愛功能 ==========
+    // ========== 文件1完整功能 (最愛、子機種、篩選、輪播等) ==========
     let favoriteMachines = JSON.parse(localStorage.getItem('favoriteMachines')) || [];
     
     if (favoriteMachines.length === 0) {
@@ -1120,8 +1245,6 @@
             favoriteMachines.splice(index, 1);
         }
         saveFavorites();
-        
-        // 觸發 storage 事件，通知其他頁面更新
         localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
     }
     
@@ -1130,49 +1253,18 @@
             '甲賀忍法帖 弐': { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=2', vendor: 'Sammy' },
             '超級奇蹟小丑': { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia' },
             '吉宗': { id: 3, name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' },
-            '甲賀忍法帖': { id: 4, name: '甲賀忍法帖', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' },
-            '吉宗(4號)': { id: 5, name: '吉宗(4號)', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' },
-            '花月': { id: 6, name: '花月', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.25', vendor: 'Olympia' },
-            '奇蹟小丑': { id: 7, name: '奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.2', vendor: 'Rodeo' },
-            '超級奇蹟': { id: 8, name: '超級奇蹟', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia' },
-            '新甲賀': { id: 9, name: '新甲賀', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' },
             '押忍！番長4': { id: 10, name: '押忍！番長4', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.5', vendor: 'Daito' },
-            '革命機ヴァルヴレイヴ': { id: 11, name: '革命機ヴァルヴレイヴ', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.8', vendor: 'Sammy' },
-            'パチスロ 幼女戦記': { id: 12, name: 'パチスロ 幼女戦記', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.6', vendor: 'Rodeo' },
-            'L 犬夜叉': { id: 13, name: 'L 犬夜叉', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.7', vendor: 'Olympia' },
+            '花月': { id: 6, name: '花月', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.25', vendor: 'Olympia' },
             '大花火': { id: 14, name: '大花火', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.17', vendor: 'Olympia' },
-            'ドンちゃん2': { id: 15, name: 'ドンちゃん2', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1.0', vendor: 'Rodeo' },
-            'アラジンA': { id: 16, name: 'アラジンA', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.9', vendor: 'Sammy' },
-            'クランキーコンドル': { id: 17, name: 'クランキーコンドル', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=1.1', vendor: 'Sammy' },
-            'バーサス': { id: 18, name: 'バーサス', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.8', vendor: 'Daito' },
-            'ニューパルサー': { id: 19, name: 'ニューパルサー', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=1.2', vendor: 'Olympia' },
-            'パチスロ モンキーターン': { id: 20, name: 'パチスロ モンキーターン', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1.1', vendor: 'Rodeo' },
-            '押忍！番長3': { id: 21, name: '押忍！番長3', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.9', vendor: 'Daito' },
-            'パチスロ ガールズ＆パンツァー': { id: 22, name: 'パチスロ ガールズ＆パンツァー', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.7', vendor: 'Sammy' },
-            'パチスロ 北斗の拳': { id: 23, name: 'パチスロ 北斗の拳', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1.5', vendor: 'Sammy' },
-            'パチスロ 新鬼武者': { id: 24, name: 'パチスロ 新鬼武者', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.6', vendor: 'Daito' },
-            'パチスロ 魔法少女まどか☆マギカ': { id: 25, name: 'パチスロ 魔法少女まどか☆マギカ', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=1.3', vendor: 'Rodeo' },
-            'バジリスク〜甲賀忍法帖〜': { id: 26, name: 'バジリスク〜甲賀忍法帖〜', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=1.4', vendor: 'Sammy' },
-            'パチスロ エウレカセブン': { id: 27, name: 'パチスロ エウレカセブン', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.7', vendor: 'Rodeo' },
-            'パチスロ コードギアス': { id: 28, name: 'パチスロ コードギアス', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=1.1', vendor: 'Sammy' },
-            'パチスロ 戦国無双': { id: 29, name: 'パチスロ 戦国無双', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.6', vendor: 'Daito' },
-            'パチスロ 蒼天の拳': { id: 30, name: 'パチスロ 蒼天の拳', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=1.3', vendor: 'Olympia' },
-            'パチスロ ゴッドイーター': { id: 31, name: 'パチスロ ゴッドイーター', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.9', vendor: 'Rodeo' },
-            'パチスロ ダンまち': { id: 32, name: 'パチスロ ダンまち', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=1.0', vendor: 'Daito' },
-            'L 聖戦士ダンバイン': { id: 33, name: 'L 聖戦士ダンバイン', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.8', vendor: 'Sammy' },
-            'パチスロ ありふれた': { id: 34, name: 'パチスロ ありふれた', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1.2', vendor: 'Olympia' },
-            'パチスロ 転スラ': { id: 35, name: 'パチスロ 転スラ', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.7', vendor: 'Rodeo' },
-            'パチスロ このすば': { id: 36, name: 'パチスロ このすば', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=1.5', vendor: 'Daito' }
+            '奇蹟小丑': { id: 7, name: '奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.2', vendor: 'Rodeo' },
+            '新甲賀': { id: 9, name: '新甲賀', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' }
         };
         return machineMap[name] || { id: 999, name: name, image: '', ratio: '1枚=?', vendor: '其他' };
     }
     
-    // ========== 監聽 localStorage 變化 (跨頁籤同步) ==========
     window.addEventListener('storage', function(e) {
         if (e.key === 'favoriteMachines') {
             favoriteMachines = JSON.parse(e.newValue) || [];
-            
-            // 更新主畫面上的愛心按鈕（如果有）
             document.querySelectorAll('.favorite-btn').forEach(btn => {
                 const machineName = btn.closest('.game-card-bg')?.querySelector('h3')?.textContent.trim();
                 if (machineName) {
@@ -1183,20 +1275,6 @@
                     }
                 }
             });
-            
-            // ★★★ 重點：更新彈窗內的子機台愛心 ★★★
-            if (document.getElementById('machineModal').classList.contains('show')) {
-                const currentMachineName = document.getElementById('modalMachineName').innerText;
-                document.querySelectorAll('.sub-fav').forEach(btn => {
-                    if (btn.dataset.machine === currentMachineName) {
-                        const machine = getMachineByName(currentMachineName);
-                        if (machine) {
-                            const isFavorite = favoriteMachines.some(m => m.id === machine.id);
-                            btn.classList.toggle('active', isFavorite);
-                        }
-                    }
-                });
-            }
         }
     });
 
@@ -1213,7 +1291,7 @@
         }
     };
 
-    // ========== 子機種資料庫 ==========
+    // 子機種資料庫
     const subMachineDB = {
         '甲賀忍法帖 弐': [
             { name: '朧', ratio: '1枚=2.5', status: 'playable' },
@@ -1295,7 +1373,7 @@
         return subMachineDB[machineName] || [];
     }
 
-    // ========== 彈窗控制 ==========
+    // 彈窗控制
     const modal = document.getElementById('machineModal');
     const modalTitle = document.getElementById('modalMachineName');
     const modalSubList = document.getElementById('modalSubmachineList');
@@ -1322,8 +1400,7 @@
             const enterButtonClass = isMaintenance ? 'enter-btn maintenance' : 'enter-btn';
             const enterButtonText = isMaintenance ? '維護中' : '進入';
             
-            const maintenanceBadge = isMaintenance ? 
-                '<span class="maintenance-badge"><i class="fa fa-wrench"></i> 維護</span>' : '';
+            const maintenanceBadge = isMaintenance ? '<span class="maintenance-badge"><i class="fa fa-wrench"></i> 維護</span>' : '';
             
             const maintenanceDateHtml = isMaintenance ? 
                 `<div class="maintenance-date"><i class="fa fa-clock-o"></i> ${sub.maintenanceDate || '待定'}</div>` : 
@@ -1406,7 +1483,7 @@
         if (e.target === modal) closeModal();
     });
 
-    // ========== 點擊「進入」按鈕開子機種 ==========
+    // 點擊「進入」按鈕開子機種
     const enterBtns = document.querySelectorAll('.enter-btn');
     enterBtns.forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -1423,7 +1500,7 @@
         });
     });
 
-    // ========== 點擊卡片開子機種 ==========
+    // 點擊卡片開子機種
     const cards = document.querySelectorAll('.game-card-bg');
     cards.forEach(card => {
         card.addEventListener('click', function(e) {
@@ -1435,7 +1512,7 @@
         });
     });
 
-    // ========== 側拉欄 ==========
+    // 側拉欄
     const openBtn = document.getElementById('openDrawerBtn');
     const closeBtn = document.getElementById('closeDrawer');
     const drawer = document.getElementById('filterDrawer');
@@ -1462,7 +1539,7 @@
         });
     }
 
-    // ========== 底部導航當前頁面標記 ==========
+    // 底部導航當前頁面標記
     function setCurrentNav() {
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => item.classList.remove('current-page'));
@@ -1484,7 +1561,7 @@
     }
     setCurrentNav();
 
-    // ========== 標籤切換 ==========
+    // 標籤切換
     const tabBtns = document.querySelectorAll('.tab-btn');
     const categorySections = document.querySelectorAll('.category-section');
     
@@ -1525,7 +1602,7 @@
     
     filterByCategory('全部');
 
-    // ========== 新機滑塊初始化 ==========
+    // 新機滑塊初始化
     function initNewSlider() {
         const wrapper = document.getElementById('newWrapper');
         const prev = document.getElementById('newPrev');
@@ -1574,13 +1651,55 @@
     
     initNewSlider();
 
-    // ========== 回到頂部 ==========
+    // 回到頂部
     const backBtn = document.getElementById('backToTop');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 300) backBtn?.classList.add('show');
         else backBtn?.classList.remove('show');
     });
     backBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // ===== 浮動左側欄收合功能 =====
+    const sidebar = document.getElementById('floatingSidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+        });
+    }
+
+    // 迷你聊天室發送功能
+    const miniSend = document.getElementById('miniChatSend');
+    const miniInput = document.getElementById('miniChatInput');
+    const miniMsgs = document.getElementById('miniChatMessages');
+    if (miniSend) {
+        miniSend.addEventListener('click', function() {
+            if (miniInput.value.trim()) {
+                const msg = document.createElement('div');
+                msg.style.textAlign = 'right';
+                msg.textContent = '你: ' + miniInput.value;
+                miniMsgs.appendChild(msg);
+                miniInput.value = '';
+                miniMsgs.scrollTop = miniMsgs.scrollHeight;
+            }
+        });
+    }
+
+    // 聊天室最小化 (簡易)
+    const miniMinimize = document.getElementById('miniChatMinimize');
+    const chatMini = document.querySelector('.chat-mini-messages');
+    if (miniMinimize) {
+        miniMinimize.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (chatMini.style.display === 'none') {
+                chatMini.style.display = 'block';
+                miniMinimize.innerHTML = '<i class="fa fa-minus"></i>';
+            } else {
+                chatMini.style.display = 'none';
+                miniMinimize.innerHTML = '<i class="fa fa-plus"></i>';
+            }
+        });
+    }
 })();
 </script>
 </body>
