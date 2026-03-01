@@ -802,6 +802,351 @@
         body.alert-active {
             overflow: hidden;
         }
+
+        /* ===== 炫光全像投影 Loading 動畫 (從 index.html 移植) ===== */
+        .hologram-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .hologram-loading.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .hologram-content {
+            text-align: center;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .hologram-loading.show .hologram-content {
+            transform: scale(1);
+        }
+
+        .hologram-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            position: relative;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00ccff, #0066cc, #00ccff);
+            background-size: 200% 200%;
+            animation: hologram-gradient 3s ease infinite;
+            box-shadow: 
+                0 0 30px rgba(0, 204, 255, 0.5),
+                inset 0 0 30px rgba(0, 204, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hologram-inner-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 204, 255, 0.5);
+        }
+
+        .hologram-inner-circle::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                #00ccff,
+                #ffd700,
+                #00ccff,
+                transparent
+            );
+            animation: hologram-rotate 3s linear infinite;
+        }
+
+        .hologram-scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                #00ccff, 
+                #ffffff, 
+                #00ccff, 
+                transparent
+            );
+            box-shadow: 0 0 20px #00ccff;
+            animation: scan-move 2s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        .hologram-scan-line.delay {
+            animation: scan-move 2s ease-in-out infinite 1s;
+            top: auto;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent, 
+                #ffd700, 
+                #ffffff, 
+                #ffd700, 
+                transparent
+            );
+        }
+
+        .hologram-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(0,204,255,0.3) 0%, transparent 70%);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .hologram-text {
+            margin: 20px 0 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #00ccff;
+            text-shadow: 
+                0 0 10px #00ccff,
+                0 0 20px #0066cc,
+                0 0 40px #00ccff;
+            animation: text-flicker 3s linear infinite;
+        }
+
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        .glitch-text::before {
+            animation: glitch-1 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+            color: #ff00ff;
+            z-index: -1;
+        }
+
+        .glitch-text::after {
+            animation: glitch-2 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite reverse;
+            color: #00ffff;
+            z-index: -2;
+        }
+
+        .hologram-subtext {
+            font-size: 18px;
+            color: #90d0ff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            animation: fade-pulse 2s ease-in-out infinite;
+            margin-top: 5px;
+        }
+
+        .hologram-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ccff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ccff;
+            animation: particle-float 3s linear infinite;
+        }
+
+        .particle:nth-child(1) { top: 20%; left: 30%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 60%; left: 70%; animation-delay: 0.5s; }
+        .particle:nth-child(3) { top: 80%; left: 40%; animation-delay: 1s; }
+        .particle:nth-child(4) { top: 30%; left: 80%; animation-delay: 1.5s; }
+        .particle:nth-child(5) { top: 70%; left: 20%; animation-delay: 2s; }
+
+        @keyframes hologram-gradient {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        @keyframes hologram-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes scan-move {
+            0% { transform: translateY(-60px); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(60px); opacity: 0; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        @keyframes text-flicker {
+            0%, 100% { opacity: 1; text-shadow: 0 0 10px #00ccff, 0 0 20px #0066cc, 0 0 40px #00ccff; }
+            33% { opacity: 0.9; text-shadow: 0 0 15px #00ccff, 0 0 30px #0066cc, 0 0 60px #00ccff; }
+            66% { opacity: 1; text-shadow: 0 0 8px #00ccff, 0 0 15px #0066cc, 0 0 30px #00ccff; }
+        }
+
+        @keyframes glitch-1 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            10% { clip-path: inset(2% 0 5% 0); transform: translate(-2px, 2px); }
+            20% { clip-path: inset(10% 0 20% 0); transform: translate(2px, -2px); }
+            30% { clip-path: inset(50% 0 30% 0); transform: translate(-2px); }
+            40% { clip-path: inset(20% 0 60% 0); transform: translate(2px); }
+            50% { clip-path: inset(70% 0 10% 0); transform: translate(-2px, 2px); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
+        }
+
+        @keyframes glitch-2 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            10% { clip-path: inset(5% 0 10% 0); transform: translate(2px, -2px); }
+            20% { clip-path: inset(30% 0 40% 0); transform: translate(-2px, 2px); }
+            30% { clip-path: inset(60% 0 20% 0); transform: translate(2px); }
+            40% { clip-path: inset(40% 0 30% 0); transform: translate(-2px); }
+            50% { clip-path: inset(20% 0 50% 0); transform: translate(2px, -2px); }
+            60% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, 2px); }
+        }
+
+        @keyframes fade-pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes particle-float {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        }
+
+        /* ===== 公告按鈕框樣式 (從 index.html 移植) ===== */
+        .announcement-combo {
+            background: linear-gradient(145deg, #001f3f, #001a33);
+            border: 1px solid #0099ff80;
+            border-radius: 9999px;
+            box-shadow: 0 0 20px rgba(0, 153, 255, 0.4);
+            backdrop-filter: blur(2px);
+            padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            min-height: 42px;
+        }
+        .announcement-combo .hologram-lines {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            border-radius: 9999px;
+        }
+        .announcement-combo .hologram-lines div {
+            width: 100%;
+            height: 1px;
+            background: rgba(0, 204, 255, 0.25);
+            position: absolute;
+            left: 0;
+        }
+        .combo-announce-btn {
+            background: linear-gradient(145deg, #0066cc, #0099ff);
+            border: 1px solid #80e4ff;
+            border-radius: 9999px;
+            padding: 0.25rem 1rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 0 12px #00ccff;
+            transition: 0.2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            margin-right: 10px;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+        .combo-announce-btn:hover {
+            transform: scale(1.02);
+            background: linear-gradient(145deg, #0077dd, #00aaff);
+            border-color: white;
+            box-shadow: 0 0 20px #00ccff;
+        }
+        .combo-announce-btn:active { transform: scale(0.96); }
+        
+        .combo-marquee {
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #b3e6ff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 6px #0099ff;
+            padding-right: 0.5rem;
+            z-index: 2;
+        }
+        .combo-marquee marquee {
+            width: 100%;
+            display: inline-block;
+        }
+
+        .animate-scan-line {
+            animation: scan-line 3s ease-in-out infinite;
+        }
+        .animate-scan-line-delay {
+            animation: scan-line 3s ease-in-out infinite 1.5s;
+        }
+        @keyframes scan-line {
+            0% { transform: translateY(-20px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(20px); opacity: 0; }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
@@ -828,11 +1173,21 @@
         </div>
     </header>
 
-    <!-- 跑馬燈 -->
-    <div class="px-4 py-1 bg-dark-200/80 tech-border">
-        <marquee class="text-secondary text-xs py-1" scrollamount="5">
-            🎮 吉宗保留倒數10分鐘中 | 新機上線甲賀忍法帖 弐 | 最後10分鐘每2分鐘提醒
-        </marquee>
+    <!-- 公告按鈕框 (與 index.html 完全相同) -->
+    <div class="px-4 mt-2">
+        <div class="announcement-combo">
+            <div class="hologram-lines">
+                <div class="animate-scan-line" style="top: 20%;"></div>
+                <div class="animate-scan-line-delay" style="top: 60%;"></div>
+            </div>
+            <a href="news.html" class="combo-announce-btn">
+                <i class="fa fa-bullhorn"></i>
+                <span>公告</span>
+            </a>
+            <div class="combo-marquee">
+                <marquee scrollamount="5" behavior="scroll" direction="left">◈ 春 季 人 氣 機 台 大 賞 ◈ 甲 賀 忍 法 帖 系 列 全 線 熱 賣 ◈ 代 幣 優 惠 實 施 中 ◈</marquee>
+            </div>
+        </div>
     </div>
 
     <!-- 分類標籤 -->
@@ -882,6 +1237,29 @@
     <!-- 離開確認容器 -->
     <div id="confirmContainer"></div>
 
+    <!-- 炫光全像投影 Loading 動畫容器 -->
+    <div class="hologram-loading" id="hologramLoading">
+        <div class="hologram-content">
+            <div class="hologram-circle">
+                <div class="hologram-inner-circle"></div>
+                <div class="hologram-scan-line"></div>
+                <div class="hologram-scan-line delay"></div>
+                <div class="hologram-glow"></div>
+            </div>
+            <div class="hologram-text">
+                <span class="glitch-text" data-text="LOADING">LOADING</span>
+            </div>
+            <div class="hologram-subtext">載入中......</div>
+            <div class="hologram-particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- 底部导航 -->
     <nav class="bottom-nav mx-auto">
         <div class="flex justify-between items-center">
@@ -905,6 +1283,28 @@
     </nav>
 
     <script>
+        // ==================== 我的最愛連動功能 ====================
+        const FAVORITE_STORAGE_KEY = 't Pachin_favoriteMachines';
+        
+        // 從 localStorage 載入我的最愛
+        function loadFavoritesFromStorage() {
+            const stored = localStorage.getItem(FAVORITE_STORAGE_KEY);
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    console.error('解析我的最愛失敗', e);
+                    return [];
+                }
+            }
+            return [];
+        }
+
+        // 儲存我的最愛到 localStorage
+        function saveFavoritesToStorage(favorites) {
+            localStorage.setItem(FAVORITE_STORAGE_KEY, JSON.stringify(favorites));
+        }
+
         // ==================== 資料庫 ====================
         const machineDatabase = [
             { id:1, name:'甲賀忍法帖 弐', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=2', vendor:'Sammy' },
@@ -915,8 +1315,14 @@
         ];
 
         // ==================== 狀態資料 ====================
-        // 我的最愛
-        let favoriteMachines = JSON.parse(localStorage.getItem('favoriteMachines')) || [];
+        // 我的最愛 - 從 localStorage 讀取
+        let favoriteMachines = loadFavoritesFromStorage();
+        
+        // 如果沒有資料，加入測試資料
+        if (favoriteMachines.length === 0) {
+            favoriteMachines = [machineDatabase[0], machineDatabase[1], machineDatabase[2]];
+            saveFavoritesToStorage(favoriteMachines);
+        }
         
         // 保留中機台 - 設定不同的保留時間
         const now = Date.now();
@@ -940,12 +1346,6 @@
                 lastAlertTime: 0
             }
         ];
-
-        // 加入測試資料到我的最愛
-        if (favoriteMachines.length === 0) {
-            favoriteMachines = [machineDatabase[0], machineDatabase[1], machineDatabase[2]];
-            localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
-        }
 
         // ==================== 產生紅綠大賞燈 ====================
         function generateBarSegments(value, maxValue = 150) {
@@ -1225,9 +1625,27 @@
             setupPanelClickHandlers('#reserve-section');
         }
 
+        // ==================== 炫光 Loading 動畫 ====================
+        const hologramLoading = document.getElementById('hologramLoading');
+
+        function showHologramLoading() {
+            hologramLoading.classList.add('show');
+        }
+
+        function hideHologramLoading() {
+            hologramLoading.classList.remove('show');
+        }
+
         // ==================== 處理進入按鈕 ====================
         window.handleEnter = function(machineName) {
-            alert(`進入遊戲 - ${machineName}`);
+            // 顯示炫光 loading
+            showHologramLoading();
+            
+            // 模擬載入時間（2 秒後關閉並顯示提示）
+            setTimeout(() => {
+                hideHologramLoading();
+                alert(`🎮 進入遊戲 - ${machineName}\n\n此為演示功能，實際遊玩請前往遊戲頁面。`);
+            }, 2000);
         };
 
         // ==================== 顯示離開確認視窗 ====================
@@ -1478,7 +1896,8 @@
                 showMessage('已加入我的最愛');
             }
             
-            localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
+            // 儲存到 localStorage
+            saveFavoritesToStorage(favoriteMachines);
             
             renderFavoriteList();
             renderReserveList();
@@ -1540,6 +1959,16 @@
             renderFavoriteList();
             renderReserveList();
         }, 10000);
+        
+        // ==================== 監聽其他頁面的最愛變更 ====================
+        window.addEventListener('storage', function(e) {
+            if (e.key === FAVORITE_STORAGE_KEY) {
+                // 重新讀取最愛並更新畫面
+                favoriteMachines = loadFavoritesFromStorage();
+                renderFavoriteList();
+                renderReserveList();
+            }
+        });
     </script>
 </div>
 </body>
