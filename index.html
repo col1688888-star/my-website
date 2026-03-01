@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>T-PACHIN · 完整卡片 · 連動 machines.html</title>
+    <title>T-PACHIN · 完整卡片＋點數轉代幣</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- Font Awesome 6 (僅用於側欄 chevron) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-    /* ========== 完整保留文件1的所有原始樣式 (一字不漏) ========== */
+    /* 保留所有原本的樣式 */
     .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
     .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
     .nav-item { position: relative; }
@@ -261,11 +259,14 @@
     }
     .modal-close:hover { background: #ff3b3b; border-color: white; transform: scale(1.1); box-shadow: 0 0 15px red; }
     
+    /* 子機種網格 */
     .submachine-grid { 
         display: grid; 
         grid-template-columns: 1fr 1fr; 
         gap: 0.8rem; 
     }
+    
+    /* 子機台卡片 */
     .sub-item-card {
         background: linear-gradient(145deg, rgba(0,40,70,0.9), rgba(0,20,45,0.95));
         border: 1px solid rgba(0, 153, 255, 0.5);
@@ -281,6 +282,8 @@
         overflow: hidden;
     }
     .sub-item-card:hover { transform: translateY(-2px); border-color: #00ccff; box-shadow: 0 0 18px #0099ff; }
+    
+    /* 維護中的子機台卡片 */
     .sub-item-card.maintenance {
         background: linear-gradient(145deg, rgba(70, 70, 70, 0.8), rgba(50, 50, 50, 0.9));
         border: 1px solid rgba(255, 100, 100, 0.4);
@@ -326,6 +329,8 @@
         gap: 4px;
     }
     .maintenance .sub-name { color: #ccc; }
+    
+    /* 子機種上的代幣標籤，以「1枚=」開頭 */
     .sub-ratio {
         background: #001c3a; 
         padding: 0.15rem 0.5rem; 
@@ -344,6 +349,7 @@
         box-shadow: 0 0 6px rgba(255, 100, 100, 0.3);
     }
     
+    /* 維護中標籤 */
     .maintenance-badge {
         background: #c92a2a;
         color: white;
@@ -363,6 +369,7 @@
         100% { opacity: 0.7; }
     }
     
+    /* 維護中日期 */
     .maintenance-date {
         font-size: 0.5rem;
         color: #ff9999;
@@ -379,11 +386,13 @@
         font-size: 0.45rem;
     }
     
+    /* 空白佔位 - 保持高度一致 */
     .placeholder-date {
         min-height: 16px;
         margin: 0.2rem 0 0.3rem 0;
     }
     
+    /* 按鈕區域 */
     .sub-actions { 
         display: flex; 
         gap: 4px; 
@@ -403,6 +412,7 @@
         height: 1.7rem; 
     }
 
+    /* 全像投影動畫 */
     @keyframes scan-line {
         0% { transform: translateY(-20px); opacity: 0; }
         50% { opacity: 1; }
@@ -415,140 +425,398 @@
         animation: scan-line 3s ease-in-out infinite 1.5s;
     }
 
-    /* ========== 浮動左側欄 (可收合) ========== */
-    .floating-sidebar {
-        position: fixed;
-        left: 0;
-        top: 160px;
-        width: 200px;
-        background: linear-gradient(165deg, #001f3f 0%, #000f1f 100%);
-        border: 2px solid #0099ff;
-        border-left: none;
-        border-radius: 0 20px 20px 0;
-        box-shadow: 5px 5px 20px rgba(0,153,255,0.6);
-        z-index: 1000;
-        transition: transform 0.3s ease;
-        padding: 1rem 0.8rem;
-        backdrop-filter: blur(8px);
+    /* ========== 公告按鈕放在框內 (左側縮小版) ========== */
+    .announcement-combo {
+        background: linear-gradient(145deg, #001f3f, #001a33);
+        border: 1px solid #0099ff80;
+        border-radius: 9999px;
+        box-shadow: 0 0 20px rgba(0, 153, 255, 0.4);
+        backdrop-filter: blur(2px);
+        padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        min-height: 42px;
     }
-    .floating-sidebar.collapsed {
-        transform: translateX(-185px);
-    }
-    .sidebar-toggle {
+    .announcement-combo .hologram-lines {
         position: absolute;
-        right: -30px;
-        top: 20px;
-        width: 30px;
-        height: 60px;
-        background: linear-gradient(90deg, #0099ff, #0066cc);
-        border: 2px solid #80e4ff;
-        border-left: none;
-        border-radius: 0 15px 15px 0;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        border-radius: 9999px;
+    }
+    .announcement-combo .hologram-lines div {
+        width: 100%;
+        height: 1px;
+        background: rgba(0, 204, 255, 0.25);
+        position: absolute;
+        left: 0;
+    }
+    .combo-announce-btn {
+        background: linear-gradient(145deg, #0066cc, #0099ff);
+        border: 1px solid #80e4ff;
+        border-radius: 9999px;
+        padding: 0.25rem 1rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        box-shadow: 0 0 12px #00ccff;
+        transition: 0.2s;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: white;
+        text-decoration: none;
+        letter-spacing: 0.3px;
+        margin-right: 10px;
+        flex-shrink: 0;
+        z-index: 2;
+    }
+    .combo-announce-btn:hover {
+        transform: scale(1.02);
+        background: linear-gradient(145deg, #0077dd, #00aaff);
+        border-color: white;
+        box-shadow: 0 0 20px #00ccff;
+    }
+    .combo-announce-btn:active { transform: scale(0.96); }
+    
+    .combo-marquee {
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        color: #b3e6ff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-shadow: 0 0 6px #0099ff;
+        padding-right: 0.5rem;
+        z-index: 2;
+    }
+    .combo-marquee marquee {
+        width: 100%;
+        display: inline-block;
+    }
+
+    /* ===== 點數轉代幣彈窗 (無數字滾動條) ===== */
+    .convert-modal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 10, 20, 0.9); backdrop-filter: blur(8px); z-index: 25000;
+        display: flex; align-items: center; justify-content: center; opacity: 0;
+        visibility: hidden; transition: 0.25s; padding: 1rem;
+    }
+    .convert-modal.show { opacity: 1; visibility: visible; }
+    .convert-content {
+        background: linear-gradient(165deg, #002b4a, #001a33);
+        border: 2px solid #ffd966; border-radius: 2.5rem; width: 100%; max-width: 400px;
+        padding: 2rem 1.5rem; box-shadow: 0 20px 40px rgba(255, 215, 0, 0.4);
+        transform: scale(0.9); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .convert-modal.show .convert-content { transform: scale(1); }
+    .convert-header { text-align: center; margin-bottom: 1.2rem; }
+    .convert-header h3 { font-size: 1.8rem; font-weight: 700; color: #ffd966; text-shadow: 0 0 10px #fbbf24; }
+    .convert-header p { color: #90d0ff; font-size: 0.9rem; }
+    .available-points-card {
+        background: #001b2e; border-radius: 40px; padding: 1rem 1.5rem; margin-bottom: 1.8rem;
+        border: 1px solid #ffd96640; display: flex; justify-content: space-between; align-items: center;
+    }
+    .available-points-card .label { font-size: 0.85rem; color: #9fc9ff; }
+    .available-points-card .value { font-size: 2rem; font-weight: 700; color: #ffd966; line-height: 1.2; }
+    
+    .convert-input-group {
+        background: #001c35; border: 1px solid #0099ff; border-radius: 60px;
+        margin: 1rem 0 0.8rem 0;
+    }
+    .convert-input-group input {
+        background: transparent; border: none; color: white; font-size: 1.4rem; width: 100%;
+        outline: none; padding: 0.7rem 1.2rem; font-weight: 700;
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+    .convert-input-group input::-webkit-outer-spin-button,
+    .convert-input-group input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    .convert-preview {
+        text-align: right; margin: 0.5rem 0 1.5rem 0; padding-right: 0.5rem;
+        font-size: 1.2rem; color: #ffd966;
+    }
+    .convert-preview span { font-size: 1.5rem; font-weight: 700; margin-left: 0.5rem; }
+    .convert-actions { display: flex; gap: 12px; margin-top: 1.2rem; }
+    .convert-btn {
+        flex: 1; background: linear-gradient(145deg, #0066cc, #0099ff); border: none; border-radius: 40px;
+        color: white; font-weight: 700; padding: 1rem; font-size: 1.1rem; transition: 0.2s;
+        box-shadow: 0 4px 10px #0066cc80; cursor: pointer; border: 1px solid #80e4ff;
+    }
+    .convert-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px #00ccff; }
+    .convert-btn.secondary { background: linear-gradient(145deg, #444, #222); border-color: #888; box-shadow: none; }
+    .convert-note { text-align: center; margin-top: 1rem; font-size: 0.75rem; color: #ffd966; }
+    .convert-close {
+        position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 2rem;
+        cursor: pointer; transition: 0.2s; line-height: 1;
+    }
+    .convert-close:hover { color: #ffd966; transform: scale(1.2); }
+
+    /* ===== 炫光全像投影 Loading 動畫 ===== */
+    .hologram-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 999999;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 1.2rem;
-        cursor: pointer;
-        box-shadow: 5px 5px 15px rgba(0,153,255,0.6);
-        transition: all 0.2s;
-    }
-    .sidebar-toggle:hover {
-        background: #00ccff;
-        right: -32px;
-    }
-    .sidebar-toggle i {
-        transition: transform 0.3s;
-    }
-    .collapsed .sidebar-toggle i {
-        transform: rotate(180deg);
-    }
-    .sidebar-content {
-        transition: opacity 0.2s;
-    }
-    .collapsed .sidebar-content {
         opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .hologram-loading.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .hologram-content {
+        text-align: center;
+        position: relative;
+        transform: scale(0.8);
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .hologram-loading.show .hologram-content {
+        transform: scale(1);
+    }
+
+    .hologram-circle {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 30px;
+        position: relative;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #00ccff, #0066cc, #00ccff);
+        background-size: 200% 200%;
+        animation: hologram-gradient 3s ease infinite;
+        box-shadow: 
+            0 0 30px rgba(0, 204, 255, 0.5),
+            inset 0 0 30px rgba(0, 204, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hologram-inner-circle {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: #000;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 0 0 20px rgba(0, 204, 255, 0.5);
+    }
+
+    .hologram-inner-circle::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(
+            from 0deg,
+            transparent,
+            #00ccff,
+            #ffd700,
+            #00ccff,
+            transparent
+        );
+        animation: hologram-rotate 3s linear infinite;
+    }
+
+    .hologram-scan-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, 
+            transparent, 
+            #00ccff, 
+            #ffffff, 
+            #00ccff, 
+            transparent
+        );
+        box-shadow: 0 0 20px #00ccff;
+        animation: scan-move 2s ease-in-out infinite;
+        opacity: 0.8;
+    }
+
+    .hologram-scan-line.delay {
+        animation: scan-move 2s ease-in-out infinite 1s;
+        top: auto;
+        bottom: 0;
+        background: linear-gradient(90deg, 
+            transparent, 
+            #ffd700, 
+            #ffffff, 
+            #ffd700, 
+            transparent
+        );
+    }
+
+    .hologram-glow {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, rgba(0,204,255,0.3) 0%, transparent 70%);
+        animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .hologram-text {
+        margin: 20px 0 10px;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 24px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        color: #00ccff;
+        text-shadow: 
+            0 0 10px #00ccff,
+            0 0 20px #0066cc,
+            0 0 40px #00ccff;
+        animation: text-flicker 3s linear infinite;
+    }
+
+    .glitch-text {
+        position: relative;
+        display: inline-block;
+    }
+
+    .glitch-text::before,
+    .glitch-text::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+    }
+
+    .glitch-text::before {
+        animation: glitch-1 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+        color: #ff00ff;
+        z-index: -1;
+    }
+
+    .glitch-text::after {
+        animation: glitch-2 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite reverse;
+        color: #00ffff;
+        z-index: -2;
+    }
+
+    .hologram-subtext {
+        font-size: 18px;
+        color: #90d0ff;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        opacity: 0.8;
+        animation: fade-pulse 2s ease-in-out infinite;
+        margin-top: 5px;
+    }
+
+    .hologram-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         pointer-events: none;
     }
 
-    /* 側欄內部卡片 */
-    .sidebar-card {
-        background: rgba(0, 40, 70, 0.7);
-        border: 1px solid rgba(0, 148, 255, 0.4);
-        border-radius: 0.75rem;
-        padding: 0.6rem 0.4rem;
-        margin-bottom: 1rem;
+    .particle {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: #00ccff;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #00ccff;
+        animation: particle-float 3s linear infinite;
     }
-    .sidebar-card-header {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        border-bottom: 1px solid rgba(0,153,255,0.3);
-        padding-bottom: 0.4rem;
-        margin-bottom: 0.5rem;
-        color: #ffd966;
-        font-weight: 600;
-        font-size: 0.85rem;
-    }
-    .quick-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: rgba(0, 30, 50, 0.9);
-        border: 1px solid #0099ff60;
-        border-radius: 0.5rem;
-        padding: 0.4rem 0.3rem;
-        margin-bottom: 0.4rem;
-        cursor: pointer;
-    }
-    .quick-item:hover { background: rgba(0,102,204,0.4); }
-    .quick-icon {
-        width: 26px; height: 26px;
-        background: #001f3f;
-        border-radius: 30%;
-        display: flex; align-items: center; justify-content: center;
-        border: 1px solid #0099ff; color: #ffd966;
-        font-size: 0.8rem;
-    }
-    .quick-info h4 { font-size: 0.7rem; color: #b3e0ff; margin:0; }
-    .quick-info p { font-size: 0.55rem; color: #9ca3af; margin:0; }
-    .quick-badge { background: #fbbf24; color: #000; padding: 0.1rem 0.4rem; border-radius: 30px; font-size: 0.55rem; }
-    .quick-chevron { color: #0099ff; font-size: 0.8rem; }
 
-    .activity-item {
-        display: flex; align-items: center; gap: 4px; padding: 0.3rem 0;
-        border-bottom: 1px solid rgba(0,153,255,0.2);
-        font-size: 0.65rem;
-        cursor: pointer;
-    }
-    .activity-icon { width: 22px; height: 22px; background: rgba(0,70,120,0.7); border-radius: 30%; display: flex; align-items: center; justify-content: center; color: #ffd966; font-size:0.7rem;}
+    .particle:nth-child(1) { top: 20%; left: 30%; animation-delay: 0s; }
+    .particle:nth-child(2) { top: 60%; left: 70%; animation-delay: 0.5s; }
+    .particle:nth-child(3) { top: 80%; left: 40%; animation-delay: 1s; }
+    .particle:nth-child(4) { top: 30%; left: 80%; animation-delay: 1.5s; }
+    .particle:nth-child(5) { top: 70%; left: 20%; animation-delay: 2s; }
 
-    /* 迷你聊天室 */
-    .chat-mini {
-        background: rgba(0, 30, 50, 0.9);
-        border-radius: 0.75rem;
-        border: 1px solid #0099ff60;
-        margin-top: 0.5rem;
+    @keyframes hologram-gradient {
+        0% { background-position: 0% 0%; }
+        50% { background-position: 100% 100%; }
+        100% { background-position: 0% 0%; }
     }
-    .chat-mini-header { background: rgba(0,51,102,0.6); padding: 0.4rem; border-radius: 0.75rem 0.75rem 0 0; display: flex; justify-content: space-between; align-items:center; color:#ffd966; font-size:0.75rem;}
-    .chat-mini-messages { height: 70px; overflow-y: auto; padding: 0.3rem; font-size: 0.6rem; color:#b3e0ff; }
-    .chat-mini-input { display: flex; padding: 0.3rem; gap: 2px; }
-    .chat-mini-input input { flex:1; background: #001a33; border:1px solid #0099ff; border-radius: 20px; padding:0.2rem 0.5rem; color:white; font-size:0.6rem; }
-    .chat-mini-input button { background:#c90a0a; border:none; border-radius:50%; width:24px; height:24px; color:white; font-size:0.6rem; cursor:pointer; }
 
-    /* 主內容左側留空間給浮動欄 */
-    .max-w-md {
-        margin-left: 210px;
-        transition: margin-left 0.3s;
+    @keyframes hologram-rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
     }
-    .floating-sidebar.collapsed ~ .max-w-md {
-        margin-left: 25px;
+
+    @keyframes scan-move {
+        0% { transform: translateY(-60px); opacity: 0; }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { transform: translateY(60px); opacity: 0; }
     }
-    @media (max-width: 480px) {
-        .floating-sidebar { width: 170px; }
-        .floating-sidebar.collapsed { transform: translateX(-155px); }
-        .max-w-md { margin-left: 180px; }
-        .floating-sidebar.collapsed ~ .max-w-md { margin-left: 20px; }
+
+    @keyframes pulse-glow {
+        0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+        50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.2); }
+    }
+
+    @keyframes text-flicker {
+        0%, 100% { opacity: 1; text-shadow: 0 0 10px #00ccff, 0 0 20px #0066cc, 0 0 40px #00ccff; }
+        33% { opacity: 0.9; text-shadow: 0 0 15px #00ccff, 0 0 30px #0066cc, 0 0 60px #00ccff; }
+        66% { opacity: 1; text-shadow: 0 0 8px #00ccff, 0 0 15px #0066cc, 0 0 30px #00ccff; }
+    }
+
+    @keyframes glitch-1 {
+        0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+        10% { clip-path: inset(2% 0 5% 0); transform: translate(-2px, 2px); }
+        20% { clip-path: inset(10% 0 20% 0); transform: translate(2px, -2px); }
+        30% { clip-path: inset(50% 0 30% 0); transform: translate(-2px); }
+        40% { clip-path: inset(20% 0 60% 0); transform: translate(2px); }
+        50% { clip-path: inset(70% 0 10% 0); transform: translate(-2px, 2px); }
+        60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
+    }
+
+    @keyframes glitch-2 {
+        0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+        10% { clip-path: inset(5% 0 10% 0); transform: translate(2px, -2px); }
+        20% { clip-path: inset(30% 0 40% 0); transform: translate(-2px, 2px); }
+        30% { clip-path: inset(60% 0 20% 0); transform: translate(2px); }
+        40% { clip-path: inset(40% 0 30% 0); transform: translate(-2px); }
+        50% { clip-path: inset(20% 0 50% 0); transform: translate(2px, -2px); }
+        60% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, 2px); }
+    }
+
+    @keyframes fade-pulse {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
+    }
+
+    @keyframes particle-float {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        100% { transform: translateY(-100px) scale(0); opacity: 0; }
     }
 </style>
 </head>
@@ -557,23 +825,22 @@
 <!-- 篩選側拉欄遮罩 -->
 <div id="drawerOverlay" class="drawer-overlay"></div>
 
-<!-- 篩選側拉欄 (完整內容) -->
+<!-- 篩選側拉欄 -->
 <div id="filterDrawer" class="filter-drawer scrollbar-thin">
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-primary text-lg font-bold flex items-center gap-2"><i class="fa fa-sliders text-secondary"></i> 進階篩選</h3>
         <button id="closeDrawer" class="text-gray-400 hover:text-primary text-2xl"><i class="fa fa-times-circle"></i></button>
     </div>
     <div class="mb-6">
-        <div class="text-secondary text-sm mb-3 flex items-center gap-2"><i class="fa fa-percent"></i> 代幣</div>
+        <div class="text-secondary text-sm mb-3 flex items-center gap-2"><i class="fa fa-percent"></i> 代幣 <span class="text-[0.6rem] bg-blue-900 px-1.5 py-0.5 rounded-full">1枚=X</span></div>
         <div class="flex flex-wrap gap-2">
-            <span class="filter-chip" data-type="ratio" data-value="2">1枚=2</span>
-            <span class="filter-chip" data-type="ratio" data-value="1">1枚=1</span>
-            <span class="filter-chip" data-type="ratio" data-value="0.5">1枚=0.5</span>
-            <span class="filter-chip" data-type="ratio" data-value="0.33">1枚=0.33</span>
-            <span class="filter-chip" data-type="ratio" data-value="0.25">1枚=0.25</span>
-            <span class="filter-chip" data-type="ratio" data-value="0.2">1枚=0.2</span>
-            <span class="filter-chip" data-type="ratio" data-value="0.17">1枚=0.17</span>
-            <span class="filter-chip" data-type="ratio" data-value="0.1">1枚=0.1</span>
+            <span class="filter-chip" data-type="ratio" data-value="2.1">2.1</span>
+            <span class="filter-chip" data-type="ratio" data-value="0.5">0.5</span>
+            <span class="filter-chip" data-type="ratio" data-value="0.33">0.33</span>
+            <span class="filter-chip" data-type="ratio" data-value="0.25">0.25</span>
+            <span class="filter-chip" data-type="ratio" data-value="0.2">0.2</span>
+            <span class="filter-chip" data-type="ratio" data-value="0.17">0.17</span>
+            <span class="filter-chip" data-type="ratio" data-value="0.1">0.1</span>
         </div>
     </div>
     <div class="mb-6">
@@ -612,86 +879,7 @@
     </div>
 </div>
 
-<!-- ===== 浮動左側欄 (可收合) ===== -->
-<div class="floating-sidebar" id="floatingSidebar">
-    <div class="sidebar-toggle" id="sidebarToggle">
-        <i class="fas fa-chevron-right"></i>
-    </div>
-    <div class="sidebar-content">
-        <!-- 快捷功能卡片 (連動 machines.html) -->
-        <div class="sidebar-card">
-            <div class="sidebar-card-header"><i class="fa fa-bolt"></i> 快捷功能</div>
-            <div class="quick-item" onclick="window.location.href='machines.html?action=buy'">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <div class="quick-icon"><i class="fa fa-coins"></i></div>
-                    <div class="quick-info"><h4>購買代幣</h4><p>儲值</p></div>
-                </div>
-                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
-            </div>
-            <div class="quick-item" onclick="window.location.href='machines.html?action=favorites'">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <div class="quick-icon"><i class="fa fa-heart"></i></div>
-                    <div class="quick-info"><h4>我的最愛</h4><p>5個收藏</p></div>
-                </div>
-                <span class="quick-badge">5</span><div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
-            </div>
-            <div class="quick-item" onclick="window.location.href='machines.html?action=history'">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <div class="quick-icon"><i class="fa fa-history"></i></div>
-                    <div class="quick-info"><h4>遊玩記錄</h4><p>近期</p></div>
-                </div>
-                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
-            </div>
-            <div class="quick-item" onclick="window.location.href='machines.html?action=my-machines'">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <div class="quick-icon"><i class="fa fa-gamepad"></i></div>
-                    <div class="quick-info"><h4>我遊戲的機台</h4><p>保留中</p></div>
-                </div>
-                <span class="quick-badge">3</span><div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
-            </div>
-        </div>
-        <!-- 近期活動卡片 (連動 machines.html) -->
-        <div class="sidebar-card">
-            <div class="sidebar-card-header"><i class="fa fa-history"></i> 近期活動</div>
-            <div class="activity-item" onclick="window.location.href='machines.html?event=xmas'">
-                <div class="activity-icon"><i class="fa fa-gift"></i></div>
-                <span style="flex:1;">聖誕節活動</span>
-                <span style="font-size:0.5rem; color:#aaa;">1天前</span>
-                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
-            </div>
-            <div class="activity-item" onclick="window.location.href='machines.html?event=monster-hunter'">
-                <div class="activity-icon"><i class="fa fa-gamepad"></i></div>
-                <span style="flex:1;">魔物獵人</span>
-                <span style="font-size:0.5rem; color:#aaa;">2天前</span>
-                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
-            </div>
-            <div class="activity-item" onclick="window.location.href='machines.html?event=token-reward'">
-                <div class="activity-icon"><i class="fa fa-coins"></i></div>
-                <span style="flex:1;">代幣獎勵</span>
-                <span style="font-size:0.5rem; color:#aaa;">3天前</span>
-                <div class="quick-chevron"><i class="fas fa-chevron-right"></i></div>
-            </div>
-        </div>
-        <!-- 迷你聊天室 (點擊發送不會跳轉) -->
-        <div class="chat-mini">
-            <div class="chat-mini-header">
-                <span><i class="fa fa-comments"></i> 即時聊天</span>
-                <button style="background:none; border:none; color:#0099ff;" id="miniChatMinimize"><i class="fa fa-minus"></i></button>
-            </div>
-            <div class="chat-mini-messages" id="miniChatMessages">
-                <div>系統: 歡迎光臨</div>
-                <div>玩家A: 新機台好玩</div>
-                <div style="text-align:right;">你: +1</div>
-            </div>
-            <div class="chat-mini-input">
-                <input type="text" id="miniChatInput" placeholder="訊息...">
-                <button id="miniChatSend"><i class="fa fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 主內容：文件1完整手機版，所有卡片已復原 ===== -->
+<!-- 主內容 -->
 <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col relative">
     <header class="px-4 py-3 bg-dark-200/90 tech-border">
         <div class="flex items-center justify-between">
@@ -701,7 +889,7 @@
             </a>
             <div class="text-right flex flex-col items-end">
                 <a href="about.html" class="text-xs text-white clickable hover-glow" id="nicknameBtn">夫人會生氣</a>
-                <a href="about.html" class="font-bold text-lg text-amber-400 clickable hover-glow" id="tokenBtn">5.280</a>
+                <span class="font-bold text-lg text-amber-400 clickable hover-glow" id="tokenBtn" title="點擊轉換點數為代幣">5280</span>
             </div>
         </div>
     </header>
@@ -719,18 +907,19 @@
         </div>
     </div>
 
-    <!-- 跑馬燈 - 全像投影 (加上公告按鈕) -->
+    <!-- 公告按鈕框 -->
     <div class="px-4 mt-2">
-        <div class="flex items-center gap-2">
-            <a href="news.html" class="bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-[0_0_15px_rgba(0,255,255,0.5)] hover:scale-105 transition-transform duration-200 flex items-center gap-1"><i class="fa fa-bullhorn"></i><span>公告</span></a>
-            <div class="flex-1 relative">
-                <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div class="w-full h-1 bg-blue-400/20 animate-scan-line" style="top: 30%;"></div>
-                    <div class="w-full h-1 bg-purple-400/20 animate-scan-line-delay" style="top: 60%;"></div>
-                </div>
-                <div class="relative backdrop-blur-sm bg-gradient-to-r from-blue-500/5 to-purple-500/5 border border-blue-400/30 rounded-lg px-4 py-2.5" style="box-shadow: 0 0 30px rgba(0,150,255,0.2);">
-                    <marquee class="text-blue-300 text-sm font-bold tracking-wider" scrollamount="5">◈ 春 季 人 氣 機 台 大 賞 ◈ 甲 賀 忍 法 帖 系 列 全 線 熱 賣 ◈ 代 幣 優 惠 實 施 中 ◈</marquee>
-                </div>
+        <div class="announcement-combo">
+            <div class="hologram-lines">
+                <div class="animate-scan-line" style="top: 20%;"></div>
+                <div class="animate-scan-line-delay" style="top: 60%;"></div>
+            </div>
+            <a href="news.html" class="combo-announce-btn">
+                <i class="fa fa-bullhorn"></i>
+                <span>公告</span>
+            </a>
+            <div class="combo-marquee">
+                <marquee scrollamount="5" behavior="scroll" direction="left">◈ 春 季 人 氣 機 台 大 賞 ◈ 甲 賀 忍 法 帖 系 列 全 線 熱 賣 ◈ 代 幣 優 惠 實 施 中 ◈</marquee>
             </div>
         </div>
     </div>
@@ -753,14 +942,14 @@
         </div>
     </div>
 
-    <!-- 機台列表 - 所有卡片完整復原 -->
+    <!-- 機台列表 -->
     <main class="flex-1 px-4 pb-24 overflow-y-auto scrollbar-thin main-content" id="machineList">
         
         <!-- 新機入替區塊 -->
         <div class="category-section" data-category="新機">
             <h2 class="category-title"><i class="fa fa-star text-secondary"></i> 新機入替 <span class="text-xs text-gray-400 ml-2">共6款</span></h2>
             
-            <!-- 滑動模式 -->
+            <!-- 滑動模式 - 用於「全部」標籤 -->
             <div class="slider-container new-slider-mode">
                 <div class="slider-arrow left" id="newPrev"><i class="fa fa-chevron-left"></i></div>
                 <div class="slider-arrow right" id="newNext"><i class="fa fa-chevron-right"></i></div>
@@ -855,7 +1044,7 @@
                 </div>
             </div>
             
-            <!-- 垂直模式 (用於「新機」標籤) -->
+            <!-- 垂直模式 - 用於「新機」標籤 -->
             <div class="vertical-grid new-vertical-mode" style="display: none;">
                 <!-- 甲賀忍法帖 弐 -->
                 <div class="game-card-bg" data-categories='["新機","人氣機台","6號機"]'>
@@ -1220,333 +1409,254 @@
     </div>
 </div>
 
+<!-- 點數轉代幣彈窗 (無任何滾動條) -->
+<div class="convert-modal" id="convertModal">
+    <div class="convert-content">
+        <span class="convert-close" id="convertModalClose">&times;</span>
+        <div class="convert-header">
+            <h3>點數轉代幣</h3>
+            <p>1 點數 = 1 代幣</p>
+        </div>
+        <div class="available-points-card">
+            <span class="label">可用點數</span>
+            <span class="value" id="availablePoints">5280</span>
+        </div>
+        <div class="convert-input-group">
+            <input type="number" id="convertInput" placeholder="輸入點數" min="0" step="1" value="0">
+        </div>
+        <div class="convert-preview">
+            兌換代幣 <span id="tokenPreview">0</span>
+        </div>
+        <div class="convert-actions">
+            <button class="convert-btn secondary" id="cancelConvert">取消</button>
+            <button class="convert-btn" id="confirmConvert">立即兌換</button>
+        </div>
+        <div class="convert-note" id="convertNote">輸入數量後點擊兌換</div>
+    </div>
+</div>
+
+<!-- 炫光全像投影 Loading 動畫 -->
+<div class="hologram-loading" id="hologramLoading">
+    <div class="hologram-content">
+        <div class="hologram-circle">
+            <div class="hologram-inner-circle"></div>
+            <div class="hologram-scan-line"></div>
+            <div class="hologram-scan-line delay"></div>
+            <div class="hologram-glow"></div>
+        </div>
+        <div class="hologram-text">
+            <span class="glitch-text" data-text="LOADING">LOADING</span>
+        </div>
+        <div class="hologram-subtext">載入中......</div>
+        <div class="hologram-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+</div>
+
 <script>
 (function() {
-    // ========== 文件1完整功能 (最愛、子機種、篩選、輪播等) ==========
-    let favoriteMachines = JSON.parse(localStorage.getItem('favoriteMachines')) || [];
+    // ========== 我的最愛全域同步 ==========
+    const FAVORITE_STORAGE_KEY = 't Pachin_favoriteMachines';
     
-    if (favoriteMachines.length === 0) {
-        favoriteMachines = [
-            { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=2', vendor: 'Sammy' },
-            { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia' }
-        ];
-        localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
-    }
-    
-    function saveFavorites() {
-        localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
-    }
-    
-    function toggleFavorite(machine) {
-        const index = favoriteMachines.findIndex(m => m.id === machine.id);
-        if (index === -1) {
-            favoriteMachines.push(machine);
-        } else {
-            favoriteMachines.splice(index, 1);
-        }
-        saveFavorites();
-        localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
-    }
-    
-    function getMachineByName(name) {
-        const machineMap = {
-            '甲賀忍法帖 弐': { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=2', vendor: 'Sammy' },
-            '超級奇蹟小丑': { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=1', vendor: 'Olympia' },
-            '吉宗': { id: 3, name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=2', vendor: 'Daito' },
-            '押忍！番長4': { id: 10, name: '押忍！番長4', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.5', vendor: 'Daito' },
-            '花月': { id: 6, name: '花月', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1枚=0.25', vendor: 'Olympia' },
-            '大花火': { id: 14, name: '大花火', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.17', vendor: 'Olympia' },
-            '奇蹟小丑': { id: 7, name: '奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1枚=0.2', vendor: 'Rodeo' },
-            '新甲賀': { id: 9, name: '新甲賀', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1枚=0.25', vendor: 'Sammy' }
-        };
-        return machineMap[name] || { id: 999, name: name, image: '', ratio: '1枚=?', vendor: '其他' };
-    }
-    
-    window.addEventListener('storage', function(e) {
-        if (e.key === 'favoriteMachines') {
-            favoriteMachines = JSON.parse(e.newValue) || [];
-            document.querySelectorAll('.favorite-btn').forEach(btn => {
-                const machineName = btn.closest('.game-card-bg')?.querySelector('h3')?.textContent.trim();
-                if (machineName) {
-                    const machine = getMachineByName(machineName);
-                    if (machine) {
-                        const isFavorite = favoriteMachines.some(m => m.id === machine.id);
-                        btn.classList.toggle('active', isFavorite);
-                    }
-                }
-            });
-        }
-    });
-
-    window.toggleFavoriteFromCard = function(id) {
-        const machineName = document.getElementById('modalMachineName').innerText;
-        const machine = getMachineByName(machineName);
-        if (machine) {
-            toggleFavorite(machine);
-            document.querySelectorAll('.sub-fav').forEach(btn => {
-                if (btn.dataset.machine === machineName) {
-                    btn.classList.toggle('active');
-                }
-            });
-        }
-    };
-
-    // 子機種資料庫
-    const subMachineDB = {
-        '甲賀忍法帖 弐': [
-            { name: '朧', ratio: '1枚=2.5', status: 'playable' },
-            { name: '甲賀弦之介', ratio: '1枚=0.4', status: 'playable' },
-            { name: '陽炎', ratio: '1枚=0.8', status: 'playable' },
-            { name: '夜叉丸', ratio: '1枚=0.12', status: 'maintenance', maintenanceDate: '06/18 10:30' },
-            { name: '朱絹', ratio: '1枚=4.0', status: 'playable' },
-            { name: 'お胡夷', ratio: '1枚=0.18', status: 'maintenance', maintenanceDate: '06/22 15:00' }
-        ],
-        '超級奇蹟小丑': [
-            { name: '奇蹟小丑', ratio: '1枚=1.5', status: 'playable' },
-            { name: '小丑王', ratio: '1枚=0.6', status: 'maintenance', maintenanceDate: '06/16 11:00' },
-            { name: '笑面小丑', ratio: '1枚=0.3', status: 'playable' },
-            { name: '悲傷小丑', ratio: '1枚=0.15', status: 'playable' },
-            { name: '瘋狂小丑', ratio: '1枚=2.2', status: 'maintenance', maintenanceDate: '06/19 13:30' },
-            { name: '夢幻小丑', ratio: '1枚=0.25', status: 'playable' }
-        ],
-        '押忍！番長4': [
-            { name: '番長', ratio: '1枚=3.0', status: 'playable' },
-            { name: '番長G', ratio: '1枚=0.8', status: 'playable' },
-            { name: '副番長', ratio: '1枚=0.4', status: 'maintenance', maintenanceDate: '06/17 09:45' },
-            { name: '番長Z', ratio: '1枚=0.2', status: 'playable' },
-            { name: '番長F', ratio: '1枚=5.0', status: 'maintenance', maintenanceDate: '06/21 14:20' },
-            { name: '番長改', ratio: '1枚=0.35', status: 'playable' }
-        ],
-        '吉宗': [
-            { name: '暴れん坊将軍', ratio: '1枚=2.0', status: 'playable' },
-            { name: '吉宗S', ratio: '1枚=0.33', status: 'maintenance', maintenanceDate: '06/16 13:00' },
-            { name: '姫', ratio: '1枚=0.5', status: 'playable' },
-            { name: '爺', ratio: '1枚=0.1', status: 'playable' }
-        ],
-        '花月': [
-            { name: '花月G', ratio: '1枚=2.0', status: 'playable' },
-            { name: '花月S', ratio: '1枚=0.33', status: 'playable' },
-            { name: '花月改', ratio: '1枚=0.5', status: 'maintenance', maintenanceDate: '06/18 14:30' }
-        ],
-        '大花火': [
-            { name: '大花火G', ratio: '1枚=2.0', status: 'playable' },
-            { name: '大花火S', ratio: '1枚=0.5', status: 'maintenance', maintenanceDate: '06/19 11:00' }
-        ],
-        '奇蹟小丑': [
-            { name: '小丑', ratio: '1枚=1.8', status: 'playable' },
-            { name: '小丑G', ratio: '1枚=0.28', status: 'playable' },
-            { name: '小丑S', ratio: '1枚=0.45', status: 'maintenance', maintenanceDate: '06/20 09:00' }
-        ],
-        '新甲賀': [
-            { name: '甲賀弦之介', ratio: '1枚=2.0', status: 'playable' },
-            { name: '朧', ratio: '1枚=0.33', status: 'maintenance', maintenanceDate: '06/21 15:30' }
-        ],
-        '革命機ヴァルヴレイヴ': [ { name: '革命機1', ratio: '1枚=1.0', status: 'playable' } ],
-        'パチスロ 幼女戦記': [ { name: '幼女1', ratio: '1枚=0.8', status: 'playable' } ],
-        'L 犬夜叉': [ { name: '犬夜叉', ratio: '1枚=1.2', status: 'playable' } ],
-        'パチスロ モンキーターン': [ { name: 'モンキー', ratio: '1枚=1.1', status: 'playable' } ],
-        '押忍！番長3': [ { name: '番長3', ratio: '1枚=0.9', status: 'playable' } ],
-        'パチスロ ガールズ＆パンツァー': [ { name: 'ガルパン', ratio: '1枚=0.7', status: 'playable' } ],
-        'パチスロ 北斗の拳': [ { name: '拳四郎', ratio: '1枚=1.5', status: 'playable' } ],
-        'パチスロ 新鬼武者': [ { name: '鬼武者', ratio: '1枚=0.6', status: 'playable' } ],
-        'パチスロ 魔法少女まどか☆マギカ': [ { name: 'まどか', ratio: '1枚=1.3', status: 'playable' } ],
-        'ドンちゃん2': [ { name: 'ドンちゃん', ratio: '1枚=1.0', status: 'playable' } ],
-        'アラジンA': [ { name: 'アラジン', ratio: '1枚=0.9', status: 'playable' } ],
-        'クランキーコンドル': [ { name: 'クランキー', ratio: '1枚=1.1', status: 'playable' } ],
-        'バーサス': [ { name: 'バーサス', ratio: '1枚=0.8', status: 'playable' } ],
-        'ニューパルサー': [ { name: 'パルサー', ratio: '1枚=1.2', status: 'playable' } ],
-        '超級奇蹟': [ { name: '超級', ratio: '1枚=0.9', status: 'playable' } ],
-        'バジリスク〜甲賀忍法帖〜': [ { name: '弦之介', ratio: '1枚=1.4', status: 'playable' } ],
-        'パチスロ エウレカセブン': [ { name: 'エウレカ', ratio: '1枚=0.7', status: 'playable' } ],
-        'パチスロ コードギアス': [ { name: 'ルルーシュ', ratio: '1枚=1.1', status: 'playable' } ],
-        'パチスロ 戦国無双': [ { name: '真田', ratio: '1枚=0.6', status: 'playable' } ],
-        'パチスロ 蒼天の拳': [ { name: '拳志郎', ratio: '1枚=1.3', status: 'playable' } ],
-        'パチスロ ゴッドイーター': [ { name: 'ゴッド', ratio: '1枚=0.9', status: 'playable' } ],
-        'パチスロ ダンまち': [ { name: 'ベル', ratio: '1枚=1.0', status: 'playable' } ],
-        'L 聖戦士ダンバイン': [ { name: 'ダンバイン', ratio: '1枚=0.8', status: 'playable' } ],
-        'パチスロ ありふれた': [ { name: 'ありふれ', ratio: '1枚=1.2', status: 'playable' } ],
-        'パチスロ 転スラ': [ { name: 'リムル', ratio: '1枚=0.7', status: 'playable' } ],
-        'パチスロ このすば': [ { name: 'カズマ', ratio: '1枚=1.5', status: 'playable' } ]
-    };
-
-    function getSubMachines(machineName) {
-        return subMachineDB[machineName] || [];
-    }
-
-    // 彈窗控制
-    const modal = document.getElementById('machineModal');
-    const modalTitle = document.getElementById('modalMachineName');
-    const modalSubList = document.getElementById('modalSubmachineList');
-    const modalClose = document.getElementById('modalCloseBtn');
-
-    function openModal(machineName) {
-        modalTitle.innerText = machineName;
-        const subList = getSubMachines(machineName);
-        
-        if (subList.length === 0) {
-            modalSubList.innerHTML = '<div class="col-span-2 text-center text-gray-400 py-8">此機台暫無子機種資料</div>';
-            modal.classList.add('show');
-            return;
-        }
-        
-        let html = '';
-        subList.forEach(sub => {
-            const machine = getMachineByName(machineName);
-            const isFavorite = machine ? favoriteMachines.some(m => m.id === machine.id) : false;
-            
-            const isMaintenance = sub.status === 'maintenance';
-            const cardClass = isMaintenance ? 'sub-item-card maintenance' : 'sub-item-card';
-            
-            const enterButtonClass = isMaintenance ? 'enter-btn maintenance' : 'enter-btn';
-            const enterButtonText = isMaintenance ? '維護中' : '進入';
-            
-            const maintenanceBadge = isMaintenance ? '<span class="maintenance-badge"><i class="fa fa-wrench"></i> 維護</span>' : '';
-            
-            const maintenanceDateHtml = isMaintenance ? 
-                `<div class="maintenance-date"><i class="fa fa-clock-o"></i> ${sub.maintenanceDate || '待定'}</div>` : 
-                '<div class="placeholder-date"></div>';
-            
-            html += `
-                <div class="${cardClass}">
-                    <div class="sub-name-ratio">
-                        <span class="sub-name">${sub.name} ${maintenanceBadge}</span>
-                        <span class="sub-ratio">${sub.ratio}</span>
-                    </div>
-                    ${maintenanceDateHtml}
-                    <div class="sub-actions">
-                        <button class="${enterButtonClass} sub-enter" 
-                            data-machine="${machineName}" 
-                            data-sub="${sub.name}" 
-                            data-ratio="${sub.ratio}"
-                            ${isMaintenance ? 'disabled' : ''}>
-                            ${enterButtonText}
-                        </button>
-                        <button class="favorite-btn sub-fav ${isFavorite ? 'active' : ''}" 
-                            data-machine="${machineName}" 
-                            data-sub="${sub.name}" 
-                            data-ratio="${sub.ratio}">
-                            <i class="fa fa-heart text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        modalSubList.innerHTML = html;
-        modal.classList.add('show');
-        
-        modalSubList.querySelectorAll('.sub-fav').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const machineName = this.dataset.machine;
-                const machine = getMachineByName(machineName);
-                if (machine) {
-                    toggleFavorite(machine);
-                    this.classList.toggle('active');
-                    
-                    document.querySelectorAll('.favorite-btn').forEach(mainBtn => {
-                        const mainMachineName = mainBtn.closest('.game-card-bg')?.querySelector('h3')?.textContent.trim();
-                        if (mainMachineName === machineName) {
-                            mainBtn.classList.toggle('active');
-                        }
-                    });
-                    
-                    localStorage.setItem('favoriteMachines', JSON.stringify(favoriteMachines));
-                }
-            });
-        });
-        
-        modalSubList.querySelectorAll('.sub-enter:not(.maintenance)').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                alert(`🚀 進入 ${this.dataset.machine} - ${this.dataset.sub} (${this.dataset.ratio})`);
-            });
-        });
-        
-        modalSubList.querySelectorAll('.sub-enter.maintenance').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                alert(`🔧 此子機台維護中，預計 ${btn.closest('.sub-item-card')?.querySelector('.maintenance-date')?.textContent || '稍後' } 恢復`);
-            });
-        });
-    }
-
-    function closeModal() {
-        modal.classList.remove('show');
-    }
-
-    if (modalClose) {
-        modalClose.addEventListener('click', closeModal);
-    }
-    
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-
-    // 點擊「進入」按鈕開子機種
-    const enterBtns = document.querySelectorAll('.enter-btn');
-    enterBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            
-            let machineName = this.dataset.machine;
-            if (!machineName) {
-                const card = this.closest('.game-card-bg');
-                const titleElem = card?.querySelector('h3');
-                machineName = titleElem ? titleElem.textContent.trim() : '機台';
+    // 從 localStorage 載入我的最愛
+    function loadFavorites() {
+        const stored = localStorage.getItem(FAVORITE_STORAGE_KEY);
+        if (stored) {
+            try {
+                return JSON.parse(stored);
+            } catch (e) {
+                return [];
             }
+        }
+        return [];
+    }
+    
+    // 儲存我的最愛到 localStorage
+    function saveFavorites(favorites) {
+        localStorage.setItem(FAVORITE_STORAGE_KEY, JSON.stringify(favorites));
+    }
+    
+    // 檢查機台是否在我的最愛中
+    function isMachineFavorite(machineName) {
+        const favorites = loadFavorites();
+        return favorites.some(m => m.name === machineName);
+    }
+    
+    // 切換我的最愛狀態
+    function toggleMachineFavorite(machineName, buttonElement) {
+        const favorites = loadFavorites();
+        
+        // 建立機台資料
+        const machine = {
+            id: Date.now() + Math.random(),
+            name: machineName,
+            image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png',
+            ratio: '1枚=2',
+            vendor: '通用'
+        };
+        
+        const index = favorites.findIndex(m => m.name === machineName);
+        
+        if (index !== -1) {
+            favorites.splice(index, 1);
+            showFavoriteMessage('已從我的最愛移除');
             
-            openModal(machineName);
+            if (buttonElement) {
+                buttonElement.classList.remove('active');
+                const icon = buttonElement.querySelector('i');
+                if (icon) {
+                    icon.className = 'fa fa-heart-o';
+                }
+            }
+        } else {
+            favorites.push(machine);
+            showFavoriteMessage('已加入我的最愛');
+            
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+                const icon = buttonElement.querySelector('i');
+                if (icon) {
+                    icon.className = 'fa fa-heart';
+                    icon.style.color = '#ef4444';
+                }
+            }
+        }
+        
+        saveFavorites(favorites);
+        
+        // 觸發 storage 事件，通知其他頁面更新
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: FAVORITE_STORAGE_KEY,
+            newValue: JSON.stringify(favorites)
+        }));
+    }
+    
+    // 顯示提示訊息
+    function showFavoriteMessage(text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 text-white px-6 py-3 rounded-lg border-2 border-yellow-400 shadow-2xl z-50';
+        msgDiv.style.background = 'linear-gradient(135deg, #000, #333)';
+        msgDiv.innerHTML = `<i class="fa fa-heart text-pink-400 mr-2"></i>${text}`;
+        document.body.appendChild(msgDiv);
+        
+        setTimeout(() => {
+            msgDiv.remove();
+        }, 1500);
+    }
+    
+    // ========== 點數/代幣核心 ==========
+    let points = 5280;
+    const tokenBtn = document.getElementById('tokenBtn');
+    
+    function updatePointsDisplay() {
+        if (tokenBtn) tokenBtn.textContent = points;
+    }
+    
+    // ========== 點數轉代幣彈窗 ==========
+    const convertModal = document.getElementById('convertModal');
+    const convertInput = document.getElementById('convertInput');
+    const availableSpan = document.getElementById('availablePoints');
+    const tokenPreview = document.getElementById('tokenPreview');
+    const convertNote = document.getElementById('convertNote');
+    const cancelBtn = document.getElementById('cancelConvert');
+    const confirmBtn = document.getElementById('confirmConvert');
+    const closeBtn = document.getElementById('convertModalClose');
+
+    if (tokenBtn) {
+        tokenBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            convertInput.value = 0;
+            availableSpan.textContent = points;
+            tokenPreview.textContent = '0';
+            convertNote.textContent = '輸入數量後點擊兌換';
+            convertModal.classList.add('show');
         });
+    }
+
+    function closeConvertModal() {
+        convertModal.classList.remove('show');
+    }
+    if (cancelBtn) cancelBtn.addEventListener('click', closeConvertModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeConvertModal);
+    convertModal.addEventListener('click', (e) => {
+        if (e.target === convertModal) closeConvertModal();
     });
 
-    // 點擊卡片開子機種
-    const cards = document.querySelectorAll('.game-card-bg');
-    cards.forEach(card => {
-        card.addEventListener('click', function(e) {
-            if (e.target.closest('button')) return;
-            
-            const titleElem = this.querySelector('h3');
-            const machineName = titleElem ? titleElem.textContent.trim() : '機台';
-            openModal(machineName);
+    if (convertInput) {
+        convertInput.addEventListener('input', function() {
+            let val = parseInt(this.value);
+            if (isNaN(val) || val < 0) val = 0;
+            if (val > points) {
+                val = points;
+                this.value = points;
+                convertNote.textContent = `⚠️ 僅剩 ${points} 點可轉換`;
+            } else {
+                convertNote.textContent = val === 0 ? '輸入數量後點擊兌換' : '✅ 可兌換等值代幣';
+            }
+            tokenPreview.textContent = val;
         });
-    });
+    }
 
-    // 側拉欄
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+            let val = parseInt(convertInput.value);
+            if (isNaN(val) || val <= 0) {
+                alert('請輸入大於0的點數');
+                return;
+            }
+            if (val > points) {
+                alert(`點數不足，目前僅有 ${points} 點`);
+                return;
+            }
+            points -= val;
+            updatePointsDisplay();
+            closeConvertModal();
+            alert(`✨ 成功兌換 ${val} 代幣！剩餘點數 ${points}`);
+        });
+    }
+
+    updatePointsDisplay();
+
+    // ========== 篩選側拉欄 ==========
     const openBtn = document.getElementById('openDrawerBtn');
-    const closeBtn = document.getElementById('closeDrawer');
+    const closeDrawerBtn = document.getElementById('closeDrawer');
     const drawer = document.getElementById('filterDrawer');
-    const drawerOverlay = document.getElementById('drawerOverlay');
-    
+    const overlay = document.getElementById('drawerOverlay');
+
     if (openBtn) {
-        openBtn.addEventListener('click', () => {
+        openBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
             drawer.classList.add('open');
-            drawerOverlay.classList.add('open');
+            overlay.classList.add('open');
         });
     }
     
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
+    if (closeDrawerBtn) {
+        closeDrawerBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
             drawer.classList.remove('open');
-            drawerOverlay.classList.remove('open');
+            overlay.classList.remove('open');
         });
     }
     
-    if (drawerOverlay) {
-        drawerOverlay.addEventListener('click', () => {
+    if (overlay) {
+        overlay.addEventListener('click', function() {
             drawer.classList.remove('open');
-            drawerOverlay.classList.remove('open');
+            overlay.classList.remove('open');
         });
     }
 
-    // 底部導航當前頁面標記
+    // ========== 底部導航當前頁面標記 ==========
     function setCurrentNav() {
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => item.classList.remove('current-page'));
-        
         const path = window.location.pathname;
         const filename = path.split('/').pop() || 'index.html';
-        
         if (filename === 'index.html' || filename === '' || filename === '/') {
             document.getElementById('nav-home')?.classList.add('current-page');
         } else if (filename.includes('machines')) {
@@ -1561,145 +1671,592 @@
     }
     setCurrentNav();
 
-    // 標籤切換
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const categorySections = document.querySelectorAll('.category-section');
-    
-    function filterByCategory(category) {
-        categorySections.forEach(section => {
-            const cat = section.getAttribute('data-category');
-            section.style.display = (category === '全部' || cat === category) ? 'block' : 'none';
-        });
-
-        const newSection = document.querySelector('.category-section[data-category="新機"]');
-        if (newSection) {
-            const sliderMode = newSection.querySelector('.new-slider-mode');
-            const verticalMode = newSection.querySelector('.new-vertical-mode');
-            
-            if (sliderMode && verticalMode) {
-                if (category === '全部') {
-                    sliderMode.style.display = 'block';
-                    verticalMode.style.display = 'none';
-                } else if (category === '新機') {
-                    sliderMode.style.display = 'none';
-                    verticalMode.style.display = 'grid';
-                }
-            }
-        }
-    }
-    
-    tabBtns.forEach((btn, index) => {
-        btn.addEventListener('click', function() {
-            tabBtns.forEach(b => {
-                b.classList.remove('tech-tab-active');
-                b.classList.add('bg-dark-200', 'tech-border');
-            });
-            this.classList.remove('bg-dark-200', 'tech-border');
-            this.classList.add('tech-tab-active');
-            filterByCategory(this.getAttribute('data-tab'));
-        });
-    });
-    
-    filterByCategory('全部');
-
-    // 新機滑塊初始化
-    function initNewSlider() {
-        const wrapper = document.getElementById('newWrapper');
-        const prev = document.getElementById('newPrev');
-        const next = document.getElementById('newNext');
-        const dots = document.querySelectorAll('#newDots .slider-dot');
-        if (!wrapper || !prev || !next) return;
-        
-        const itemWidth = 196;
-        let currentIndex = 0;
-        const maxIndex = Math.max(0, wrapper.children.length - 2);
-        
-        function updateSlider(index) {
-            currentIndex = Math.max(0, Math.min(index, maxIndex));
-            wrapper.scrollTo({ left: currentIndex * itemWidth, behavior: 'smooth' });
-            prev.classList.toggle('disabled', currentIndex === 0);
-            next.classList.toggle('disabled', currentIndex >= maxIndex);
-            
-            const dotIndex = Math.min(Math.floor(currentIndex / 2), dots.length - 1);
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === dotIndex);
-            });
-        }
-        
-        prev.addEventListener('click', () => updateSlider(currentIndex - 1));
-        next.addEventListener('click', () => updateSlider(currentIndex + 1));
-        
-        dots.forEach((dot, i) => {
-            dot.addEventListener('click', () => {
-                updateSlider(i * 2);
-            });
-        });
-        
-        wrapper.addEventListener('scroll', () => {
-            const index = Math.round(wrapper.scrollLeft / itemWidth);
-            prev.classList.toggle('disabled', index === 0);
-            next.classList.toggle('disabled', index >= maxIndex);
-            
-            const dotIndex = Math.min(Math.floor(index / 2), dots.length - 1);
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === dotIndex);
-            });
-        });
-        
-        updateSlider(0);
-    }
-    
-    initNewSlider();
-
-    // 回到頂部
     const backBtn = document.getElementById('backToTop');
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) backBtn?.classList.add('show');
-        else backBtn?.classList.remove('show');
+        if (window.scrollY > 300) backBtn?.classList.add('show'); else backBtn?.classList.remove('show');
     });
     backBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // ===== 浮動左側欄收合功能 =====
-    const sidebar = document.getElementById('floatingSidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('collapsed');
-        });
+    // ========== 炫光 Loading 動畫 ==========
+    const hologramLoading = document.getElementById('hologramLoading');
+
+    function showHologramLoading() {
+        hologramLoading.classList.add('show');
     }
 
-    // 迷你聊天室發送功能
-    const miniSend = document.getElementById('miniChatSend');
-    const miniInput = document.getElementById('miniChatInput');
-    const miniMsgs = document.getElementById('miniChatMessages');
-    if (miniSend) {
-        miniSend.addEventListener('click', function() {
-            if (miniInput.value.trim()) {
-                const msg = document.createElement('div');
-                msg.style.textAlign = 'right';
-                msg.textContent = '你: ' + miniInput.value;
-                miniMsgs.appendChild(msg);
-                miniInput.value = '';
-                miniMsgs.scrollTop = miniMsgs.scrollHeight;
+    function hideHologramLoading() {
+        hologramLoading.classList.remove('show');
+    }
+
+    // ========== 子機種資料 ==========
+    const submachinesData = {
+        '吉宗': [
+            { name: '吉宗 A', ratio: '1枚=2.1', maintenance: false },
+            { name: '吉宗 B', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-15' },
+            { name: '吉宗 C', ratio: '1枚=0.33', maintenance: false },
+            { name: '吉宗 D', ratio: '1枚=0.25', maintenance: false }
+        ],
+        '甲賀忍法帖 弐': [
+            { name: '甲賀 紅', ratio: '1枚=2.1', maintenance: false },
+            { name: '甲賀 白', ratio: '1枚=0.5', maintenance: false },
+            { name: '甲賀 黑', ratio: '1枚=0.33', maintenance: true, maintenanceDate: '2026-03-20' }
+        ],
+        '超級奇蹟小丑': [
+            { name: '小丑 紅', ratio: '1枚=2.1', maintenance: false },
+            { name: '小丑 藍', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-18' },
+            { name: '小丑 綠', ratio: '1枚=0.33', maintenance: false }
+        ],
+        '押忍！番長4': [
+            { name: '番長 4-1', ratio: '1枚=2.1', maintenance: false },
+            { name: '番長 4-2', ratio: '1枚=0.5', maintenance: false },
+            { name: '番長 4-3', ratio: '1枚=0.33', maintenance: true, maintenanceDate: '2026-03-25' }
+        ],
+        '革命機ヴァルヴレイヴ': [
+            { name: '革命機 01', ratio: '1枚=2.1', maintenance: false },
+            { name: '革命機 02', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ 幼女戦記': [
+            { name: '幼女戦記 T', ratio: '1枚=2.1', maintenance: false },
+            { name: '幼女戦記 Y', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-22' }
+        ],
+        'L 犬夜叉': [
+            { name: '犬夜叉 鐵', ratio: '1枚=2.1', maintenance: false },
+            { name: '犬夜叉 牙', ratio: '1枚=0.5', maintenance: false },
+            { name: '犬夜叉 爪', ratio: '1枚=0.33', maintenance: false }
+        ],
+        'パチスロ モンキーターン': [
+            { name: '猴子 轉', ratio: '1枚=2.1', maintenance: false },
+            { name: '猴子 旋', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-28' }
+        ],
+        '押忍！番長3': [
+            { name: '番長 3-1', ratio: '1枚=2.1', maintenance: false },
+            { name: '番長 3-2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ ガールズ＆パンツァー': [
+            { name: 'GUP 01', ratio: '1枚=2.1', maintenance: false },
+            { name: 'GUP 02', ratio: '1枚=0.5', maintenance: false },
+            { name: 'GUP 03', ratio: '1枚=0.33', maintenance: true, maintenanceDate: '2026-04-01' }
+        ],
+        'パチスロ 北斗の拳': [
+            { name: '北斗 拳', ratio: '1枚=2.1', maintenance: false },
+            { name: '北斗 拉', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ 新鬼武者': [
+            { name: '新鬼 武', ratio: '1枚=2.1', maintenance: false },
+            { name: '新鬼 者', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-30' }
+        ],
+        'パチスロ 魔法少女まどか☆マギカ': [
+            { name: 'まどか', ratio: '1枚=2.1', maintenance: false },
+            { name: 'ほむら', ratio: '1枚=0.5', maintenance: false },
+            { name: 'さやか', ratio: '1枚=0.33', maintenance: false }
+        ],
+        '花月': [
+            { name: '花月 極', ratio: '1枚=2.1', maintenance: false },
+            { name: '花月 彩', ratio: '1枚=0.5', maintenance: false }
+        ],
+        '大花火': [
+            { name: '花火 大', ratio: '1枚=2.1', maintenance: false },
+            { name: '花火 小', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-17' }
+        ],
+        'ドンちゃん2': [
+            { name: 'Don 2-1', ratio: '1枚=2.1', maintenance: false },
+            { name: 'Don 2-2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'アラジンA': [
+            { name: 'Aladdin A1', ratio: '1枚=2.1', maintenance: false },
+            { name: 'Aladdin A2', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-19' }
+        ],
+        'クランキーコンドル': [
+            { name: 'Cranky 01', ratio: '1枚=2.1', maintenance: false },
+            { name: 'Cranky 02', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'バーサス': [
+            { name: 'Versus 紅', ratio: '1枚=2.1', maintenance: false },
+            { name: 'Versus 藍', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'ニューパルサー': [
+            { name: 'New Pulsar 1', ratio: '1枚=2.1', maintenance: false },
+            { name: 'New Pulsar 2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        '奇蹟小丑': [
+            { name: '奇蹟 1', ratio: '1枚=2.1', maintenance: false },
+            { name: '奇蹟 2', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-23' }
+        ],
+        '超級奇蹟': [
+            { name: '超奇 1', ratio: '1枚=2.1', maintenance: false },
+            { name: '超奇 2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'バジリスク〜甲賀忍法帖〜': [
+            { name: '甲賀 參', ratio: '1枚=2.1', maintenance: false },
+            { name: '甲賀 肆', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ エウレカセブン': [
+            { name: 'Eureka 7', ratio: '1枚=2.1', maintenance: false },
+            { name: 'Eureka AO', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-26' }
+        ],
+        'パチスロ コードギアス': [
+            { name: 'Code Geass R1', ratio: '1枚=2.1', maintenance: false },
+            { name: 'Code Geass R2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ 戦国無双': [
+            { name: '戰國 1', ratio: '1枚=2.1', maintenance: false },
+            { name: '戰國 2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ 蒼天の拳': [
+            { name: '蒼天 拳', ratio: '1枚=2.1', maintenance: false },
+            { name: '蒼天 飛', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-04-02' }
+        ],
+        '新甲賀': [
+            { name: '新甲賀 1', ratio: '1枚=2.1', maintenance: false },
+            { name: '新甲賀 2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ ゴッドイーター': [
+            { name: 'GE 神', ratio: '1枚=2.1', maintenance: false },
+            { name: 'GE 喰', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ ダンまち': [
+            { name: 'Danmachi 1', ratio: '1枚=2.1', maintenance: false },
+            { name: 'Danmachi 2', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-27' }
+        ],
+        'L 聖戦士ダンバイン': [
+            { name: 'Dunbine 1', ratio: '1枚=2.1', maintenance: false },
+            { name: 'Dunbine 2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ ありふれた': [
+            { name: '平凡 1', ratio: '1枚=2.1', maintenance: false },
+            { name: '平凡 2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ 転スラ': [
+            { name: '轉生 1', ratio: '1枚=2.1', maintenance: false },
+            { name: '轉生 2', ratio: '1枚=0.5', maintenance: false }
+        ],
+        'パチスロ このすば': [
+            { name: 'KonoSuba 1', ratio: '1枚=2.1', maintenance: false },
+            { name: 'KonoSuba 2', ratio: '1枚=0.5', maintenance: false }
+        ]
+    };
+
+    // ========== 預設資料 ==========
+    function getDefaultSubmachines(machineName) {
+        return [
+            { name: `${machineName} 標準A`, ratio: '1枚=2.1', maintenance: false },
+            { name: `${machineName} 標準B`, ratio: '1枚=0.5', maintenance: Math.random() > 0.7, maintenanceDate: '2026-03-15' },
+            { name: `${machineName} 標準C`, ratio: '1枚=0.33', maintenance: false },
+            { name: `${machineName} 標準D`, ratio: '1枚=0.25', maintenance: false }
+        ];
+    }
+
+    // ========== 子機種彈窗 ==========
+    const modal = document.getElementById('machineModal');
+    const modalTitle = document.getElementById('modalMachineName');
+    const modalSubList = document.getElementById('modalSubmachineList');
+    const modalClose = document.getElementById('modalCloseBtn');
+
+    function openModal(machineName) {
+        modalTitle.innerText = machineName;
+        
+        // 立即顯示彈窗，不加載入動畫
+        modal.classList.add('show');
+        
+        // 清空舊內容
+        modalSubList.innerHTML = '';
+        
+        // 取得子機台資料
+        let submachines = submachinesData[machineName] || getDefaultSubmachines(machineName);
+        
+        // 建立子機台卡片
+        submachines.forEach(sub => {
+            const card = document.createElement('div');
+            card.className = `sub-item-card ${sub.maintenance ? 'maintenance' : ''}`;
+            
+            const maintenanceDate = sub.maintenance && sub.maintenanceDate ? 
+                `<div class="maintenance-date"><i class="fa fa-calendar"></i> 預計 ${sub.maintenanceDate}</div>` : 
+                '<div class="placeholder-date"></div>';
+            
+            card.innerHTML = `
+                <div class="sub-name-ratio">
+                    <div class="sub-name">
+                        ${sub.maintenance ? '<i class="fa fa-exclamation-triangle text-red-400 mr-1"></i>' : ''}
+                        ${sub.name}
+                    </div>
+                    <span class="sub-ratio">${sub.ratio}</span>
+                </div>
+                ${maintenanceDate}
+                <div class="sub-actions">
+                    <button class="enter-btn ${sub.maintenance ? 'maintenance' : ''}" 
+                            ${sub.maintenance ? 'disabled' : ''}
+                            data-action="enter-sub" 
+                            data-machine="${machineName}" 
+                            data-submachine="${sub.name}">
+                        ${sub.maintenance ? '維護中' : '進入遊玩'}
+                    </button>
+                    <button class="favorite-btn" data-favorite-sub="${sub.name}">
+                        <i class="fa fa-heart-o"></i>
+                    </button>
+                </div>
+            `;
+            
+            modalSubList.appendChild(card);
+        });
+        
+        // ===== 子機台的「進入遊玩」按鈕（只有這裡才需要炫光 loading） =====
+        document.querySelectorAll('.sub-actions .enter-btn:not(.maintenance)').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const machine = this.dataset.machine;
+                const submachine = this.dataset.submachine;
+                
+                // 顯示炫光 loading
+                showHologramLoading();
+                
+                // 模擬載入時間（2 秒後關閉並顯示提示）
+                setTimeout(() => {
+                    hideHologramLoading();
+                    alert(`🎮 進入 ${machine} - ${submachine}\n\n此為演示功能，實際遊玩請前往遊戲頁面。`);
+                }, 2000);
+            });
+        });
+        
+        // 收藏按鈕事件 - 使用新的我的最愛功能
+        document.querySelectorAll('.sub-actions .favorite-btn').forEach(btn => {
+            // 檢查是否已經在最愛中
+            if (isMachineFavorite(machineName)) {
+                btn.classList.add('active');
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    icon.className = 'fa fa-heart';
+                    icon.style.color = '#ef4444';
+                }
             }
+            
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleMachineFavorite(machineName, this);
+            });
         });
     }
+    
+    function closeModal() { 
+        modal.classList.remove('show');
+    }
 
-    // 聊天室最小化 (簡易)
-    const miniMinimize = document.getElementById('miniChatMinimize');
-    const chatMini = document.querySelector('.chat-mini-messages');
-    if (miniMinimize) {
-        miniMinimize.addEventListener('click', function(e) {
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    // ========== 主機台進入按鈕事件（不加載入動畫） ==========
+    document.querySelectorAll('.enter-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (chatMini.style.display === 'none') {
-                chatMini.style.display = 'block';
-                miniMinimize.innerHTML = '<i class="fa fa-minus"></i>';
-            } else {
-                chatMini.style.display = 'none';
-                miniMinimize.innerHTML = '<i class="fa fa-plus"></i>';
+            
+            let machineName = this.dataset.machine || 
+                             this.closest('.game-card-bg')?.querySelector('h3')?.textContent.trim() || 
+                             '機台';
+            
+            // 直接開啟子機台彈窗，不加載入動畫
+            openModal(machineName);
+        });
+    });
+
+    // ========== 卡片點擊事件（不加載入動畫） ==========
+    document.querySelectorAll('.game-card-bg').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('button')) return;
+            
+            const titleElem = this.querySelector('h3');
+            if (titleElem) {
+                const machineName = titleElem.textContent.trim();
+                
+                // 顯示卡片按下效果
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+                
+                // 直接開啟子機台彈窗
+                openModal(machineName);
+            }
+        });
+    });
+
+    // ========== 新機滑動功能 ==========
+    const newWrapper = document.getElementById('newWrapper');
+    const newPrev = document.getElementById('newPrev');
+    const newNext = document.getElementById('newNext');
+    const newDots = document.querySelectorAll('#newDots .slider-dot');
+    
+    if (newWrapper && newPrev && newNext) {
+        const scrollAmount = 200;
+        
+        newPrev.addEventListener('click', () => {
+            newWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+        
+        newNext.addEventListener('click', () => {
+            newWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+        
+        newWrapper.addEventListener('scroll', () => {
+            const scrollLeft = newWrapper.scrollLeft;
+            const maxScroll = newWrapper.scrollWidth - newWrapper.clientWidth;
+            const scrollPercentage = scrollLeft / maxScroll;
+            const activeIndex = Math.round(scrollPercentage * (newDots.length - 1));
+            
+            newDots.forEach((dot, index) => {
+                if (index === activeIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        });
+        
+        newDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                const itemWidth = newWrapper.scrollWidth / newDots.length;
+                newWrapper.scrollTo({ left: itemWidth * index, behavior: 'smooth' });
+            });
+        });
+    }
+
+    // ========== Banner 輪播 ==========
+    const bannerSlider = document.getElementById('bannerSlider');
+    const bannerDots = document.querySelectorAll('.banner-dot');
+    const bannerTouchArea = document.getElementById('bannerTouchArea');
+    
+    if (bannerSlider && bannerDots.length) {
+        let currentSlide = 0;
+        let startX = 0;
+        let isDragging = false;
+        
+        function goToSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= bannerDots.length) index = bannerDots.length - 1;
+            
+            currentSlide = index;
+            bannerSlider.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            bannerDots.forEach((dot, i) => {
+                if (i === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        bannerDots.forEach((dot, index) => {
+            dot.addEventListener('click', (e) => {
+                e.stopPropagation();
+                goToSlide(index);
+            });
+        });
+        
+        if (bannerTouchArea) {
+            bannerTouchArea.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+            }, { passive: true });
+            
+            bannerTouchArea.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+            }, { passive: false });
+            
+            bannerTouchArea.addEventListener('touchend', (e) => {
+                if (!isDragging) return;
+                
+                const endX = e.changedTouches[0].clientX;
+                const diffX = endX - startX;
+                
+                if (Math.abs(diffX) > 50) {
+                    if (diffX > 0 && currentSlide > 0) {
+                        goToSlide(currentSlide - 1);
+                    } else if (diffX < 0 && currentSlide < bannerDots.length - 1) {
+                        goToSlide(currentSlide + 1);
+                    }
+                }
+                
+                isDragging = false;
+            }, { passive: true });
+        }
+        
+        setInterval(() => {
+            let nextSlide = (currentSlide + 1) % bannerDots.length;
+            goToSlide(nextSlide);
+        }, 5000);
+    }
+
+    // ========== 標籤切換 ==========
+    const tabs = document.querySelectorAll('.tab-btn');
+    const tabIndicator = document.getElementById('tabIndicator');
+    const tabsWrapper = document.getElementById('tabsWrapper');
+    const categorySections = document.querySelectorAll('.category-section');
+    const newSliderMode = document.querySelector('.new-slider-mode');
+    const newVerticalMode = document.querySelector('.new-vertical-mode');
+    
+    if (tabs.length && tabIndicator && tabsWrapper) {
+        function updateActiveTab(activeTab) {
+            // 更新按鈕樣式
+            tabs.forEach(tab => {
+                tab.classList.remove('tech-tab-active');
+                tab.classList.add('bg-dark-200', 'tech-border');
+            });
+            
+            activeTab.classList.remove('bg-dark-200', 'tech-border');
+            activeTab.classList.add('tech-tab-active');
+            
+            // 更新指示器位置
+            const tabRect = activeTab.getBoundingClientRect();
+            const wrapperRect = tabsWrapper.getBoundingClientRect();
+            
+            tabIndicator.style.width = `${tabRect.width}px`;
+            tabIndicator.style.left = `${tabRect.left - wrapperRect.left}px`;
+            
+            // 滾動到可見區域
+            const scrollLeft = tabsWrapper.scrollLeft;
+            const tabLeft = activeTab.offsetLeft;
+            const tabRight = tabLeft + activeTab.offsetWidth;
+            const wrapperWidth = tabsWrapper.clientWidth;
+            
+            if (tabLeft < scrollLeft) {
+                tabsWrapper.scrollTo({ left: tabLeft - 10, behavior: 'smooth' });
+            } else if (tabRight > scrollLeft + wrapperWidth) {
+                tabsWrapper.scrollTo({ left: tabRight - wrapperWidth + 10, behavior: 'smooth' });
+            }
+            
+            // 切換新機區塊顯示模式
+            const tabText = activeTab.dataset.tab;
+            
+            // 新機區塊：全部標籤顯示滑動模式，新機標籤顯示垂直模式
+            if (newSliderMode && newVerticalMode) {
+                if (tabText === '全部') {
+                    newSliderMode.style.display = 'block';
+                    newVerticalMode.style.display = 'none';
+                } else if (tabText === '新機') {
+                    newSliderMode.style.display = 'none';
+                    newVerticalMode.style.display = 'grid';
+                } else {
+                    // 其他標籤時隱藏新機區塊（因為要顯示其他分類）
+                    newSliderMode.style.display = 'none';
+                    newVerticalMode.style.display = 'none';
+                }
+            }
+            
+            // 顯示/隱藏分類區塊
+            categorySections.forEach(section => {
+                const category = section.dataset.category;
+                
+                if (tabText === '全部') {
+                    section.style.display = 'block';
+                } else if (tabText === category) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+        
+        // 初始化
+        const defaultTab = document.querySelector('.tab-btn[data-tab="全部"]') || tabs[0];
+        updateActiveTab(defaultTab);
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                updateActiveTab(tab);
+            });
+        });
+        
+        // 視窗大小改變時更新指示器
+        window.addEventListener('resize', () => {
+            const activeTab = document.querySelector('.tab-btn.tech-tab-active');
+            if (activeTab) {
+                const tabRect = activeTab.getBoundingClientRect();
+                const wrapperRect = tabsWrapper.getBoundingClientRect();
+                
+                tabIndicator.style.width = `${tabRect.width}px`;
+                tabIndicator.style.left = `${tabRect.left - wrapperRect.left}px`;
             }
         });
     }
+
+    // ========== 篩選功能 ==========
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const resetFiltersBtn = document.getElementById('resetFilters');
+    const applyFiltersBtn = document.getElementById('applyFilters');
+    const clearAllBtn = document.getElementById('clearAllFilters');
+    
+    if (filterChips.length) {
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+    }
+    
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', () => {
+            filterChips.forEach(chip => {
+                chip.classList.remove('selected');
+            });
+        });
+    }
+    
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+            filterChips.forEach(chip => {
+                chip.classList.remove('selected');
+            });
+        });
+    }
+    
+    if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', () => {
+            const selectedFilters = [];
+            filterChips.forEach(chip => {
+                if (chip.classList.contains('selected')) {
+                    selectedFilters.push(chip.textContent.trim());
+                }
+            });
+            
+            alert(`套用篩選條件: ${selectedFilters.length ? selectedFilters.join(', ') : '無'}\n\n此為演示功能，實際篩選請串接後端資料。`);
+            
+            drawer.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+    }
+
+    // ========== 其他功能 ==========
+    const nicknameBtn = document.getElementById('nicknameBtn');
+    if (nicknameBtn) {
+        nicknameBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('👤 會員中心\n\n此為演示畫面，實際功能請串接後端。');
+        });
+    }
+
+    const logoHomeBtn = document.getElementById('logoHomeBtn');
+    if (logoHomeBtn) {
+        logoHomeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+                location.reload();
+            }, 300);
+        });
+    }
+
+    const newsBadge = document.getElementById('newsBadge');
+    if (newsBadge) {
+        newsBadge.style.display = 'block';
+    }
+
+    // ========== 監聽其他頁面的最愛變更 ==========
+    window.addEventListener('storage', function(e) {
+        if (e.key === FAVORITE_STORAGE_KEY) {
+            console.log('我的最愛已更新 from other tab');
+            // 可以視需要更新當前頁面的最愛按鈕狀態
+        }
+    });
 })();
 </script>
 </body>
