@@ -3,916 +3,895 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>我的 · T-PACHIN 個人中心 (交易記錄不収合)</title>
+    <title>我的 · 點數雙向｜優化明細</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
-        /* ===== 所有樣式整合在這裡 ===== */
-        .tech-gradient { 
-            background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); 
-        }
+        /* ===== 完整保留原樣式 ===== */
+        .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
+        .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
+        body.dark-mode .tech-gradient { background: linear-gradient(180deg, #1a2a3a 0%, #1f3a5f 50%, #2c4c6b 100%); }
+        body.dark-mode .game-card-bg { background: linear-gradient(180deg, rgba(40, 70, 100, 0.8) 0%, rgba(20, 50, 80, 0.9) 100%); }
+        body.dark-mode .filter-drawer { background: linear-gradient(165deg, #2a3f5a 0%, #1b2b40 100%); }
+        body.dark-mode .bottom-nav { background: #2c4058; border-top-color: #3399ff; }
+        .game-card-bg { background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%); transition: background 0.3s ease; }
+        .filter-drawer { position: fixed; top: 0; right: -100%; width: 85%; max-width: 340px; height: 100vh; background: linear-gradient(165deg, #001a33 0%, #000a1a 100%); border-left: 2px solid #0099ff; box-shadow: -5px 0 30px rgba(0, 153, 255, 0.5); z-index: 10000; transition: right 0.3s ease; overflow-y: auto; padding: 1.5rem; }
+        .filter-drawer.open { right: 0; }
+        .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(3px); z-index: 9999; display: none; }
+        .drawer-overlay.open { display: block; }
+        .filter-chip { background: rgba(0, 40, 70, 0.8); border: 1px solid #0099ff60; border-radius: 9999px; padding: 0.4rem 1.2rem; font-size: 0.75rem; color: #cce6ff; transition: all 0.2s; cursor: pointer; display: inline-block; }
         
-        .tech-border { 
-            border: 1px solid rgba(0, 148, 255, 0.4); 
+        /* ===== 優化後的滾邊條樣式 ===== */
+        .scrollbar-beauty {
+            scrollbar-width: thin;
+            scrollbar-color: #00aaff #002a4a;
         }
-        
-        body.dark-mode .tech-gradient {
-            background: linear-gradient(180deg, #1a2a3a 0%, #1f3a5f 50%, #2c4c6b 100%);
+        .scrollbar-beauty::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
-        
-        body.dark-mode .game-card-bg {
-            background: linear-gradient(180deg, rgba(40, 70, 100, 0.8) 0%, rgba(20, 50, 80, 0.9) 100%);
+        .scrollbar-beauty::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, #001a33, #002a4a);
+            border-radius: 20px;
+            border: 1px solid #0099ff30;
+            margin: 4px 0;
         }
-        
-        body.dark-mode .filter-drawer {
-            background: linear-gradient(165deg, #2a3f5a 0%, #1b2b40 100%);
-        }
-        
-        body.dark-mode .bottom-nav {
-            background: #2c4058;
-            border-top-color: #3399ff;
-        }
-        
-        .game-card-bg {
-            background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%);
-            transition: background 0.3s ease;
-        }
-        
-        .filter-drawer {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 85%;
-            max-width: 340px;
-            height: 100vh;
-            background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
-            border-left: 2px solid #0099ff;
-            box-shadow: -5px 0 30px rgba(0, 153, 255, 0.5);
-            z-index: 10000;
-            transition: right 0.3s ease;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-        
-        .filter-drawer.open {
-            right: 0;
-        }
-        
-        .drawer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(3px);
-            z-index: 9999;
-            display: none;
-        }
-        
-        .drawer-overlay.open {
-            display: block;
-        }
-        
-        .filter-chip {
-            background: rgba(0, 40, 70, 0.8);
-            border: 1px solid #0099ff60;
-            border-radius: 9999px;
-            padding: 0.4rem 1.2rem;
-            font-size: 0.75rem;
-            color: #cce6ff;
-            transition: all 0.2s;
-            cursor: pointer;
-            display: inline-block;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background: rgba(0, 20, 40, 0.5);
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background: #0099ff;
-            border-radius: 4px;
-        }
-        
-        .bottom-nav {
-            background: #001a33;
-            border-top: 2px solid #0066cc;
-            box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3);
-            width: 100%;
-            max-width: 448px;
-            padding: 0.75rem 1.5rem;
-            margin-top: 1rem;
-            transition: background 0.3s ease, border-top-color 0.3s ease;
-        }
-        
-        .nav-item {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #4b9cd3;
-            transition: all 0.2s ease;
-            border-radius: 8px;
-            padding: 0.25rem 0.5rem;
-            text-decoration: none;
-            outline: none;
-        }
-        
-        .nav-item:hover {
-            color: #80e4ff;
-            transform: translateY(-2px);
-            text-shadow: 0 0 6px #00ccff;
-            background: rgba(0, 153, 255, 0.15);
-        }
-        
-        .nav-item:active {
-            transform: scale(0.95);
-            color: white;
-            background: rgba(0, 204, 255, 0.3);
-        }
-        
-        .nav-item.current-page {
-            color: white;
-            background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%);
+        .scrollbar-beauty::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00aaff, #0066cc);
+            border-radius: 20px;
             border: 1px solid #80e4ff;
-            box-shadow: 0 0 12px #00ccff;
-            transform: scale(1.02);
+            box-shadow: 0 0 8px #00aaff;
         }
-        
-        .nav-badge {
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            width: 10px;
-            height: 10px;
-            background-color: #ff3b3b;
-            border-radius: 50%;
-            border: 2px solid #001a33;
-            box-shadow: 0 0 8px #ff0000;
+        .scrollbar-beauty::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #33ccff, #0088ee);
+            box-shadow: 0 0 12px #33ccff;
+        }
+        .scrollbar-beauty::-webkit-scrollbar-button {
             display: none;
-            z-index: 25;
         }
         
-        .nav-item.current-page .nav-badge {
-            border-color: #0066cc;
+        /* 針對橫向滾輪 */
+        .scrollbar-beauty-x {
+            scrollbar-width: thin;
+            scrollbar-color: #00aaff #002a4a;
+        }
+        .scrollbar-beauty-x::-webkit-scrollbar {
+            height: 6px;
+        }
+        .scrollbar-beauty-x::-webkit-scrollbar-track {
+            background: linear-gradient(90deg, #001a33, #002a4a);
+            border-radius: 20px;
+            border: 1px solid #0099ff30;
+        }
+        .scrollbar-beauty-x::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #00aaff, #0066cc);
+            border-radius: 20px;
+            border: 1px solid #80e4ff;
+            box-shadow: 0 0 8px #00aaff;
         }
         
-        .action-grid-btn {
-            background: rgba(0, 30, 60, 0.8);
-            border: 1px solid #0099ff60;
-            border-radius: 16px;
-            padding: 1rem 0.5rem;
-            text-align: center;
-            transition: all 0.2s;
-            color: #cce6ff;
-            font-size: 0.9rem;
-            backdrop-filter: blur(4px);
-            cursor: pointer;
-            user-select: none;
-            position: relative;
+        /* 應用滾邊條到所有需要滾動的區域 */
+        .scrollable-area {
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #00aaff #002a4a;
+        }
+        .scrollable-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollable-area::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, #001a33, #002a4a);
+            border-radius: 20px;
+            border: 1px solid #0099ff30;
+        }
+        .scrollable-area::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00aaff, #0066cc);
+            border-radius: 20px;
+            border: 1px solid #80e4ff;
+            box-shadow: 0 0 8px #00aaff;
         }
         
-        .action-grid-btn i {
-            display: block;
-            font-size: 1.8rem;
-            margin-bottom: 6px;
-            color: #ffd966;
+        .bottom-nav { background: #001a33; border-top: 2px solid #0066cc; box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3); width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; margin-top: 1rem; transition: background 0.3s ease, border-top-color 0.3s ease; }
+        .nav-item { position: relative; display: flex; flex-direction: column; align-items: center; color: #4b9cd3; transition: all 0.2s ease; border-radius: 8px; padding: 0.25rem 0.5rem; text-decoration: none; outline: none; }
+        .nav-item:hover { color: #80e4ff; transform: translateY(-2px); text-shadow: 0 0 6px #00ccff; background: rgba(0, 153, 255, 0.15); }
+        .nav-item:active { transform: scale(0.95); color: white; background: rgba(0, 204, 255, 0.3); }
+        .nav-item.current-page { color: white; background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%); border: 1px solid #80e4ff; box-shadow: 0 0 12px #00ccff; transform: scale(1.02); }
+        .nav-badge { position: absolute; top: 0px; right: 0px; width: 10px; height: 10px; background-color: #ff3b3b; border-radius: 50%; border: 2px solid #001a33; box-shadow: 0 0 8px #ff0000; display: none; z-index: 25; }
+        .nav-item.current-page .nav-badge { border-color: #0066cc; }
+        .action-grid-btn { background: rgba(0, 30, 60, 0.8); border: 1px solid #0099ff60; border-radius: 16px; padding: 1rem 0.5rem; text-align: center; transition: all 0.2s; color: #cce6ff; font-size: 0.9rem; backdrop-filter: blur(4px); cursor: pointer; user-select: none; position: relative; }
+        .action-grid-btn i { display: block; font-size: 1.8rem; margin-bottom: 6px; color: #ffd966; }
+        .action-grid-btn:active { transform: scale(0.94); background: #0099ff60; border-color: #00ccff; box-shadow: 0 0 12px #00ccff; }
+        .count-badge { position: absolute; top: 8px; right: 12px; background: #ff4444; color: white; font-size: 0.7rem; font-weight: bold; min-width: 22px; height: 22px; border-radius: 30px; display: flex; align-items: center; justify-content: center; padding: 0 6px; border: 1px solid #ffd966; box-shadow: 0 0 8px #ff4444; animation: pulse 2s infinite; }
+        .count-badge.keep { background: #ff9900; box-shadow: 0 0 8px #ff9900; }
+        @keyframes pulse { 0% { opacity: 0.9; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.9; transform: scale(1); } }
+        .machine-card { background: rgba(0, 40, 70, 0.7); border: 1px solid #0099ff60; border-radius: 12px; padding: 0.8rem; display: flex; gap: 12px; align-items: center; transition: 0.2s; backdrop-filter: blur(4px); position: relative; }
+        .machine-card:active { transform: scale(0.98); background: #0099ff30; }
+        .machine-card img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; border: 1px solid #0099ff; }
+        .machine-info { flex: 1; }
+        .machine-name { font-weight: bold; color: #ffd966; font-size: 1rem; }
+        .machine-meta { display: flex; gap: 8px; margin-top: 4px; font-size: 0.7rem; color: #b0d4ff; }
+        .machine-meta span { background: rgba(0, 153, 255, 0.2); padding: 0.2rem 0.6rem; border-radius: 30px; border: 1px solid #0099ff40; }
+        .countdown-timer { font-size: 0.7rem; color: #ffaa00; background: rgba(0, 0, 0, 0.4); padding: 0.2rem 0.6rem; border-radius: 30px; border: 1px solid #ffaa00; display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; width: fit-content; }
+        .countdown-timer i { color: #ffaa00; font-size: 0.6rem; }
+        .countdown-timer.warning { color: #ff6666; border-color: #ff6666; animation: blink 1s infinite; }
+        .countdown-timer.warning i { color: #ff6666; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .machine-actions { display: flex; flex-direction: column; gap: 6px; margin-left: 4px; }
+        
+        /* 進入按鈕樣式 - 綠色 */
+        .play-btn { 
+            background: linear-gradient(135deg, #00cc66, #009933); 
+            border: 1px solid #80ff80; 
+            color: white; 
+            font-size: 0.8rem; 
+            padding: 6px 12px; 
+            border-radius: 30px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 4px; 
+            cursor: pointer; 
+            box-shadow: 0 0 8px #00ff80; 
+            transition: 0.15s; 
+            white-space: nowrap; 
+            min-width: 70px;
+        }
+        .play-btn:active { 
+            transform: scale(0.9); 
+            background: #00ff80; 
+            color: #000; 
+        }
+        .play-btn i { 
+            font-size: 0.8rem; 
         }
         
-        .action-grid-btn:active {
-            transform: scale(0.94);
-            background: #0099ff60;
-            border-color: #00ccff;
-            box-shadow: 0 0 12px #00ccff;
+        /* 離開按鈕樣式 - 紅色，與進入按鈕相同大小 */
+        .leave-btn { 
+            background: linear-gradient(135deg, #ff4d4d, #cc0000); 
+            border: 1px solid #ff9999; 
+            color: white; 
+            font-size: 0.8rem; 
+            padding: 6px 12px; 
+            border-radius: 30px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 4px; 
+            cursor: pointer; 
+            box-shadow: 0 0 8px #ff4d4d; 
+            transition: 0.15s; 
+            white-space: nowrap; 
+            min-width: 70px;
+        }
+        .leave-btn:active { 
+            transform: scale(0.9); 
+            background: #ff6666; 
+            color: #000; 
+        }
+        .leave-btn i { 
+            font-size: 0.8rem; 
         }
         
-        .count-badge {
-            position: absolute;
-            top: 8px;
-            right: 12px;
-            background: #ff4444;
+        /* 取消收藏按鈕樣式 - 粉紅色 */
+        .unfavorite-btn {
+            background: linear-gradient(135deg, #ff6680, #cc3355);
+            border: 1px solid #ff99aa;
             color: white;
-            font-size: 0.7rem;
-            font-weight: bold;
-            min-width: 22px;
-            height: 22px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 6px;
-            border: 1px solid #ffd966;
-            box-shadow: 0 0 8px #ff4444;
-            animation: pulse 2s infinite;
-        }
-        
-        .count-badge.keep {
-            background: #ff9900;
-            box-shadow: 0 0 8px #ff9900;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 0.9; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0.9; transform: scale(1); }
-        }
-        
-        .machine-card {
-            background: rgba(0, 40, 70, 0.7);
-            border: 1px solid #0099ff60;
-            border-radius: 12px;
-            padding: 0.8rem;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            transition: 0.2s;
-            backdrop-filter: blur(4px);
-            position: relative;
-        }
-        
-        .machine-card:active {
-            transform: scale(0.98);
-            background: #0099ff30;
-        }
-        
-        .machine-card img {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 1px solid #0099ff;
-        }
-        
-        .machine-info {
-            flex: 1;
-        }
-        
-        .machine-name {
-            font-weight: bold;
-            color: #ffd966;
-            font-size: 1rem;
-        }
-        
-        .machine-meta {
-            display: flex;
-            gap: 8px;
-            margin-top: 4px;
-            font-size: 0.7rem;
-            color: #b0d4ff;
-        }
-        
-        .machine-meta span {
-            background: rgba(0, 153, 255, 0.2);
-            padding: 0.2rem 0.6rem;
-            border-radius: 30px;
-            border: 1px solid #0099ff40;
-        }
-        
-        .countdown-timer {
-            font-size: 0.7rem;
-            color: #ffaa00;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 0.2rem 0.6rem;
-            border-radius: 30px;
-            border: 1px solid #ffaa00;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 6px;
-            width: fit-content;
-        }
-        
-        .countdown-timer i {
-            color: #ffaa00;
-            font-size: 0.6rem;
-        }
-        
-        .countdown-timer.warning {
-            color: #ff6666;
-            border-color: #ff6666;
-            animation: blink 1s infinite;
-        }
-        
-        .countdown-timer.warning i {
-            color: #ff6666;
-        }
-        
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-        
-        .machine-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-left: 4px;
-        }
-        
-        .play-btn {
-            background: linear-gradient(135deg, #00cc66, #009933);
-            border: 1px solid #80ff80;
-            color: white;
-            font-size: 0.7rem;
-            padding: 4px 10px;
+            font-size: 0.8rem;
+            padding: 6px 12px;
             border-radius: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
             cursor: pointer;
-            box-shadow: 0 0 8px #00ff80;
+            box-shadow: 0 0 8px #ff6680;
             transition: 0.15s;
             white-space: nowrap;
+            min-width: 70px;
         }
-        
-        .play-btn:active {
+        .unfavorite-btn:active {
             transform: scale(0.9);
-            background: #00ff80;
+            background: #ff88aa;
             color: #000;
         }
-        
-        .play-btn i {
-            font-size: 0.7rem;
+        .unfavorite-btn i {
+            font-size: 0.8rem;
         }
         
-        .remove-btn {
-            color: #ff6666;
-            font-size: 1rem;
-            padding: 4px 8px;
-            cursor: pointer;
-            text-align: center;
-            background: rgba(255, 0, 0, 0.1);
+        .remove-btn { 
+            display: none; 
+        }
+        
+        .machine-list-container { margin-top: 1rem; display: none; }
+        .machine-list-container.show { display: block; }
+        .machine-list { display: flex; flex-direction: column; gap: 10px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
+        .list-title { color: #80e4ff; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .nickname-edit { cursor: pointer; transition: 0.1s; border-bottom: 1px dashed #aaa; }
+        .home-return-btn { background: rgba(0, 153, 255, 0.25); border: 1.5px solid #80e4ff; color: #ffd966; width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; box-shadow: 0 0 12px #00aaff; backdrop-filter: blur(4px); transition: 0.15s; text-decoration: none; }
+        .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 9999px; border: 3px solid #0099ff; box-shadow: 0 0 15px #00ccff; background: #001d3d; overflow: hidden; cursor: pointer; }
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0, 100, 200, 0.8); color: white; font-size: 0.7rem; text-align: center; padding: 3px 0; backdrop-filter: blur(2px); }
+        .profile-tab { flex: 1; text-align: center; padding: 0.7rem 0; border-radius: 40px; background: transparent; border: 1px solid #0099ff40; color: #b0d4ff; font-weight: 500; transition: 0.2s; cursor: pointer; }
+        .profile-tab.active { background: #0066cc; border-color: #80e4ff; color: white; box-shadow: 0 0 10px #00ccff; }
+        .lang-select { background: rgba(0, 30, 60, 0.9); border: 1px solid #0099ff; border-radius: 40px; padding: 0.6rem 2rem 0.6rem 1.2rem; font-size: 0.9rem; color: #e0f0ff; width: 100%; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230099ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 0.8rem center; background-size: 1.2rem; cursor: pointer; }
+        .theme-switch { width: 48px; height: 24px; background-color: #1e3a5f; border-radius: 40px; border: 1px solid #0099ff; position: relative; cursor: pointer; }
+        .theme-switch .thumb { width: 20px; height: 20px; background-color: #ffd966; border-radius: 50%; position: absolute; top: 1px; left: 2px; transition: left 0.2s; }
+        body.dark-mode .theme-switch .thumb { left: 26px; background-color: #cce6ff; }
+        .vip-badge { background: linear-gradient(135deg, #b8860b, #ffd700); color: #000; font-weight: bold; padding: 0.15rem 0.6rem; border-radius: 30px; font-size: 0.7rem; box-shadow: 0 0 8px #ffaa00; cursor: pointer; }
+        .exp-text { font-size: 0.7rem; color: #b0d4ff; cursor: pointer; }
+        .progress-bar { width: 100%; height: 6px; background: rgba(0, 50, 100, 0.5); border-radius: 10px; overflow: hidden; border: 1px solid #0099ff60; }
+        .progress-fill { height: 100%; width: 68%; background: linear-gradient(90deg, #ffd966, #ffaa33); border-radius: 10px; }
+        .vip-info-panel { background: rgba(0, 20, 40, 0.95); border: 2px solid #ffd966; border-radius: 16px; padding: 1rem; margin: 0.5rem 0; box-shadow: 0 0 20px #ffaa33; backdrop-filter: blur(8px); display: none; }
+        .vip-info-panel.show { display: block; }
+        .vip-tier { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #0099ff60; padding: 0.5rem 0; }
+        .banner-area { width: 100%; height: auto; background: linear-gradient(145deg, #002244, #001133); border: 1px solid #0099ff60; border-radius: 12px; padding: 0.75rem 0.5rem; }
+        .sub-tab { background: rgba(0, 30, 60, 0.5); border: 1px solid #0099ff40; border-radius: 30px; padding: 0.3rem 1rem; font-size: 0.75rem; color: #b0d4ff; cursor: pointer; transition: 0.2s; text-align: center; }
+        .sub-tab.active { background: #0066cc; border-color: #80e4ff; color: white; box-shadow: 0 0 6px #00ccff; }
+        .bet-id { font-size: 0.9rem; font-weight: 600; color: #aad0ff; letter-spacing: 0.5px; }
+        .detail-bb { color: #ffaa33; font-weight: bold; border-bottom: 1px dashed #ffaa33; cursor: pointer; font-size: 0.8rem; margin-left: 6px; white-space: nowrap; }
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+        .page-btn { background: rgba(0, 40, 70, 0.8); border: 1px solid #0099ff60; border-radius: 30px; padding: 0.3rem 0.8rem; font-size: 0.8rem; color: #cce6ff; cursor: pointer; transition: 0.2s; min-width: 36px; text-align: center; }
+        .page-btn.active { background: #0066cc; border-color: #80e4ff; color: white; box-shadow: 0 0 6px #00ccff; }
+        .page-btn:active { transform: scale(0.92); }
+        .platform-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f4a7a; padding: 10px 0; font-size: 0.85rem; cursor: pointer; transition: 0.2s; border-radius: 8px; padding-left: 6px; position: relative; }
+        .platform-item:hover { background: rgba(0, 153, 255, 0.15); }
+        .platform-item .chevron-icon { transition: transform 0.2s; }
+        .platform-item.expanded .chevron-icon { transform: rotate(90deg); }
+        .platform-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .platform-tag { font-weight: bold; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; min-width: 45px; text-align: center; }
+        .platform-tag.out { background: #00a86b20; border: 1px solid #00cc88; color: #a0ffc0; }
+        .platform-tag.in { background: #cc555020; border: 1px solid #ff6666; color: #ffb0b0; }
+        .platform-machine { color: #ffd966; background: rgba(0, 153, 255, 0.15); border-radius: 16px; padding: 0.1rem 0.6rem; font-size: 0.75rem; font-weight: 500; }
+        .platform-amount { font-weight: 600; margin-left: auto; padding-right: 8px; }
+        .platform-detail { background: rgba(0, 20, 40, 0.9); border-left: 3px solid #0099ff; border-radius: 0 0 12px 12px; padding: 12px 15px; margin-top: 8px; margin-bottom: 8px; font-size: 0.85rem; display: none; }
+        .platform-item.expanded + .platform-detail { display: block; }
+        .platform-detail-row { display: flex; justify-content: space-between; margin: 6px 0; }
+        .platform-detail-label { color: #aaccff; }
+        .platform-detail-value { font-weight: 600; color: #ffd966; }
+        .platform-detail-change { font-weight: 600; }
+        .platform-detail-change.positive { color: #88ff88; }
+        .platform-detail-change.negative { color: #ff8888; }
+        .filter-row { display: flex; gap: 8px; margin: 10px 0 15px 0; flex-wrap: wrap; }
+        .filter-select, .filter-date { background: #003366 !important; border: 2px solid #66ccff !important; border-radius: 30px; padding: 0.4rem 1rem; font-size: 0.8rem; color: #ffffff !important; cursor: pointer; flex: 1 1 auto; font-weight: 500; box-shadow: 0 0 8px #3399ff; }
+        .filter-date { min-width: 130px; }
+        .filter-select option { background: #004488; color: white; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.8; cursor: pointer; }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+        .current-balance { background: rgba(0, 153, 255, 0.15); border-radius: 30px; padding: 0.5rem 1rem; margin-bottom: 15px; border: 1px solid #0099ff60; display: flex; justify-content: space-between; align-items: center; }
+        .balance-number { font-size: 1.2rem; font-weight: bold; color: #ffd966; text-shadow: 0 0 5px #ffaa00; }
+        .formula-box { background: rgba(0, 20, 40, 0.7); border: 1px solid #0099ff60; border-radius: 16px; padding: 10px; margin-bottom: 15px; text-align: center; font-size: 0.8rem; line-height: 1.5; }
+        .formula-highlight { color: #ffd966; font-weight: bold; font-size: 0.9rem; }
+        .uniform-section { margin-bottom: 8px; }
+        .uniform-header { display: flex; align-items: center; justify-content: space-between; background: rgba(0, 50, 80, 0.6); border: 1px solid #0099ff60; border-radius: 30px; padding: 10px 15px; cursor: pointer; transition: 0.2s; }
+        .uniform-header:hover { background: rgba(0, 80, 120, 0.8); }
+        .uniform-header .chevron { transition: transform 0.3s; }
+        .uniform-header.collapsed .chevron { transform: rotate(-90deg); }
+        .uniform-header-left { display: flex; align-items: center; gap: 10px; }
+        .uniform-title { font-size: 0.95rem; font-weight: 500; }
+        .uniform-content { transition: all 0.3s; overflow: hidden; padding: 5px 0; }
+        .uniform-content.collapsed { display: none; }
+        .records-title { font-size: 0.95rem; font-weight: 500; color: #b0d4ff; margin: 15px 0 10px 0; padding-left: 5px; border-left: 3px solid #0099ff; padding-left: 10px; }
+        .source-detail-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #1f4a7a; font-size: 0.85rem; background: rgba(0, 30, 50, 0.4); }
+        .source-detail-item:last-child { border-bottom: none; }
+        .source-detail-date { color: #aaccff; }
+        .source-detail-amount { font-weight: 600; }
+        .hidden { display: none !important; }
+        
+        /* ===== 輸入框樣式 ===== */
+        .input-panel {
+            background: #002b4a;
+            border: 2px solid #0099ff;
             border-radius: 30px;
-            border: 1px solid #ff6666;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
+            padding: 1rem;
+            margin: 0.5rem 0;
         }
-        
-        .remove-btn:active {
-            transform: scale(0.9);
-            background: #ff0000;
-            color: white;
-        }
-        
-        .machine-list-container {
-            margin-top: 1rem;
-            display: none;
-        }
-        
-        .machine-list-container.show {
-            display: block;
-        }
-        
-        .machine-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 350px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-        
-        .list-title {
-            color: #80e4ff;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .nickname-edit {
-            cursor: pointer;
-            transition: 0.1s;
-            border-bottom: 1px dashed #aaa;
-        }
-        
-        .home-return-btn {
-            background: rgba(0, 153, 255, 0.25);
-            border: 1.5px solid #80e4ff;
+        .number-input {
+            background: #001d33;
+            border: 1px solid #33ccff;
+            border-radius: 40px;
+            padding: 0.8rem 1.2rem;
+            font-size: 1.8rem;
+            font-weight: 800;
             color: #ffd966;
-            width: 44px;
-            height: 44px;
-            border-radius: 30px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-family: monospace;
+        }
+        .number-input:focus {
+            outline: none;
+            border-color: #ffaa33;
+            box-shadow: 0 0 10px #ffaa33;
+        }
+        .input-buttons {
             display: flex;
-            align-items: center;
+            gap: 10px;
             justify-content: center;
-            font-size: 1.6rem;
-            box-shadow: 0 0 12px #00aaff;
-            backdrop-filter: blur(4px);
-            transition: 0.15s;
-            text-decoration: none;
         }
-        
-        .avatar-container {
-            position: relative;
-            width: 70px;
-            height: 70px;
-            border-radius: 9999px;
-            border: 3px solid #0099ff;
-            box-shadow: 0 0 15px #00ccff;
-            background: #001d3d;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .avatar-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .avatar-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 100, 200, 0.8);
-            color: white;
-            font-size: 0.7rem;
-            text-align: center;
-            padding: 3px 0;
-            backdrop-filter: blur(2px);
-        }
-        
-        .profile-tab {
-            flex: 1;
-            text-align: center;
-            padding: 0.7rem 0;
+        .action-btn {
+            border: none;
             border-radius: 40px;
-            background: transparent;
-            border: 1px solid #0099ff40;
-            color: #b0d4ff;
-            font-weight: 500;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-        
-        .profile-tab.active {
-            background: #0066cc;
-            border-color: #80e4ff;
-            color: white;
-            box-shadow: 0 0 10px #00ccff;
-        }
-        
-        .lang-select {
-            background: rgba(0, 30, 60, 0.9);
-            border: 1px solid #0099ff;
-            border-radius: 40px;
-            padding: 0.6rem 2rem 0.6rem 1.2rem;
-            font-size: 0.9rem;
-            color: #e0f0ff;
-            width: 100%;
-            appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230099ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 0.8rem center;
-            background-size: 1.2rem;
-            cursor: pointer;
-        }
-        
-        .theme-switch {
-            width: 48px;
-            height: 24px;
-            background-color: #1e3a5f;
-            border-radius: 40px;
-            border: 1px solid #0099ff;
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .theme-switch .thumb {
-            width: 20px;
-            height: 20px;
-            background-color: #ffd966;
-            border-radius: 50%;
-            position: absolute;
-            top: 1px;
-            left: 2px;
-            transition: left 0.2s;
-        }
-        
-        body.dark-mode .theme-switch .thumb {
-            left: 26px;
-            background-color: #cce6ff;
-        }
-        
-        .vip-badge {
-            background: linear-gradient(135deg, #b8860b, #ffd700);
-            color: #000;
+            padding: 0.8rem 2rem;
             font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.15s;
+            flex: 1;
+            font-size: 1.1rem;
+        }
+        .action-btn.in {
+            background: linear-gradient(145deg, #00b37a, #00875a);
+        }
+        .action-btn.out {
+            background: linear-gradient(145deg, #ff8800, #cc6600);
+        }
+        .action-btn.max {
+            background: linear-gradient(145deg, #ffaa33, #ff8800);
+        }
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+        .remain-badge {
+            background: #004d80;
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            font-size: 1.1rem;
+            border: 1px solid #ffaa33;
+            margin-top: 0.8rem;
+        }
+
+        /* 機台卡片 */
+        .machine-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .machine-card-item {
+            background: #003d66;
+            border: 2px solid #0099ff;
+            border-radius: 20px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .machine-card-item:hover {
+            transform: scale(1.02);
+            border-color: #ffaa33;
+        }
+        .machine-card-item.selected {
+            border-color: #ffaa33;
+            background: #004d80;
+            box-shadow: 0 0 15px #ffaa33;
+        }
+        .machine-name-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffd966;
+            margin-bottom: 5px;
+        }
+        .machine-points {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #33ccff;
+        }
+        .machine-label {
+            font-size: 0.7rem;
+            color: #aaccff;
+        }
+
+        /* 表格明細樣式 */
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .detail-table th {
+            text-align: left;
+            padding: 0.5rem 0.3rem;
+            color: #80e4ff;
+            font-weight: 500;
+            border-bottom: 1px solid #1f4a7a;
+        }
+        .detail-table td {
+            padding: 0.5rem 0.3rem;
+            border-bottom: 1px solid #1f4a7a;
+        }
+        .detail-table tr:last-child td {
+            border-bottom: none;
+        }
+        .machine-badge {
+            display: inline-block;
             padding: 0.15rem 0.6rem;
             border-radius: 30px;
             font-size: 0.7rem;
-            box-shadow: 0 0 8px #ffaa00;
-            cursor: pointer;
+            background: #ffaa3320;
+            border: 1px solid #ffaa33;
+            color: #ffd966;
         }
-        
-        .exp-text {
-            font-size: 0.7rem;
-            color: #b0d4ff;
-            cursor: pointer;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(0, 50, 100, 0.5);
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid #0099ff60;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            width: 68%;
-            background: linear-gradient(90deg, #ffd966, #ffaa33);
-            border-radius: 10px;
-        }
-        
-        .vip-info-panel {
-            background: rgba(0, 20, 40, 0.95);
-            border: 2px solid #ffd966;
-            border-radius: 16px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            box-shadow: 0 0 20px #ffaa33;
-            backdrop-filter: blur(8px);
-            display: none;
-        }
-        
-        .vip-info-panel.show {
-            display: block;
-        }
-        
-        .vip-tier {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #0099ff60;
-            padding: 0.5rem 0;
-        }
-        
-        .banner-area {
-            width: 100%;
-            height: auto;
-            background: linear-gradient(145deg, #002244, #001133);
-            border: 1px solid #0099ff60;
-            border-radius: 12px;
-            padding: 0.75rem 0.5rem;
-        }
-        
-        .sub-tab {
-            background: rgba(0, 30, 60, 0.5);
-            border: 1px solid #0099ff40;
-            border-radius: 30px;
-            padding: 0.3rem 1rem;
-            font-size: 0.75rem;
-            color: #b0d4ff;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: center;
-        }
-        
-        .sub-tab.active {
-            background: #0066cc;
-            border-color: #80e4ff;
-            color: white;
-            box-shadow: 0 0 6px #00ccff;
-        }
-        
-        .bet-id {
-            font-size: 0.9rem;
+        .total-row {
+            background: #003355;
             font-weight: 600;
-            color: #aad0ff;
-            letter-spacing: 0.5px;
+        }
+
+        /* 為主要內容區域套用優雅滾邊條 */
+        #profileContentArea {
+            scrollbar-width: thin;
+            scrollbar-color: #00aaff #002a4a;
+        }
+        #profileContentArea::-webkit-scrollbar {
+            width: 6px;
+        }
+        #profileContentArea::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, #001a33, #002a4a);
+            border-radius: 20px;
+            border: 1px solid #0099ff30;
+        }
+        #profileContentArea::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00aaff, #0066cc);
+            border-radius: 20px;
+            border: 1px solid #80e4ff;
+            box-shadow: 0 0 8px #00aaff;
         }
         
-        .detail-bb {
-            color: #ffaa33;
-            font-weight: bold;
-            border-bottom: 1px dashed #ffaa33;
-            cursor: pointer;
-            font-size: 0.8rem;
-            margin-left: 6px;
-            white-space: nowrap;
+        /* 為所有需要滾動的容器套用 */
+        .machine-list, .platform-list, .filter-drawer {
+            scrollbar-width: thin;
+            scrollbar-color: #00aaff #002a4a;
+        }
+        .machine-list::-webkit-scrollbar,
+        .platform-list::-webkit-scrollbar,
+        .filter-drawer::-webkit-scrollbar {
+            width: 6px;
+        }
+        .machine-list::-webkit-scrollbar-track,
+        .platform-list::-webkit-scrollbar-track,
+        .filter-drawer::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, #001a33, #002a4a);
+            border-radius: 20px;
+            border: 1px solid #0099ff30;
+        }
+        .machine-list::-webkit-scrollbar-thumb,
+        .platform-list::-webkit-scrollbar-thumb,
+        .filter-drawer::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00aaff, #0066cc);
+            border-radius: 20px;
+            border: 1px solid #80e4ff;
+            box-shadow: 0 0 8px #00aaff;
+        }
+
+        /* ===== 完全移除兌換代幣區域的所有滾動條 ===== */
+        #exchangeContent,
+        #exchangeContent *,
+        #exchangeContent .uniform-content,
+        #exchangeContent .uniform-content *,
+        #exchangeContent .detail-table,
+        #exchangeContent .detail-table tbody,
+        #exchangeContent .detail-table tr,
+        #exchangeContent .detail-table td,
+        #exchangeDetailBody,
+        #exchangeDetailBody * {
+            overflow: visible !important;
+            overflow-y: visible !important;
+            overflow-x: visible !important;
+            max-height: none !important;
         }
         
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 16px;
-            flex-wrap: wrap;
+        /* 確保表格不會因為內容過長而產生滾動條 */
+        #exchangeContent .bg-\\[\\#002b4a\\] {
+            overflow: visible !important;
         }
-        
-        .page-btn {
-            background: rgba(0, 40, 70, 0.8);
-            border: 1px solid #0099ff60;
-            border-radius: 30px;
-            padding: 0.3rem 0.8rem;
-            font-size: 0.8rem;
-            color: #cce6ff;
-            cursor: pointer;
-            transition: 0.2s;
-            min-width: 36px;
-            text-align: center;
+
+        /* ===== 移除輸入數字的滾邊條 ===== */
+        .number-input::-webkit-outer-spin-button,
+        .number-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
-        
-        .page-btn.active {
-            background: #0066cc;
-            border-color: #80e4ff;
-            color: white;
-            box-shadow: 0 0 6px #00ccff;
+        .number-input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
-        
-        .page-btn:active {
-            transform: scale(0.92);
+        .number-input {
+            overflow: hidden !important;
+            resize: none !important;
         }
-        
-        .platform-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #1f4a7a;
-            padding: 10px 0;
+        .input-panel,
+        .input-panel * {
+            overflow: visible !important;
+        }
+        .number-input::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
+        }
+        .number-input {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+        }
+
+        /* ===== 交易明細表格樣式 ===== */
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
             font-size: 0.85rem;
-            cursor: pointer;
-            transition: 0.2s;
-            border-radius: 8px;
-            padding-left: 6px;
-            position: relative;
+            margin-top: 10px;
         }
-        
-        .platform-item:hover {
-            background: rgba(0, 153, 255, 0.15);
+        .transaction-table th {
+            text-align: left;
+            padding: 10px 5px;
+            color: #80e4ff;
+            font-weight: 500;
+            border-bottom: 2px solid #0099ff60;
         }
-        
-        .platform-item .chevron-icon {
-            transition: transform 0.2s;
+        .transaction-table td {
+            padding: 8px 5px;
+            border-bottom: 1px solid #1f4a7a;
         }
-        
-        .platform-item.expanded .chevron-icon {
-            transform: rotate(90deg);
+        .transaction-table tr:hover {
+            background: rgba(0, 153, 255, 0.1);
         }
-        
-        .platform-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .platform-tag {
-            font-weight: bold;
+        .type-badge {
+            display: inline-block;
             padding: 2px 8px;
             border-radius: 20px;
             font-size: 0.7rem;
-            min-width: 45px;
-            text-align: center;
+            font-weight: 600;
         }
-        
-        .platform-tag.out {
+        .type-badge.in {
             background: #00a86b20;
             border: 1px solid #00cc88;
             color: #a0ffc0;
         }
-        
-        .platform-tag.in {
+        .type-badge.out {
             background: #cc555020;
             border: 1px solid #ff6666;
             color: #ffb0b0;
         }
-        
-        .platform-machine {
-            color: #ffd966;
-            background: rgba(0, 153, 255, 0.15);
-            border-radius: 16px;
-            padding: 0.1rem 0.6rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-        
-        .platform-amount {
+        .total-amount {
             font-weight: 600;
-            margin-left: auto;
-            padding-right: 8px;
+            color: #ffd966;
+        }
+
+        /* ===== 注單記錄表格樣式 ===== */
+        .bet-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 10px;
+            border-radius: 12px;
         }
         
-        .platform-detail {
-            background: rgba(0, 20, 40, 0.9);
-            border-left: 3px solid #0099ff;
-            border-radius: 0 0 12px 12px;
-            padding: 12px 15px;
-            margin-top: 8px;
-            margin-bottom: 8px;
+        .bet-table {
+            min-width: 700px;
+            width: 100%;
+            border-collapse: collapse;
             font-size: 0.85rem;
-            display: none;
         }
-        
-        .platform-item.expanded + .platform-detail {
-            display: block;
-        }
-        
-        .platform-detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 6px 0;
-        }
-        
-        .platform-detail-label {
-            color: #aaccff;
-        }
-        
-        .platform-detail-value {
-            font-weight: 600;
-            color: #ffd966;
-        }
-        
-        .platform-detail-change {
-            font-weight: 600;
-        }
-        
-        .platform-detail-change.positive { color: #88ff88; }
-        .platform-detail-change.negative { color: #ff8888; }
-        
-        .filter-row {
-            display: flex;
-            gap: 8px;
-            margin: 10px 0 15px 0;
-            flex-wrap: wrap;
-        }
-        
-        .filter-select, .filter-date {
-            background: #003366 !important;
-            border: 2px solid #66ccff !important;
-            border-radius: 30px;
-            padding: 0.4rem 1rem;
-            font-size: 0.8rem;
-            color: #ffffff !important;
-            cursor: pointer;
-            flex: 1 1 auto;
+        .bet-table th {
+            text-align: left;
+            padding: 12px 10px;
+            color: #80e4ff;
             font-weight: 500;
-            box-shadow: 0 0 8px #3399ff;
+            border-bottom: 2px solid #0099ff60;
+            white-space: nowrap;
         }
-        
-        .filter-date {
-            min-width: 130px;
+        .bet-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #1f4a7a;
+            white-space: nowrap;
         }
-        
-        .filter-select option {
-            background: #004488;
-            color: white;
+        .bet-table tr:hover {
+            background: rgba(0, 153, 255, 0.1);
         }
-        
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            opacity: 0.8;
-            cursor: pointer;
-        }
-        
-        input[type="date"]::-webkit-calendar-picker-indicator:hover {
-            opacity: 1;
-        }
-        
-        .current-balance {
-            background: rgba(0, 153, 255, 0.15);
-            border-radius: 30px;
-            padding: 0.5rem 1rem;
-            margin-bottom: 15px;
-            border: 1px solid #0099ff60;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .balance-number {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #ffd966;
-            text-shadow: 0 0 5px #ffaa00;
-        }
-        
-        .formula-box {
-            background: rgba(0, 20, 40, 0.7);
-            border: 1px solid #0099ff60;
-            border-radius: 16px;
-            padding: 10px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 0.8rem;
-            line-height: 1.5;
-        }
-        
-        .formula-highlight {
-            color: #ffd966;
-            font-weight: bold;
+        .bet-id {
             font-size: 0.9rem;
-        }
-        
-        .uniform-section {
-            margin-bottom: 8px;
-        }
-        
-        .uniform-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(0, 50, 80, 0.6);
-            border: 1px solid #0099ff60;
-            border-radius: 30px;
-            padding: 10px 15px;
+            font-weight: 600;
+            color: #ffd966;
             cursor: pointer;
             transition: 0.2s;
+            padding: 4px 8px;
+            border-radius: 20px;
+            background: rgba(0, 153, 255, 0.1);
+            display: inline-block;
         }
-        
-        .uniform-header:hover {
-            background: rgba(0, 80, 120, 0.8);
+        .bet-id:hover {
+            background: #0066cc;
+            color: white;
+            transform: scale(1.05);
         }
-        
-        .uniform-header .chevron {
-            transition: transform 0.3s;
+        .bet-machine {
+            background: rgba(0, 153, 255, 0.15);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #ffd966;
+            display: inline-block;
         }
-        
-        .uniform-header.collapsed .chevron {
-            transform: rotate(-90deg);
+        .video-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-left: 8px;
         }
-        
-        .uniform-header-left {
+        .video-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px currentColor;
+        }
+        .video-badge.bb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        .video-badge.rb {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+        .video-badge i {
+            font-size: 0.7rem;
+        }
+        .prize-positive {
+            color: #88ff88;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .prize-negative {
+            color: #ff8888;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* ===== 搜尋框樣式 ===== */
+        .search-box {
+            background: rgba(0, 40, 70, 0.8);
+            border: 1px solid #0099ff60;
+            border-radius: 40px;
+            padding: 0.5rem 1rem;
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 15px;
+            transition: 0.2s;
         }
-        
-        .uniform-title {
-            font-size: 0.95rem;
-            font-weight: 500;
+        .search-box:focus-within {
+            border-color: #ffaa33;
+            box-shadow: 0 0 10px #ffaa33;
         }
-        
-        .uniform-content {
-            transition: all 0.3s;
-            overflow: hidden;
-            padding: 5px 0;
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.9rem;
+            width: 100%;
+            outline: none;
         }
-        
-        .uniform-content.collapsed {
+        .search-box input::placeholder {
+            color: #7e9bb5;
+        }
+        .search-box i {
+            color: #0099ff;
+            font-size: 1rem;
+        }
+        .search-box button {
+            background: #0066cc;
+            border: none;
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .search-box button:hover {
+            background: #0099ff;
+            transform: scale(1.05);
+        }
+
+        /* ===== 注單彈窗樣式 ===== */
+        .bet-detail-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 350px;
+            background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
+            border: 2px solid #0099ff;
+            border-radius: 20px;
+            padding: 1.5rem;
+            z-index: 20000;
             display: none;
+            box-shadow: 0 0 30px #0099ff;
         }
-        
-        .records-title {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #b0d4ff;
-            margin: 15px 0 10px 0;
-            padding-left: 5px;
-            border-left: 3px solid #0099ff;
-            padding-left: 10px;
+        .bet-detail-modal.open {
+            display: block;
         }
-        
-        .source-detail-item {
+        .bet-detail-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
-            border-bottom: 1px solid #1f4a7a;
-            font-size: 0.85rem;
-            background: rgba(0, 30, 50, 0.4);
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #0099ff60;
+            padding-bottom: 0.8rem;
         }
-        
-        .source-detail-item:last-child {
-            border-bottom: none;
+        .bet-detail-title {
+            color: #ffd966;
+            font-size: 1.1rem;
+            font-weight: bold;
         }
-        
-        .source-detail-date {
-            color: #aaccff;
+        .bet-detail-close {
+            color: #ff6666;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        
-        .source-detail-amount {
+        .bet-detail-close:hover {
+            transform: scale(1.2);
+            color: #ff0000;
+        }
+        .bet-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .bet-list-item {
+            background: rgba(0, 30, 60, 0.8);
+            border: 1px solid #0099ff40;
+            border-radius: 12px;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bet-list-item:last-child {
+            margin-bottom: 0;
+        }
+        .bet-list-item .bet-number {
+            color: #aad0ff;
+            font-size: 0.9rem;
             font-weight: 600;
         }
-        
-        .hidden {
-            display: none !important;
+        .bet-list-item .bet-video {
+            display: flex;
+            gap: 5px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 19999;
+            display: none;
+        }
+        .modal-overlay.open {
+            display: block;
+        }
+
+        /* ===== 確認對話框自定義樣式 ===== */
+        .confirm-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
+            border: 2px solid #ffaa33;
+            border-radius: 20px;
+            padding: 1.5rem;
+            z-index: 21000;
+            display: none;
+            box-shadow: 0 0 30px #ffaa33;
+            text-align: center;
+        }
+        .confirm-dialog.open {
+            display: block;
+        }
+        .confirm-dialog .icon {
+            font-size: 3rem;
+            color: #ffaa33;
+            margin-bottom: 1rem;
+        }
+        .confirm-dialog .title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .confirm-dialog .message {
+            color: #b0d4ff;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .confirm-dialog .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .confirm-dialog .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+        }
+        .confirm-dialog .btn.confirm {
+            background: #ffaa33;
+            color: #000;
+        }
+        .confirm-dialog .btn.confirm:hover {
+            background: #ffbb55;
+            transform: scale(1.05);
+        }
+        .confirm-dialog .btn.cancel {
+            background: #3a5a7a;
+            color: white;
+        }
+        .confirm-dialog .btn.cancel:hover {
+            background: #4a6a8a;
+            transform: scale(1.05);
+        }
+        .confirm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 20999;
+            display: none;
+        }
+        .confirm-overlay.open {
+            display: block;
         }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
     <!-- 篩選側拉欄 -->
     <div id="drawerOverlay" class="drawer-overlay"></div>
-    <div id="filterDrawer" class="filter-drawer scrollbar-thin">
+    <div id="filterDrawer" class="filter-drawer scrollbar-beauty">
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-primary text-lg font-bold flex items-center gap-2"><i class="fa fa-sliders text-secondary"></i> 進階篩選</h3>
             <button id="closeDrawer" class="text-gray-400 hover:text-primary text-2xl"><i class="fa fa-times-circle"></i></button>
+        </div>
+    </div>
+
+    <!-- 注單明細彈窗 -->
+    <div id="modalOverlay" class="modal-overlay"></div>
+    <div id="betDetailModal" class="bet-detail-modal">
+        <div class="bet-detail-header">
+            <span class="bet-detail-title" id="modalMachineName">甲賀忍法帖</span>
+            <span class="bet-detail-close" id="closeModalBtn">&times;</span>
+        </div>
+        <div class="bet-list" id="betDetailList">
+            <!-- 動態生成注單列表 -->
+        </div>
+    </div>
+
+    <!-- 自定義確認對話框 -->
+    <div id="confirmOverlay" class="confirm-overlay"></div>
+    <div id="confirmDialog" class="confirm-dialog">
+        <div class="icon" id="confirmIcon">❓</div>
+        <div class="title" id="confirmTitle">確認</div>
+        <div class="message" id="confirmMessage">確定要執行此操作嗎？</div>
+        <div class="buttons">
+            <button class="btn cancel" id="confirmCancel">取消</button>
+            <button class="btn confirm" id="confirmOk">確定</button>
         </div>
     </div>
 
@@ -936,18 +915,20 @@
                             <span class="vip-badge" id="vipBadge">VIP 3</span>
                             <span class="exp-text" id="expText">經驗值 2,480/3,600</span>
                         </div>
+                        <!-- 剩餘點數顯示 -->
+                        <div class="flex items-center gap-2 mt-1 text-amber-400 text-sm">
+                            剩餘點數 <span id="headerPoints" class="font-bold text-amber-300">5,520</span>
+                        </div>
                     </div>
                 </div>
-                <a href="#" id="exitToHomeBtn" class="home-return-btn" title="回到首頁">
-                    <i class="fa fa-home"></i>
-                </a>
+                <a href="#" id="exitToHomeBtn" class="home-return-btn" title="回到首頁"><i class="fa fa-home"></i></a>
             </div>
             <div class="mt-2 pl-16 pr-2">
                 <div class="progress-bar"><div class="progress-fill"></div></div>
             </div>
         </header>
 
-        <!-- VIP 功能說明浮層 -->
+        <!-- VIP 資訊層 -->
         <div id="vipInfoPanel" class="vip-info-panel mx-4 mt-2">
             <h3 class="text-amber-400 font-bold text-sm mb-2"><i class="fa fa-crown"></i> VIP 特權說明</h3>
             <div class="vip-tier"><span class="level">VIP 1</span><span class="benefit">每日紅利 +50</span></div>
@@ -980,19 +961,16 @@
         <!-- 收藏機台列表容器 -->
         <div id="favMachineList" class="machine-list-container px-4">
             <div class="list-title"><i class="fa fa-heart text-pink-400"></i> 我收藏的機台 (<span id="favCountDisplay">3</span>)</div>
-            <div class="machine-list" id="favMachineItems"></div>
+            <div class="machine-list scrollbar-beauty" id="favMachineItems"></div>
         </div>
 
         <!-- 保留機台列表容器 -->
         <div id="keepMachineList" class="machine-list-container px-4">
             <div class="list-title"><i class="fa fa-bookmark text-amber-400"></i> 我保留的機台 (<span id="keepCountDisplay">2</span>)</div>
-            <div class="machine-list" id="keepMachineItems"></div>
+            <div class="machine-list scrollbar-beauty" id="keepMachineItems"></div>
         </div>
 
-        <!-- 跑馬燈 -->
-        <div class="px-4 py-1 bg-dark-200/80 tech-border mt-3">
-            <marquee class="text-secondary text-xs py-1" scrollamount="5">⚙️ 交易記錄列表改為純文字標題 | 點擊記錄展開明細 ⚙️</marquee>
-        </div>
+        <!-- 跑馬燈已移除 -->
 
         <!-- 標籤欄 -->
         <div class="px-4 py-3">
@@ -1004,7 +982,7 @@
         </div>
 
         <!-- 動態內容區域 -->
-        <main class="flex-1 px-4 pb-4 overflow-y-auto scrollbar-thin" id="profileContentArea">
+        <main class="flex-1 px-4 pb-4 overflow-y-auto scrollbar-beauty" id="profileContentArea">
             <!-- 設定面板 -->
             <div id="settingsPanel" class="tab-panel">
                 <div class="game-card-bg tech-border rounded-xl p-4 space-y-4">
@@ -1036,132 +1014,124 @@
                 </div>
             </div>
 
-            <!-- 代幣面板 -->
+            <!-- 代幣面板 - 雙向帶入/帶出 + 機台列表 + 交易明細 -->
             <div id="tokenPanel" class="tab-panel hidden">
                 <div class="game-card-bg tech-border rounded-xl p-3">
+                    <!-- 子標籤 -->
                     <div class="flex gap-2 mb-3 border-b border-blue-900 pb-2">
                         <span class="sub-tab active" id="tokenExchangeSub">兌換</span>
-                        <span class="sub-tab" id="tokenPlatformSub">平台帶出帶入</span>
+                        <span class="sub-tab" id="tokenPlatformSub">代幣帶出帶入</span>
                     </div>
-                    <!-- 兌換內容 - 三種來源 (保留收合) -->
+
+                    <!-- 兌換內容 -->
                     <div id="exchangeContent">
-                        <h3 class="text-primary text-md mb-3"><i class="fa fa-gift mr-2"></i>代幣來源</h3>
-                        
-                        <!-- 儲值區塊 -->
-                        <div class="uniform-section">
-                            <div class="uniform-header" id="toggleRecharge">
-                                <div class="uniform-header-left">
-                                    <i class="fa fa-credit-card text-green-400"></i>
-                                    <span class="uniform-title">儲值</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span class="uniform-value" id="rechargeAmount">3,000</span>
-                                    <i class="fa fa-chevron-down chevron"></i>
-                                </div>
-                            </div>
-                            <div class="uniform-content" id="rechargeDetails">
-                                <div class="source-detail-item">
-                                    <span class="source-detail-date">2025-02-15 14:30</span>
-                                    <span class="source-detail-amount text-green-400">+1,000</span>
-                                </div>
-                                <div class="source-detail-item">
-                                    <span class="source-detail-date">2025-02-10 09:20</span>
-                                    <span class="source-detail-amount text-green-400">+2,000</span>
-                                </div>
-                                <div class="source-detail-item" onclick="alert('更多儲值記錄...')" style="cursor: pointer; color: #66ccff; justify-content: center;">
-                                    <span>查看完整記錄 <i class="fa fa-arrow-right ml-1"></i></span>
-                                </div>
-                            </div>
+                        <!-- 剩餘點數顯示 -->
+                        <div class="remain-badge">
+                            <span class="text-blue-300">剩餘點數：</span>
+                            <span class="text-amber-400 font-bold text-2xl" id="remainingPointsDisplay">5,520</span>
                         </div>
                         
-                        <!-- 平台贈送區塊 -->
-                        <div class="uniform-section">
-                            <div class="uniform-header" id="toggleBonus">
-                                <div class="uniform-header-left">
-                                    <i class="fa fa-gift text-yellow-400"></i>
-                                    <span class="uniform-title">平台贈送</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span class="uniform-value" id="bonusAmount">2,000</span>
-                                    <i class="fa fa-chevron-down chevron"></i>
-                                </div>
-                            </div>
-                            <div class="uniform-content" id="bonusDetails">
-                                <div class="source-detail-item">
-                                    <span class="source-detail-date">2025-02-18 10:15</span>
-                                    <span class="source-detail-amount text-green-400">+500</span>
-                                    <span class="text-xs text-blue-300">(註冊禮)</span>
-                                </div>
-                                <div class="source-detail-item">
-                                    <span class="source-detail-date">2025-02-20 16:40</span>
-                                    <span class="source-detail-amount text-green-400">+1,000</span>
-                                    <span class="text-xs text-blue-300">(儲值回饋)</span>
-                                </div>
-                                <div class="source-detail-item">
-                                    <span class="source-detail-date">2025-02-25 09:30</span>
-                                    <span class="source-detail-amount text-green-400">+500</span>
-                                    <span class="text-xs text-blue-300">(每日紅利)</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- 遊戲裡獲得區塊 -->
-                        <div class="uniform-section">
-                            <div class="uniform-header" id="toggleGame">
-                                <div class="uniform-header-left">
-                                    <i class="fa fa-gamepad text-purple-400"></i>
-                                    <span class="uniform-title">遊戲裡獲得</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span class="uniform-value" id="gameAmount">1,740</span>
-                                    <i class="fa fa-chevron-down chevron"></i>
-                                </div>
-                            </div>
-                            <div class="uniform-content" id="gameDetails">
-                                <div class="source-detail-item">
-                                    <span class="source-detail-date">2025-02-16 20:30</span>
-                                    <span class="source-detail-amount text-green-400">+800</span>
-                                    <span class="text-xs text-blue-300">(甲賀忍法帖)</span>
-                                </div>
-                                <div class="source-detail-item">
-                                    <span class="source-detail-date">2025-02-19 22:15</span>
-                                    <span class="source-detail-amount text-green-400">+640</span>
-                                    <span class="text-xs text-blue-300">(超級奇蹟小丑)</span>
-                                </div>
-                                <div class="source-detail-item">
-                                    <span class="source-detail-date">2025-02-22 19:40</span>
-                                    <span class="source-detail-amount text-green-400">+300</span>
-                                    <span class="text-xs text-blue-300">(吉宗)</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-3 pt-2 border-t border-blue-800 text-xs text-blue-300 text-right">
-                            <span class="mr-2">總獲得代幣:</span>
-                            <span class="text-amber-400 font-bold" id="totalSourceDisplay">6,740</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 平台帶出帶入內容 - 交易記錄列表改為純文字標題 -->
-                    <div id="platformContent" class="hidden">
-                        <h3 class="text-primary text-md"><i class="fa fa-arrows-h mr-2"></i>平台帶出/帶入</h3>
-                        
-                        <div class="current-balance">
-                            <span>💰 當前身上代幣</span>
-                            <span class="balance-number" id="currentTokenBalance">5,520</span>
-                        </div>
-                        
-                        <!-- 公式區塊 -->
-                        <div class="formula-box">
-                            <div class="text-blue-300 mb-1 text-xs">計算公式：</div>
-                            <div class="formula-highlight" id="formulaHighlight">總獲得 6,740 + (帶出+ 2,000) - (帶入- 780) = 5,520</div>
-                            <div class="text-xs text-blue-300 mt-2">
-                                <span class="text-green-400">帶出+</span> = 從平台提出的總額 (2,000)<br>
-                                <span class="text-red-400">帶入-</span> = 存入平台的總額 (780)
+                        <!-- 機台列表 -->
+                        <div class="mt-3">
+                            <div class="text-sm text-blue-400 mb-2"><i class="fa fa-gamepad mr-1"></i>我的機台</div>
+                            <div class="machine-grid" id="machineGrid">
+                                <!-- 由 JavaScript 動態產生 -->
                             </div>
                         </div>
 
-                        <!-- 明顯顏色的篩選列 -->
+                        <!-- 當前選中的機台 -->
+                        <div id="selectedMachineInfo" class="bg-[#003355] rounded-xl p-3 mb-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-blue-300">當前選擇：</span>
+                                <span class="text-amber-400 font-bold" id="selectedMachineName">請選擇機台</span>
+                            </div>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-blue-300">機台內點數：</span>
+                                <span class="text-cyan-400 font-bold" id="selectedMachinePoints">0</span>
+                            </div>
+                        </div>
+
+                        <!-- 雙向輸入框 - 已移除滾動條 -->
+                        <div class="input-panel">
+                            <input type="number" id="pointInput" class="number-input" value="1000" min="0" step="100" placeholder="輸入點數">
+                            <div class="input-buttons mb-2">
+                                <button class="action-btn max" id="maxBtn">最大值</button>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="action-btn in flex-1" id="bringInBtn">
+                                    <i class="fa fa-arrow-down mr-1"></i> 帶入機台
+                                </button>
+                                <button class="action-btn out flex-1" id="bringOutBtn">
+                                    <i class="fa fa-arrow-up mr-1"></i> 帶出機台
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 儲值明細區 -->
+                        <div class="mt-4 pt-2 border-t border-blue-800">
+                            <div class="text-xs text-blue-400 mb-2"><i class="fa fa-history mr-1"></i>儲值明細</div>
+                            <div class="uniform-section">
+                                <div class="uniform-header" id="toggleRecharge">
+                                    <div class="uniform-header-left"><i class="fa fa-credit-card text-green-400"></i><span class="uniform-title">儲值</span></div>
+                                    <div style="display: flex; align-items: center; gap: 10px;"><span class="uniform-value" id="rechargeAmount">3,000</span><i class="fa fa-chevron-down chevron"></i></div>
+                                </div>
+                                <div class="uniform-content" id="rechargeDetails">
+                                    <div class="source-detail-item">
+                                        <span class="source-detail-date">2025-02-15 14:30</span>
+                                        <span class="source-detail-amount text-green-400">+1,000</span>
+                                    </div>
+                                    <div class="source-detail-item">
+                                        <span class="source-detail-date">2025-02-10 09:20</span>
+                                        <span class="source-detail-amount text-green-400">+2,000</span>
+                                    </div>
+                                    <div class="source-detail-item" onclick="alert('更多儲值記錄...')" style="cursor: pointer; color: #66ccff; justify-content: center;">
+                                        <span>查看完整記錄 <i class="fa fa-arrow-right ml-1"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 平台贈送點數 -->
+                            <div class="text-xs text-blue-400 mb-2 mt-3"><i class="fa fa-gift mr-1"></i>平台贈送點數</div>
+                            <div class="bg-[#002b4a] rounded-xl p-3 mb-3 tech-border">
+                                <table class="detail-table">
+                                    <thead>
+                                        <tr>
+                                            <th>時間</th>
+                                            <th>類別</th>
+                                            <th>點數</th>
+                                            <th>合計</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2025-02-18 10:15</td>
+                                            <td><span class="category-badge in">註冊禮</span></td>
+                                            <td class="text-green-400">+500</td>
+                                            <td class="text-amber-400">500</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-02-20 16:40</td>
+                                            <td><span class="category-badge in">儲值回饋</span></td>
+                                            <td class="text-green-400">+1,000</td>
+                                            <td class="text-amber-400">1,500</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-02-25 09:30</td>
+                                            <td><span class="category-badge in">每日紅利</span></td>
+                                            <td class="text-green-400">+500</td>
+                                            <td class="text-amber-400">2,000</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 代幣帶出帶入內容 -->
+                    <div id="platformContent" class="hidden">
+                        <h3 class="text-primary text-md"><i class="fa fa-exchange mr-2"></i>代幣帶出/帶入</h3>
+                        <div class="current-balance"><span>💰 當前身上點數</span><span class="balance-number" id="currentTokenBalance">5,520</span></div>
+                        <div class="formula-box"><div class="formula-highlight" id="formulaHighlight">總獲得 6,740 + (帶出+ 2,000) - (帶入- 780) = 5,520</div></div>
                         <div class="filter-row">
                             <input type="date" id="startDateFilter" class="filter-date" value="2025-01-01">
                             <span class="text-blue-300">至</span>
@@ -1172,119 +1142,145 @@
                                 <option value="in">僅帶入 (-)</option>
                             </select>
                         </div>
-
-                        <!-- 純文字標題 - 不収合 -->
-                        <div class="records-title">
-                            <i class="fa fa-list-ul text-blue-400 mr-2"></i>交易記錄列表
-                        </div>
                         
-                        <div id="platformList" class="mt-1"></div>
+                        <!-- 交易明細列表 -->
+                        <div class="records-title"><i class="fa fa-list-ul mr-2"></i>交易明細列表</div>
+                        <div id="transactionList" class="mt-1"></div>
                         <div id="platformPagination" class="pagination mt-3"></div>
-                        
-                        <div class="text-xs text-blue-300 mt-2 text-center">* 點擊任一筆記錄展開查看詳細計算</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 注單紀錄面板 (保留收合) -->
+            <!-- 注單紀錄面板 - 可左右滑動，影片在獎項旁邊 -->
             <div id="betHistoryPanel" class="tab-panel hidden">
                 <div class="game-card-bg tech-border rounded-xl p-3">
-                    <h3 class="text-primary text-md"><i class="fa fa-list-alt mr-2"></i>最近注單</h3>
+                    <h3 class="text-primary text-md mb-3"><i class="fa fa-list-alt mr-2"></i>注單記錄</h3>
                     
-                    <div class="uniform-section">
-                        <div class="uniform-header" id="toggleBetBtn">
-                            <div class="uniform-header-left">
-                                <i class="fa fa-list-ul text-blue-400"></i>
-                                <span class="uniform-title">注單記錄列表</span>
-                            </div>
-                            <i class="fa fa-chevron-down chevron"></i>
-                        </div>
-                        <div class="uniform-content" id="betSection">
-                            <div id="betListContainer" class="mt-2 space-y-2 text-xs min-h-[180px]"></div>
-                            <div id="betPagination" class="pagination mt-3">
-                                <span class="page-btn active" data-page="1">1</span>
-                                <span class="page-btn" data-page="2">2</span>
-                                <span class="page-btn" data-page="3">3</span>
-                            </div>
-                        </div>
+                    <!-- 關鍵字搜尋框 -->
+                    <div class="search-box">
+                        <i class="fa fa-search"></i>
+                        <input type="text" id="betSearchInput" placeholder="搜尋注單編號或機台名稱...">
+                        <button id="betSearchBtn">搜尋</button>
                     </div>
+                    
+                    <!-- 注單記錄列表 - 可左右滑動 -->
+                    <div class="records-title"><i class="fa fa-ticket mr-2"></i>注單記錄列表</div>
+                    <div class="bet-container scrollbar-beauty-x" id="betContainer">
+                        <table class="bet-table" id="betTable">
+                            <thead>
+                                <tr>
+                                    <th>時間</th>
+                                    <th>機台名稱</th>
+                                    <th>獎項</th>
+                                    <th>注單明細(影片)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="betListBody">
+                                <!-- 由 JavaScript 動態產生 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="betPagination" class="pagination mt-3"></div>
                 </div>
             </div>
         </main>
 
-        <!-- 底部导航 -->
+        <!-- 底部導航 - 修正「我的」亮燈 -->
         <nav class="bottom-nav mx-auto">
             <div class="flex justify-between items-center">
-                <a href="index.html" class="nav-item" id="nav-home" data-page="home">
-                    <i class="fa fa-home text-xl"></i>
-                    <span class="text-xs mt-1">首頁</span>
-                </a>
-                <a href="machines.html" class="nav-item" id="nav-game" data-page="game">
-                    <i class="fa fa-gamepad text-xl"></i>
-                    <span class="text-xs mt-1">機台</span>
-                </a>
-                <a href="news.html" class="nav-item" id="nav-bell" data-page="bell">
-                    <i class="fa fa-bell text-xl"></i>
-                    <span class="text-xs mt-1">公告</span>
-                    <span class="nav-badge" id="newsBadge"></span>
-                </a>
-                <a href="about.html" class="nav-item" id="nav-user" data-page="user">
-                    <i class="fa fa-user text-xl"></i>
-                    <span class="text-xs mt-1">我的</span>
-                </a>
+                <a href="#" class="nav-item" id="nav-home" data-page="home"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
+                <a href="#" class="nav-item" id="nav-game" data-page="game"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
+                <a href="#" class="nav-item" id="nav-bell" data-page="bell"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span><span class="nav-badge" id="newsBadge"></span></a>
+                <a href="#" class="nav-item" id="nav-user" data-page="user"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
             </div>
         </nav>
     </div>
 
-    <!-- ⭐ 引入 shared.js ⭐ -->
-    <script src="shared.js"></script>
     <script>
         (function() {
-            // ===== 核心數據模型 =====
-            const recharge = 3000;
-            const bonus = 2000;
-            const game = 1740;
-            const totalSource = recharge + bonus + game; // 6740
+            // ========== 核心數據 ==========
+            const RECHARGE = 3000;
+            const BONUS = 2000;
+            const GAME_ACTUAL = 1740;
             
-            // 平台交易記錄
-            const correctedTransactions = [
-                { date: '2025-02-17 09:05', machine: '花月', impact: -200, type: 'out' },
-                { date: '2025-02-17 10:05', machine: '花月', impact: 300, type: 'in' },
-                { date: '2025-02-18 22:10', machine: '吉宗', impact: 150, type: 'in' },
-                { date: '2025-02-19 09:20', machine: '超級奇蹟小丑', impact: -500, type: 'out' },
+            // 交易數據
+            const transactions = [
+                { date: '2025-02-17 09:05', machine: '甲賀忍法帖', impact: -200, type: 'out' },
+                { date: '2025-02-17 10:05', machine: '甲賀忍法帖', impact: 300, type: 'in' },
                 { date: '2025-02-20 13:45', machine: '甲賀忍法帖', impact: 80, type: 'in' },
-                { date: '2025-02-16 14:30', machine: '新甲賀', impact: -1000, type: 'out' },
-                { date: '2025-02-15 20:15', machine: '花月', impact: 200, type: 'in' },
-                { date: '2025-01-25 11:30', machine: '吉宗', impact: -300, type: 'out' },
                 { date: '2025-03-01 14:20', machine: '甲賀忍法帖', impact: 50, type: 'in' },
-                { date: '2025-03-02 10:30', machine: '新甲賀', impact: -150, type: 'out' },
-                { date: '2025-03-03 15:45', machine: '花月', impact: 400, type: 'in' },
+                { date: '2025-02-19 09:20', machine: '超級奇蹟小丑', impact: -500, type: 'out' },
+                { date: '2025-02-18 22:10', machine: '超級奇蹟小丑', impact: 150, type: 'in' },
+                { date: '2025-03-05 14:10', machine: '超級奇蹟小丑', impact: 600, type: 'in' },
                 { date: '2025-03-04 09:20', machine: '吉宗', impact: -80, type: 'out' },
-                { date: '2025-03-05 14:10', machine: '超級奇蹟小丑', impact: 600, type: 'in' }
+                { date: '2025-01-25 11:30', machine: '吉宗', impact: -300, type: 'out' },
+                { date: '2025-02-15 20:15', machine: '吉宗', impact: 200, type: 'in' },
+                { date: '2025-02-16 14:30', machine: '花月', impact: -1000, type: 'out' },
+                { date: '2025-03-03 15:45', machine: '花月', impact: 400, type: 'in' },
+                { date: '2025-03-02 10:30', machine: '新甲賀', impact: -150, type: 'out' },
+                { date: '2025-03-02 11:20', machine: '新甲賀', impact: 500, type: 'in' }
             ];
-
-            // 計算總帶出和總帶入
-            const totalOut = correctedTransactions.filter(t => t.type === 'out').reduce((sum, t) => sum + Math.abs(t.impact), 0);
-            const totalIn = correctedTransactions.filter(t => t.type === 'in').reduce((sum, t) => sum + t.impact, 0);
             
-            // 計算淨影響和當前代幣
-            const netImpact = correctedTransactions.reduce((sum, t) => sum + t.impact, 0);
-            const currentTokens = totalSource + netImpact;
-
-            // 更新UI顯示
-            document.getElementById('rechargeAmount').textContent = recharge.toLocaleString();
-            document.getElementById('bonusAmount').textContent = bonus.toLocaleString();
-            document.getElementById('gameAmount').textContent = game.toLocaleString();
-            document.getElementById('totalSourceDisplay').textContent = totalSource.toLocaleString();
-            document.getElementById('currentTokenBalance').textContent = currentTokens.toLocaleString();
+            const totalOut = transactions.filter(t => t.type === 'out').reduce((sum, t) => sum + Math.abs(t.impact), 0);
+            const totalIn = transactions.filter(t => t.type === 'in').reduce((sum, t) => sum + t.impact, 0);
+            const netImpact = transactions.reduce((sum, t) => sum + t.impact, 0);
             
-            // 更新公式區塊
-            const formulaBox = document.getElementById('formulaHighlight');
-            if (formulaBox) {
-                formulaBox.innerHTML = `總獲得 ${totalSource.toLocaleString()} + (帶出+ ${totalOut.toLocaleString()}) - (帶入- ${totalIn.toLocaleString()}) = ${currentTokens.toLocaleString()}`;
+            const TOTAL_COIN_ACTUAL = RECHARGE + BONUS + GAME_ACTUAL; // 6740
+            let currentPoints = TOTAL_COIN_ACTUAL + netImpact; // 5520
+
+            // ========== 機台數據 ==========
+            let machines = [
+                { id: 1, name: '甲賀忍法帖', points: 1200, icon: '🎮' },
+                { id: 2, name: '超級奇蹟小丑', points: 800, icon: '🎰' },
+                { id: 3, name: '吉宗', points: 2500, icon: '🎯' },
+                { id: 4, name: '花月', points: 600, icon: '🎲' },
+                { id: 5, name: '新甲賀', points: 900, icon: '🎯' }
+            ];
+            
+            let selectedMachine = null;
+
+            // ========== 注單數據 ==========
+            function generateBetRecords() {
+                const machines = ['甲賀忍法帖', '超級奇蹟小丑', '吉宗', '花月', '新甲賀'];
+                const dates = ['2025-03-15', '2025-03-14', '2025-03-13', '2025-03-12', '2025-03-11', '2025-03-10'];
+                const hours = ['10:30', '11:45', '14:20', '15:10', '16:30', '18:20', '19:45', '20:30', '21:15', '22:40'];
+                const videoTypes = ['BB', 'RB'];
+                const prizes = ['+2,500', '+1,200', '+3,800', '+1,800', '+2,200', '+3,000', '+1,600', '+900', '+2,800', '-500', '-300', '-200', '-150', '-400', '-100'];
+                
+                let records = [];
+                let idCounter = 1;
+                
+                machines.forEach(machine => {
+                    for (let i = 0; i < 20; i++) {
+                        const randomDate = dates[Math.floor(Math.random() * dates.length)];
+                        const randomHour = hours[Math.floor(Math.random() * hours.length)];
+                        const randomVideo = videoTypes[Math.floor(Math.random() * videoTypes.length)];
+                        const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
+                        
+                        const dateNum = randomDate.replace(/-/g, '');
+                        const betNumber = String(idCounter).padStart(3, '0');
+                        const betId = `BB${dateNum}-${betNumber}`;
+                        
+                        records.push({
+                            date: `${randomDate} ${randomHour}`,
+                            machine: machine,
+                            betId: betId,
+                            prize: randomPrize,
+                            videoType: randomVideo,
+                            videoUrl: '#'
+                        });
+                        
+                        idCounter++;
+                        if (idCounter > 99) idCounter = 1;
+                    }
+                });
+                
+                return records.sort((a, b) => new Date(b.date) - new Date(a.date));
             }
+            
+            const betRecords = generateBetRecords();
 
-            // 收藏機台、保留機台資料
+            // ========== 收藏/保留機台資料 ==========
             let favoriteMachines = [
                 { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1:2', vendor: 'Sammy' },
                 { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1:1', vendor: 'Olympia' },
@@ -1310,27 +1306,240 @@
                 }
             ];
 
-            // DOM 元素
+            // ========== DOM 元素 ==========
             const favBtn = document.getElementById('favMachinesBtn');
             const keepBtn = document.getElementById('keepMachinesBtn');
-            const favListContainer = document.getElementById('favMachineList');
-            const keepListContainer = document.getElementById('keepMachineList');
-            const favItemsEl = document.getElementById('favMachineItems');
-            const keepItemsEl = document.getElementById('keepMachineItems');
-            const favCountEl = document.getElementById('favCount');
-            const keepCountEl = document.getElementById('keepCount');
+            const favList = document.getElementById('favMachineList');
+            const keepList = document.getElementById('keepMachineList');
+            const favItems = document.getElementById('favMachineItems');
+            const keepItems = document.getElementById('keepMachineItems');
+            const favCount = document.getElementById('favCount');
+            const keepCount = document.getElementById('keepCount');
             const favCountDisplay = document.getElementById('favCountDisplay');
             const keepCountDisplay = document.getElementById('keepCountDisplay');
+            const machineGrid = document.getElementById('machineGrid');
+            const selectedMachineName = document.getElementById('selectedMachineName');
+            const selectedMachinePoints = document.getElementById('selectedMachinePoints');
+            const transactionList = document.getElementById('transactionList');
+            const betListBody = document.getElementById('betListBody');
+            const betPagination = document.getElementById('betPagination');
+            const betSearchInput = document.getElementById('betSearchInput');
+            const betSearchBtn = document.getElementById('betSearchBtn');
+            const betDetailModal = document.getElementById('betDetailModal');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const modalMachineName = document.getElementById('modalMachineName');
+            const betDetailList = document.getElementById('betDetailList');
+            
+            // 確認對話框元素
+            const confirmDialog = document.getElementById('confirmDialog');
+            const confirmOverlay = document.getElementById('confirmOverlay');
+            const confirmTitle = document.getElementById('confirmTitle');
+            const confirmMessage = document.getElementById('confirmMessage');
+            const confirmIcon = document.getElementById('confirmIcon');
+            const confirmCancel = document.getElementById('confirmCancel');
+            const confirmOk = document.getElementById('confirmOk');
+            
+            let pendingAction = null;
 
-            // 倒數計時
+            // ========== 自定義確認對話框函數 ==========
+            function showConfirm(options) {
+                confirmTitle.textContent = options.title || '確認';
+                confirmMessage.textContent = options.message || '確定要執行此操作嗎？';
+                confirmIcon.textContent = options.icon || '❓';
+                confirmIcon.style.color = options.iconColor || '#ffaa33';
+                pendingAction = options.onConfirm;
+                
+                confirmDialog.classList.add('open');
+                confirmOverlay.classList.add('open');
+            }
+
+            function hideConfirm() {
+                confirmDialog.classList.remove('open');
+                confirmOverlay.classList.remove('open');
+                pendingAction = null;
+            }
+
+            confirmCancel.addEventListener('click', hideConfirm);
+            confirmOk.addEventListener('click', function() {
+                if (pendingAction) {
+                    pendingAction();
+                }
+                hideConfirm();
+            });
+
+            confirmOverlay.addEventListener('click', hideConfirm);
+
+            // ========== 移除收藏（取消收藏） ==========
+            window.unfavoriteMachine = function(id, name) {
+                showConfirm({
+                    title: '取消收藏',
+                    message: `確定要取消收藏「${name}」嗎？`,
+                    icon: '💔',
+                    iconColor: '#ff6680',
+                    onConfirm: function() {
+                        favoriteMachines = favoriteMachines.filter(m => m.id !== id);
+                        renderFavorites();
+                        alert(`✅ 已取消收藏「${name}」`);
+                    }
+                });
+            };
+
+            // ========== 離開保留 ==========
+            window.leaveKeepMachine = function(id, name) {
+                showConfirm({
+                    title: '離開保留',
+                    message: `確定要離開保留的機台「${name}」嗎？`,
+                    icon: '🚪',
+                    iconColor: '#ff4d4d',
+                    onConfirm: function() {
+                        keepMachines = keepMachines.filter(m => m.id !== id);
+                        renderKeep();
+                        alert(`✅ 已離開保留的機台「${name}」`);
+                    }
+                });
+            };
+
+            // ========== 彈窗函數 ==========
+            window.openBetDetail = function(machineName) {
+                const machineBets = betRecords.filter(bet => bet.machine === machineName);
+                
+                let html = '';
+                machineBets.slice(0, 30).forEach(bet => {
+                    const videoClass = bet.videoType === 'BB' ? 'video-badge bb' : 'video-badge rb';
+                    html += `
+                        <div class="bet-list-item">
+                            <span class="bet-number">${bet.betId}</span>
+                            <div class="bet-video">
+                                <span class="${videoClass}" onclick="window.playVideo('${bet.betId}', '${bet.videoType}')">
+                                    <i class="fa ${bet.videoType === 'BB' ? 'fa-film' : 'fa-video-camera'}"></i>
+                                    ${bet.videoType}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                if (machineBets.length > 30) {
+                    html += `<div class="text-center text-blue-300 mt-2">... 還有 ${machineBets.length - 30} 筆</div>`;
+                }
+                
+                betDetailList.innerHTML = html;
+                modalMachineName.textContent = machineName;
+                betDetailModal.classList.add('open');
+                modalOverlay.classList.add('open');
+            };
+
+            window.playVideo = function(betId, videoType) {
+                alert(`🎬 播放 ${videoType} 影片\n注單號: ${betId}\n(示範功能)`);
+            };
+
+            // 關閉彈窗
+            closeModalBtn.addEventListener('click', () => {
+                betDetailModal.classList.remove('open');
+                modalOverlay.classList.remove('open');
+            });
+
+            modalOverlay.addEventListener('click', () => {
+                betDetailModal.classList.remove('open');
+                modalOverlay.classList.remove('open');
+            });
+
+            // ========== 渲染收藏機台 ==========
+            function renderFavorites() {
+                let html = '';
+                favoriteMachines.forEach(m => {
+                    html += `
+                        <div class="machine-card" data-id="${m.id}">
+                            <img src="${m.image}" alt="${m.name}">
+                            <div class="machine-info">
+                                <div class="machine-name">${m.name}</div>
+                                <div class="machine-meta"><span>${m.ratio}</span><span>${m.vendor}</span></div>
+                            </div>
+                            <div class="machine-actions">
+                                <div class="play-btn" onclick="window.playGame('${m.name}')"><i class="fa fa-play"></i> 進入</div>
+                                <div class="unfavorite-btn" onclick="window.unfavoriteMachine(${m.id}, '${m.name}')">
+                                    <i class="fa fa-heart"></i> 取消收藏
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                favItems.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無收藏機台</div>';
+                favCount.textContent = favoriteMachines.length;
+                if(favCountDisplay) favCountDisplay.textContent = favoriteMachines.length;
+            }
+
+            // ========== 渲染保留機台 ==========
+            function renderKeep() {
+                let html = '';
+                keepMachines.forEach(m => {
+                    const endDate = new Date(m.endTime);
+                    const endTimeStr = endDate.toLocaleString('zh-TW');
+                    
+                    html += `
+                        <div class="machine-card" data-id="${m.id}">
+                            <img src="${m.image}" alt="${m.name}">
+                            <div class="machine-info">
+                                <div class="machine-name">${m.name}</div>
+                                <div class="machine-meta"><span>${m.ratio}</span><span>${m.vendor}</span></div>
+                                <div class="countdown-timer" data-endtime="${endDate.toISOString()}"><i class="fa fa-hourglass-half"></i> 計算中...</div>
+                                <div style="font-size: 0.6rem; color: #aaa; margin-top: 2px;">結束於 ${endTimeStr}</div>
+                            </div>
+                            <div class="machine-actions">
+                                <div class="play-btn" onclick="window.playGame('${m.name}')"><i class="fa fa-play"></i> 進入</div>
+                                <div class="leave-btn" onclick="window.leaveKeepMachine(${m.id}, '${m.name}')">
+                                    <i class="fa fa-sign-out"></i> 離開
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                keepItems.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無保留機台</div>';
+                keepCount.textContent = keepMachines.length;
+                if(keepCountDisplay) keepCountDisplay.textContent = keepMachines.length;
+                updateCountdowns();
+            }
+
+            // ========== 渲染機台 ==========
+            function renderMachines() {
+                let html = '';
+                machines.forEach(m => {
+                    const selectedClass = (selectedMachine && selectedMachine.id === m.id) ? 'selected' : '';
+                    html += `
+                        <div class="machine-card-item ${selectedClass}" data-id="${m.id}" data-name="${m.name}" data-points="${m.points}">
+                            <div class="machine-name-text">${m.icon} ${m.name}</div>
+                            <div class="machine-points">${m.points.toLocaleString()}</div>
+                            <div class="machine-label">機台點數</div>
+                        </div>
+                    `;
+                });
+                machineGrid.innerHTML = html;
+                
+                document.querySelectorAll('.machine-card-item').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const id = parseInt(card.dataset.id);
+                        const name = card.dataset.name;
+                        const points = parseInt(card.dataset.points);
+                        selectedMachine = { id, name, points };
+                        
+                        document.querySelectorAll('.machine-card-item').forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        
+                        selectedMachineName.textContent = name;
+                        selectedMachinePoints.textContent = points.toLocaleString();
+                    });
+                });
+            }
+
+            // ========== 倒數計時 ==========
             function updateCountdowns() {
-                const countdownElements = document.querySelectorAll('.countdown-timer[data-endtime]');
-                countdownElements.forEach(el => {
+                document.querySelectorAll('.countdown-timer[data-endtime]').forEach(el => {
                     const endTime = new Date(el.dataset.endtime).getTime();
                     const now = new Date().getTime();
                     const diff = endTime - now;
                     
-                    if (diff <= 0) {
+                    if(diff <= 0) {
                         el.innerHTML = '<i class="fa fa-hourglass-end"></i> 已到期';
                         el.classList.add('warning');
                         return;
@@ -1341,379 +1550,409 @@
                     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                     
                     let timeText = '';
-                    if (days > 0) timeText = `${days}天 ${hours}小時`;
-                    else if (hours > 0) timeText = `${hours}小時 ${minutes}分`;
+                    if(days > 0) timeText = `${days}天 ${hours}小時`;
+                    else if(hours > 0) timeText = `${hours}小時 ${minutes}分`;
                     else timeText = `${minutes}分`;
                     
-                    if (hours === 0 && days === 0) el.classList.add('warning');
+                    if(hours === 0 && days === 0) el.classList.add('warning');
                     else el.classList.remove('warning');
                     
                     el.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${timeText}`;
                 });
             }
 
-            function formatEndTime(date) {
-                return date.toLocaleString('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }).replace(/\//g,'/');
-            }
-
-            window.playGame = function(machineName) {
-                alert(`🎮 進入遊戲：${machineName}\n(示範功能)`);
+            window.playGame = function(name) {
+                alert(`🎮 進入遊戲：${name}\n(示範功能)`);
             };
 
-            function renderFavoriteMachines() {
-                let html = '';
-                favoriteMachines.forEach(machine => {
-                    html += `
-                        <div class="machine-card" data-id="${machine.id}">
-                            <img src="${machine.image}" alt="${machine.name}">
-                            <div class="machine-info">
-                                <div class="machine-name">${machine.name}</div>
-                                <div class="machine-meta"><span>${machine.ratio}</span><span>${machine.vendor}</span></div>
-                            </div>
-                            <div class="machine-actions">
-                                <div class="play-btn" onclick="playGame('${machine.name}')"><i class="fa fa-play"></i> 進入</div>
-                                <div class="remove-btn" onclick="removeFavorite(${machine.id})"><i class="fa fa-times"></i></div>
-                            </div>
-                        </div>
-                    `;
-                });
-                favItemsEl.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無收藏機台</div>';
-                favCountEl.textContent = favoriteMachines.length;
-                if (favCountDisplay) favCountDisplay.textContent = favoriteMachines.length;
-            }
-
-            function renderKeepMachines() {
-                let html = '';
-                keepMachines.forEach(machine => {
-                    const endDate = new Date(machine.endTime);
-                    const endTimeStr = formatEndTime(endDate);
-                    
-                    html += `
-                        <div class="machine-card" data-id="${machine.id}">
-                            <img src="${machine.image}" alt="${machine.name}">
-                            <div class="machine-info">
-                                <div class="machine-name">${machine.name}</div>
-                                <div class="machine-meta"><span>${machine.ratio}</span><span>${machine.vendor}</span></div>
-                                <div class="countdown-timer" data-endtime="${endDate.toISOString()}"><i class="fa fa-hourglass-half"></i> 計算中...</div>
-                                <div style="font-size: 0.6rem; color: #aaa; margin-top: 2px;">結束於 ${endTimeStr}</div>
-                            </div>
-                            <div class="machine-actions">
-                                <div class="play-btn" onclick="playGame('${machine.name}')"><i class="fa fa-play"></i> 進入</div>
-                                <div class="remove-btn" onclick="removeKeep(${machine.id})"><i class="fa fa-times"></i></div>
-                            </div>
-                        </div>
-                    `;
-                });
-                keepItemsEl.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無保留機台</div>';
-                keepCountEl.textContent = keepMachines.length;
-                if (keepCountDisplay) keepCountDisplay.textContent = keepMachines.length;
-                updateCountdowns();
-            }
-
-            window.removeFavorite = function(id) {
-                favoriteMachines = favoriteMachines.filter(m => m.id !== id);
-                renderFavoriteMachines();
-                alert('已從收藏移除 (示範)');
-            };
-            window.removeKeep = function(id) {
-                keepMachines = keepMachines.filter(m => m.id !== id);
-                renderKeepMachines();
-                alert('已從保留移除 (示範)');
-            };
-
+            // ========== 按鈕事件 ==========
             favBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const isShowing = favListContainer.classList.contains('show');
-                favListContainer.classList.remove('show');
-                keepListContainer.classList.remove('show');
-                if (!isShowing) favListContainer.classList.add('show');
+                favList.classList.toggle('show');
+                keepList.classList.remove('show');
             });
+            
             keepBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const isShowing = keepListContainer.classList.contains('show');
-                favListContainer.classList.remove('show');
-                keepListContainer.classList.remove('show');
-                if (!isShowing) {
-                    keepListContainer.classList.add('show');
-                    updateCountdowns();
-                }
+                keepList.classList.toggle('show');
+                favList.classList.remove('show');
+                if(keepList.classList.contains('show')) updateCountdowns();
             });
+
             document.addEventListener('click', function(e) {
-                if (!favBtn.contains(e.target) && !keepBtn.contains(e.target) && 
-                    !favListContainer.contains(e.target) && !keepListContainer.contains(e.target)) {
-                    favListContainer.classList.remove('show');
-                    keepListContainer.classList.remove('show');
+                if(!favBtn.contains(e.target) && !keepBtn.contains(e.target) && 
+                   !favList.contains(e.target) && !keepList.contains(e.target)) {
+                    favList.classList.remove('show');
+                    keepList.classList.remove('show');
                 }
             });
-            setInterval(() => { if (keepListContainer.classList.contains('show')) updateCountdowns(); }, 1000);
-            renderFavoriteMachines();
-            renderKeepMachines();
 
-            // ===== 展開/收合功能 =====
-            function setupToggle(btnId, sectionId) {
-                const btn = document.getElementById(btnId);
-                const section = document.getElementById(sectionId);
-                if (btn && section) {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        btn.classList.toggle('collapsed');
-                        section.classList.toggle('collapsed');
-                    });
-                }
-            }
-            
-            setupToggle('toggleRecharge', 'rechargeDetails');
-            setupToggle('toggleBonus', 'bonusDetails');
-            setupToggle('toggleGame', 'gameDetails');
-            setupToggle('toggleBetBtn', 'betSection');
+            setInterval(() => {
+                if(keepList.classList.contains('show')) updateCountdowns();
+            }, 1000);
 
-            // ===== 平台列表渲染 + 點擊展開明細 =====
-            const ITEMS_PER_PAGE = 5;
+            // ========== 交易明細列表渲染 ==========
+            const ITEMS_PER_PAGE = 8;
             let currentPlatformPage = 1;
-            let filteredPlatformTransactions = [];
-            let expandedIndex = null;
 
-            function togglePlatformDetail(index) {
-                if (expandedIndex === index) {
-                    expandedIndex = null;
-                } else {
-                    expandedIndex = index;
-                }
-                renderPlatformList();
-            }
-
-            function renderPlatformList() {
-                const filterType = document.getElementById('platformFilter').value;
-                const startDate = new Date(document.getElementById('startDateFilter').value);
-                const endDate = new Date(document.getElementById('endDateFilter').value);
+            function renderTransactionList() {
+                const filterType = document.getElementById('platformFilter')?.value || 'all';
+                const startDate = new Date(document.getElementById('startDateFilter')?.value || '2025-01-01');
+                const endDate = new Date(document.getElementById('endDateFilter')?.value || '2025-04-01');
                 endDate.setHours(23, 59, 59, 999);
-
-                filteredPlatformTransactions = correctedTransactions.filter(t => {
+                
+                let filtered = transactions.filter(t => {
                     const tDate = new Date(t.date.split(' ')[0]);
-                    if (tDate < startDate || tDate > endDate) return false;
-                    if (filterType === 'out') return t.type === 'out';
-                    if (filterType === 'in') return t.type === 'in';
+                    if(tDate < startDate || tDate > endDate) return false;
+                    if(filterType === 'out') return t.type === 'out';
+                    if(filterType === 'in') return t.type === 'in';
                     return true;
+                }).sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                const sortedAsc = [...filtered].sort((a, b) => new Date(a.date) - new Date(b.date));
+                let runningTotal = TOTAL_COIN_ACTUAL;
+                const totalMap = new Map();
+                
+                sortedAsc.forEach(t => {
+                    runningTotal += t.impact;
+                    totalMap.set(t.date + t.machine + t.impact, runningTotal);
                 });
-
-                filteredPlatformTransactions.sort((a,b) => new Date(b.date) - new Date(a.date));
                 
-                const allSorted = [...correctedTransactions].sort((a,b) => new Date(a.date) - new Date(b.date));
-                let balanceMap = new Map();
-                let runningBalance = totalSource;
-                for (let i = 0; i < allSorted.length; i++) {
-                    const trans = allSorted[i];
-                    const key = trans.date + trans.machine + trans.impact;
-                    balanceMap.set(key, runningBalance);
-                    runningBalance += trans.impact;
-                }
-                
-                const totalPages = Math.ceil(filteredPlatformTransactions.length / ITEMS_PER_PAGE) || 1;
-                if (currentPlatformPage > totalPages) currentPlatformPage = totalPages;
-                
+                const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+                if(currentPlatformPage > totalPages) currentPlatformPage = totalPages;
                 const startIdx = (currentPlatformPage - 1) * ITEMS_PER_PAGE;
-                const pageItems = filteredPlatformTransactions.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+                const pageItems = filtered.slice(startIdx, startIdx + ITEMS_PER_PAGE);
                 
-                const listContainer = document.getElementById('platformList');
-                let html = '';
+                let html = '<table class="transaction-table">';
+                html += '<thead><tr><th>時間</th><th>機台名稱</th><th>帶入/帶出</th><th>合計</th></tr></thead><tbody>';
                 
-                pageItems.forEach((t, idx) => {
-                    const globalIndex = startIdx + idx;
-                    const tagClass = t.type === 'out' ? 'platform-tag out' : 'platform-tag in';
-                    const tagText = t.type === 'out' ? '帶出' : '帶入';
+                pageItems.forEach(t => {
+                    const typeText = t.type === 'in' ? '帶入' : '帶出';
+                    const typeClass = t.type === 'in' ? 'type-badge in' : 'type-badge out';
                     const amountClass = t.type === 'in' ? 'text-green-400' : 'text-red-400';
                     const amountSign = t.type === 'in' ? `+${t.impact}` : `-${Math.abs(t.impact)}`;
-                    const key = t.date + t.machine + t.impact;
-                    const prevBal = balanceMap.get(key) || totalSource;
-                    const afterBal = prevBal + t.impact;
+                    const total = totalMap.get(t.date + t.machine + t.impact);
                     
-                    const isExpanded = (expandedIndex === globalIndex);
-                    const expandedClass = isExpanded ? 'expanded' : '';
-                    
-                    html += `
-                        <div class="platform-item ${expandedClass}" onclick="togglePlatformDetail(${globalIndex})">
-                            <div class="platform-left">
-                                <span class="${tagClass}">${tagText}</span>
-                                <span class="text-blue-200">${t.date}</span>
-                                <span class="platform-machine">${t.machine}</span>
-                            </div>
-                            <span class="platform-amount ${amountClass}">${amountSign}</span>
-                            <span class="detail-icon"><i class="fa fa-chevron-right chevron-icon"></i></span>
-                        </div>
-                        <div class="platform-detail" id="detail-${globalIndex}" style="${isExpanded ? 'display: block;' : 'display: none;'}">
-                            <div class="platform-detail-row">
-                                <span class="platform-detail-label">原身上代幣：</span>
-                                <span class="platform-detail-value">${prevBal.toLocaleString()}</span>
-                            </div>
-                            <div class="platform-detail-row">
-                                <span class="platform-detail-label">交易變動：</span>
-                                <span class="platform-detail-change ${t.type === 'in' ? 'positive' : 'negative'}">${t.type === 'in' ? '+' : '-'}${Math.abs(t.impact)}</span>
-                            </div>
-                            <div class="platform-detail-row">
-                                <span class="platform-detail-label">當前身上代幣：</span>
-                                <span class="platform-detail-value">${afterBal.toLocaleString()}</span>
-                            </div>
-                        </div>
-                    `;
+                    html += `<tr>
+                        <td class="text-blue-200">${t.date}</td>
+                        <td><span class="machine-badge">${t.machine}</span></td>
+                        <td><span class="${typeClass}">${typeText}</span> <span class="${amountClass} ml-1">${amountSign}</span></td>
+                        <td class="total-amount">${total.toLocaleString()}</td>
+                    </tr>`;
                 });
                 
-                listContainer.innerHTML = html || '<div class="text-gray-400 text-sm p-2 text-center">無符合記錄</div>';
+                html += '</tbody></table>';
                 
-                renderPlatformPagination(totalPages);
-            }
-
-            function renderPlatformPagination(totalPages) {
-                const paginationContainer = document.getElementById('platformPagination');
-                let btns = '';
-                for (let i = 1; i <= totalPages; i++) {
-                    btns += `<span class="page-btn ${i === currentPlatformPage ? 'active' : ''}" data-platform-page="${i}">${i}</span>`;
+                if (pageItems.length === 0) {
+                    html = '<div class="text-gray-400 p-4 text-center">無交易記錄</div>';
                 }
-                paginationContainer.innerHTML = btns;
                 
-                document.querySelectorAll('[data-platform-page]').forEach(btn => {
+                transactionList.innerHTML = html;
+                
+                let pagiHtml = '';
+                for(let i = 1; i <= totalPages; i++) {
+                    pagiHtml += `<span class="page-btn ${i === currentPlatformPage ? 'active' : ''}" data-page="${i}">${i}</span>`;
+                }
+                document.getElementById('platformPagination').innerHTML = pagiHtml;
+                
+                document.querySelectorAll('#platformPagination .page-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        currentPlatformPage = parseInt(e.target.dataset.platformPage);
-                        expandedIndex = null;
-                        renderPlatformList();
+                        currentPlatformPage = parseInt(e.target.dataset.page);
+                        renderTransactionList();
                     });
                 });
             }
 
-            window.togglePlatformDetail = function(index) {
-                if (expandedIndex === index) {
-                    expandedIndex = null;
-                } else {
-                    expandedIndex = index;
-                }
-                renderPlatformList();
-            };
+            // ========== 注單記錄渲染 ==========
+            const BET_ITEMS_PER_PAGE = 10;
+            let currentBetPage = 1;
+            let currentSearchTerm = '';
 
-            // 子標籤切換
+            function renderBetList() {
+                let filtered = betRecords;
+                if (currentSearchTerm) {
+                    const term = currentSearchTerm.toLowerCase();
+                    filtered = betRecords.filter(bet => 
+                        bet.betId.toLowerCase().includes(term) || 
+                        bet.machine.toLowerCase().includes(term)
+                    );
+                }
+                
+                const totalPages = Math.ceil(filtered.length / BET_ITEMS_PER_PAGE) || 1;
+                if(currentBetPage > totalPages) currentBetPage = totalPages;
+                const startIdx = (currentBetPage - 1) * BET_ITEMS_PER_PAGE;
+                const pageItems = filtered.slice(startIdx, startIdx + BET_ITEMS_PER_PAGE);
+                
+                let html = '';
+                pageItems.forEach(bet => {
+                    const prizeClass = bet.prize.startsWith('+') ? 'prize-positive' : 'prize-negative';
+                    const videoClass = bet.videoType === 'BB' ? 'video-badge bb' : 'video-badge rb';
+                    
+                    html += `<tr>
+                        <td class="text-blue-200">${bet.date}</td>
+                        <td><span class="bet-machine">${bet.machine}</span></td>
+                        <td class="${prizeClass}">${bet.prize}</td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span class="bet-id" onclick="window.openBetDetail('${bet.machine}')">${bet.betId}</span>
+                                <span class="${videoClass}" onclick="window.playVideo('${bet.betId}', '${bet.videoType}')">
+                                    <i class="fa ${bet.videoType === 'BB' ? 'fa-film' : 'fa-video-camera'}"></i>
+                                    ${bet.videoType}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+                
+                betListBody.innerHTML = html;
+                
+                let pagiHtml = '';
+                for(let i = 1; i <= totalPages; i++) {
+                    pagiHtml += `<span class="page-btn ${i === currentBetPage ? 'active' : ''}" data-page="${i}">${i}</span>`;
+                }
+                betPagination.innerHTML = pagiHtml;
+                
+                document.querySelectorAll('#betPagination .page-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        currentBetPage = parseInt(e.target.dataset.page);
+                        renderBetList();
+                    });
+                });
+            }
+
+            // 搜尋功能
+            betSearchBtn.addEventListener('click', () => {
+                currentSearchTerm = betSearchInput.value;
+                currentBetPage = 1;
+                renderBetList();
+            });
+
+            betSearchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    currentSearchTerm = betSearchInput.value;
+                    currentBetPage = 1;
+                    renderBetList();
+                }
+            });
+
+            // ========== 點數 UI 更新 ==========
+            const headerPoints = document.getElementById('headerPoints');
+            const remainingDisplay = document.getElementById('remainingPointsDisplay');
+            const tokenBalanceSpan = document.getElementById('currentTokenBalance');
+            const formulaSpan = document.getElementById('formulaHighlight');
+            const pointInput = document.getElementById('pointInput');
+            
+            function updateAllPointsUI() {
+                const pointsStr = currentPoints.toLocaleString();
+                if(headerPoints) headerPoints.innerText = pointsStr;
+                if(remainingDisplay) remainingDisplay.innerText = pointsStr;
+                if(tokenBalanceSpan) tokenBalanceSpan.innerText = pointsStr;
+                if(formulaSpan) {
+                    formulaSpan.innerHTML = `總獲得 ${TOTAL_COIN_ACTUAL.toLocaleString()} + (帶出+ ${totalOut}) - (帶入- ${totalIn}) = ${currentPoints.toLocaleString()}`;
+                }
+                if(pointInput) {
+                    pointInput.max = Math.max(currentPoints, ...machines.map(m => m.points));
+                    pointInput.placeholder = `最多 ${currentPoints}`;
+                }
+                
+                renderMachines();
+                if(selectedMachine) {
+                    const updated = machines.find(m => m.id === selectedMachine.id);
+                    if(updated) {
+                        selectedMachine.points = updated.points;
+                        selectedMachinePoints.textContent = updated.points.toLocaleString();
+                    }
+                }
+            }
+
+            // ========== 輸入框功能 ==========
+            const maxBtn = document.getElementById('maxBtn');
+            const bringInBtn = document.getElementById('bringInBtn');
+            const bringOutBtn = document.getElementById('bringOutBtn');
+
+            if(maxBtn) {
+                maxBtn.addEventListener('click', () => {
+                    if(pointInput) pointInput.value = currentPoints;
+                });
+            }
+
+            if(bringInBtn) {
+                bringInBtn.addEventListener('click', () => {
+                    if(!selectedMachine) {
+                        alert('請先選擇一個機台');
+                        return;
+                    }
+                    
+                    const inputVal = parseInt(pointInput.value);
+                    if(isNaN(inputVal) || inputVal <= 0) {
+                        alert('請輸入有效的點數');
+                        return;
+                    }
+                    
+                    if(inputVal > currentPoints) {
+                        alert(`剩餘點數不足！只剩 ${currentPoints} 點`);
+                        return;
+                    }
+                    
+                    currentPoints -= inputVal;
+                    const machine = machines.find(m => m.id === selectedMachine.id);
+                    if(machine) {
+                        machine.points += inputVal;
+                    }
+                    
+                    const now = new Date();
+                    const dateStr = now.toISOString().split('T')[0] + ' ' + 
+                                   now.getHours().toString().padStart(2,'0') + ':' + 
+                                   now.getMinutes().toString().padStart(2,'0');
+                    
+                    transactions.push({
+                        date: dateStr,
+                        machine: selectedMachine.name,
+                        impact: inputVal,
+                        type: 'in'
+                    });
+                    
+                    updateAllPointsUI();
+                    renderTransactionList();
+                    alert(`✅ 已將 ${inputVal} 點帶入 ${selectedMachine.name}`);
+                    pointInput.value = 1000;
+                });
+            }
+
+            if(bringOutBtn) {
+                bringOutBtn.addEventListener('click', () => {
+                    if(!selectedMachine) {
+                        alert('請先選擇一個機台');
+                        return;
+                    }
+                    
+                    const inputVal = parseInt(pointInput.value);
+                    if(isNaN(inputVal) || inputVal <= 0) {
+                        alert('請輸入有效的點數');
+                        return;
+                    }
+                    
+                    const machine = machines.find(m => m.id === selectedMachine.id);
+                    if(!machine) return;
+                    
+                    if(inputVal > machine.points) {
+                        alert(`機台內點數不足！只剩 ${machine.points} 點`);
+                        return;
+                    }
+                    
+                    currentPoints += inputVal;
+                    machine.points -= inputVal;
+                    
+                    const now = new Date();
+                    const dateStr = now.toISOString().split('T')[0] + ' ' + 
+                                   now.getHours().toString().padStart(2,'0') + ':' + 
+                                   now.getMinutes().toString().padStart(2,'0');
+                    
+                    transactions.push({
+                        date: dateStr,
+                        machine: selectedMachine.name,
+                        impact: -inputVal,
+                        type: 'out'
+                    });
+                    
+                    updateAllPointsUI();
+                    renderTransactionList();
+                    alert(`✅ 已從 ${selectedMachine.name} 帶出 ${inputVal} 點`);
+                    pointInput.value = 1000;
+                });
+            }
+
+            // ========== 標籤切換 ==========
             const exchangeSub = document.getElementById('tokenExchangeSub');
             const platformSub = document.getElementById('tokenPlatformSub');
             const exchangeContent = document.getElementById('exchangeContent');
             const platformContent = document.getElementById('platformContent');
             
-            if (exchangeSub && platformSub) {
-                exchangeSub.addEventListener('click', () => {
-                    exchangeSub.classList.add('active');
-                    platformSub.classList.remove('active');
+            if(exchangeSub && platformSub) {
+                const newExchangeSub = exchangeSub.cloneNode(true);
+                const newPlatformSub = platformSub.cloneNode(true);
+                exchangeSub.parentNode.replaceChild(newExchangeSub, exchangeSub);
+                platformSub.parentNode.replaceChild(newPlatformSub, platformSub);
+                
+                const newExchangeSubElement = document.getElementById('tokenExchangeSub');
+                const newPlatformSubElement = document.getElementById('tokenPlatformSub');
+                
+                newExchangeSubElement.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    newExchangeSubElement.classList.add('active');
+                    newPlatformSubElement.classList.remove('active');
                     exchangeContent.classList.remove('hidden');
                     platformContent.classList.add('hidden');
                 });
-                platformSub.addEventListener('click', () => {
-                    platformSub.classList.add('active');
-                    exchangeSub.classList.remove('active');
+                
+                newPlatformSubElement.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    newPlatformSubElement.classList.add('active');
+                    newExchangeSubElement.classList.remove('active');
                     platformContent.classList.remove('hidden');
                     exchangeContent.classList.add('hidden');
                     
-                    const today = new Date();
-                    const threeMonthsAgo = new Date();
-                    threeMonthsAgo.setDate(today.getDate() - 90);
-                    document.getElementById('startDateFilter').value = threeMonthsAgo.toISOString().split('T')[0];
-                    document.getElementById('endDateFilter').value = today.toISOString().split('T')[0];
-                    
                     currentPlatformPage = 1;
-                    expandedIndex = null;
-                    renderPlatformList();
+                    renderTransactionList();
                 });
             }
 
-            document.getElementById('platformFilter')?.addEventListener('change', () => {
-                currentPlatformPage = 1;
-                expandedIndex = null;
-                renderPlatformList();
-            });
-            document.getElementById('startDateFilter')?.addEventListener('change', () => {
-                currentPlatformPage = 1;
-                expandedIndex = null;
-                renderPlatformList();
-            });
-            document.getElementById('endDateFilter')?.addEventListener('change', () => {
-                currentPlatformPage = 1;
-                expandedIndex = null;
-                renderPlatformList();
-            });
-
-            // 注單分頁
-            const betPages = {
-                1: [
-                    { id: 'BB20250221-001', machine: '甲賀忍法帖', amount: '+1,200', amountClass: 'text-amber-400' },
-                    { id: 'BB20250220-045', machine: '超級奇蹟小丑', amount: '-500', amountClass: 'text-red-400' },
-                    { id: 'BB20250219-112', machine: '吉宗', amount: '+3,200', amountClass: 'text-amber-400' }
-                ],
-                2: [
-                    { id: 'BB20250218-089', machine: '花月', amount: '+800', amountClass: 'text-amber-400' },
-                    { id: 'BB20250217-033', machine: '新甲賀', amount: '+2,100', amountClass: 'text-amber-400' },
-                    { id: 'BB20250216-077', machine: '甲賀忍法帖', amount: '-150', amountClass: 'text-red-400' }
-                ],
-                3: [
-                    { id: 'BB20250215-120', machine: '超級奇蹟小丑', amount: '+4,500', amountClass: 'text-amber-400' },
-                    { id: 'BB20250214-056', machine: '吉宗', amount: '-300', amountClass: 'text-red-400' },
-                    { id: 'BB20250213-099', machine: '花月', amount: '+1,050', amountClass: 'text-amber-400' },
-                    { id: 'BB20250212-222', machine: '新甲賀', amount: '+600', amountClass: 'text-amber-400' }
-                ]
-            };
+            // 篩選事件
+            const platformFilter = document.getElementById('platformFilter');
+            const startDateFilter = document.getElementById('startDateFilter');
+            const endDateFilter = document.getElementById('endDateFilter');
             
-            const betContainer = document.getElementById('betListContainer');
-            const betPageBtns = document.querySelectorAll('#betPagination .page-btn');
-            
-            function renderBetPage(page) {
-                const bets = betPages[page] || [];
-                let html = '';
-                bets.forEach(b => {
-                    html += `
-                        <div class="flex justify-between items-center border-b border-blue-900 pb-1">
-                            <span class="bet-id">#${b.id}</span>
-                            <span class="text-xs text-blue-300">${b.machine}</span>
-                            <span class="${b.amountClass}">${b.amount}</span>
-                            <span class="detail-bb" onclick="alert('🎬 播放BB影片 (示範)  \\n注單號: ${b.id}')">📽️ 詳細</span>
-                        </div>
-                    `;
+            if(platformFilter) {
+                platformFilter.addEventListener('change', () => {
+                    currentPlatformPage = 1;
+                    renderTransactionList();
                 });
-                betContainer.innerHTML = html;
-                
-                betPageBtns.forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.dataset.page == page) btn.classList.add('active');
+            }
+            
+            if(startDateFilter) {
+                startDateFilter.addEventListener('change', () => {
+                    currentPlatformPage = 1;
+                    renderTransactionList();
+                });
+            }
+            
+            if(endDateFilter) {
+                endDateFilter.addEventListener('change', () => {
+                    currentPlatformPage = 1;
+                    renderTransactionList();
                 });
             }
 
-            betPageBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const page = e.target.dataset.page;
-                    if (page) renderBetPage(parseInt(page));
-                });
-            });
-            renderBetPage(1);
-
-            // 其他功能
-            const closeBtn = document.getElementById('closeDrawer');
-            const overlay = document.getElementById('drawerOverlay');
-            if(closeBtn) closeBtn.addEventListener('click', ()=> {
+            // ========== 其他互動 ==========
+            document.getElementById('closeDrawer')?.addEventListener('click', () => {
                 document.getElementById('filterDrawer')?.classList.remove('open');
-                overlay?.classList.remove('open');
+                document.getElementById('drawerOverlay')?.classList.remove('open');
             });
-            if(overlay) overlay.addEventListener('click', ()=> {
+            
+            document.getElementById('drawerOverlay')?.addEventListener('click', () => {
                 document.getElementById('filterDrawer')?.classList.remove('open');
-                overlay.classList.remove('open');
+                document.getElementById('drawerOverlay')?.classList.remove('open');
             });
 
+            // 頭像更換
             const avatarImg = document.getElementById('avatarImage');
             const avatarContainer = document.getElementById('avatarContainer');
             const avatars = ['https://i.pravatar.cc/150?img=7','https://i.pravatar.cc/150?img=5','https://i.pravatar.cc/150?img=9','https://i.pravatar.cc/150?img=12'];
-            let idx = 0;
-            avatarContainer.addEventListener('click', ()=>{
-                idx = (idx+1)%avatars.length;
-                avatarImg.src = avatars[idx];
-                alert('大頭照已更換 (示範)');
+            let avatarIdx = 0;
+            avatarContainer?.addEventListener('click', () => {
+                avatarIdx = (avatarIdx + 1) % avatars.length;
+                avatarImg.src = avatars[avatarIdx];
+                alert('大頭照已更換');
             });
 
+            // 暱稱編輯
             const displayName = document.getElementById('displayNickname');
             let currentName = '夫人會生氣';
-            displayName.addEventListener('click', ()=>{
+            displayName?.addEventListener('click', () => {
                 let newName = prompt('修改暱稱', currentName);
                 if(newName && newName.trim()) {
                     currentName = newName.trim();
@@ -1721,19 +1960,21 @@
                 }
             });
 
-            document.getElementById('exitToHomeBtn').addEventListener('click', (e)=>{
+            document.getElementById('exitToHomeBtn')?.addEventListener('click', (e) => {
                 e.preventDefault();
-                alert('返回首頁 (示範)');
+                alert('返回首頁');
             });
-            document.getElementById('supportBtn').addEventListener('click', ()=> alert('📞 客服與幫助 (示範)'));
-            document.getElementById('languageSelect').addEventListener('change', function(e){
-                alert(`語言切換至：${this.options[this.selectedIndex].text} (示範)`);
+
+            document.getElementById('supportBtn')?.addEventListener('click', () => alert('📞 客服與幫助'));
+
+            document.getElementById('languageSelect')?.addEventListener('change', function(e) {
+                alert(`語言切換至：${this.options[this.selectedIndex].text}`);
             });
 
             const themeToggle = document.getElementById('themeToggle');
             const body = document.body;
-            if(localStorage.getItem('theme')==='dark') body.classList.add('dark-mode');
-            themeToggle.addEventListener('click', ()=>{
+            if(localStorage.getItem('theme') === 'dark') body.classList.add('dark-mode');
+            themeToggle?.addEventListener('click', () => {
                 body.classList.toggle('dark-mode');
                 localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
             });
@@ -1741,15 +1982,18 @@
             const vipPanel = document.getElementById('vipInfoPanel');
             const vipBadge = document.getElementById('vipBadge');
             const expText = document.getElementById('expText');
+            
             function toggleVipPanel(e) {
                 e.stopPropagation();
                 vipPanel.classList.toggle('show');
             }
-            vipBadge.addEventListener('click', toggleVipPanel);
-            expText.addEventListener('click', toggleVipPanel);
+            
+            vipBadge?.addEventListener('click', toggleVipPanel);
+            expText?.addEventListener('click', toggleVipPanel);
+            
             document.addEventListener('click', function(e) {
-                if (!vipPanel.contains(e.target) && !vipBadge.contains(e.target) && !expText.contains(e.target)) {
-                    vipPanel.classList.remove('show');
+                if(!vipPanel?.contains(e.target) && !vipBadge?.contains(e.target) && !expText?.contains(e.target)) {
+                    vipPanel?.classList.remove('show');
                 }
             });
 
@@ -1759,16 +2003,72 @@
                 token: document.getElementById('tokenPanel'),
                 betHistory: document.getElementById('betHistoryPanel')
             };
+            
             tabs.forEach(tab => {
-                tab.addEventListener('click', (e)=>{
+                tab.addEventListener('click', (e) => {
                     e.preventDefault();
                     const tabId = tab.dataset.tab;
-                    tabs.forEach(t=>t.classList.remove('active'));
+                    tabs.forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
-                    Object.keys(panels).forEach(key => panels[key].classList.add('hidden'));
+                    Object.keys(panels).forEach(key => panels[key]?.classList.add('hidden'));
                     if(panels[tabId]) panels[tabId].classList.remove('hidden');
+                    
+                    if(tabId === 'betHistory') {
+                        currentBetPage = 1;
+                        renderBetList();
+                    }
                 });
             });
+
+            function setupToggle(btnId, sectionId) {
+                const btn = document.getElementById(btnId);
+                const section = document.getElementById(sectionId);
+                if(btn && section) {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        btn.classList.toggle('collapsed');
+                        section.classList.toggle('collapsed');
+                    });
+                }
+            }
+            
+            setupToggle('toggleRecharge', 'rechargeDetails');
+
+            // ========== 底部導航亮燈控制 - 修正「我的」亮燈 ==========
+            function setCurrentNav() {
+                // 移除所有 nav-item 的 current-page class
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('current-page');
+                });
+                
+                // 為「我的」按鈕加上 current-page class
+                const userNav = document.getElementById('nav-user');
+                if (userNav) {
+                    userNav.classList.add('current-page');
+                }
+            }
+
+            // 監聽導航點擊事件（保留視覺效果）
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // 這裡可以加入其他導航功能
+                    // 例如：alert('跳轉到 ' + this.dataset.page);
+                });
+            });
+
+            // 初始渲染
+            renderFavorites();
+            renderKeep();
+            renderMachines();
+            renderTransactionList();
+            renderBetList();
+            updateAllPointsUI();
+            
+            // 設定底部導航亮燈
+            setCurrentNav();
+
+            setInterval(updateAllPointsUI, 200);
         })();
     </script>
 </body>
