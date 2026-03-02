@@ -803,7 +803,7 @@
             overflow: hidden;
         }
 
-        /* ===== 炫光全像投影 Loading 動畫 (從 index.html 移植) ===== */
+        /* ===== 炫光全像投影 Loading 動畫 ===== */
         .hologram-loading {
             position: fixed;
             top: 0;
@@ -1061,7 +1061,7 @@
             100% { transform: translateY(-100px) scale(0); opacity: 0; }
         }
 
-        /* ===== 公告按鈕框樣式 (從 index.html 移植) ===== */
+        /* ===== 公告按鈕框樣式 ===== */
         .announcement-combo {
             background: linear-gradient(145deg, #001f3f, #001a33);
             border: 1px solid #0099ff80;
@@ -1167,13 +1167,13 @@
             </a>
             
             <div class="flex flex-col items-end">
-                <div class="text-xs text-white">夫人會生氣</div>
-                <div class="font-bold text-lg text-yellow-400">5,280</div>
+                <div class="text-xs text-white nickname-display">夫人會生氣</div>
+                <div class="font-bold text-lg text-yellow-400 points-display">5,280</div>
             </div>
         </div>
     </header>
 
-    <!-- 公告按鈕框 (與 index.html 完全相同) -->
+    <!-- 公告按鈕框 -->
     <div class="px-4 mt-2">
         <div class="announcement-combo">
             <div class="hologram-lines">
@@ -1274,6 +1274,7 @@
             <a href="news.html" class="nav-item" id="nav-bell">
                 <i class="fa fa-bell text-xl"></i>
                 <span class="text-xs mt-1">公告</span>
+                <span class="nav-badge" id="newsBadge" style="display: block;"></span>
             </a>
             <a href="about.html" class="nav-item" id="nav-user">
                 <i class="fa fa-user text-xl"></i>
@@ -1282,693 +1283,704 @@
         </div>
     </nav>
 
+    <!-- 引入 shared.js -->
+    <script src="shared.js"></script>
+    <!-- 初始化點數顯示 -->
     <script>
-        // ==================== 我的最愛連動功能 ====================
-        const FAVORITE_STORAGE_KEY = 't Pachin_favoriteMachines';
-        
-        // 從 localStorage 載入我的最愛
-        function loadFavoritesFromStorage() {
-            const stored = localStorage.getItem(FAVORITE_STORAGE_KEY);
-            if (stored) {
-                try {
-                    return JSON.parse(stored);
-                } catch (e) {
-                    console.error('解析我的最愛失敗', e);
-                    return [];
-                }
-            }
-            return [];
-        }
-
-        // 儲存我的最愛到 localStorage
-        function saveFavoritesToStorage(favorites) {
-            localStorage.setItem(FAVORITE_STORAGE_KEY, JSON.stringify(favorites));
-        }
-
-        // ==================== 資料庫 ====================
-        const machineDatabase = [
-            { id:1, name:'甲賀忍法帖 弐', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=2', vendor:'Sammy' },
-            { id:2, name:'超級奇蹟小丑', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
-            { id:3, name:'吉宗', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
-            { id:4, name:'北斗神拳', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=3', vendor:'Sammy' },
-            { id:5, name:'海物語', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' }
-        ];
-
-        // ==================== 狀態資料 ====================
-        // 我的最愛 - 從 localStorage 讀取
-        let favoriteMachines = loadFavoritesFromStorage();
-        
-        // 如果沒有資料，加入測試資料
-        if (favoriteMachines.length === 0) {
-            favoriteMachines = [machineDatabase[0], machineDatabase[1], machineDatabase[2]];
-            saveFavoritesToStorage(favoriteMachines);
-        }
-        
-        // 保留中機台 - 設定不同的保留時間
-        const now = Date.now();
-        let reserveMachines = [
-            { 
-                ...machineDatabase[3], 
-                reserveTime: '15:30', 
-                expiresAt: now + 9 * 60 * 1000, // 9分鐘後（已進入最後10分鐘）
-                lastAlertTime: 0
-            },
-            { 
-                ...machineDatabase[4], 
-                reserveTime: '16:00', 
-                expiresAt: now + 25 * 60 * 1000, // 25分鐘後
-                lastAlertTime: 0
-            },
-            { 
-                ...machineDatabase[0], 
-                reserveTime: '16:30', 
-                expiresAt: now + 40 * 60 * 1000, // 40分鐘後
-                lastAlertTime: 0
-            }
-        ];
-
-        // ==================== 產生紅綠大賞燈 ====================
-        function generateBarSegments(value, maxValue = 150) {
-            const filledCount = Math.ceil((value / maxValue) * 5);
-            let segments = '';
+        // 初始化點數顯示
+        initializePointsDisplay();
+    </script>
+    <!-- 以下是您原本的 JavaScript 程式碼，修改為使用共用資料 -->
+    <script>
+        (function() {
+            // ==================== 我的最愛連動功能 ====================
             
-            for (let i = 0; i < 5; i++) {
-                if (i < filledCount) {
-                    if (i <= 1) {
-                        segments += `<div class="bar-segment filled-green"></div>`;
-                    } else {
-                        segments += `<div class="bar-segment filled-red"></div>`;
+            // 從共用儲存載入我的最愛
+            function loadFavoritesFromStorage() {
+                return T_PACHIN_STORAGE.getFavorites();
+            }
+
+            // 儲存我的最愛到共用儲存
+            function saveFavoritesToStorage(favorites) {
+                T_PACHIN_STORAGE.saveFavorites(favorites);
+            }
+
+            // ==================== 資料庫 ====================
+            const machineDatabase = [
+                { id:1, name:'甲賀忍法帖 弐', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=2', vendor:'Sammy' },
+                { id:2, name:'超級奇蹟小丑', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' },
+                { id:3, name:'吉宗', image:'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio:'1枚=2', vendor:'Daito' },
+                { id:4, name:'北斗神拳', image:'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio:'1枚=3', vendor:'Sammy' },
+                { id:5, name:'海物語', image:'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio:'1枚=1', vendor:'Olympia' }
+            ];
+
+            // ==================== 狀態資料 ====================
+            // 我的最愛 - 從共用儲存讀取
+            let favoriteMachines = loadFavoritesFromStorage();
+            
+            // 如果沒有資料，加入測試資料
+            if (favoriteMachines.length === 0) {
+                favoriteMachines = [machineDatabase[0], machineDatabase[1], machineDatabase[2]];
+                saveFavoritesToStorage(favoriteMachines);
+            }
+            
+            // 保留中機台 - 從共用儲存讀取
+            let reserveMachines = T_PACHIN_STORAGE.getReserves();
+            
+            // 如果沒有資料，加入測試資料
+            if (reserveMachines.length === 0) {
+                const now = Date.now();
+                reserveMachines = [
+                    { 
+                        ...machineDatabase[3], 
+                        reserveTime: '15:30', 
+                        expiresAt: now + 9 * 60 * 1000, // 9分鐘後（已進入最後10分鐘）
+                        lastAlertTime: 0
+                    },
+                    { 
+                        ...machineDatabase[4], 
+                        reserveTime: '16:00', 
+                        expiresAt: now + 25 * 60 * 1000, // 25分鐘後
+                        lastAlertTime: 0
+                    },
+                    { 
+                        ...machineDatabase[0], 
+                        reserveTime: '16:30', 
+                        expiresAt: now + 40 * 60 * 1000, // 40分鐘後
+                        lastAlertTime: 0
                     }
-                } else {
-                    segments += `<div class="bar-segment"></div>`;
-                }
+                ];
+                T_PACHIN_STORAGE.saveReserves(reserveMachines);
             }
-            
-            return segments;
-        }
 
-        // ==================== 建立雙頁面板 ====================
-        function createPachinkoPanel(machineId) {
-            const panelId = `panel-${machineId}`;
-            
-            const days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-            const values = [49, 127, 77, 136, 95, 148, 58, 114, 93, 149];
-            const maxValue = 150;
-            
-            const todayData = {
-                bb: Math.floor(Math.random() * 8) + 1,
-                rb: Math.floor(Math.random() * 5) + 1,
-                totalSpins: Math.floor(Math.random() * 300) + 50,
-                currentSpins: Math.floor(Math.random() * 150) + 30,
-                maxTokens: (Math.floor(Math.random() * 50) + 10) * 100
-            };
-            
-            let barsHtml = '';
-            for (let i = 0; i < days.length; i++) {
-                barsHtml += `
-                    <div class="bar-wrapper">
-                        <div class="bar-grid">
-                            ${generateBarSegments(values[i], maxValue)}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            let daysHtml = '';
-            for (let i = 0; i < days.length; i++) {
-                daysHtml += `<span class="day-item">${days[i]}</span>`;
-            }
-            
-            let valuesHtml = '';
-            for (let i = 0; i < values.length; i++) {
-                valuesHtml += `<span class="value-item">${values[i]}</span>`;
-            }
-            
-            return `
-                <div class="pachinko-panel" id="${panelId}" data-page="1">
-                    <div class="panel-pages">
-                        <div class="panel-page" id="${panelId}-page1">
-                            <div class="page1-header">
-                                <div class="tenjo-display">
-                                    <span class="page1-title">今日</span>
-                                    <span class="tenjo-badge">天井:1,980</span>
-                                </div>
-                                <span style="font-size:12px; color:#00e0ff;">TODAY</span>
-                            </div>
-                            
-                            <div class="data-row-header">
-                                <span>BB</span>
-                                <span>RB</span>
-                                <span>總轉數</span>
-                                <span>目前轉數</span>
-                                <span>最高枚數</span>
-                            </div>
-                            
-                            <div class="data-row-values">
-                                <div class="data-cell">${todayData.bb}</div>
-                                <div class="data-cell">${todayData.rb}</div>
-                                <div class="data-cell">${todayData.totalSpins}</div>
-                                <div class="data-cell">${todayData.currentSpins}</div>
-                                <div class="data-cell">${todayData.maxTokens.toLocaleString()}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="panel-page hidden" id="${panelId}-page2">
-                            <div class="page2-header">
-                                <span class="page2-title">大賞燈</span>
-                            </div>
-                            
-                            <div class="days-row">
-                                ${daysHtml}
-                            </div>
-                            
-                            <div class="bars-container">
-                                ${barsHtml}
-                            </div>
-                            
-                            <div class="values-row">
-                                ${valuesHtml}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="page-indicator">
-                        <span class="indicator-dot active" data-panel="${panelId}" data-page="1"></span>
-                        <span class="indicator-dot" data-panel="${panelId}" data-page="2"></span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // ==================== 為所有面板添加點擊切換事件 ====================
-        function setupPanelClickHandlers(containerSelector) {
-            document.querySelectorAll(containerSelector + ' .pachinko-panel').forEach(panel => {
-                // 移除原有的事件監聽器（避免重複）
-                panel.removeEventListener('click', panel.clickHandler);
+            // ==================== 產生紅綠大賞燈 ====================
+            function generateBarSegments(value, maxValue = 150) {
+                const filledCount = Math.ceil((value / maxValue) * 5);
+                let segments = '';
                 
-                // 定義新的點擊處理函數
-                panel.clickHandler = function(e) {
-                    e.stopPropagation();
-                    
-                    const panelId = this.id;
-                    const currentPage = parseInt(this.dataset.page);
-                    const nextPage = currentPage === 1 ? 2 : 1;
-                    
-                    const page1 = document.getElementById(`${panelId}-page1`);
-                    const page2 = document.getElementById(`${panelId}-page2`);
-                    
-                    if (page1 && page2) {
-                        page1.classList.toggle('hidden');
-                        page2.classList.toggle('hidden');
-                    }
-                    
-                    this.dataset.page = nextPage;
-                    
-                    const dots = this.querySelectorAll('.indicator-dot');
-                    dots.forEach((dot, index) => {
-                        if (index + 1 === nextPage) {
-                            dot.classList.add('active');
+                for (let i = 0; i < 5; i++) {
+                    if (i < filledCount) {
+                        if (i <= 1) {
+                            segments += `<div class="bar-segment filled-green"></div>`;
                         } else {
-                            dot.classList.remove('active');
+                            segments += `<div class="bar-segment filled-red"></div>`;
                         }
-                    });
+                    } else {
+                        segments += `<div class="bar-segment"></div>`;
+                    }
+                }
+                
+                return segments;
+            }
+
+            // ==================== 建立雙頁面板 ====================
+            function createPachinkoPanel(machineId) {
+                const panelId = `panel-${machineId}`;
+                
+                const days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                const values = [49, 127, 77, 136, 95, 148, 58, 114, 93, 149];
+                const maxValue = 150;
+                
+                const todayData = {
+                    bb: Math.floor(Math.random() * 8) + 1,
+                    rb: Math.floor(Math.random() * 5) + 1,
+                    totalSpins: Math.floor(Math.random() * 300) + 50,
+                    currentSpins: Math.floor(Math.random() * 150) + 30,
+                    maxTokens: (Math.floor(Math.random() * 50) + 10) * 100
                 };
                 
-                // 添加事件監聽器
-                panel.addEventListener('click', panel.clickHandler);
-            });
-        }
-
-        // ==================== 渲染我的最愛 ====================
-        function renderFavoriteList() {
-            const container = document.getElementById('favoriteContainer');
-            const noMsg = document.getElementById('noFavoriteMsg');
-            const countSpan = document.getElementById('favoriteCount');
-            
-            if (favoriteMachines.length === 0) {
-                container.innerHTML = '';
-                noMsg.classList.remove('hidden');
-                countSpan.textContent = '0 台';
-                return;
-            }
-            
-            noMsg.classList.add('hidden');
-            countSpan.textContent = favoriteMachines.length + ' 台';
-            
-            let html = '';
-            favoriteMachines.forEach(machine => {
-                const isFavorite = favoriteMachines.some(m => m.id === machine.id);
-                html += `
-                    <div class="horizontal-card" data-id="${machine.id}">
-                        <div class="card-top">
-                            <img src="${machine.image}" class="card-image">
-                            <div class="card-info">
-                                <div class="card-name">${machine.name}</div>
-                                <div class="info-tags">
-                                    <span class="token-badge">${machine.ratio}</span>
-                                    <span class="info-tag">${machine.vendor}</span>
+                let barsHtml = '';
+                for (let i = 0; i < days.length; i++) {
+                    barsHtml += `
+                        <div class="bar-wrapper">
+                            <div class="bar-grid">
+                                ${generateBarSegments(values[i], maxValue)}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                let daysHtml = '';
+                for (let i = 0; i < days.length; i++) {
+                    daysHtml += `<span class="day-item">${days[i]}</span>`;
+                }
+                
+                let valuesHtml = '';
+                for (let i = 0; i < values.length; i++) {
+                    valuesHtml += `<span class="value-item">${values[i]}</span>`;
+                }
+                
+                return `
+                    <div class="pachinko-panel" id="${panelId}" data-page="1">
+                        <div class="panel-pages">
+                            <div class="panel-page" id="${panelId}-page1">
+                                <div class="page1-header">
+                                    <div class="tenjo-display">
+                                        <span class="page1-title">今日</span>
+                                        <span class="tenjo-badge">天井:1,980</span>
+                                    </div>
+                                    <span style="font-size:12px; color:#00e0ff;">TODAY</span>
                                 </div>
-                                <div class="card-stats-mini">
-                                    <span><i class="fa fa-users"></i> ${Math.floor(Math.random()*8)+1}人</span>
-                                    <span><i class="fa fa-trophy"></i> 最大${Math.floor(Math.random()*4000)+2000}</span>
+                                
+                                <div class="data-row-header">
+                                    <span>BB</span>
+                                    <span>RB</span>
+                                    <span>總轉數</span>
+                                    <span>目前轉數</span>
+                                    <span>最高枚數</span>
+                                </div>
+                                
+                                <div class="data-row-values">
+                                    <div class="data-cell">${todayData.bb}</div>
+                                    <div class="data-cell">${todayData.rb}</div>
+                                    <div class="data-cell">${todayData.totalSpins}</div>
+                                    <div class="data-cell">${todayData.currentSpins}</div>
+                                    <div class="data-cell">${todayData.maxTokens.toLocaleString()}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="panel-page hidden" id="${panelId}-page2">
+                                <div class="page2-header">
+                                    <span class="page2-title">大賞燈</span>
+                                </div>
+                                
+                                <div class="days-row">
+                                    ${daysHtml}
+                                </div>
+                                
+                                <div class="bars-container">
+                                    ${barsHtml}
+                                </div>
+                                
+                                <div class="values-row">
+                                    ${valuesHtml}
                                 </div>
                             </div>
                         </div>
                         
-                        ${createPachinkoPanel(machine.id)}
-                        
-                        <div class="card-actions">
-                            <button class="enter-btn available" onclick="handleEnter('${machine.name}')">進入</button>
-                            <button class="favorite-btn ${isFavorite ? 'active' : 'inactive'}" onclick="toggleFavorite(${machine.id})">
-                                <i class="fa ${isFavorite ? 'fa-heart' : 'fa-heart-o'}"></i>
-                            </button>
+                        <div class="page-indicator">
+                            <span class="indicator-dot active" data-panel="${panelId}" data-page="1"></span>
+                            <span class="indicator-dot" data-panel="${panelId}" data-page="2"></span>
                         </div>
                     </div>
                 `;
-            });
-            
-            container.innerHTML = html;
-            
-            // 為我的最愛面板添加點擊切換事件
-            setupPanelClickHandlers('#favorite-section');
-        }
-
-        // ==================== 渲染保留中機台 ====================
-        function renderReserveList() {
-            const container = document.getElementById('reserveContainer');
-            const noMsg = document.getElementById('noReserveMsg');
-            const countSpan = document.getElementById('reserveCount');
-            
-            if (reserveMachines.length === 0) {
-                container.innerHTML = '';
-                noMsg.classList.remove('hidden');
-                countSpan.textContent = '0 台';
-                return;
             }
-            
-            noMsg.classList.add('hidden');
-            countSpan.textContent = reserveMachines.length + ' 台';
-            
-            let html = '';
-            reserveMachines.forEach((machine) => {
-                const isFavorite = favoriteMachines.some(m => m.id === machine.id);
+
+            // ==================== 為所有面板添加點擊切換事件 ====================
+            function setupPanelClickHandlers(containerSelector) {
+                document.querySelectorAll(containerSelector + ' .pachinko-panel').forEach(panel => {
+                    // 移除原有的事件監聽器（避免重複）
+                    panel.removeEventListener('click', panel.clickHandler);
+                    
+                    // 定義新的點擊處理函數
+                    panel.clickHandler = function(e) {
+                        e.stopPropagation();
+                        
+                        const panelId = this.id;
+                        const currentPage = parseInt(this.dataset.page);
+                        const nextPage = currentPage === 1 ? 2 : 1;
+                        
+                        const page1 = document.getElementById(`${panelId}-page1`);
+                        const page2 = document.getElementById(`${panelId}-page2`);
+                        
+                        if (page1 && page2) {
+                            page1.classList.toggle('hidden');
+                            page2.classList.toggle('hidden');
+                        }
+                        
+                        this.dataset.page = nextPage;
+                        
+                        const dots = this.querySelectorAll('.indicator-dot');
+                        dots.forEach((dot, index) => {
+                            if (index + 1 === nextPage) {
+                                dot.classList.add('active');
+                            } else {
+                                dot.classList.remove('active');
+                            }
+                        });
+                    };
+                    
+                    // 添加事件監聽器
+                    panel.addEventListener('click', panel.clickHandler);
+                });
+            }
+
+            // ==================== 渲染我的最愛 ====================
+            function renderFavoriteList() {
+                const container = document.getElementById('favoriteContainer');
+                const noMsg = document.getElementById('noFavoriteMsg');
+                const countSpan = document.getElementById('favoriteCount');
                 
-                // 計算剩餘秒數
-                const now = Date.now();
-                const remainingMs = machine.expiresAt - now;
-                const remainingSeconds = Math.max(0, Math.floor(remainingMs / 1000));
+                if (favoriteMachines.length === 0) {
+                    container.innerHTML = '';
+                    noMsg.classList.remove('hidden');
+                    countSpan.textContent = '0 台';
+                    return;
+                }
                 
-                // 格式化顯示時間
-                const minutes = Math.floor(remainingSeconds / 60);
-                const seconds = remainingSeconds % 60;
-                const timeDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                noMsg.classList.add('hidden');
+                countSpan.textContent = favoriteMachines.length + ' 台';
                 
-                // 判斷是否進入最後10分鐘（低於600秒）
-                const isLastTenMinutes = remainingSeconds <= 600 && remainingSeconds > 0;
-                const timeClass = isLastTenMinutes ? 'countdown-timer urgent' : 'countdown-timer';
-                
-                html += `
-                    <div class="horizontal-card" data-id="${machine.id}" data-expires="${machine.expiresAt}">
-                        <div class="card-top">
-                            <img src="${machine.image}" class="card-image">
-                            <div class="card-info">
-                                <div class="card-name">${machine.name}</div>
-                                <div class="info-tags">
-                                    <span class="token-badge">${machine.ratio}</span>
-                                    <span class="info-tag">${machine.vendor}</span>
-                                    <span class="info-tag" style="background:#f59e0b; color:black;">
-                                        <i class="fa fa-clock-o"></i> 保留 ${machine.reserveTime}
-                                    </span>
-                                </div>
-                                <div class="card-stats-mini">
-                                    <span><i class="fa fa-hourglass-half"></i> 剩餘 <span class="${timeClass}">${timeDisplay}</span></span>
+                let html = '';
+                favoriteMachines.forEach(machine => {
+                    const isFavorite = favoriteMachines.some(m => m.id === machine.id);
+                    html += `
+                        <div class="horizontal-card" data-id="${machine.id}">
+                            <div class="card-top">
+                                <img src="${machine.image}" class="card-image">
+                                <div class="card-info">
+                                    <div class="card-name">${machine.name}</div>
+                                    <div class="info-tags">
+                                        <span class="token-badge">${machine.ratio}</span>
+                                        <span class="info-tag">${machine.vendor}</span>
+                                    </div>
+                                    <div class="card-stats-mini">
+                                        <span><i class="fa fa-users"></i> ${Math.floor(Math.random()*8)+1}人</span>
+                                        <span><i class="fa fa-trophy"></i> 最大${Math.floor(Math.random()*4000)+2000}</span>
+                                    </div>
                                 </div>
                             </div>
+                            
+                            ${createPachinkoPanel(machine.id)}
+                            
+                            <div class="card-actions">
+                                <button class="enter-btn available" onclick="handleEnter('${machine.name}')">進入</button>
+                                <button class="favorite-btn ${isFavorite ? 'active' : 'inactive'}" onclick="toggleFavorite(${machine.id})">
+                                    <i class="fa ${isFavorite ? 'fa-heart' : 'fa-heart-o'}"></i>
+                                </button>
+                            </div>
                         </div>
-                        
-                        ${createPachinkoPanel(machine.id)}
-                        
-                        <div class="card-actions">
-                            <button class="enter-btn reserved" onclick="handleEnter('${machine.name} (保留中)')">進入</button>
-                            <button class="leave-btn" onclick="showLeaveConfirm(${machine.id}, '${machine.name}')">離開</button>
-                            <button class="favorite-btn ${isFavorite ? 'active' : 'inactive'}" onclick="toggleFavorite(${machine.id})">
-                                <i class="fa ${isFavorite ? 'fa-heart' : 'fa-heart-o'}"></i>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+                // 為我的最愛面板添加點擊切換事件
+                setupPanelClickHandlers('#favorite-section');
+            }
+
+            // ==================== 渲染保留中機台 ====================
+            function renderReserveList() {
+                const container = document.getElementById('reserveContainer');
+                const noMsg = document.getElementById('noReserveMsg');
+                const countSpan = document.getElementById('reserveCount');
+                
+                if (reserveMachines.length === 0) {
+                    container.innerHTML = '';
+                    noMsg.classList.remove('hidden');
+                    countSpan.textContent = '0 台';
+                    return;
+                }
+                
+                noMsg.classList.add('hidden');
+                countSpan.textContent = reserveMachines.length + ' 台';
+                
+                let html = '';
+                reserveMachines.forEach((machine) => {
+                    const isFavorite = favoriteMachines.some(m => m.id === machine.id);
+                    
+                    // 計算剩餘秒數
+                    const now = Date.now();
+                    const remainingMs = machine.expiresAt - now;
+                    const remainingSeconds = Math.max(0, Math.floor(remainingMs / 1000));
+                    
+                    // 格式化顯示時間
+                    const minutes = Math.floor(remainingSeconds / 60);
+                    const seconds = remainingSeconds % 60;
+                    const timeDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    // 判斷是否進入最後10分鐘（低於600秒）
+                    const isLastTenMinutes = remainingSeconds <= 600 && remainingSeconds > 0;
+                    const timeClass = isLastTenMinutes ? 'countdown-timer urgent' : 'countdown-timer';
+                    
+                    // 建立唯一的計時器 ID
+                    const timerId = `timer-${machine.id}`;
+                    
+                    html += `
+                        <div class="horizontal-card" data-id="${machine.id}" data-expires="${machine.expiresAt}">
+                            <div class="card-top">
+                                <img src="${machine.image}" class="card-image">
+                                <div class="card-info">
+                                    <div class="card-name">${machine.name}</div>
+                                    <div class="info-tags">
+                                        <span class="token-badge">${machine.ratio}</span>
+                                        <span class="info-tag">${machine.vendor}</span>
+                                        <span class="info-tag" style="background:#f59e0b; color:black;">
+                                            <i class="fa fa-clock-o"></i> 保留 ${machine.reserveTime}
+                                        </span>
+                                    </div>
+                                    <div class="card-stats-mini">
+                                        <span><i class="fa fa-hourglass-half"></i> 剩餘 <span class="${timeClass}" id="${timerId}">${timeDisplay}</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ${createPachinkoPanel(machine.id)}
+                            
+                            <div class="card-actions">
+                                <button class="enter-btn reserved" onclick="handleEnter('${machine.name} (保留中)')">進入</button>
+                                <button class="leave-btn" onclick="showLeaveConfirm(${machine.id}, '${machine.name}')">離開</button>
+                                <button class="favorite-btn ${isFavorite ? 'active' : 'inactive'}" onclick="toggleFavorite(${machine.id})">
+                                    <i class="fa ${isFavorite ? 'fa-heart' : 'fa-heart-o'}"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+                // 為保留中面板添加點擊切換事件 - 同樣可以點擊切換！
+                setupPanelClickHandlers('#reserve-section');
+                
+                // 啟動所有計時器
+                reserveMachines.forEach(machine => {
+                    const timerId = `timer-${machine.id}`;
+                    CountdownManager.startCountdown(timerId, machine.expiresAt, () => {
+                        // 過期後自動移除
+                        const index = reserveMachines.findIndex(m => m.id === machine.id);
+                        if (index !== -1) {
+                            reserveMachines.splice(index, 1);
+                            T_PACHIN_STORAGE.saveReserves(reserveMachines);
+                            renderReserveList();
+                        }
+                    });
+                });
+            }
+
+            // ==================== 炫光 Loading 動畫 ====================
+            const hologramLoading = document.getElementById('hologramLoading');
+
+            function showHologramLoading() {
+                hologramLoading.classList.add('show');
+            }
+
+            function hideHologramLoading() {
+                hologramLoading.classList.remove('show');
+            }
+
+            // ==================== 處理進入按鈕 ====================
+            window.handleEnter = function(machineName) {
+                // 顯示炫光 loading
+                showHologramLoading();
+                
+                // 模擬載入時間（2 秒後關閉並顯示提示）
+                setTimeout(() => {
+                    hideHologramLoading();
+                    alert(`🎮 進入遊戲 - ${machineName}\n\n此為演示功能，實際遊玩請前往遊戲頁面。`);
+                }, 2000);
+            };
+
+            // ==================== 顯示離開確認視窗 ====================
+            function showLeaveConfirm(machineId, machineName) {
+                const confirmContainer = document.getElementById('confirmContainer');
+                
+                const machine = reserveMachines.find(m => m.id === machineId);
+                const remainingMs = machine.expiresAt - Date.now();
+                const remainingMinutes = Math.floor(remainingMs / 60000);
+                const remainingSeconds = Math.floor((remainingMs % 60000) / 1000);
+                
+                const confirmDialog = document.createElement('div');
+                confirmDialog.className = 'confirm-dialog';
+                confirmDialog.id = `confirm-${machineId}`;
+                confirmDialog.innerHTML = `
+                    <div class="confirm-content">
+                        <div class="icon">
+                            <i class="fa fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>離開保留</h3>
+                        <div class="machine-name">${machineName}</div>
+                        <p>
+                            目前剩餘 <span style="color:#ffd700; font-weight:700;">${remainingMinutes}分${remainingSeconds}秒</span><br>
+                            確定要離開保留嗎？
+                        </p>
+                        <div class="confirm-buttons">
+                            <button class="confirm-btn cancel" onclick="closeLeaveConfirm(${machineId})">
+                                <i class="fa fa-times mr-2"></i>取消
+                            </button>
+                            <button class="confirm-btn confirm" onclick="confirmLeave(${machineId})">
+                                <i class="fa fa-check mr-2"></i>確定離開
                             </button>
                         </div>
                     </div>
                 `;
-            });
-            
-            container.innerHTML = html;
-            
-            // 為保留中面板添加點擊切換事件 - 同樣可以點擊切換！
-            setupPanelClickHandlers('#reserve-section');
-        }
-
-        // ==================== 炫光 Loading 動畫 ====================
-        const hologramLoading = document.getElementById('hologramLoading');
-
-        function showHologramLoading() {
-            hologramLoading.classList.add('show');
-        }
-
-        function hideHologramLoading() {
-            hologramLoading.classList.remove('show');
-        }
-
-        // ==================== 處理進入按鈕 ====================
-        window.handleEnter = function(machineName) {
-            // 顯示炫光 loading
-            showHologramLoading();
-            
-            // 模擬載入時間（2 秒後關閉並顯示提示）
-            setTimeout(() => {
-                hideHologramLoading();
-                alert(`🎮 進入遊戲 - ${machineName}\n\n此為演示功能，實際遊玩請前往遊戲頁面。`);
-            }, 2000);
-        };
-
-        // ==================== 顯示離開確認視窗 ====================
-        function showLeaveConfirm(machineId, machineName) {
-            const confirmContainer = document.getElementById('confirmContainer');
-            
-            const machine = reserveMachines.find(m => m.id === machineId);
-            const remainingMs = machine.expiresAt - Date.now();
-            const remainingMinutes = Math.floor(remainingMs / 60000);
-            const remainingSeconds = Math.floor((remainingMs % 60000) / 1000);
-            
-            const confirmDialog = document.createElement('div');
-            confirmDialog.className = 'confirm-dialog';
-            confirmDialog.id = `confirm-${machineId}`;
-            confirmDialog.innerHTML = `
-                <div class="confirm-content">
-                    <div class="icon">
-                        <i class="fa fa-exclamation-triangle"></i>
-                    </div>
-                    <h3>離開保留</h3>
-                    <div class="machine-name">${machineName}</div>
-                    <p>
-                        目前剩餘 <span style="color:#ffd700; font-weight:700;">${remainingMinutes}分${remainingSeconds}秒</span><br>
-                        確定要離開保留嗎？
-                    </p>
-                    <div class="confirm-buttons">
-                        <button class="confirm-btn cancel" onclick="closeLeaveConfirm(${machineId})">
-                            <i class="fa fa-times mr-2"></i>取消
-                        </button>
-                        <button class="confirm-btn confirm" onclick="confirmLeave(${machineId})">
-                            <i class="fa fa-check mr-2"></i>確定離開
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            confirmContainer.appendChild(confirmDialog);
-        }
-
-        // ==================== 關閉離開確認視窗 ====================
-        window.closeLeaveConfirm = function(machineId) {
-            const confirmDialog = document.getElementById(`confirm-${machineId}`);
-            if (confirmDialog) {
-                confirmDialog.remove();
+                
+                confirmContainer.appendChild(confirmDialog);
             }
-        };
 
-        // ==================== 確認離開 ====================
-        window.confirmLeave = function(id) {
-            const index = reserveMachines.findIndex(m => m.id === id);
-            if (index !== -1) {
-                reserveMachines.splice(index, 1);
+            // ==================== 關閉離開確認視窗 ====================
+            window.closeLeaveConfirm = function(machineId) {
+                const confirmDialog = document.getElementById(`confirm-${machineId}`);
+                if (confirmDialog) {
+                    confirmDialog.remove();
+                }
+            };
+
+            // ==================== 確認離開 ====================
+            window.confirmLeave = function(id) {
+                // 使用共用儲存移除保留
+                T_PACHIN_STORAGE.removeReserve(id);
+                reserveMachines = T_PACHIN_STORAGE.getReserves();
                 renderReserveList();
                 showMessage('已離開保留');
+                closeLeaveConfirm(id);
+            };
+
+            // ==================== 檢查最後10分鐘並顯示警示 ====================
+            function checkLastTenMinutesAndShowAlerts() {
+                const now = Date.now();
+                const twoMinutes = 2 * 60 * 1000;
+                const tenMinutes = 10 * 60 * 1000;
+                
+                reserveMachines.forEach(machine => {
+                    const remainingMs = machine.expiresAt - now;
+                    
+                    if (remainingMs <= 0) return;
+                    
+                    const isLastTenMinutes = remainingMs <= tenMinutes;
+                    
+                    if (isLastTenMinutes && (now - machine.lastAlertTime) >= twoMinutes) {
+                        machine.lastAlertTime = now;
+                        
+                        const remainingMinutes = Math.floor(remainingMs / 60000);
+                        const remainingSeconds = Math.floor((remainingMs % 60000) / 1000);
+                        
+                        showAlertPopup(
+                            machine.name, 
+                            `${remainingMinutes}分${remainingSeconds}秒`,
+                            machine.id
+                        );
+                    }
+                });
             }
-            closeLeaveConfirm(id);
-        };
 
-        // ==================== 檢查最後10分鐘並顯示警示 ====================
-        function checkLastTenMinutesAndShowAlerts() {
-            const now = Date.now();
-            const twoMinutes = 2 * 60 * 1000;
-            const tenMinutes = 10 * 60 * 1000;
-            
-            reserveMachines.forEach(machine => {
-                const remainingMs = machine.expiresAt - now;
+            // ==================== 顯示彈跳紅色警示小視窗 ====================
+            function showAlertPopup(machineName, remainingTime, machineId) {
+                const alertContainer = document.getElementById('alertContainer');
                 
-                if (remainingMs <= 0) return;
+                const existingAlert = document.querySelector(`.alert-popup[data-machine-id="${machineId}"]`);
+                if (existingAlert) return;
                 
-                const isLastTenMinutes = remainingMs <= tenMinutes;
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert-popup';
+                alertDiv.setAttribute('data-machine-id', machineId);
+                alertDiv.innerHTML = `
+                    <div class="alert-icon">
+                        <i class="fa fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="alert-content">
+                        <div class="alert-title">⏰ 保留即將到期</div>
+                        <div class="alert-message">${machineName} 剩餘 ${remainingTime}</div>
+                    </div>
+                `;
                 
-                if (isLastTenMinutes && (now - machine.lastAlertTime) >= twoMinutes) {
-                    machine.lastAlertTime = now;
-                    
-                    const remainingMinutes = Math.floor(remainingMs / 60000);
-                    const remainingSeconds = Math.floor((remainingMs % 60000) / 1000);
-                    
-                    showAlertPopup(
-                        machine.name, 
-                        `${remainingMinutes}分${remainingSeconds}秒`,
-                        machine.id
-                    );
+                alertContainer.appendChild(alertDiv);
+                
+                setupEnhancedSwipeToDismiss(alertDiv);
+                
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                        if (document.querySelectorAll('.alert-popup').length === 0) {
+                            document.body.classList.remove('alert-active');
+                        }
+                    }
+                }, 30000);
+            }
+
+            // ==================== 強化滑動關閉功能 ====================
+            function setupEnhancedSwipeToDismiss(alertElement) {
+                let startY = 0;
+                let currentY = 0;
+                let isSwiping = false;
+                
+                function handleStart(clientY) {
+                    startY = clientY;
+                    isSwiping = true;
+                    alertElement.classList.add('swiping');
+                    alertElement.style.transition = 'none';
+                    document.body.classList.add('alert-active');
                 }
-            });
-        }
-
-        // ==================== 顯示彈跳紅色警示小視窗 ====================
-        function showAlertPopup(machineName, remainingTime, machineId) {
-            const alertContainer = document.getElementById('alertContainer');
-            
-            const existingAlert = document.querySelector(`.alert-popup[data-machine-id="${machineId}"]`);
-            if (existingAlert) return;
-            
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert-popup';
-            alertDiv.setAttribute('data-machine-id', machineId);
-            alertDiv.innerHTML = `
-                <div class="alert-icon">
-                    <i class="fa fa-exclamation-triangle"></i>
-                </div>
-                <div class="alert-content">
-                    <div class="alert-title">⏰ 保留即將到期</div>
-                    <div class="alert-message">${machineName} 剩餘 ${remainingTime}</div>
-                </div>
-            `;
-            
-            alertContainer.appendChild(alertDiv);
-            
-            setupEnhancedSwipeToDismiss(alertDiv);
-            
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                    if (document.querySelectorAll('.alert-popup').length === 0) {
-                        document.body.classList.remove('alert-active');
+                
+                function handleMove(clientY) {
+                    if (!isSwiping) return;
+                    
+                    currentY = clientY;
+                    const diffY = currentY - startY;
+                    
+                    if (diffY < 0) {
+                        const translateY = Math.max(diffY, -200);
+                        alertElement.style.transform = `translateX(-50%) translateY(${translateY}px)`;
+                        alertElement.style.opacity = 1 + (translateY / 200);
                     }
                 }
-            }, 30000);
-        }
-
-        // ==================== 強化滑動關閉功能 ====================
-        function setupEnhancedSwipeToDismiss(alertElement) {
-            let startY = 0;
-            let currentY = 0;
-            let isSwiping = false;
-            
-            function handleStart(clientY) {
-                startY = clientY;
-                isSwiping = true;
-                alertElement.classList.add('swiping');
-                alertElement.style.transition = 'none';
-                document.body.classList.add('alert-active');
-            }
-            
-            function handleMove(clientY) {
-                if (!isSwiping) return;
                 
-                currentY = clientY;
-                const diffY = currentY - startY;
-                
-                if (diffY < 0) {
-                    const translateY = Math.max(diffY, -200);
-                    alertElement.style.transform = `translateX(-50%) translateY(${translateY}px)`;
-                    alertElement.style.opacity = 1 + (translateY / 200);
-                }
-            }
-            
-            function handleEnd() {
-                if (!isSwiping) return;
-                
-                isSwiping = false;
-                alertElement.classList.remove('swiping');
-                document.body.classList.remove('alert-active');
-                
-                const diffY = currentY - startY;
-                
-                if (diffY < -80) {
-                    alertElement.style.transition = 'all 0.3s ease';
-                    alertElement.style.transform = `translateX(-50%) translateY(-200px)`;
-                    alertElement.style.opacity = '0';
+                function handleEnd() {
+                    if (!isSwiping) return;
                     
-                    setTimeout(() => {
-                        if (alertElement.parentNode) {
-                            alertElement.remove();
-                        }
-                    }, 300);
-                } else {
-                    alertElement.style.transition = 'all 0.3s ease';
-                    alertElement.style.transform = 'translateX(-50%) translateY(0)';
-                    alertElement.style.opacity = '1';
+                    isSwiping = false;
+                    alertElement.classList.remove('swiping');
+                    document.body.classList.remove('alert-active');
+                    
+                    const diffY = currentY - startY;
+                    
+                    if (diffY < -80) {
+                        alertElement.style.transition = 'all 0.3s ease';
+                        alertElement.style.transform = `translateX(-50%) translateY(-200px)`;
+                        alertElement.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            if (alertElement.parentNode) {
+                                alertElement.remove();
+                            }
+                        }, 300);
+                    } else {
+                        alertElement.style.transition = 'all 0.3s ease';
+                        alertElement.style.transform = 'translateX(-50%) translateY(0)';
+                        alertElement.style.opacity = '1';
+                    }
+                    
+                    window.removeEventListener('mousemove', mouseMoveHandler);
+                    window.removeEventListener('mouseup', mouseUpHandler);
+                    window.removeEventListener('touchmove', touchMoveHandler);
+                    window.removeEventListener('touchend', touchEndHandler);
                 }
                 
-                window.removeEventListener('mousemove', mouseMoveHandler);
-                window.removeEventListener('mouseup', mouseUpHandler);
-                window.removeEventListener('touchmove', touchMoveHandler);
-                window.removeEventListener('touchend', touchEndHandler);
-            }
-            
-            const touchStartHandler = (e) => {
-                e.preventDefault();
-                handleStart(e.touches[0].clientY);
-            };
-            
-            const touchMoveHandler = (e) => {
-                e.preventDefault();
-                handleMove(e.touches[0].clientY);
-            };
-            
-            const touchEndHandler = (e) => {
-                e.preventDefault();
-                handleEnd();
-            };
-            
-            const mouseDownHandler = (e) => {
-                e.preventDefault();
-                handleStart(e.clientY);
-                window.addEventListener('mousemove', mouseMoveHandler);
-                window.addEventListener('mouseup', mouseUpHandler);
-            };
-            
-            const mouseMoveHandler = (e) => {
-                e.preventDefault();
-                handleMove(e.clientY);
-            };
-            
-            const mouseUpHandler = (e) => {
-                e.preventDefault();
-                handleEnd();
-            };
-            
-            alertElement.addEventListener('touchstart', touchStartHandler, { passive: false });
-            alertElement.addEventListener('touchmove', touchMoveHandler, { passive: false });
-            alertElement.addEventListener('touchend', touchEndHandler, { passive: false });
-            alertElement.addEventListener('touchcancel', touchEndHandler, { passive: false });
-            alertElement.addEventListener('mousedown', mouseDownHandler);
-            
-            window.addEventListener('mouseleave', () => {
-                if (isSwiping) {
+                const touchStartHandler = (e) => {
+                    e.preventDefault();
+                    handleStart(e.touches[0].clientY);
+                };
+                
+                const touchMoveHandler = (e) => {
+                    e.preventDefault();
+                    handleMove(e.touches[0].clientY);
+                };
+                
+                const touchEndHandler = (e) => {
+                    e.preventDefault();
                     handleEnd();
-                }
-            });
-        }
-
-        // ==================== 顯示提示訊息 ====================
-        function showMessage(text) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 text-white px-6 py-3 rounded-lg border-2 border-yellow-400 shadow-2xl z-50';
-            msgDiv.style.background = 'linear-gradient(135deg, #000, #333)';
-            msgDiv.innerHTML = `<i class="fa fa-check-circle text-yellow-400 mr-2"></i>${text}`;
-            document.body.appendChild(msgDiv);
-            
-            setTimeout(() => {
-                msgDiv.remove();
-            }, 1500);
-        }
-
-        // ==================== 最愛切換 ====================
-        window.toggleFavorite = function(id) {
-            const machine = machineDatabase.find(m => m.id === id);
-            if (!machine) return;
-            
-            const index = favoriteMachines.findIndex(m => m.id === id);
-            if (index !== -1) {
-                favoriteMachines.splice(index, 1);
-                showMessage('已從我的最愛移除');
-            } else {
-                favoriteMachines.push(machine);
-                showMessage('已加入我的最愛');
-            }
-            
-            // 儲存到 localStorage
-            saveFavoritesToStorage(favoriteMachines);
-            
-            renderFavoriteList();
-            renderReserveList();
-        };
-
-        // ==================== 更新倒數計時器顯示 ====================
-        function updateCountdownDisplay() {
-            const countdownElements = document.querySelectorAll('.countdown-timer');
-            
-            countdownElements.forEach(el => {
-                const card = el.closest('.horizontal-card');
-                if (!card) return;
+                };
                 
-                const machineId = parseInt(card.dataset.id);
-                const machine = reserveMachines.find(m => m.id === machineId);
+                const mouseDownHandler = (e) => {
+                    e.preventDefault();
+                    handleStart(e.clientY);
+                    window.addEventListener('mousemove', mouseMoveHandler);
+                    window.addEventListener('mouseup', mouseUpHandler);
+                };
+                
+                const mouseMoveHandler = (e) => {
+                    e.preventDefault();
+                    handleMove(e.clientY);
+                };
+                
+                const mouseUpHandler = (e) => {
+                    e.preventDefault();
+                    handleEnd();
+                };
+                
+                alertElement.addEventListener('touchstart', touchStartHandler, { passive: false });
+                alertElement.addEventListener('touchmove', touchMoveHandler, { passive: false });
+                alertElement.addEventListener('touchend', touchEndHandler, { passive: false });
+                alertElement.addEventListener('touchcancel', touchEndHandler, { passive: false });
+                alertElement.addEventListener('mousedown', mouseDownHandler);
+                
+                window.addEventListener('mouseleave', () => {
+                    if (isSwiping) {
+                        handleEnd();
+                    }
+                });
+            }
+
+            // ==================== 顯示提示訊息 ====================
+            function showMessage(text) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 text-white px-6 py-3 rounded-lg border-2 border-yellow-400 shadow-2xl z-50';
+                msgDiv.style.background = 'linear-gradient(135deg, #000, #333)';
+                msgDiv.innerHTML = `<i class="fa fa-check-circle text-yellow-400 mr-2"></i>${text}`;
+                document.body.appendChild(msgDiv);
+                
+                setTimeout(() => {
+                    msgDiv.remove();
+                }, 1500);
+            }
+
+            // ==================== 最愛切換 ====================
+            window.toggleFavorite = function(id) {
+                const machine = machineDatabase.find(m => m.id === id);
                 if (!machine) return;
                 
-                const now = Date.now();
-                const remainingMs = machine.expiresAt - now;
-                
-                if (remainingMs <= 0) {
-                    el.textContent = '0:00';
-                    el.classList.remove('urgent');
+                const index = favoriteMachines.findIndex(m => m.id === id);
+                if (index !== -1) {
+                    favoriteMachines.splice(index, 1);
+                    showMessage('已從我的最愛移除');
                 } else {
-                    const minutes = Math.floor(remainingMs / 60000);
-                    const seconds = Math.floor((remainingMs % 60000) / 1000);
-                    el.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                    
-                    if (remainingMs <= 600000) {
-                        el.classList.add('urgent');
-                    } else {
-                        el.classList.remove('urgent');
-                    }
+                    favoriteMachines.push(machine);
+                    showMessage('已加入我的最愛');
                 }
-            });
-        }
-
-        // ==================== 標籤切換 ====================
-        document.querySelectorAll('.category-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
                 
-                const target = this.dataset.tab;
-                document.querySelectorAll('.category-section').forEach(s => s.classList.add('hidden'));
-                document.getElementById(target + '-section').classList.remove('hidden');
-            });
-        });
-
-        // ==================== 初始化 ====================
-        renderFavoriteList();
-        renderReserveList();
-        
-        setInterval(updateCountdownDisplay, 1000);
-        setInterval(checkLastTenMinutesAndShowAlerts, 2 * 60 * 1000);
-        setTimeout(checkLastTenMinutesAndShowAlerts, 1000);
-        
-        setInterval(() => {
-            renderFavoriteList();
-            renderReserveList();
-        }, 10000);
-        
-        // ==================== 監聽其他頁面的最愛變更 ====================
-        window.addEventListener('storage', function(e) {
-            if (e.key === FAVORITE_STORAGE_KEY) {
-                // 重新讀取最愛並更新畫面
-                favoriteMachines = loadFavoritesFromStorage();
+                // 儲存到共用儲存
+                saveFavoritesToStorage(favoriteMachines);
+                
                 renderFavoriteList();
                 renderReserveList();
+            };
+
+            // ==================== 更新倒數計時器顯示 ====================
+            function updateCountdownDisplay() {
+                // 這個函數現在由 CountdownManager 處理，留空避免衝突
             }
-        });
+
+            // ==================== 標籤切換 ====================
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const target = this.dataset.tab;
+                    document.querySelectorAll('.category-section').forEach(s => s.classList.add('hidden'));
+                    document.getElementById(target + '-section').classList.remove('hidden');
+                });
+            });
+
+            // ==================== 初始化 ====================
+            renderFavoriteList();
+            renderReserveList();
+            
+            setInterval(checkLastTenMinutesAndShowAlerts, 2 * 60 * 1000);
+            setTimeout(checkLastTenMinutesAndShowAlerts, 1000);
+            
+            setInterval(() => {
+                renderFavoriteList();
+                renderReserveList();
+            }, 10000);
+            
+            // ==================== 監聽其他頁面的最愛變更 ====================
+            window.addEventListener('storage', function(e) {
+                if (e.key === 't_pachin_favorites') {
+                    // 重新讀取最愛並更新畫面
+                    favoriteMachines = T_PACHIN_STORAGE.getFavorites();
+                    renderFavoriteList();
+                    renderReserveList();
+                }
+            });
+            
+            // ==================== 監聽共用事件 ====================
+            window.addEventListener('t-pachin:favorites-updated', function(e) {
+                favoriteMachines = e.detail;
+                renderFavoriteList();
+                renderReserveList();
+            });
+
+            window.addEventListener('t-pachin:reserves-updated', function(e) {
+                reserveMachines = e.detail;
+                renderReserveList();
+            });
+
+            window.addEventListener('t-pachin:user-updated', function(e) {
+                // 更新點數顯示
+                initializePointsDisplay();
+            });
+        })();
     </script>
 </div>
 </body>
