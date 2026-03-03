@@ -654,7 +654,7 @@
                         <!-- 點數與代幣分離顯示 -->
                         <div class="flex items-center gap-4 mt-1">
                             <div><span class="text-amber-400 text-sm">💰點數</span> <span id="headerPoints" class="font-bold text-amber-300 text-lg">2,300</span></div>
-                            <div><span class="text-cyan-400 text-sm">🎰代幣</span> <span id="headerTotalTokens" class="font-bold text-cyan-300 text-lg">6,000</span></div>
+                            <div><span class="text-cyan-400 text-sm">🎰代幣</span> <span id="headerTotalTokens" class="font-bold text-cyan-300 text-lg">750</span></div>
                         </div>
                     </div>
                 </div>
@@ -732,19 +732,15 @@
                         <div class="balance-row-grid">
                             <div class="balance-item">
                                 <span class="label">點數總計</span>
-                                <span class="value points" id="totalPointsEarnedDisplay">8,300</span>
-                            </div>
-                            <div class="balance-item">
-                                <span class="label">已兌換為代幣</span>
-                                <span class="value text-red-400" id="convertedToTokensDisplay">-6,000</span>
+                                <span class="value points" id="totalPointsEarnedDisplay">3,100</span>
                             </div>
                             <div class="balance-item">
                                 <span class="label">可用點數</span>
                                 <span class="value points" id="pointsBalance">2,300</span>
                             </div>
                             <div class="balance-item">
-                                <span class="label">可用代幣</span>
-                                <span class="value tokens" id="availableTokensDisplay">6,000</span>
+                                <span class="label">機台代幣總計</span>
+                                <span class="value tokens" id="availableTokensDisplay">750</span>
                             </div>
                         </div>
                     </div>
@@ -765,7 +761,7 @@
                                 <tfoot>
                                     <tr class="border-t border-blue-800">
                                         <td colspan="3" class="text-right">儲值合計：</td>
-                                        <td class="text-green-400 font-bold" id="totalRecharge">6,000</td>
+                                        <td class="text-green-400 font-bold" id="totalRecharge">1,800</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -787,7 +783,7 @@
                                 <tfoot>
                                     <tr class="border-t border-blue-800">
                                         <td colspan="2" class="text-right">贈送合計：</td>
-                                        <td class="text-green-400 font-bold" id="totalBonus">2,300</td>
+                                        <td class="text-green-400 font-bold" id="totalBonus">1,300</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -810,8 +806,8 @@
                         <!-- 代幣總和與目前點數 -->
                         <div class="flex justify-between items-center mb-3">
                             <div>
-                                <span class="text-cyan-400">🎰 代幣</span>
-                                <span class="text-cyan-300 text-2xl font-bold ml-2" id="totalTokensDisplay">6,000</span>
+                                <span class="text-cyan-400">🎰 機台代幣</span>
+                                <span class="text-cyan-300 text-2xl font-bold ml-2" id="totalTokensDisplay">750</span>
                             </div>
                             <div>
                                 <span class="text-amber-400">💰 點數</span>
@@ -835,12 +831,16 @@
                             </div>
                         </div>
 
-                        <!-- 兌換輸入面板 -->
+                        <!-- 兌換輸入面板 - 修改後的版本 -->
                         <div class="input-panel">
                             <input type="number" id="pointInput" class="number-input" value="100" min="0" step="100" placeholder="輸入數量">
+                            
+                            <!-- 兩個新按鈕：一鍵轉代幣 和 一鍵轉點數 -->
                             <div class="flex gap-2 mb-2">
-                                <button class="action-btn max flex-1" id="maxBtn">最大值</button>
+                                <button class="action-btn max flex-1" id="oneKeyToTokens" style="background: linear-gradient(145deg, #00b37a, #00875a);">一鍵轉代幣</button>
+                                <button class="action-btn max flex-1" id="oneKeyToPoints" style="background: linear-gradient(145deg, #ff8800, #cc6600);">一鍵轉點數</button>
                             </div>
+                            
                             <div class="flex gap-2">
                                 <button class="action-btn in flex-1" id="bringInBtn"><i class="fa fa-arrow-down"></i> 點數→代幣</button>
                                 <button class="action-btn out flex-1" id="bringOutBtn"><i class="fa fa-arrow-up"></i> 代幣→點數</button>
@@ -889,7 +889,7 @@
                 </div>
             </div>
 
-            <!-- 注單面板 - 修改為同一行 -->
+            <!-- 注單面板 -->
             <div id="betHistoryPanel" class="tab-panel hidden">
                 <div class="game-card-bg tech-border rounded-xl p-3">
                     <h3 class="text-primary text-md mb-3"><i class="fa fa-list-alt mr-2"></i>注單記錄</h3>
@@ -941,7 +941,7 @@
                     <!-- 目前代幣餘額 -->
                     <div class="bg-[#003355] rounded-xl p-3 mb-4 text-center">
                         <span class="text-blue-300">🎰 目前代幣</span>
-                        <span class="text-cyan-400 text-2xl font-bold ml-2" id="shopTokensDisplay">6,000</span>
+                        <span class="text-cyan-400 text-2xl font-bold ml-2" id="shopTokensDisplay">750</span>
                     </div>
                     
                     <!-- 道具列表 -->
@@ -1035,65 +1035,94 @@
 
     <script>
         (function() {
-            // ========== 點數數據 ==========
+            // ========== 點數數據 (修改為相等版本) ==========
+            const POINTS_STORAGE_KEY = 'tPachin_userPoints';
+            
+            // 從 localStorage 讀取點數，若無則使用預設值 2300
+            function loadPointsFromStorage() {
+                const storedPoints = localStorage.getItem(POINTS_STORAGE_KEY);
+                if (storedPoints !== null) {
+                    return parseInt(storedPoints, 10);
+                }
+                return 2300;
+            }
+
+            function savePointsToStorage(value) {
+                localStorage.setItem(POINTS_STORAGE_KEY, value);
+            }
+
+            // 修改儲值記錄 - 讓總和等於 1800
             let rechargeRecords = [
-                { date: '2025-02-10 09:20', amount: 2000, method: '信用卡' },
-                { date: '2025-02-15 14:30', amount: 1000, method: '超商付款' },
-                { date: '2025-02-25 16:45', amount: 3000, method: '銀行轉帳' }
+                { date: '2025-02-10 09:20', amount: 1000, method: '信用卡' },
+                { date: '2025-02-15 14:30', amount: 800, method: '超商付款' }
             ];
             
+            // 修改贈送記錄 - 讓總和等於 1300
             let bonusRecords = [
                 { date: '2025-02-18 10:15', amount: 500, description: '註冊禮' },
-                { date: '2025-02-20 16:40', amount: 1000, description: '儲值回饋' },
-                { date: '2025-02-25 09:30', amount: 500, description: '每日紅利' },
+                { date: '2025-02-20 16:40', amount: 300, description: '儲值回饋' },
+                { date: '2025-02-25 09:30', amount: 200, description: '每日紅利' },
                 { date: '2025-03-01 12:00', amount: 300, description: 'VIP加碼' }
             ];
 
-            const totalRecharge = rechargeRecords.reduce((sum, r) => sum + r.amount, 0); // 6000
-            const totalBonus = bonusRecords.reduce((sum, b) => sum + b.amount, 0);       // 2300
-            const totalPointsEarned = totalRecharge + totalBonus; // 8300
-            const convertedToTokens = 6000;
-            let currentPoints = totalPointsEarned - convertedToTokens; // 2300
+            // 重新計算總和
+            const totalRecharge = rechargeRecords.reduce((sum, r) => sum + r.amount, 0); // 1800
+            const totalBonus = bonusRecords.reduce((sum, b) => sum + b.amount, 0);       // 1300
+            const totalPointsEarned = totalRecharge + totalBonus; // 3100
+            
+            // 當前點數改為從 localStorage 載入
+            let currentPoints = loadPointsFromStorage();
+
+            // ========== 監聽其他分頁的變更 ==========
+            window.addEventListener('storage', function(e) {
+                if (e.key === POINTS_STORAGE_KEY) {
+                    const newPoints = parseInt(e.newValue, 10);
+                    if (!isNaN(newPoints)) {
+                        currentPoints = newPoints;
+                        updateAllUI();
+                    }
+                }
+            });
 
             // ========== 代幣數據 ==========
             let machines = [
-                { id: 1, name: '甲賀忍法帖', tokens: 1200, icon: '🎮' },
-                { id: 2, name: '超級奇蹟小丑', tokens: 800, icon: '🎰' },
-                { id: 3, name: '吉宗', tokens: 2500, icon: '🎯' },
-                { id: 4, name: '花月', tokens: 600, icon: '🎲' },
-                { id: 5, name: '新甲賀', tokens: 900, icon: '🎯' }
+                { id: 1, name: '甲賀忍法帖', tokens: 200, icon: '🎮' },
+                { id: 2, name: '超級奇蹟小丑', tokens: 150, icon: '🎰' },
+                { id: 3, name: '吉宗', tokens: 250, icon: '🎯' },
+                { id: 4, name: '花月', tokens: 80, icon: '🎲' },
+                { id: 5, name: '新甲賀', tokens: 70, icon: '🎯' }
             ];
 
             // ========== 帶入帶出記錄 ==========
             let exchangeRecords = [
-                { date: '2025-02-18 14:30', machineName: '甲賀忍法帖', amount: 2000, type: 'in' },
-                { date: '2025-02-20 09:15', machineName: '吉宗', amount: 1000, type: 'in' },
-                { date: '2025-02-25 11:20', machineName: '超級奇蹟小丑', amount: 3000, type: 'in' },
-                { date: '2025-03-02 15:40', machineName: '花月', amount: 500, type: 'out' }
+                { date: '2025-02-18 14:30', machineName: '甲賀忍法帖', amount: 200, type: 'in' },
+                { date: '2025-02-20 09:15', machineName: '吉宗', amount: 150, type: 'in' },
+                { date: '2025-02-25 11:20', machineName: '超級奇蹟小丑', amount: 300, type: 'in' },
+                { date: '2025-03-02 15:40', machineName: '花月', amount: 100, type: 'out' }
             ];
 
             let gameEarnRecords = [
-                { date: '2025-02-19 20:30', machineName: '甲賀忍法帖', amount: 500 },
-                { date: '2025-02-21 14:20', machineName: '吉宗', amount: 1200 },
-                { date: '2025-02-23 19:45', machineName: '超級奇蹟小丑', amount: 800 },
-                { date: '2025-02-27 22:10', machineName: '花月', amount: 300 },
-                { date: '2025-03-01 16:30', machineName: '新甲賀', amount: 600 }
+                { date: '2025-02-19 20:30', machineName: '甲賀忍法帖', amount: 80 },
+                { date: '2025-02-21 14:20', machineName: '吉宗', amount: 120 },
+                { date: '2025-02-23 19:45', machineName: '超級奇蹟小丑', amount: 60 },
+                { date: '2025-02-27 22:10', machineName: '花月', amount: 40 },
+                { date: '2025-03-01 16:30', machineName: '新甲賀', amount: 90 }
             ];
 
             // ========== 商城道具數據 ==========
             const shopItems = [
-                { id: 1, name: '幸運護符', icon: '🍀', price: 200, description: '提升幸運值' },
-                { id: 2, name: '經驗加倍卡', icon: '⚡', price: 150, description: '經驗值2倍' },
-                { id: 3, name: '神秘寶箱', icon: '📦', price: 500, description: '隨機獎勵' },
-                { id: 4, name: '道具組合包', icon: '🎁', price: 800, description: '超值組合' }
+                { id: 1, name: '幸運護符', icon: '🍀', price: 50, description: '提升幸運值' },
+                { id: 2, name: '經驗加倍卡', icon: '⚡', price: 30, description: '經驗值2倍' },
+                { id: 3, name: '神秘寶箱', icon: '📦', price: 100, description: '隨機獎勵' },
+                { id: 4, name: '道具組合包', icon: '🎁', price: 150, description: '超值組合' }
             ];
 
             // 購買紀錄
             let shopRecords = [
-                { date: '2025-02-22 10:15', itemName: '幸運護符', cost: 200 },
-                { date: '2025-02-24 13:40', itemName: '經驗加倍卡', cost: 150 },
-                { date: '2025-02-26 19:20', itemName: '神秘寶箱', cost: 500 },
-                { date: '2025-02-28 09:30', itemName: '道具組合包', cost: 800 }
+                { date: '2025-02-22 10:15', itemName: '幸運護符', cost: 50 },
+                { date: '2025-02-24 13:40', itemName: '經驗加倍卡', cost: 30 },
+                { date: '2025-02-26 19:20', itemName: '神秘寶箱', cost: 100 },
+                { date: '2025-02-28 09:30', itemName: '道具組合包', cost: 150 }
             ];
 
             // ========== 收藏/保留機台 ==========
@@ -1103,7 +1132,7 @@
                 { id: 3, name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:2', vendor: 'Daito' }
             ];
             
-            // 保留機台 - 設定為10分鐘後到期以便測試
+            // 保留機台
             let keepMachines = [
                 { 
                     id: 4, 
@@ -1111,7 +1140,7 @@
                     image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', 
                     ratio: '1:4', 
                     vendor: 'Olympia',
-                    endTime: new Date(Date.now() + 10 * 60 * 1000) // 10分鐘後到期
+                    endTime: new Date(Date.now() + 10 * 60 * 1000)
                 },
                 { 
                     id: 5, 
@@ -1119,7 +1148,7 @@
                     image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', 
                     ratio: '1:4', 
                     vendor: 'Sammy',
-                    endTime: new Date(Date.now() + 15 * 60 * 1000) // 15分鐘後到期
+                    endTime: new Date(Date.now() + 15 * 60 * 1000)
                 }
             ];
 
@@ -1167,10 +1196,7 @@
             
             // 點數面板
             const pointsBalance = document.getElementById('pointsBalance');
-            const totalPointsEarnedSpan = document.getElementById('totalPointsEarned');
             const totalPointsEarnedDisplay = document.getElementById('totalPointsEarnedDisplay');
-            const convertedToTokensSpan = document.getElementById('convertedToTokens');
-            const convertedToTokensDisplay = document.getElementById('convertedToTokensDisplay');
             const rechargeDetailList = document.getElementById('rechargeDetailList');
             const bonusDetailList = document.getElementById('bonusDetailList');
             const totalRechargeSpan = document.getElementById('totalRecharge');
@@ -1190,6 +1216,10 @@
             const bringInBtn = document.getElementById('bringInBtn');
             const bringOutBtn = document.getElementById('bringOutBtn');
             const exchangeDetailList = document.getElementById('exchangeDetailList');
+            
+            // 新按鈕
+            const oneKeyToTokens = document.getElementById('oneKeyToTokens');
+            const oneKeyToPoints = document.getElementById('oneKeyToPoints');
             
             // 遊戲獲得
             const gameEarnDetailList = document.getElementById('gameEarnDetailList');
@@ -1259,7 +1289,7 @@
             let touchStartY = 0;
             let touchCurrentY = 0;
             let isDragging = false;
-            const SWIPE_THRESHOLD = 20; // 滑動閾值調小
+            const SWIPE_THRESHOLD = 20;
 
             keepAlertModal.addEventListener('touchstart', (e) => {
                 touchStartY = e.touches[0].clientY;
@@ -1272,7 +1302,6 @@
                 touchCurrentY = e.touches[0].clientY;
                 const diff = touchCurrentY - touchStartY;
                 
-                // 只能向上滑動 (diff < 0)
                 if (diff < 0) {
                     const translateY = Math.max(diff, -100);
                     keepAlertModal.style.transform = `translateY(${translateY}px)`;
@@ -1286,10 +1315,8 @@
                 
                 const diff = touchCurrentY - touchStartY;
                 if (diff < -SWIPE_THRESHOLD) {
-                    // 向上滑動超過閾值，關閉
                     keepAlertModal.classList.add('-translate-y-full');
                 } else {
-                    // 恢復原位
                     keepAlertModal.style.transform = '';
                 }
                 
@@ -1298,13 +1325,11 @@
             });
 
             // ========== 保留警示相關 ==========
-            let alertInterval = null;
             let lastAlertTime = 0;
-            const ALERT_INTERVAL = 2 * 60 * 1000; // 2分鐘
+            const ALERT_INTERVAL = 2 * 60 * 1000;
 
-            // 檢查並顯示警示
             function checkAndShowAlert() {
-                if (!keepList.classList.contains('show')) return; // 只有開啟保留列表才檢查
+                if (!keepList.classList.contains('show')) return;
                 
                 const now = Date.now();
                 let hasNearExpiry = false;
@@ -1315,7 +1340,6 @@
                     const endTime = m.endTime.getTime();
                     const timeLeft = endTime - now;
                     
-                    // 小於10分鐘且大於0
                     if (timeLeft > 0 && timeLeft <= 10 * 60 * 1000) {
                         hasNearExpiry = true;
                         if (timeLeft < nearestTime) {
@@ -1330,10 +1354,8 @@
                     const seconds = Math.floor((nearestTime % (60 * 1000)) / 1000);
                     keepAlertMessage.textContent = `「${nearestMachine.name}」${minutes}分${seconds}秒後到期`;
                     
-                    // 顯示彈窗 (從上方滑下)
                     keepAlertModal.classList.remove('-translate-y-full');
                     
-                    // 3秒後自動滑上去 (時間縮短)
                     setTimeout(() => {
                         keepAlertModal.classList.add('-translate-y-full');
                     }, 3000);
@@ -1358,13 +1380,12 @@
                 if(headerPoints) headerPoints.innerText = currentPoints.toLocaleString();
                 if(headerTotalTokens) headerTotalTokens.innerText = totalTokens.toLocaleString();
                 
-                // 點數面板 - 新格式
+                // 點數面板
                 if(pointsBalance) pointsBalance.innerText = currentPoints.toLocaleString();
                 if(totalPointsEarnedDisplay) totalPointsEarnedDisplay.innerText = totalPointsEarned.toLocaleString();
-                if(convertedToTokensDisplay) convertedToTokensDisplay.innerText = '-' + convertedToTokens.toLocaleString();
                 if(availableTokensDisplay) availableTokensDisplay.innerText = totalTokens.toLocaleString();
                 
-                // 儲值明細 - 加入 XDHG 開頭的流水編號
+                // 儲值明細
                 let rechargeHtml = '';
                 rechargeRecords.forEach((r, index) => {
                     const serialNumber = 'XDHG' + Math.floor(100000 + Math.random() * 900000);
@@ -1482,7 +1503,6 @@
                 }
                 
                 showConfirm(`確定要購買「${name}」嗎？\n花費 ${price} 代幣`, () => {
-                    // 從機台中扣除代幣
                     let remainingPrice = price;
                     for (let i = 0; i < machines.length && remainingPrice > 0; i++) {
                         if (machines[i].tokens >= remainingPrice) {
@@ -1494,7 +1514,6 @@
                         }
                     }
                     
-                    // 記錄購買
                     const now = new Date();
                     const dateStr = now.toISOString().split('T')[0] + ' ' + 
                                    String(now.getHours()).padStart(2,'0') + ':' + 
@@ -1523,6 +1542,8 @@
                 
                 showConfirm(`確定要將 ${val} 點數兌換成代幣嗎？`, () => {
                     currentPoints -= val;
+                    savePointsToStorage(currentPoints);
+                    
                     const machine = machines.find(m => m.id === selectedMachine.id);
                     machine.tokens += val;
                     
@@ -1556,6 +1577,7 @@
                 showConfirm(`確定要將 ${val} 代幣兌換成點數嗎？`, () => {
                     machine.tokens -= val;
                     currentPoints += val;
+                    savePointsToStorage(currentPoints);
                     
                     const now = new Date();
                     const dateStr = now.toISOString().split('T')[0] + ' ' + 
@@ -1574,8 +1596,85 @@
                 });
             });
 
-            maxBtn.addEventListener('click', () => {
-                pointInput.value = currentPoints;
+            // ========== 一鍵轉換按鈕（全域性） ==========
+            // 一鍵轉代幣：將所有機台的代幣全部轉回點數
+            oneKeyToTokens.addEventListener('click', () => {
+                const totalTokens = getTotalTokens();
+                if(totalTokens <= 0) { 
+                    alert('沒有任何機台有代幣可以轉換'); 
+                    return; 
+                }
+                
+                showConfirm(`確定要將全部機台的 ${totalTokens} 代幣兌換成點數嗎？`, () => {
+                    // 把所有機台的代幣加總
+                    let totalConverted = 0;
+                    machines.forEach(machine => {
+                        totalConverted += machine.tokens;
+                        machine.tokens = 0;
+                    });
+                    
+                    // 加到點數
+                    currentPoints += totalConverted;
+                    savePointsToStorage(currentPoints);
+                    
+                    // 記錄一筆總帳
+                    const now = new Date();
+                    const dateStr = now.toISOString().split('T')[0] + ' ' + 
+                                   String(now.getHours()).padStart(2,'0') + ':' + 
+                                   String(now.getMinutes()).padStart(2,'0');
+                    exchangeRecords.push({
+                        date: dateStr,
+                        machineName: '全部機台',
+                        amount: totalConverted,
+                        type: 'out'  // 代幣→點數
+                    });
+                    
+                    updateAllUI();
+                    alert(`✅ 一鍵轉換成功！全部 ${totalConverted} 代幣 → 點數`);
+                    
+                    // 清除選擇的機台
+                    selectedMachine = null;
+                    selectedMachineName.textContent = '請選擇機台';
+                    selectedMachinePoints.textContent = '0';
+                    pointInput.value = 100;
+                });
+            });
+
+            // 一鍵轉點數：將所有點數轉入當前選擇的機台
+            oneKeyToPoints.addEventListener('click', () => {
+                if(!selectedMachine) { 
+                    alert('請先選擇要存入的機台'); 
+                    return; 
+                }
+                if(currentPoints <= 0) { 
+                    alert('沒有點數可以轉換'); 
+                    return; 
+                }
+                
+                const val = currentPoints;
+                
+                showConfirm(`確定要將全部 ${val} 點數兌換成代幣，存入「${selectedMachine.name}」嗎？`, () => {
+                    currentPoints = 0;
+                    savePointsToStorage(currentPoints);
+                    
+                    const machine = machines.find(m => m.id === selectedMachine.id);
+                    machine.tokens += val;
+                    
+                    const now = new Date();
+                    const dateStr = now.toISOString().split('T')[0] + ' ' + 
+                                   String(now.getHours()).padStart(2,'0') + ':' + 
+                                   String(now.getMinutes()).padStart(2,'0');
+                    exchangeRecords.push({
+                        date: dateStr,
+                        machineName: machine.name,
+                        amount: val,
+                        type: 'in'
+                    });
+                    
+                    updateAllUI();
+                    alert(`✅ 一鍵轉換成功！全部 ${val} 點數 → 代幣 (${machine.name})`);
+                    pointInput.value = 100;
+                });
             });
 
             // ========== 收藏/保留功能 ==========
@@ -1665,7 +1764,6 @@
                     el.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${timeText}`;
                 });
                 
-                // 檢查是否需要顯示警示
                 checkAndShowAlert();
             }
 
@@ -1708,7 +1806,6 @@
                 }
             });
 
-            // 每秒更新倒數
             setInterval(() => {
                 if(keepList.classList.contains('show')) {
                     updateCountdowns();
@@ -1970,7 +2067,6 @@
 
             // ========== 設定連動效果 ==========
             
-            // 1. 接收通知開關
             let notificationEnabled = true;
             notificationToggle.addEventListener('click', () => {
                 notificationEnabled = !notificationEnabled;
@@ -1983,7 +2079,6 @@
                 }
             });
 
-            // 2. 帳號綁定連動
             let isBound = true;
             bindStatus.addEventListener('click', () => {
                 if (isBound) {
@@ -2005,7 +2100,6 @@
                 }
             });
 
-            // 3. 雙重驗證連動
             let twoFactorEnabled = false;
             twoFactorStatus.addEventListener('click', () => {
                 if (!twoFactorEnabled) {
@@ -2027,7 +2121,6 @@
                 }
             });
 
-            // 4. 交易密碼連動
             let hasTransactionPwd = true;
             transactionPwdStatus.addEventListener('click', () => {
                 if (hasTransactionPwd) {
@@ -2045,7 +2138,6 @@
                 }
             });
 
-            // 暗色模式
             const themeToggle = document.getElementById('themeToggle');
             const body = document.body;
             if(localStorage.getItem('theme') === 'dark') body.classList.add('dark-mode');
@@ -2054,12 +2146,10 @@
                 localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
             });
 
-            // 語言選擇
             document.getElementById('languageSelect')?.addEventListener('change', function(e) {
                 alert(`語言切換至：${this.options[this.selectedIndex].text}`);
             });
 
-            // 頭像更換
             const avatarImg = document.getElementById('avatarImage');
             const avatarContainer = document.getElementById('avatarContainer');
             const avatars = ['https://i.pravatar.cc/150?img=7','https://i.pravatar.cc/150?img=5','https://i.pravatar.cc/150?img=9','https://i.pravatar.cc/150?img=12'];
@@ -2070,7 +2160,6 @@
                 alert('大頭照已更換');
             });
 
-            // 暱稱編輯
             const displayName = document.getElementById('displayNickname');
             let currentName = '夫人會生氣';
             displayName?.addEventListener('click', () => {
@@ -2086,7 +2175,6 @@
                 alert('返回首頁');
             });
 
-            // 客服
             supportBtn.addEventListener('click', () => alert('📞 客服與幫助'));
 
             // ========== 初始化 ==========
@@ -2096,7 +2184,6 @@
             renderBetList();
             updateAllUI();
 
-            // 隱藏保留警示彈窗
             keepAlertModal.classList.add('-translate-y-full');
         })();
     </script>
