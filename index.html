@@ -277,7 +277,7 @@
         box-shadow: 0 0 10px rgba(0,153,255,0.3); 
         transition: 0.15s;
         height: 100%;
-        min-height: 115px;
+        min-height: 130px;
         position: relative;
         overflow: hidden;
     }
@@ -312,7 +312,7 @@
         display: flex; 
         align-items: center; 
         justify-content: space-between; 
-        margin-bottom: 0.3rem; 
+        margin-bottom: 0.2rem; 
         position: relative; 
         z-index: 2; 
     }
@@ -330,7 +330,29 @@
     }
     .maintenance .sub-name { color: #ccc; }
     
-    /* 子機種上的代幣標籤，以「1枚=」開頭 */
+    /* 子機台編號 - 修改為 NO. 開頭 */
+    .machine-number {
+        font-size: 0.65rem;
+        color: #9cd4ff;
+        background: rgba(0, 51, 102, 0.7);
+        padding: 0.1rem 0.4rem;
+        border-radius: 20px;
+        border: 1px solid #0099ff60;
+        display: inline-block;
+        margin: 0.2rem 0 0.1rem 0;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+        position: relative;
+        z-index: 2;
+        width: fit-content;
+    }
+    .maintenance .machine-number {
+        background: rgba(80, 80, 80, 0.8);
+        border-color: #aaa;
+        color: #ccc;
+    }
+    
+    /* 子機種上的代幣標籤 */
     .sub-ratio {
         background: #001c3a; 
         padding: 0.15rem 0.5rem; 
@@ -373,7 +395,7 @@
     .maintenance-date {
         font-size: 0.5rem;
         color: #ff9999;
-        margin: 0.2rem 0 0.3rem 0;
+        margin: 0.1rem 0 0.2rem 0;
         display: flex;
         align-items: center;
         gap: 2px;
@@ -386,10 +408,10 @@
         font-size: 0.45rem;
     }
     
-    /* 空白佔位 - 保持高度一致 */
+    /* 空白佔位 */
     .placeholder-date {
         min-height: 16px;
-        margin: 0.2rem 0 0.3rem 0;
+        margin: 0.1rem 0 0.2rem 0;
     }
     
     /* 按鈕區域 */
@@ -425,7 +447,7 @@
         animation: scan-line 3s ease-in-out infinite 1.5s;
     }
 
-    /* ========== 公告按鈕放在框內 (左側縮小版) ========== */
+    /* ========== 公告按鈕放在框內 ========== */
     .announcement-combo {
         background: linear-gradient(145deg, #001f3f, #001a33);
         border: 1px solid #0099ff80;
@@ -500,7 +522,7 @@
         display: inline-block;
     }
 
-    /* ===== 點數轉代幣彈窗 (無數字滾動條) ===== */
+    /* ===== 點數轉代幣彈窗 ===== */
     .convert-modal {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 10, 20, 0.9); backdrop-filter: blur(8px); z-index: 25000;
@@ -889,7 +911,7 @@
             </a>
             <div class="text-right flex flex-col items-end">
                 <a href="about.html" class="text-xs text-white clickable hover-glow" id="nicknameBtn">夫人會生氣</a>
-                <span class="font-bold text-lg text-amber-400 clickable hover-glow" id="tokenBtn" title="點擊轉換點數為代幣">5280</span>
+                <span class="font-bold text-lg text-amber-400 clickable hover-glow" id="tokenBtn" title="點擊轉換點數為代幣">2300</span>
             </div>
         </div>
     </header>
@@ -1409,7 +1431,7 @@
     </div>
 </div>
 
-<!-- 點數轉代幣彈窗 (無任何滾動條) -->
+<!-- 點數轉代幣彈窗 -->
 <div class="convert-modal" id="convertModal">
     <div class="convert-content">
         <span class="convert-close" id="convertModalClose">&times;</span>
@@ -1419,7 +1441,7 @@
         </div>
         <div class="available-points-card">
             <span class="label">可用點數</span>
-            <span class="value" id="availablePoints">5280</span>
+            <span class="value" id="availablePoints">2300</span>
         </div>
         <div class="convert-input-group">
             <input type="number" id="convertInput" placeholder="輸入點數" min="0" step="1" value="0">
@@ -1463,7 +1485,6 @@
     // ========== 我的最愛全域同步 ==========
     const FAVORITE_STORAGE_KEY = 't Pachin_favoriteMachines';
     
-    // 從 localStorage 載入我的最愛
     function loadFavorites() {
         const stored = localStorage.getItem(FAVORITE_STORAGE_KEY);
         if (stored) {
@@ -1476,22 +1497,18 @@
         return [];
     }
     
-    // 儲存我的最愛到 localStorage
     function saveFavorites(favorites) {
         localStorage.setItem(FAVORITE_STORAGE_KEY, JSON.stringify(favorites));
     }
     
-    // 檢查機台是否在我的最愛中
     function isMachineFavorite(machineName) {
         const favorites = loadFavorites();
         return favorites.some(m => m.name === machineName);
     }
     
-    // 切換我的最愛狀態
     function toggleMachineFavorite(machineName, buttonElement) {
         const favorites = loadFavorites();
         
-        // 建立機台資料
         const machine = {
             id: Date.now() + Math.random(),
             name: machineName,
@@ -1529,14 +1546,12 @@
         
         saveFavorites(favorites);
         
-        // 觸發 storage 事件，通知其他頁面更新
         window.dispatchEvent(new StorageEvent('storage', {
             key: FAVORITE_STORAGE_KEY,
             newValue: JSON.stringify(favorites)
         }));
     }
     
-    // 顯示提示訊息
     function showFavoriteMessage(text) {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 text-white px-6 py-3 rounded-lg border-2 border-yellow-400 shadow-2xl z-50';
@@ -1549,14 +1564,49 @@
         }, 1500);
     }
     
-    // ========== 點數/代幣核心 ==========
-    let points = 5280;
+    // ========== 點數/代幣核心 (與 localStorage 同步) ==========
+    const POINTS_STORAGE_KEY = 'tPachin_userPoints';
+    let points = 2300; // 修改為 2300，與 about.html 的可用點數一致
+
+    // 初始化：從 localStorage 讀取點數，若無則使用預設值並存入
+    function loadPoints() {
+        const storedPoints = localStorage.getItem(POINTS_STORAGE_KEY);
+        if (storedPoints !== null) {
+            points = parseInt(storedPoints, 10);
+            // 確保是有效數字
+            if (isNaN(points)) points = 2300;
+        } else {
+            // 首次使用，設定預設值並存入
+            points = 2300;
+            localStorage.setItem(POINTS_STORAGE_KEY, points);
+        }
+        updatePointsDisplay();
+    }
+
+    function savePoints() {
+        localStorage.setItem(POINTS_STORAGE_KEY, points);
+    }
+
     const tokenBtn = document.getElementById('tokenBtn');
     
     function updatePointsDisplay() {
         if (tokenBtn) tokenBtn.textContent = points;
     }
-    
+
+    // 監聽其他分頁對點數的修改
+    window.addEventListener('storage', function(e) {
+        if (e.key === POINTS_STORAGE_KEY) {
+            const newPoints = parseInt(e.newValue, 10);
+            if (!isNaN(newPoints)) {
+                points = newPoints;
+                updatePointsDisplay();
+            }
+        }
+    });
+
+    // 執行初始化
+    loadPoints();
+
     // ========== 點數轉代幣彈窗 ==========
     const convertModal = document.getElementById('convertModal');
     const convertInput = document.getElementById('convertInput');
@@ -1614,13 +1664,12 @@
                 return;
             }
             points -= val;
+            savePoints();
             updatePointsDisplay();
             closeConvertModal();
             alert(`✨ 成功兌換 ${val} 代幣！剩餘點數 ${points}`);
         });
     }
-
-    updatePointsDisplay();
 
     // ========== 篩選側拉欄 ==========
     const openBtn = document.getElementById('openDrawerBtn');
@@ -1688,161 +1737,167 @@
         hologramLoading.classList.remove('show');
     }
 
-    // ========== 子機種資料 ==========
+    // ========== 子機種資料 (加入隨機機台編號 - NO. 開頭) ==========
+    function generateMachineNumber() {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const num = Math.floor(Math.random() * 100);
+        const letter = letters[Math.floor(Math.random() * letters.length)];
+        return Math.random() > 0.5 ? `NO.${String(num).padStart(2,'0')}` : `NO.${letter}${Math.floor(Math.random()*10)}`;
+    }
+
     const submachinesData = {
         '吉宗': [
-            { name: '吉宗 A', ratio: '1枚=2.1', maintenance: false },
-            { name: '吉宗 B', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-15' },
-            { name: '吉宗 C', ratio: '1枚=0.33', maintenance: false },
-            { name: '吉宗 D', ratio: '1枚=0.25', maintenance: false }
+            { name: '吉宗 A', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '吉宗 B', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-15', number: generateMachineNumber() },
+            { name: '吉宗 C', ratio: '1枚=0.33', maintenance: false, number: generateMachineNumber() },
+            { name: '吉宗 D', ratio: '1枚=0.25', maintenance: false, number: generateMachineNumber() }
         ],
         '甲賀忍法帖 弐': [
-            { name: '甲賀 紅', ratio: '1枚=2.1', maintenance: false },
-            { name: '甲賀 白', ratio: '1枚=0.5', maintenance: false },
-            { name: '甲賀 黑', ratio: '1枚=0.33', maintenance: true, maintenanceDate: '2026-03-20' }
+            { name: '甲賀 紅', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '甲賀 白', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() },
+            { name: '甲賀 黑', ratio: '1枚=0.33', maintenance: true, maintenanceDate: '2026-03-20', number: generateMachineNumber() }
         ],
         '超級奇蹟小丑': [
-            { name: '小丑 紅', ratio: '1枚=2.1', maintenance: false },
-            { name: '小丑 藍', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-18' },
-            { name: '小丑 綠', ratio: '1枚=0.33', maintenance: false }
+            { name: '小丑 紅', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '小丑 藍', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-18', number: generateMachineNumber() },
+            { name: '小丑 綠', ratio: '1枚=0.33', maintenance: false, number: generateMachineNumber() }
         ],
         '押忍！番長4': [
-            { name: '番長 4-1', ratio: '1枚=2.1', maintenance: false },
-            { name: '番長 4-2', ratio: '1枚=0.5', maintenance: false },
-            { name: '番長 4-3', ratio: '1枚=0.33', maintenance: true, maintenanceDate: '2026-03-25' }
+            { name: '番長 4-1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '番長 4-2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() },
+            { name: '番長 4-3', ratio: '1枚=0.33', maintenance: true, maintenanceDate: '2026-03-25', number: generateMachineNumber() }
         ],
         '革命機ヴァルヴレイヴ': [
-            { name: '革命機 01', ratio: '1枚=2.1', maintenance: false },
-            { name: '革命機 02', ratio: '1枚=0.5', maintenance: false }
+            { name: '革命機 01', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '革命機 02', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ 幼女戦記': [
-            { name: '幼女戦記 T', ratio: '1枚=2.1', maintenance: false },
-            { name: '幼女戦記 Y', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-22' }
+            { name: '幼女戦記 T', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '幼女戦記 Y', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-22', number: generateMachineNumber() }
         ],
         'L 犬夜叉': [
-            { name: '犬夜叉 鐵', ratio: '1枚=2.1', maintenance: false },
-            { name: '犬夜叉 牙', ratio: '1枚=0.5', maintenance: false },
-            { name: '犬夜叉 爪', ratio: '1枚=0.33', maintenance: false }
+            { name: '犬夜叉 鐵', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '犬夜叉 牙', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() },
+            { name: '犬夜叉 爪', ratio: '1枚=0.33', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ モンキーターン': [
-            { name: '猴子 轉', ratio: '1枚=2.1', maintenance: false },
-            { name: '猴子 旋', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-28' }
+            { name: '猴子 轉', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '猴子 旋', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-28', number: generateMachineNumber() }
         ],
         '押忍！番長3': [
-            { name: '番長 3-1', ratio: '1枚=2.1', maintenance: false },
-            { name: '番長 3-2', ratio: '1枚=0.5', maintenance: false }
+            { name: '番長 3-1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '番長 3-2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ ガールズ＆パンツァー': [
-            { name: 'GUP 01', ratio: '1枚=2.1', maintenance: false },
-            { name: 'GUP 02', ratio: '1枚=0.5', maintenance: false },
-            { name: 'GUP 03', ratio: '1枚=0.33', maintenance: true, maintenanceDate: '2026-04-01' }
+            { name: 'GUP 01', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'GUP 02', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() },
+            { name: 'GUP 03', ratio: '1枚=0.33', maintenance: true, maintenanceDate: '2026-04-01', number: generateMachineNumber() }
         ],
         'パチスロ 北斗の拳': [
-            { name: '北斗 拳', ratio: '1枚=2.1', maintenance: false },
-            { name: '北斗 拉', ratio: '1枚=0.5', maintenance: false }
+            { name: '北斗 拳', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '北斗 拉', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ 新鬼武者': [
-            { name: '新鬼 武', ratio: '1枚=2.1', maintenance: false },
-            { name: '新鬼 者', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-30' }
+            { name: '新鬼 武', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '新鬼 者', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-30', number: generateMachineNumber() }
         ],
         'パチスロ 魔法少女まどか☆マギカ': [
-            { name: 'まどか', ratio: '1枚=2.1', maintenance: false },
-            { name: 'ほむら', ratio: '1枚=0.5', maintenance: false },
-            { name: 'さやか', ratio: '1枚=0.33', maintenance: false }
+            { name: 'まどか', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'ほむら', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() },
+            { name: 'さやか', ratio: '1枚=0.33', maintenance: false, number: generateMachineNumber() }
         ],
         '花月': [
-            { name: '花月 極', ratio: '1枚=2.1', maintenance: false },
-            { name: '花月 彩', ratio: '1枚=0.5', maintenance: false }
+            { name: '花月 極', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '花月 彩', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         '大花火': [
-            { name: '花火 大', ratio: '1枚=2.1', maintenance: false },
-            { name: '花火 小', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-17' }
+            { name: '花火 大', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '花火 小', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-17', number: generateMachineNumber() }
         ],
         'ドンちゃん2': [
-            { name: 'Don 2-1', ratio: '1枚=2.1', maintenance: false },
-            { name: 'Don 2-2', ratio: '1枚=0.5', maintenance: false }
+            { name: 'Don 2-1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'Don 2-2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'アラジンA': [
-            { name: 'Aladdin A1', ratio: '1枚=2.1', maintenance: false },
-            { name: 'Aladdin A2', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-19' }
+            { name: 'Aladdin A1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'Aladdin A2', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-19', number: generateMachineNumber() }
         ],
         'クランキーコンドル': [
-            { name: 'Cranky 01', ratio: '1枚=2.1', maintenance: false },
-            { name: 'Cranky 02', ratio: '1枚=0.5', maintenance: false }
+            { name: 'Cranky 01', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'Cranky 02', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'バーサス': [
-            { name: 'Versus 紅', ratio: '1枚=2.1', maintenance: false },
-            { name: 'Versus 藍', ratio: '1枚=0.5', maintenance: false }
+            { name: 'Versus 紅', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'Versus 藍', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'ニューパルサー': [
-            { name: 'New Pulsar 1', ratio: '1枚=2.1', maintenance: false },
-            { name: 'New Pulsar 2', ratio: '1枚=0.5', maintenance: false }
+            { name: 'New Pulsar 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'New Pulsar 2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         '奇蹟小丑': [
-            { name: '奇蹟 1', ratio: '1枚=2.1', maintenance: false },
-            { name: '奇蹟 2', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-23' }
+            { name: '奇蹟 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '奇蹟 2', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-23', number: generateMachineNumber() }
         ],
         '超級奇蹟': [
-            { name: '超奇 1', ratio: '1枚=2.1', maintenance: false },
-            { name: '超奇 2', ratio: '1枚=0.5', maintenance: false }
+            { name: '超奇 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '超奇 2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'バジリスク〜甲賀忍法帖〜': [
-            { name: '甲賀 參', ratio: '1枚=2.1', maintenance: false },
-            { name: '甲賀 肆', ratio: '1枚=0.5', maintenance: false }
+            { name: '甲賀 參', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '甲賀 肆', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ エウレカセブン': [
-            { name: 'Eureka 7', ratio: '1枚=2.1', maintenance: false },
-            { name: 'Eureka AO', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-26' }
+            { name: 'Eureka 7', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'Eureka AO', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-26', number: generateMachineNumber() }
         ],
         'パチスロ コードギアス': [
-            { name: 'Code Geass R1', ratio: '1枚=2.1', maintenance: false },
-            { name: 'Code Geass R2', ratio: '1枚=0.5', maintenance: false }
+            { name: 'Code Geass R1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'Code Geass R2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ 戦国無双': [
-            { name: '戰國 1', ratio: '1枚=2.1', maintenance: false },
-            { name: '戰國 2', ratio: '1枚=0.5', maintenance: false }
+            { name: '戰國 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '戰國 2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ 蒼天の拳': [
-            { name: '蒼天 拳', ratio: '1枚=2.1', maintenance: false },
-            { name: '蒼天 飛', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-04-02' }
+            { name: '蒼天 拳', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '蒼天 飛', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-04-02', number: generateMachineNumber() }
         ],
         '新甲賀': [
-            { name: '新甲賀 1', ratio: '1枚=2.1', maintenance: false },
-            { name: '新甲賀 2', ratio: '1枚=0.5', maintenance: false }
+            { name: '新甲賀 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '新甲賀 2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ ゴッドイーター': [
-            { name: 'GE 神', ratio: '1枚=2.1', maintenance: false },
-            { name: 'GE 喰', ratio: '1枚=0.5', maintenance: false }
+            { name: 'GE 神', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'GE 喰', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ ダンまち': [
-            { name: 'Danmachi 1', ratio: '1枚=2.1', maintenance: false },
-            { name: 'Danmachi 2', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-27' }
+            { name: 'Danmachi 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'Danmachi 2', ratio: '1枚=0.5', maintenance: true, maintenanceDate: '2026-03-27', number: generateMachineNumber() }
         ],
         'L 聖戦士ダンバイン': [
-            { name: 'Dunbine 1', ratio: '1枚=2.1', maintenance: false },
-            { name: 'Dunbine 2', ratio: '1枚=0.5', maintenance: false }
+            { name: 'Dunbine 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'Dunbine 2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ ありふれた': [
-            { name: '平凡 1', ratio: '1枚=2.1', maintenance: false },
-            { name: '平凡 2', ratio: '1枚=0.5', maintenance: false }
+            { name: '平凡 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '平凡 2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ 転スラ': [
-            { name: '轉生 1', ratio: '1枚=2.1', maintenance: false },
-            { name: '轉生 2', ratio: '1枚=0.5', maintenance: false }
+            { name: '轉生 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: '轉生 2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ],
         'パチスロ このすば': [
-            { name: 'KonoSuba 1', ratio: '1枚=2.1', maintenance: false },
-            { name: 'KonoSuba 2', ratio: '1枚=0.5', maintenance: false }
+            { name: 'KonoSuba 1', ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: 'KonoSuba 2', ratio: '1枚=0.5', maintenance: false, number: generateMachineNumber() }
         ]
     };
 
-    // ========== 預設資料 ==========
     function getDefaultSubmachines(machineName) {
         return [
-            { name: `${machineName} 標準A`, ratio: '1枚=2.1', maintenance: false },
-            { name: `${machineName} 標準B`, ratio: '1枚=0.5', maintenance: Math.random() > 0.7, maintenanceDate: '2026-03-15' },
-            { name: `${machineName} 標準C`, ratio: '1枚=0.33', maintenance: false },
-            { name: `${machineName} 標準D`, ratio: '1枚=0.25', maintenance: false }
+            { name: `${machineName} 標準A`, ratio: '1枚=2.1', maintenance: false, number: generateMachineNumber() },
+            { name: `${machineName} 標準B`, ratio: '1枚=0.5', maintenance: Math.random() > 0.7, maintenanceDate: '2026-03-15', number: generateMachineNumber() },
+            { name: `${machineName} 標準C`, ratio: '1枚=0.33', maintenance: false, number: generateMachineNumber() },
+            { name: `${machineName} 標準D`, ratio: '1枚=0.25', maintenance: false, number: generateMachineNumber() }
         ];
     }
 
@@ -1854,17 +1909,11 @@
 
     function openModal(machineName) {
         modalTitle.innerText = machineName;
-        
-        // 立即顯示彈窗，不加載入動畫
         modal.classList.add('show');
-        
-        // 清空舊內容
         modalSubList.innerHTML = '';
         
-        // 取得子機台資料
         let submachines = submachinesData[machineName] || getDefaultSubmachines(machineName);
         
-        // 建立子機台卡片
         submachines.forEach(sub => {
             const card = document.createElement('div');
             card.className = `sub-item-card ${sub.maintenance ? 'maintenance' : ''}`;
@@ -1872,6 +1921,8 @@
             const maintenanceDate = sub.maintenance && sub.maintenanceDate ? 
                 `<div class="maintenance-date"><i class="fa fa-calendar"></i> 預計 ${sub.maintenanceDate}</div>` : 
                 '<div class="placeholder-date"></div>';
+            
+            const machineNumberHtml = sub.number ? `<div class="machine-number">${sub.number}</div>` : '';
             
             card.innerHTML = `
                 <div class="sub-name-ratio">
@@ -1881,6 +1932,7 @@
                     </div>
                     <span class="sub-ratio">${sub.ratio}</span>
                 </div>
+                ${machineNumberHtml}
                 ${maintenanceDate}
                 <div class="sub-actions">
                     <button class="enter-btn ${sub.maintenance ? 'maintenance' : ''}" 
@@ -1899,17 +1951,12 @@
             modalSubList.appendChild(card);
         });
         
-        // ===== 子機台的「進入遊玩」按鈕（只有這裡才需要炫光 loading） =====
         document.querySelectorAll('.sub-actions .enter-btn:not(.maintenance)').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const machine = this.dataset.machine;
                 const submachine = this.dataset.submachine;
-                
-                // 顯示炫光 loading
                 showHologramLoading();
-                
-                // 模擬載入時間（2 秒後關閉並顯示提示）
                 setTimeout(() => {
                     hideHologramLoading();
                     alert(`🎮 進入 ${machine} - ${submachine}\n\n此為演示功能，實際遊玩請前往遊戲頁面。`);
@@ -1917,9 +1964,7 @@
             });
         });
         
-        // 收藏按鈕事件 - 使用新的我的最愛功能
         document.querySelectorAll('.sub-actions .favorite-btn').forEach(btn => {
-            // 檢查是否已經在最愛中
             if (isMachineFavorite(machineName)) {
                 btn.classList.add('active');
                 const icon = btn.querySelector('i');
@@ -1928,7 +1973,6 @@
                     icon.style.color = '#ef4444';
                 }
             }
-            
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 toggleMachineFavorite(machineName, this);
@@ -1943,36 +1987,28 @@
     if (modalClose) modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-    // ========== 主機台進入按鈕事件（不加載入動畫） ==========
+    // ========== 主機台進入按鈕事件 ==========
     document.querySelectorAll('.enter-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
-            
             let machineName = this.dataset.machine || 
                              this.closest('.game-card-bg')?.querySelector('h3')?.textContent.trim() || 
                              '機台';
-            
-            // 直接開啟子機台彈窗，不加載入動畫
             openModal(machineName);
         });
     });
 
-    // ========== 卡片點擊事件（不加載入動畫） ==========
+    // ========== 卡片點擊事件 ==========
     document.querySelectorAll('.game-card-bg').forEach(card => {
         card.addEventListener('click', function(e) {
             if (e.target.closest('button')) return;
-            
             const titleElem = this.querySelector('h3');
             if (titleElem) {
                 const machineName = titleElem.textContent.trim();
-                
-                // 顯示卡片按下效果
                 this.style.transform = 'scale(0.98)';
                 setTimeout(() => {
                     this.style.transform = '';
                 }, 150);
-                
-                // 直接開啟子機台彈窗
                 openModal(machineName);
             }
         });
@@ -1986,30 +2022,21 @@
     
     if (newWrapper && newPrev && newNext) {
         const scrollAmount = 200;
-        
         newPrev.addEventListener('click', () => {
             newWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
         });
-        
         newNext.addEventListener('click', () => {
             newWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
         });
-        
         newWrapper.addEventListener('scroll', () => {
             const scrollLeft = newWrapper.scrollLeft;
             const maxScroll = newWrapper.scrollWidth - newWrapper.clientWidth;
             const scrollPercentage = scrollLeft / maxScroll;
             const activeIndex = Math.round(scrollPercentage * (newDots.length - 1));
-            
             newDots.forEach((dot, index) => {
-                if (index === activeIndex) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
+                if (index === activeIndex) dot.classList.add('active'); else dot.classList.remove('active');
             });
         });
-        
         newDots.forEach((dot, index) => {
             dot.addEventListener('click', () => {
                 const itemWidth = newWrapper.scrollWidth / newDots.length;
@@ -2024,66 +2051,30 @@
     const bannerTouchArea = document.getElementById('bannerTouchArea');
     
     if (bannerSlider && bannerDots.length) {
-        let currentSlide = 0;
-        let startX = 0;
-        let isDragging = false;
+        let currentSlide = 0, startX = 0, isDragging = false;
         
         function goToSlide(index) {
-            if (index < 0) index = 0;
-            if (index >= bannerDots.length) index = bannerDots.length - 1;
-            
+            if (index < 0) index = 0; if (index >= bannerDots.length) index = bannerDots.length - 1;
             currentSlide = index;
             bannerSlider.style.transform = `translateX(-${currentSlide * 100}%)`;
-            
-            bannerDots.forEach((dot, i) => {
-                if (i === currentSlide) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
-            });
+            bannerDots.forEach((dot, i) => { if (i === currentSlide) dot.classList.add('active'); else dot.classList.remove('active'); });
         }
         
-        bannerDots.forEach((dot, index) => {
-            dot.addEventListener('click', (e) => {
-                e.stopPropagation();
-                goToSlide(index);
-            });
-        });
+        bannerDots.forEach((dot, index) => { dot.addEventListener('click', (e) => { e.stopPropagation(); goToSlide(index); }); });
         
         if (bannerTouchArea) {
-            bannerTouchArea.addEventListener('touchstart', (e) => {
-                startX = e.touches[0].clientX;
-                isDragging = true;
-            }, { passive: true });
-            
-            bannerTouchArea.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
-                e.preventDefault();
-            }, { passive: false });
-            
+            bannerTouchArea.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; }, { passive: true });
+            bannerTouchArea.addEventListener('touchmove', (e) => { if (!isDragging) return; e.preventDefault(); }, { passive: false });
             bannerTouchArea.addEventListener('touchend', (e) => {
                 if (!isDragging) return;
-                
                 const endX = e.changedTouches[0].clientX;
                 const diffX = endX - startX;
-                
-                if (Math.abs(diffX) > 50) {
-                    if (diffX > 0 && currentSlide > 0) {
-                        goToSlide(currentSlide - 1);
-                    } else if (diffX < 0 && currentSlide < bannerDots.length - 1) {
-                        goToSlide(currentSlide + 1);
-                    }
-                }
-                
+                if (Math.abs(diffX) > 50) { if (diffX > 0 && currentSlide > 0) goToSlide(currentSlide - 1); else if (diffX < 0 && currentSlide < bannerDots.length - 1) goToSlide(currentSlide + 1); }
                 isDragging = false;
             }, { passive: true });
         }
         
-        setInterval(() => {
-            let nextSlide = (currentSlide + 1) % bannerDots.length;
-            goToSlide(nextSlide);
-        }, 5000);
+        setInterval(() => { let nextSlide = (currentSlide + 1) % bannerDots.length; goToSlide(nextSlide); }, 5000);
     }
 
     // ========== 標籤切換 ==========
@@ -2096,83 +2087,48 @@
     
     if (tabs.length && tabIndicator && tabsWrapper) {
         function updateActiveTab(activeTab) {
-            // 更新按鈕樣式
-            tabs.forEach(tab => {
-                tab.classList.remove('tech-tab-active');
-                tab.classList.add('bg-dark-200', 'tech-border');
-            });
+            tabs.forEach(tab => { tab.classList.remove('tech-tab-active'); tab.classList.add('bg-dark-200', 'tech-border'); });
+            activeTab.classList.remove('bg-dark-200', 'tech-border'); activeTab.classList.add('tech-tab-active');
             
-            activeTab.classList.remove('bg-dark-200', 'tech-border');
-            activeTab.classList.add('tech-tab-active');
-            
-            // 更新指示器位置
             const tabRect = activeTab.getBoundingClientRect();
             const wrapperRect = tabsWrapper.getBoundingClientRect();
-            
             tabIndicator.style.width = `${tabRect.width}px`;
             tabIndicator.style.left = `${tabRect.left - wrapperRect.left}px`;
             
-            // 滾動到可見區域
             const scrollLeft = tabsWrapper.scrollLeft;
             const tabLeft = activeTab.offsetLeft;
             const tabRight = tabLeft + activeTab.offsetWidth;
             const wrapperWidth = tabsWrapper.clientWidth;
             
-            if (tabLeft < scrollLeft) {
-                tabsWrapper.scrollTo({ left: tabLeft - 10, behavior: 'smooth' });
-            } else if (tabRight > scrollLeft + wrapperWidth) {
-                tabsWrapper.scrollTo({ left: tabRight - wrapperWidth + 10, behavior: 'smooth' });
-            }
+            if (tabLeft < scrollLeft) { tabsWrapper.scrollTo({ left: tabLeft - 10, behavior: 'smooth' }); } 
+            else if (tabRight > scrollLeft + wrapperWidth) { tabsWrapper.scrollTo({ left: tabRight - wrapperWidth + 10, behavior: 'smooth' }); }
             
-            // 切換新機區塊顯示模式
             const tabText = activeTab.dataset.tab;
             
-            // 新機區塊：全部標籤顯示滑動模式，新機標籤顯示垂直模式
             if (newSliderMode && newVerticalMode) {
-                if (tabText === '全部') {
-                    newSliderMode.style.display = 'block';
-                    newVerticalMode.style.display = 'none';
-                } else if (tabText === '新機') {
-                    newSliderMode.style.display = 'none';
-                    newVerticalMode.style.display = 'grid';
-                } else {
-                    // 其他標籤時隱藏新機區塊（因為要顯示其他分類）
-                    newSliderMode.style.display = 'none';
-                    newVerticalMode.style.display = 'none';
-                }
+                if (tabText === '全部') { newSliderMode.style.display = 'block'; newVerticalMode.style.display = 'none'; }
+                else if (tabText === '新機') { newSliderMode.style.display = 'none'; newVerticalMode.style.display = 'grid'; }
+                else { newSliderMode.style.display = 'none'; newVerticalMode.style.display = 'none'; }
             }
             
-            // 顯示/隱藏分類區塊
             categorySections.forEach(section => {
                 const category = section.dataset.category;
-                
-                if (tabText === '全部') {
-                    section.style.display = 'block';
-                } else if (tabText === category) {
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = 'none';
-                }
+                if (tabText === '全部') { section.style.display = 'block'; } 
+                else if (tabText === category) { section.style.display = 'block'; } 
+                else { section.style.display = 'none'; }
             });
         }
         
-        // 初始化
         const defaultTab = document.querySelector('.tab-btn[data-tab="全部"]') || tabs[0];
         updateActiveTab(defaultTab);
         
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                updateActiveTab(tab);
-            });
-        });
+        tabs.forEach(tab => { tab.addEventListener('click', () => { updateActiveTab(tab); }); });
         
-        // 視窗大小改變時更新指示器
         window.addEventListener('resize', () => {
             const activeTab = document.querySelector('.tab-btn.tech-tab-active');
             if (activeTab) {
                 const tabRect = activeTab.getBoundingClientRect();
                 const wrapperRect = tabsWrapper.getBoundingClientRect();
-                
                 tabIndicator.style.width = `${tabRect.width}px`;
                 tabIndicator.style.left = `${tabRect.left - wrapperRect.left}px`;
             }
@@ -2186,77 +2142,38 @@
     const clearAllBtn = document.getElementById('clearAllFilters');
     
     if (filterChips.length) {
-        filterChips.forEach(chip => {
-            chip.addEventListener('click', function() {
-                this.classList.toggle('selected');
-            });
-        });
+        filterChips.forEach(chip => { chip.addEventListener('click', function() { this.classList.toggle('selected'); }); });
     }
     
-    if (resetFiltersBtn) {
-        resetFiltersBtn.addEventListener('click', () => {
-            filterChips.forEach(chip => {
-                chip.classList.remove('selected');
-            });
-        });
-    }
-    
-    if (clearAllBtn) {
-        clearAllBtn.addEventListener('click', () => {
-            filterChips.forEach(chip => {
-                chip.classList.remove('selected');
-            });
-        });
-    }
+    if (resetFiltersBtn) { resetFiltersBtn.addEventListener('click', () => { filterChips.forEach(chip => { chip.classList.remove('selected'); }); }); }
+    if (clearAllBtn) { clearAllBtn.addEventListener('click', () => { filterChips.forEach(chip => { chip.classList.remove('selected'); }); }); }
     
     if (applyFiltersBtn) {
         applyFiltersBtn.addEventListener('click', () => {
             const selectedFilters = [];
-            filterChips.forEach(chip => {
-                if (chip.classList.contains('selected')) {
-                    selectedFilters.push(chip.textContent.trim());
-                }
-            });
-            
+            filterChips.forEach(chip => { if (chip.classList.contains('selected')) { selectedFilters.push(chip.textContent.trim()); } });
             alert(`套用篩選條件: ${selectedFilters.length ? selectedFilters.join(', ') : '無'}\n\n此為演示功能，實際篩選請串接後端資料。`);
-            
-            drawer.classList.remove('open');
-            overlay.classList.remove('open');
+            drawer.classList.remove('open'); overlay.classList.remove('open');
         });
     }
 
     // ========== 其他功能 ==========
     const nicknameBtn = document.getElementById('nicknameBtn');
-    if (nicknameBtn) {
-        nicknameBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('👤 會員中心\n\n此為演示畫面，實際功能請串接後端。');
-        });
-    }
+    if (nicknameBtn) { nicknameBtn.addEventListener('click', (e) => { e.preventDefault(); alert('👤 會員中心\n\n此為演示畫面，實際功能請串接後端。'); }); }
 
     const logoHomeBtn = document.getElementById('logoHomeBtn');
     if (logoHomeBtn) {
         logoHomeBtn.addEventListener('click', (e) => {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => {
-                location.reload();
-            }, 300);
+            setTimeout(() => { location.reload(); }, 300);
         });
     }
 
     const newsBadge = document.getElementById('newsBadge');
-    if (newsBadge) {
-        newsBadge.style.display = 'block';
-    }
+    if (newsBadge) { newsBadge.style.display = 'block'; }
 
-    // ========== 監聽其他頁面的最愛變更 ==========
-    window.addEventListener('storage', function(e) {
-        if (e.key === FAVORITE_STORAGE_KEY) {
-            console.log('我的最愛已更新 from other tab');
-            // 可以視需要更新當前頁面的最愛按鈕狀態
-        }
-    });
+    window.addEventListener('storage', function(e) { if (e.key === FAVORITE_STORAGE_KEY) { console.log('我的最愛已更新 from other tab'); } });
 })();
 </script>
 </body>
