@@ -561,6 +561,24 @@
         .section-header { display: flex; justify-content: space-between; margin-bottom: 0.8rem; border-bottom: 1px solid #1e4b7c; padding-bottom: 0.3rem; }
         .section-title { font-size: 1rem; color: #80e4ff; }
         .section-count { font-size: 0.8rem; background: #1d405e; padding: 0.2rem 0.8rem; border-radius: 30px; }
+        
+        /* 導航小紅點 */
+        .nav-badge {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            width: 10px;
+            height: 10px;
+            background-color: #ff3b3b;
+            border-radius: 50%;
+            border: 2px solid #001a33;
+            box-shadow: 0 0 8px #ff0000;
+            display: none;
+            z-index: 25;
+        }
+        .nav-item.current-page .nav-badge {
+            border-color: #0066cc;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
@@ -569,12 +587,12 @@
     <!-- 頂部導航 -->
     <header class="px-4 py-3 bg-dark-200/90 tech-border">
         <div class="flex items-center justify-between">
-            <a href="#" class="logo" onclick="return false;">
+            <a href="index.html" class="logo">
                 <div class="logo-icon"><div class="logo-icon-inner">TP</div></div>
                 <div class="logo-text"><div class="logo-main">T-PACHIN</div><div class="logo-sub">CYBER PACHINKO SYSTEM</div></div>
             </a>
             <div class="flex flex-col items-end">
-                <div class="text-xs text-white nickname-display">夫人會生氣</div>
+                <a href="about.html" class="text-xs text-white hover:text-yellow-400 transition-colors nickname-display">夫人會生氣</a>
                 <div class="font-bold text-lg text-yellow-400 points-display">2,300</div>
             </div>
         </div>
@@ -583,7 +601,7 @@
     <!-- 公告按鈕框 -->
     <div class="px-4 mt-2">
         <div class="announcement-combo">
-            <a href="#" class="combo-announce-btn" onclick="return false;"><i class="fa fa-bullhorn"></i> 公告</a>
+            <a href="news.html" class="combo-announce-btn"><i class="fa fa-bullhorn"></i> 公告</a>
             <div class="combo-marquee"><marquee scrollamount="5">◈ 春季人氣機台大賞 ◈ 甲賀忍法帖系列熱賣 ◈ 代幣優惠實施中 ◈</marquee></div>
         </div>
     </div>
@@ -655,23 +673,23 @@
     <div id="alertContainer"></div>
     <div id="confirmContainer"></div>
 
-    <!-- 底部導航 -->
+    <!-- 底部導航 - 修正後的版本 -->
     <nav class="bottom-nav mx-auto">
         <div class="flex justify-between items-center">
-            <a href="#" class="nav-item" id="nav-home" onclick="return false;">
+            <a href="index.html" class="nav-item" id="nav-home">
                 <i class="fa fa-home text-xl"></i>
                 <span class="text-xs mt-1">首頁</span>
             </a>
-            <a href="#" class="nav-item current-page" id="nav-game" onclick="return false;">
+            <a href="machines.html" class="nav-item current-page" id="nav-game">
                 <i class="fa fa-gamepad text-xl"></i>
                 <span class="text-xs mt-1">機台</span>
             </a>
-            <a href="#" class="nav-item" id="nav-bell" onclick="return false;">
+            <a href="news.html" class="nav-item" id="nav-bell">
                 <i class="fa fa-bell text-xl"></i>
                 <span class="text-xs mt-1">公告</span>
                 <span class="nav-badge" id="newsBadge"></span>
             </a>
-            <a href="#" class="nav-item" id="nav-user" onclick="return false;">
+            <a href="about.html" class="nav-item" id="nav-user">
                 <i class="fa fa-user text-xl"></i>
                 <span class="text-xs mt-1">我的</span>
             </a>
@@ -717,6 +735,13 @@
             if (pointsElement) {
                 pointsElement.textContent = points.toLocaleString();
             }
+            
+            // 同步更新暱稱（如果有需要）
+            const nicknameElement = document.querySelector('.nickname-display');
+            if (nicknameElement && window.T_PACHIN_STORAGE) {
+                const userData = window.T_PACHIN_STORAGE.getUserData();
+                nicknameElement.textContent = userData.nickname;
+            }
         }
 
         // 監聽其他分頁的點數變更
@@ -727,6 +752,14 @@
                     points = newPoints;
                     updatePointsDisplay();
                 }
+            }
+        });
+
+        // 監聽自訂事件（來自 shared.js）
+        window.addEventListener('t-pachin:user-updated', function(e) {
+            if (e.detail && e.detail.points !== undefined) {
+                points = e.detail.points;
+                updatePointsDisplay();
             }
         });
 
@@ -1188,7 +1221,15 @@
         renderFavoriteList();
         renderReserveList();
         renderPlayedList();
+        
+        // 初始化新聞小紅點（示範用）
+        const newsBadge = document.getElementById('newsBadge');
+        if (newsBadge) {
+            newsBadge.style.display = 'block';
+        }
     })();
 </script>
+<!-- 引入 shared.js 確保點數完全同步 -->
+<script src="shared.js"></script>
 </body>
 </html>
