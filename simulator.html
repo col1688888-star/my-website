@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>パチスロ · 柏青斯洛模擬器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #0a0c1a;
+            font-family: 'Noto Sans TC', 'Orbitron', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .machine {
+            width: 100%;
+            max-width: 450px;
+            background: linear-gradient(145deg, #1e2a3a, #0f1722);
+            border-radius: 32px;
+            border: 2px solid #4a80c0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .top-bar {
+            background: linear-gradient(145deg, #2a3a4a, #1a2a3a);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #4a80c0;
+        }
+        .vip-btn {
+            background: linear-gradient(135deg, #2e4b6e, #1a344d);
+            border-radius: 30px;
+            padding: 5px 14px;
+            border: 1px solid #6a9bc0;
+            cursor: pointer;
+            color: #ffecb3;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .machine-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: #ffd966;
+            text-shadow: 0 0 8px #ffaa33;
+        }
+        .machine-info {
+            font-size: 12px;
+            color: #ffd966;
+            background: #1f2f3f;
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1px solid #fbbf24;
+        }
+
+        .data-container {
+            display: flex;
+            gap: 8px;
+            margin: 8px;
+        }
+        .chart-area {
+            flex: 2;
+            background: #0f1a22;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #4a80c0;
+        }
+        .chart-labels {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 6px;
+        }
+        .chart-labels span {
+            color: #8fcae0;
+            font-size: 9px;
+            width: 8%;
+            text-align: center;
+        }
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 65px;
+            gap: 2px;
+            margin-bottom: 6px;
+        }
+        .bar {
+            width: 8%;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 2px;
+        }
+        .block {
+            width: 100%;
+            height: 10px;
+            border-radius: 2px;
+            border: 1px solid #3a6a8a;
+            background: #2a3a4a;
+        }
+        .red-block {
+            background: #ff3366;
+            box-shadow: 0 0 5px #ff3366;
+            border-color: #ff88aa;
+        }
+        .green-block {
+            background: #33ff66;
+            box-shadow: 0 0 5px #33ff66;
+            border-color: #88ffaa;
+        }
+        .chart-values {
+            display: flex;
+            justify-content: space-around;
+        }
+        .chart-values span {
+            color: #ffaa66;
+            font-size: 8px;
+            font-family: monospace;
+            width: 8%;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .stats-panel {
+            flex: 1;
+            background: #0f1a22;
+            border-radius: 20px;
+            border: 1px solid #4a80c0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-row {
+            display: flex;
+            flex: 1;
+        }
+        .stat-row:first-child {
+            border-bottom: 1px solid #3a5a7a;
+        }
+        .stat-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 4px;
+            text-align: center;
+            border-right: 1px solid #3a5a7a;
+            background: linear-gradient(145deg, #121e2a, #0c1620);
+        }
+        .stat-card:last-child {
+            border-right: none;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #8fcae0;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .stat-number {
+            font-family: monospace;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffd966;
+            text-shadow: 0 0 6px #ffaa33;
+        }
+
+        .video-section {
+            position: relative;
+            margin: 50px 8px;  /* 上下各 50px */
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        .video-area {
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid #4a80c0;
+            position: relative;
+            height: 600px;  /* 一般螢幕 600px */
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .video-buttons {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            display: flex;
+            gap: 10px;
+            z-index: 15;
+        }
+        .video-btn {
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #4a80c0;
+            border-radius: 24px;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+        .video-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 公告容器區域 */
+        .notice-wrapper {
+            margin: 8px;
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+        
+        /* 完整公告卡片 */
+        .notice-card {
+            background: linear-gradient(135deg, rgba(10, 20, 30, 0.92), rgba(5, 12, 18, 0.96));
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 10px 16px;
+            border: 1px solid rgba(255, 136, 77, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        /* 純大聲公圖示 - 無外框 */
+        .megaphone-icon-only {
+            font-size: 28px;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.2s ease;
+            filter: drop-shadow(0 0 4px rgba(255, 100, 50, 0.5));
+            animation: megaphoneWave 1.2s ease-in-out infinite;
+        }
+        
+        .megaphone-icon-only:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 8px rgba(255, 100, 50, 0.8));
+            animation: none;
+        }
+        
+        @keyframes megaphoneWave {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(12deg) scale(1.05); }
+            75% { transform: rotate(-8deg) scale(1.02); }
+        }
+        
+        .notice-icon {
+            font-size: 20px;
+            animation: iconPulse 1.5s ease-in-out infinite;
+        }
+        
+        .notice-content {
+            flex: 1;
+        }
+        
+        .notice-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #ffaa77;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+        
+        .notice-text {
+            font-size: 11px;
+            color: #ffddbb;
+            line-height: 1.3;
+        }
+        
+        .notice-close {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            border-radius: 20px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            color: #ffaa77;
+            font-size: 12px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .notice-close:hover {
+            background: rgba(255,100,50,0.5);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease forwards;
+        }
+        
+        .fade-out {
+            animation: fadeOut 0.2s ease forwards;
+        }
+
+        .video-spacer {
+            height: 50px;
+        }
+
+        .drawer-trigger {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 60px;
+            background: rgba(74,128,192,0.5);
+            border-radius: 20px 0 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+            z-index: 100;
+        }
+        .drawer {
+            position: fixed;
+            right: -320px;
+            top: 0;
+            width: 300px;
+            height: 100%;
+            background: rgba(27, 38, 51, 0.92);
+            backdrop-filter: blur(12px);
+            border-left: 3px solid #4a80c0;
+            border-radius: 24px 0 0 24px;
+            transition: right 0.3s;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .drawer.open {
+            right: 0;
+        }
+        .drawer-header {
+            background: rgba(31,62,80,0.9);
+            padding: 14px;
+            border-bottom: 2px solid #4a80c0;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            font-weight: bold;
+        }
+        .drawer-content {
+            padding: 16px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .drawer-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .exchange-card {
+            background: linear-gradient(145deg, #1f2a34, #121b26);
+            border-radius: 24px;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #4a80c0;
+        }
+        .balance-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .balance-label {
+            color: #ffd966;
+            font-size: 12px;
+        }
+        .balance-value {
+            color: #fbbf24;
+            font-family: monospace;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .full-buttons {
+            display: flex;
+            gap: 12px;
+            margin: 12px 0;
+        }
+        .full-btn {
+            flex: 1;
+            background: linear-gradient(145deg, #3a5065, #2a4055);
+            border: 1px solid #4a80c0;
+            border-radius: 30px;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #d0ecff;
+            cursor: pointer;
+            text-align: center;
+        }
+        .custom-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 10px;
+            margin-top: 8px;
+        }
+        .custom-title {
+            font-size: 11px;
+            color: #8fcae0;
+            margin-bottom: 8px;
+        }
+        .custom-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .custom-input {
+            width: 100px;
+            background: #0e151f;
+            border: 1px solid #4a80c0;
+            border-radius: 40px;
+            padding: 8px 10px;
+            color: #ffd966;
+            text-align: center;
+            font-size: 14px;
+        }
+        .custom-btn {
+            flex: 1;
+            background: linear-gradient(145deg, #3a5065, #2a4055);
+            border: 1px solid #4a80c0;
+            border-radius: 30px;
+            padding: 8px 0;
+            font-size: 12px;
+            color: #d0ecff;
+            cursor: pointer;
+            text-align: center;
+        }
+        .coin-box-drawer {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(145deg, #2d3748, #1a202c);
+            border-radius: 40px;
+            padding: 4px 12px 4px 8px;
+            border: 1px solid #fbbf24;
+        }
+        .coin-symbol-drawer {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle at 30% 30%, #4a5568, #1a202c);
+            border-radius: 50%;
+            position: relative;
+            border: 1px solid #fbbf24;
+        }
+        .coin-symbol-drawer::before {
+            content: '$';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fbbf24;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .collapsible-section {
+            margin-bottom: 12px;
+            border-radius: 20px;
+            background: rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .section-header-click {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: rgba(74,128,192,0.2);
+            cursor: pointer;
+            border-radius: 20px;
+        }
+        .section-title-drawer {
+            font-size: 13px;
+            color: #ffd966;
+            font-weight: bold;
+            flex: 1;
+        }
+        .collapse-icon {
+            color: #4a80c0;
+            font-size: 12px;
+        }
+        .collapsible-content {
+            padding: 8px 0;
+            display: none;
+        }
+        .collapsible-content.show {
+            display: block;
+        }
+        .machine-item {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #4a80c0;
+            border-radius: 20px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .machine-item-info {
+            flex: 1;
+        }
+        .machine-item-name {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffd966;
+        }
+        .machine-item-sub {
+            font-size: 10px;
+            color: #8fcae0;
+        }
+        .machine-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .item-btn {
+            background: linear-gradient(145deg, #3a5065, #2a4055);
+            border: 1px solid #4a80c0;
+            border-radius: 30px;
+            padding: 4px 12px;
+            font-size: 11px;
+            color: white;
+            cursor: pointer;
+        }
+        .item-btn.enter { background: linear-gradient(145deg, #2e7d64, #1e5d4a); border-color: #4cae8c; }
+        .item-btn.leave { background: linear-gradient(145deg, #653a3a, #552a2a); border-color: #ff6666; }
+        .menu-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #3a506a;
+            color: #d0ecff;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .exit-btn {
+            background: #be3e62;
+            border: 1px solid #ff8a9f;
+            border-radius: 40px;
+            padding: 12px;
+            text-align: center;
+            margin-top: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #1d2a36;
+            border: 1px solid #4a80c0;
+            border-radius: 30px;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            z-index: 2000;
+            transform: translateY(100px);
+            transition: 0.3s;
+        }
+        .toast.show {
+            transform: translateY(0);
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-card {
+            background: #1f2f3f;
+            border: 2px solid #ffd966;
+            border-radius: 32px;
+            padding: 24px;
+            width: 280px;
+            text-align: center;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .modal-confirm {
+            background: #be3e62;
+            color: white;
+        }
+        .modal-cancel {
+            background: #3a5065;
+            color: white;
+        }
+        @media (max-width: 430px) {
+            .machine { max-width: 100%; }
+            .video-area { height: 500px; }  /* 手機版 500px */
+            .video-section {
+                margin: 35px 8px;  /* 手機版上下各 35px */
+                margin-top: 35px;
+                margin-bottom: 35px;
+            }
+            .video-spacer { height: 40px; }
+            .stat-number { font-size: 18px; }
+            .stat-label { font-size: 10px; }
+            .notice-card { padding: 8px 12px; }
+            .notice-icon { font-size: 16px; }
+            .notice-title { font-size: 11px; }
+            .notice-text { font-size: 10px; }
+            .megaphone-icon-only { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="machine">
+        <div class="top-bar">
+            <div class="vip-btn" id="vipBtn">⭐ VIP1</div>
+            <div class="machine-name">減之</div>
+            <div class="machine-info">NO.001｜每枚2</div>
+        </div>
+
+        <div class="data-container">
+            <div class="chart-area">
+                <div class="chart-labels" id="chartLabels"></div>
+                <div class="chart-bars" id="chartBars"></div>
+                <div class="chart-values" id="chartValues"></div>
+            </div>
+            <div class="stats-panel">
+                <div class="stat-row">
+                    <div class="stat-card">
+                        <div class="stat-label">總轉數</div>
+                        <div class="stat-number" id="totalSpins">12589</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">BB次數</div>
+                        <div class="stat-number" id="totalBB">156</div>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-card">
+                        <div class="stat-label">當前轉數</div>
+                        <div class="stat-number" id="currentSpins">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">RB次數</div>
+                        <div class="stat-number" id="totalRB">289</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 可收合的公告容器 -->
+        <div class="notice-wrapper" id="noticeWrapper">
+            <div class="notice-card" id="noticeCard">
+                <div class="notice-icon">🔧</div>
+                <div class="notice-content">
+                    <div class="notice-title" id="noticeTitle">系統維護預告</div>
+                    <div class="notice-text" id="noticeText">減之001 將在 明日 08:00 進行維護</div>
+                </div>
+                <button class="notice-close" id="noticeCloseBtn">✕</button>
+            </div>
+        </div>
+
+        <div class="video-section">
+            <div class="video-area">
+                <video id="gameVideo" autoplay muted loop playsinline>
+                    <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-glitch-digital-wave-41408-large.mp4" type="video/mp4">
+                </video>
+                <div class="video-buttons">
+                    <div class="video-btn" id="pipBtn">自動</div>
+                    <div class="video-btn" id="reserveBtn">保留</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="video-spacer"></div>
+
+        <div class="drawer-trigger" id="drawerTrigger">◀</div>
+        <div class="drawer" id="drawer">
+            <div class="drawer-header">
+                <span>⚙️ 快捷工具</span>
+                <button class="drawer-close" id="drawerClose">✕</button>
+            </div>
+            <div class="drawer-content" id="drawerContent"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <div class="modal" id="exitModal">
+        <div class="modal-card">
+            <h3 style="color:#ffd966;">⚠️ 確認離開</h3>
+            <p style="color:#b0d4e0; margin:12px 0;">確定要離開機台嗎？<br>機台上剩餘的代幣將自動轉換為點數。</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-cancel" id="exitCancel">取消</button>
+                <button class="modal-btn modal-confirm" id="exitConfirm">確定離開</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const toast = document.getElementById('toast');
+            function showMessage(msg) {
+                toast.innerText = msg;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            }
+
+            let playerCurrentSpins = 0;
+            let playerCurrentBB = 0;
+            let playerCurrentRB = 0;
+            let machineTotalSpins = 12589;
+            let machineTotalBB = 156;
+            let machineTotalRB = 289;
+            let machineCoins = 2062390;
+            let playerPoints = 0;
+            let reservedList = [];
+
+            const chartValues = [25, 30, 35, 40, 45, 50, 55, 60, 65, 70];
+            
+            // 公告相關元素
+            const noticeWrapper = document.getElementById('noticeWrapper');
+            const noticeCard = document.getElementById('noticeCard');
+            const noticeCloseBtn = document.getElementById('noticeCloseBtn');
+            const noticeTitle = document.getElementById('noticeTitle');
+            const noticeText = document.getElementById('noticeText');
+            
+            let maintenanceDateStr = '';
+            
+            // 設定維護公告內容
+            function setMaintenanceNotice() {
+                const now = new Date();
+                const maintenanceDate = new Date(now);
+                maintenanceDate.setDate(now.getDate() + 1);
+                maintenanceDate.setHours(8, 0, 0, 0);
+                maintenanceDateStr = `${maintenanceDate.getMonth()+1}/${maintenanceDate.getDate()} ${maintenanceDate.getHours().toString().padStart(2,'0')}:00`;
+                noticeTitle.innerHTML = '🔧 系統維護預告';
+                noticeText.innerHTML = `減之001 將在 ${maintenanceDateStr} 進行維護，請留意時間`;
+            }
+            
+            // 關閉公告，顯示純大聲公圖示
+            function closeNotice() {
+                noticeCard.classList.add('fade-out');
+                setTimeout(() => {
+                    noticeCard.style.display = 'none';
+                    // 顯示純大聲公圖示 - 無外框
+                    const megaphoneIcon = document.createElement('div');
+                    megaphoneIcon.className = 'megaphone-icon-only';
+                    megaphoneIcon.id = 'megaphoneIcon';
+                    megaphoneIcon.innerHTML = '📢';
+                    megaphoneIcon.onclick = () => openNotice(megaphoneIcon);
+                    noticeWrapper.appendChild(megaphoneIcon);
+                }, 200);
+            }
+            
+            // 開啟公告，移除大聲公圖示
+            function openNotice(megaphoneIcon) {
+                megaphoneIcon.remove();
+                noticeCard.style.display = 'flex';
+                noticeCard.classList.remove('fade-out');
+                noticeCard.classList.add('fade-in');
+                setTimeout(() => {
+                    noticeCard.classList.remove('fade-in');
+                }, 300);
+            }
+            
+            // 綁定關閉按鈕事件
+            noticeCloseBtn.addEventListener('click', closeNotice);
+            
+            // 原有功能
+            function initChart() {
+                const labelsDiv = document.getElementById('chartLabels');
+                const barsDiv = document.getElementById('chartBars');
+                const valuesDiv = document.getElementById('chartValues');
+                
+                labelsDiv.innerHTML = '';
+                for(let i=1; i<=10; i++) {
+                    let span = document.createElement('span');
+                    span.innerText = i;
+                    labelsDiv.appendChild(span);
+                }
+                
+                barsDiv.innerHTML = '';
+                for(let i=0; i<10; i++) {
+                    let bar = document.createElement('div');
+                    bar.className = 'bar';
+                    for(let b=0; b<5; b++) {
+                        let block = document.createElement('div');
+                        block.className = 'block';
+                        bar.appendChild(block);
+                    }
+                    barsDiv.appendChild(bar);
+                }
+                
+                valuesDiv.innerHTML = '';
+                for(let i=0; i<10; i++) {
+                    let span = document.createElement('span');
+                    span.innerText = chartValues[i];
+                    valuesDiv.appendChild(span);
+                }
+                updateChartColors();
+            }
+            
+            function updateChartColors() {
+                const barsDiv = document.getElementById('chartBars');
+                if(!barsDiv) return;
+                for(let i=0; i<10; i++) {
+                    const bar = barsDiv.children[i];
+                    if(!bar) continue;
+                    const blocks = bar.children;
+                    const val = chartValues[i];
+                    let fillCount = 1;
+                    if(val >= 65) fillCount = 5;
+                    else if(val >= 55) fillCount = 4;
+                    else if(val >= 45) fillCount = 3;
+                    else if(val >= 35) fillCount = 2;
+                    else fillCount = 1;
+                    for(let b=0; b<blocks.length; b++) {
+                        blocks[b].classList.remove('red-block', 'green-block');
+                        if(b < fillCount) {
+                            blocks[b].classList.add(b % 2 === 0 ? 'red-block' : 'green-block');
+                        } else {
+                            blocks[b].style.background = '#2a3a4a';
+                        }
+                    }
+                }
+            }
+            
+            function updateStatsDisplay() {
+                document.getElementById('totalSpins').innerText = machineTotalSpins;
+                document.getElementById('totalBB').innerText = machineTotalBB;
+                document.getElementById('currentSpins').innerText = playerCurrentSpins;
+                document.getElementById('totalRB').innerText = machineTotalRB;
+            }
+            
+            function updateDrawerUI() {
+                const drawerCoins = document.getElementById('drawerCoins');
+                const drawerPoints = document.getElementById('drawerPoints');
+                if(drawerCoins) drawerCoins.innerText = machineCoins.toLocaleString();
+                if(drawerPoints) drawerPoints.innerText = playerPoints.toLocaleString();
+                
+                const reserveContainer = document.getElementById('reserveContainer');
+                if(reserveContainer) {
+                    if(reservedList.length === 0) {
+                        reserveContainer.innerHTML = '<div style="color:#8fcae0; padding:8px;">無保留中機台</div>';
+                    } else {
+                        reserveContainer.innerHTML = reservedList.map((item, idx) => `
+                            <div class="machine-item">
+                                <div class="machine-item-info">
+                                    <div class="machine-item-name">減之 NO.001</div>
+                                    <div class="machine-item-sub">${item.time}</div>
+                                </div>
+                                <div class="machine-item-actions">
+                                    <button class="item-btn enter" onclick="enterReserve(${idx})">進入</button>
+                                    <button class="item-btn leave" onclick="removeReserve(${idx})">離開</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            }
+            
+            window.enterReserve = function(idx) {
+                showMessage(`進入 ${reservedList[idx].spins} 轉的保留機台`);
+            };
+            window.removeReserve = function(idx) {
+                reservedList.splice(idx, 1);
+                updateDrawerUI();
+                showMessage('已取消保留');
+            };
+            
+            function addSpin() {
+                playerCurrentSpins++;
+                const rand = Math.random();
+                if(rand < 0.08) {
+                    playerCurrentBB++;
+                    machineTotalBB++;
+                    showMessage(`🎉 第${playerCurrentSpins}轉 開出BB！`);
+                } else if(rand < 0.15) {
+                    playerCurrentRB++;
+                    machineTotalRB++;
+                    showMessage(`🎉 第${playerCurrentSpins}轉 開出RB！`);
+                } else if(playerCurrentSpins % 20 === 0) {
+                    showMessage(`第${playerCurrentSpins}轉`);
+                }
+                machineTotalSpins++;
+                updateStatsDisplay();
+            }
+            
+            function addAllPoints() {
+                if(playerPoints > 0) {
+                    machineCoins += playerPoints;
+                    showMessage(`上分 +${playerPoints.toLocaleString()} 代幣`);
+                    playerPoints = 0;
+                    updateDrawerUI();
+                } else {
+                    showMessage('沒有點數可以上分！');
+                }
+            }
+            
+            function subAllPoints() {
+                if(machineCoins > 0) {
+                    playerPoints += machineCoins;
+                    showMessage(`下分 +${machineCoins.toLocaleString()} 點數`);
+                    machineCoins = 0;
+                    updateDrawerUI();
+                } else {
+                    showMessage('沒有代幣可以下分！');
+                }
+            }
+            
+            function addCustomPoints() {
+                const amount = parseInt(document.getElementById('exchangeAmount').value) || 0;
+                if(amount <= 0) { showMessage('請輸入大於0的數量'); return; }
+                if(playerPoints >= amount) {
+                    machineCoins += amount;
+                    playerPoints -= amount;
+                    updateDrawerUI();
+                    showMessage(`上分 +${amount.toLocaleString()} 代幣`);
+                } else {
+                    showMessage(`點數不足！目前持有: ${playerPoints.toLocaleString()}`);
+                }
+            }
+            
+            function subCustomPoints() {
+                const amount = parseInt(document.getElementById('exchangeAmount').value) || 0;
+                if(amount <= 0) { showMessage('請輸入大於0的數量'); return; }
+                if(machineCoins >= amount) {
+                    playerPoints += amount;
+                    machineCoins -= amount;
+                    updateDrawerUI();
+                    showMessage(`下分 +${amount.toLocaleString()} 點數`);
+                } else {
+                    showMessage(`代幣不足！目前持有: ${machineCoins.toLocaleString()}`);
+                }
+            }
+            
+            function exitMachine() {
+                if(machineCoins > 0) {
+                    playerPoints += machineCoins;
+                    showMessage(`離開機台，自動兌換 ${machineCoins.toLocaleString()} 代幣 → 點數`);
+                    machineCoins = 0;
+                }
+                showMessage('已離開機台');
+                drawer.classList.remove('open');
+                updateDrawerUI();
+            }
+            
+            function initDrawer() {
+                const drawerContent = document.getElementById('drawerContent');
+                drawerContent.innerHTML = `
+                    <div class="exchange-card">
+                        <div class="balance-row">
+                            <span class="balance-label">💰 機台代幣</span>
+                            <div class="coin-box-drawer">
+                                <span class="coin-symbol-drawer"></span>
+                                <span class="balance-value" id="drawerCoins">${machineCoins.toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="balance-row">
+                            <span class="balance-label">🎯 我的點數</span>
+                            <div class="coin-box-drawer">
+                                <span class="coin-symbol-drawer"></span>
+                                <span class="balance-value" id="drawerPoints">${playerPoints.toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="full-buttons">
+                            <button class="full-btn" id="addAllBtn">上分</button>
+                            <button class="full-btn" id="subAllBtn">下分</button>
+                        </div>
+                        <div class="custom-section">
+                            <div class="custom-title">自訂上下分 (1:1兌換)</div>
+                            <div class="custom-input-group">
+                                <input type="number" id="exchangeAmount" class="custom-input" placeholder="數量" value="1000">
+                                <button class="custom-btn" id="addCustomBtn">上分</button>
+                                <button class="custom-btn" id="subCustomBtn">下分</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="collapsible-section">
+                        <div class="section-header-click" data-target="playingContent">
+                            <span class="section-title-drawer">🎮 遊戲中</span>
+                            <span class="collapse-icon">▶</span>
+                        </div>
+                        <div class="collapsible-content" id="playingContent">
+                            <div class="machine-item">
+                                <div class="machine-item-info">
+                                    <div class="machine-item-name">超級奇蹟小丑 EX版</div>
+                                    <div class="machine-item-sub">每枚2</div>
+                                </div>
+                                <div class="machine-item-actions">
+                                    <button class="item-btn enter">進入</button>
+                                    <button class="item-btn leave">離開</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="collapsible-section">
+                        <div class="section-header-click" data-target="reserveContent">
+                            <span class="section-title-drawer">⏳ 保留中</span>
+                            <span class="collapse-icon">▶</span>
+                        </div>
+                        <div class="collapsible-content" id="reserveContent">
+                            <div id="reserveContainer"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="collapsible-section">
+                        <div class="section-header-click" data-target="favoriteContent">
+                            <span class="section-title-drawer">❤️ 收藏中</span>
+                            <span class="collapse-icon">▶</span>
+                        </div>
+                        <div class="collapsible-content" id="favoriteContent">
+                            <div class="machine-item">
+                                <div class="machine-item-info">
+                                    <div class="machine-item-name">幸運小丑 櫻花版</div>
+                                    <div class="machine-item-sub">每枚2</div>
+                                </div>
+                                <div class="machine-item-actions">
+                                    <button class="item-btn enter">進入</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-title-drawer" style="margin-top: 12px;">🛠️ 系統工具</div>
+                    <div class="menu-item" id="refreshBtn">🔄 頁面重整</div>
+                    <div class="menu-item" id="videoLineBtn">📡 視訊線路</div>
+                    <div class="menu-item" id="strategyBtn">📖 機台攻略</div>
+                    <div class="exit-btn" id="exitMachineBtn">🚪 離開機台</div>
+                `;
+                
+                document.getElementById('addAllBtn')?.addEventListener('click', addAllPoints);
+                document.getElementById('subAllBtn')?.addEventListener('click', subAllPoints);
+                document.getElementById('addCustomBtn')?.addEventListener('click', addCustomPoints);
+                document.getElementById('subCustomBtn')?.addEventListener('click', subCustomPoints);
+                document.getElementById('refreshBtn')?.addEventListener('click', () => { showMessage('頁面重整'); setTimeout(() => location.reload(), 500); });
+                document.getElementById('videoLineBtn')?.addEventListener('click', () => showMessage('切換視訊線路'));
+                document.getElementById('strategyBtn')?.addEventListener('click', () => showMessage('📖 機台攻略：20:00後RB機率較高'));
+                document.getElementById('exitMachineBtn')?.addEventListener('click', () => exitModal.classList.add('show'));
+                
+                document.querySelectorAll('.collapsible-section').forEach(section => {
+                    const header = section.querySelector('.section-header-click');
+                    const content = section.querySelector('.collapsible-content');
+                    const icon = header?.querySelector('.collapse-icon');
+                    if(content && icon) {
+                        content.classList.remove('show');
+                        icon.textContent = '▶';
+                        header.addEventListener('click', () => {
+                            content.classList.toggle('show');
+                            icon.textContent = content.classList.contains('show') ? '▼' : '▶';
+                        });
+                    }
+                });
+                
+                updateDrawerUI();
+            }
+            
+            const chartArea = document.querySelector('.chart-area');
+            chartArea.addEventListener('click', addSpin);
+            document.getElementById('reserveBtn')?.addEventListener('click', addReserve);
+            
+            function addReserve() {
+                const minutes = Math.floor(playerCurrentSpins / 100) * 6;
+                if(minutes <= 0) {
+                    showMessage('轉數不足100，無法保留');
+                    return;
+                }
+                let timeStr = minutes >= 60 ? `${Math.floor(minutes/60)}小時${minutes%60}分鐘` : `${minutes}分鐘`;
+                if(minutes >= 1440) timeStr = '24小時';
+                reservedList.push({ time: `剩 ${timeStr}`, spins: playerCurrentSpins });
+                showMessage(`已保留機台，可保留 ${timeStr}`);
+                updateDrawerUI();
+            }
+            
+            const drawer = document.getElementById('drawer');
+            const drawerTrigger = document.getElementById('drawerTrigger');
+            const drawerClose = document.getElementById('drawerClose');
+            drawerTrigger.addEventListener('click', () => drawer.classList.add('open'));
+            drawerClose.addEventListener('click', () => drawer.classList.remove('open'));
+            document.addEventListener('click', (e) => {
+                if(!drawer.contains(e.target) && !drawerTrigger.contains(e.target)) {
+                    drawer.classList.remove('open');
+                }
+            });
+            
+            const exitModal = document.getElementById('exitModal');
+            document.getElementById('exitCancel')?.addEventListener('click', () => exitModal.classList.remove('show'));
+            document.getElementById('exitConfirm')?.addEventListener('click', () => {
+                exitMachine();
+                exitModal.classList.remove('show');
+            });
+            
+            document.getElementById('vipBtn')?.addEventListener('click', () => showMessage('⭐ VIP 1 等級'));
+            
+            const video = document.getElementById('gameVideo');
+            document.getElementById('pipBtn')?.addEventListener('click', async () => {
+                try {
+                    if(document.pictureInPictureElement === video) await document.exitPictureInPicture();
+                    else await video.requestPictureInPicture();
+                } catch(e) { showMessage('PIP不支援'); }
+            });
+            
+            initChart();
+            initDrawer();
+            updateStatsDisplay();
+            setMaintenanceNotice();
+        })();
+    </script>
+</body>
+</html>
