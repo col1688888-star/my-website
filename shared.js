@@ -1,27 +1,18 @@
 // ==================== 全域共用資料 ====================
 const T_PACHIN_STORAGE = {
-    // 我的最愛
+    // 儲存 KEY
     FAVORITE_KEY: 't_pachin_favorites',
-    
-    // 保留機台
     RESERVE_KEY: 't_pachin_reserves',
-    
-    // 使用者資料 (點數、代幣)
     USER_KEY: 't_pachin_user',
+    PLAYED_KEY: 't_pachin_played',
     
-    // 初始化點數
-    initPoints() {
-        const userData = this.getUserData();
-        return userData.points;
-    },
-    
-    // 取得使用者資料
+    // ==================== 使用者資料 ====================
     getUserData() {
         const defaultData = {
-            points: 5280,
+            points: 6600,
             totalTokens: 6000,
             nickname: '夫人會生氣',
-            vipLevel: 3,
+            vipLevel: 1,
             lastUpdated: Date.now()
         };
         
@@ -36,7 +27,6 @@ const T_PACHIN_STORAGE = {
         return defaultData;
     },
     
-    // 儲存使用者資料
     saveUserData(userData) {
         localStorage.setItem(this.USER_KEY, JSON.stringify({
             ...userData,
@@ -48,15 +38,29 @@ const T_PACHIN_STORAGE = {
         }));
     },
     
-    // 更新點數
     updatePoints(changeAmount) {
         const userData = this.getUserData();
         userData.points = Math.max(0, userData.points + changeAmount);
         this.saveUserData(userData);
+        this.updateAllPointsDisplay();
         return userData.points;
     },
     
-    // 取得我的最愛
+    getPoints() {
+        return this.getUserData().points;
+    },
+    
+    updateAllPointsDisplay() {
+        const points = this.getPoints();
+        document.querySelectorAll('.points-display').forEach(el => {
+            el.textContent = points.toLocaleString();
+        });
+        document.querySelectorAll('.token-display, .user-points').forEach(el => {
+            el.textContent = points.toLocaleString();
+        });
+    },
+    
+    // ==================== 我的最愛 ====================
     getFavorites() {
         const stored = localStorage.getItem(this.FAVORITE_KEY);
         if (stored) {
@@ -69,16 +73,14 @@ const T_PACHIN_STORAGE = {
         return [];
     },
     
-    // 儲存我的最愛
     saveFavorites(favorites) {
         localStorage.setItem(this.FAVORITE_KEY, JSON.stringify(favorites));
-        
         window.dispatchEvent(new CustomEvent('t-pachin:favorites-updated', {
             detail: favorites
         }));
+        return favorites;
     },
     
-    // 切換我的最愛
     toggleFavorite(machine) {
         const favorites = this.getFavorites();
         const index = favorites.findIndex(m => m.id === machine.id);
@@ -86,14 +88,18 @@ const T_PACHIN_STORAGE = {
         if (index !== -1) {
             favorites.splice(index, 1);
         } else {
-            favorites.push(machine);
+            favorites.push({ ...machine, favoritedAt: Date.now() });
         }
         
         this.saveFavorites(favorites);
         return favorites;
     },
     
-    // 取得保留機台
+    isFavorite(machineId) {
+        return this.getFavorites().some(m => m.id === machineId);
+    },
+    
+    // ==================== 保留機台 ====================
     getReserves() {
         const stored = localStorage.getItem(this.RESERVE_KEY);
         if (stored) {
@@ -108,81 +114,107 @@ const T_PACHIN_STORAGE = {
         return [];
     },
     
-    // 儲存保留機台
     saveReserves(reserves) {
         localStorage.setItem(this.RESERVE_KEY, JSON.stringify(reserves));
-        
         window.dispatchEvent(new CustomEvent('t-pachin:reserves-updated', {
             detail: reserves
         }));
+        return reserves;
     },
     
-    // 加入保留
     addReserve(machine, minutes = 30) {
-        const reserves = this.getReserves();
+        let reserves = this.getReserves();
         const now = Date.now();
+        const expiresAt = now + minutes * 60 * 1000;
         
-        const existing = reserves.find(r => r.id === machine.id);
-        if (existing) {
-            existing.expiresAt = now + minutes * 60 * 1000;
-            existing.reserveTime = new Date(now + minutes * 60 * 1000).toLocaleTimeString('zh-TW', {
+        const existingIndex = reserves.findIndex(r => r.id === machine.id);
+        const reserveData = {
+            ...machine,
+            reserveTime: new Date(expiresAt).toLocaleTimeString('zh-TW', {
                 hour: '2-digit', minute: '2-digit'
-            });
+            }),
+            expiresAt: expiresAt,
+            addedAt: now
+        };
+        
+        if (existingIndex !== -1) {
+            reserves[existingIndex] = reserveData;
         } else {
-            reserves.push({
-                ...machine,
-                reserveTime: new Date(now + minutes * 60 * 1000).toLocaleTimeString('zh-TW', {
-                    hour: '2-digit', minute: '2-digit'
-                }),
-                expiresAt: now + minutes * 60 * 1000,
-                lastAlertTime: 0
-            });
+            reserves.push(reserveData);
         }
         
         this.saveReserves(reserves);
         return reserves;
     },
     
-    // 移除保留
     removeReserve(machineId) {
-        const reserves = this.getReserves();
-        const newReserves = reserves.filter(r => r.id !== machineId);
-        this.saveReserves(newReserves);
-        return newReserves;
+        let reserves = this.getReserves();
+        reserves = reserves.filter(r => r.id !== machineId);
+        this.saveReserves(reserves);
+        return reserves;
+    },
+    
+    // ==================== 玩過記錄 ====================
+    getPlayed() {
+        const stored = localStorage.getItem(this.PLAYED_KEY);
+        if (stored) {
+            try {
+                return JSON.parse(stored);
+            } catch (e) {
+                return [];
+            }
+        }
+        return [];
+    },
+    
+    savePlayed(played) {
+        localStorage.setItem(this.PLAYED_KEY, JSON.stringify(played));
+        return played;
+    },
+    
+    addPlayed(machine, coinsUsed = 0) {
+        let played = this.getPlayed();
+        const existingIndex = played.findIndex(p => p.id === machine.id);
+        
+        const playedData = {
+            ...machine,
+            playedDate: new Date().toLocaleDateString('zh-TW'),
+            playedTime: new Date().toLocaleTimeString('zh-TW'),
+            coinsUsed: coinsUsed,
+            lastPlayed: Date.now()
+        };
+        
+        if (existingIndex !== -1) {
+            played[existingIndex] = { ...played[existingIndex], ...playedData };
+        } else {
+            played.unshift(playedData);
+        }
+        
+        if (played.length > 50) played = played.slice(0, 50);
+        
+        this.savePlayed(played);
+        return played;
+    },
+    
+    // ==================== 導航高亮 ====================
+    highlightCurrentNav() {
+        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        document.querySelectorAll('.nav-item').forEach(item => {
+            const href = item.getAttribute('href');
+            if (href === currentPath) {
+                item.classList.add('current-page');
+            } else {
+                item.classList.remove('current-page');
+            }
+        });
     }
 };
-
-// ==================== 初始化點數顯示（所有頁面共用） ====================
-function initializePointsDisplay() {
-    const userData = T_PACHIN_STORAGE.getUserData();
-    
-    document.querySelectorAll('.points-display').forEach(el => {
-        el.textContent = userData.points.toLocaleString();
-    });
-    
-    document.querySelectorAll('.tokens-display').forEach(el => {
-        el.textContent = userData.totalTokens.toLocaleString();
-    });
-    
-    document.querySelectorAll('.nickname-display').forEach(el => {
-        el.textContent = userData.nickname;
-    });
-    
-    return {
-        getPoints: () => T_PACHIN_STORAGE.getUserData().points,
-        updatePoints: (change) => {
-            const newPoints = T_PACHIN_STORAGE.updatePoints(change);
-            initializePointsDisplay();
-            return newPoints;
-        }
-    };
-}
 
 // ==================== 倒數計時器管理 ====================
 const CountdownManager = {
     intervals: {},
     
-    startCountdown(elementId, expiresAt, onExpire) {
+    startCountdown(elementId, expiresAt, onExpire, onUpdate) {
         if (this.intervals[elementId]) {
             clearInterval(this.intervals[elementId]);
         }
@@ -196,9 +228,10 @@ const CountdownManager = {
             
             if (remaining <= 0) {
                 el.textContent = '已到期';
-                el.classList.add('urgent');
+                el.classList.add('warning');
                 if (onExpire) onExpire();
                 clearInterval(this.intervals[elementId]);
+                delete this.intervals[elementId];
                 return;
             }
             
@@ -209,14 +242,17 @@ const CountdownManager = {
             el.textContent = timeStr;
             
             if (remaining <= 600000) {
-                el.classList.add('urgent');
+                el.classList.add('warning');
             } else {
-                el.classList.remove('urgent');
+                el.classList.remove('warning');
             }
+            
+            if (onUpdate) onUpdate(remaining, timeStr);
         };
         
         update();
         this.intervals[elementId] = setInterval(update, 1000);
+        return this.intervals[elementId];
     },
     
     stopCountdown(elementId) {
@@ -224,9 +260,44 @@ const CountdownManager = {
             clearInterval(this.intervals[elementId]);
             delete this.intervals[elementId];
         }
+    },
+    
+    stopAll() {
+        Object.keys(this.intervals).forEach(id => this.stopCountdown(id));
     }
 };
 
+// ==================== 初始化所有頁面共用功能 ====================
+function initializeSharedFeatures() {
+    T_PACHIN_STORAGE.updateAllPointsDisplay();
+    
+    window.addEventListener('t-pachin:user-updated', () => {
+        T_PACHIN_STORAGE.updateAllPointsDisplay();
+    });
+    
+    T_PACHIN_STORAGE.highlightCurrentNav();
+    
+    document.querySelectorAll('.points-display').forEach(el => {
+        el.addEventListener('click', () => {
+            alert(`💰 目前點數：${T_PACHIN_STORAGE.getPoints().toLocaleString()}\n\n遊玩機台即可累積點數！`);
+        });
+    });
+    
+    document.querySelectorAll('.nickname-display').forEach(el => {
+        el.addEventListener('click', () => {
+            const newName = prompt('修改暱稱', el.textContent);
+            if (newName && newName.trim()) {
+                const userData = T_PACHIN_STORAGE.getUserData();
+                userData.nickname = newName.trim();
+                T_PACHIN_STORAGE.saveUserData(userData);
+                document.querySelectorAll('.nickname-display').forEach(e => {
+                    e.textContent = newName.trim();
+                });
+            }
+        });
+    });
+}
+
 window.T_PACHIN_STORAGE = T_PACHIN_STORAGE;
 window.CountdownManager = CountdownManager;
-window.initializePointsDisplay = initializePointsDisplay;
+window.initializeSharedFeatures = initializeSharedFeatures;
