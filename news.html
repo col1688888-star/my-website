@@ -6,45 +6,262 @@
     <title>公告中心 · 初始系統公告 | T-PACHIN</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- 引入 Google Fonts 以支援 logo 字型 (Orbitron / Russo One) -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
-        /* 基礎科技風格 */
-        .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
-        .tech-border { border: 1px solid rgba(0, 148, 255, 0.3); }
-        .bottom-nav { background: #001a33; border-top: 2px solid #0066cc; width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; margin-top: 1rem; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #4b9cd3; transition: 0.2s; border-radius: 8px; padding: 0.25rem 0.5rem; }
-        .nav-item.current-page { color: white; background: linear-gradient(90deg, #0066cc, #0099ff); border: 1px solid #80e4ff; box-shadow: 0 0 12px #00ccff; }
-        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background: #0099ff; border-radius: 4px; }
+        /* ========== 基礎樣式 ========== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* 自定義顏色 - 完全移除光暈，純色設定 - 與 index.html 一致 */
-        .player-nickname {
-            color: #ffffff;           /* 純白，無光暈 */
-            font-size: 0.75rem;       /* text-xs (12px) - 與 index.html 一致 */
-            font-weight: 400;
-            letter-spacing: normal;
-            text-shadow: none;         /* 確保沒有發光 */
-            line-height: 1.5;
-        }
-        .player-credits {
-            color: #ffc800;            /* 金黃色底色，純色 */
-            font-weight: 700;          /* font-bold */
-            font-size: 1.125rem;       /* text-lg (18px) - 與 index.html 一致 */
-            line-height: 1.2;
-            text-shadow: none;         /* 移除光暈 */
+        body {
+            background: #0a0c1a;
+            color: #fff;
+            font-family: 'Noto Sans JP', 'Noto Sans TC', 'Orbitron', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
         
-        /* Banner 輪播區域 */
+        /* 網格背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(74, 128, 192, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(153, 0, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* 主容器：固定寬度 + 滿高 + 彈性列 + 上下導航鎖定 */
+        .app-container {
+            max-width: 448px;
+            margin: 0 auto;
+            height: 100vh;               /* 固定視窗高度 */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(145deg, #0f1425, #0a0e1f);
+            box-shadow: 0 0 50px rgba(74, 128, 192, 0.2);
+            border-left: 1px solid rgba(74, 128, 192, 0.2);
+            border-right: 1px solid rgba(153, 0, 255, 0.2);
+            overflow: hidden;            /* 防止整體滾動，內部區域獨立滾動 */
+        }
+        
+        /* ===== 立體金屬 Header (頂部鎖定) ===== */
+        .metal-header {
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
+            border-bottom: 2px solid #4a80c0;
+            border-top: 2px solid #4a80c0;
+            box-shadow: 
+                0 5px 0 #0f121c,
+                0 10px 15px rgba(74, 128, 192, 0.3),
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -3px 8px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+            border-radius: 0 0 30px 30px;
+            padding: 0.75rem 1rem;
+            flex-shrink: 0;              /* 防止壓縮，固定在頂部 */
+            z-index: 20;
+        }
+
+        .metal-header::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-20deg);
+            animation: shine 4s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 120%; }
+            100% { left: 120%; }
+        }
+
+        /* Logo 樣式 */
+        :root {
+            --primary-color: #ffd700;
+            --secondary-color: #c90a0a;
+            --dark-bg: #0a0a16;
+            --darker-bg: #050510;
+            --card-bg: rgba(20, 20, 40, 0.9);
+            --text-light: #f0f0f0;
+            --text-gold: #ffd700;
+            --neon-blue: #00e5ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff9d;
+            --neon-purple: #9d00ff;
+            --menu-height: 55px;
+            --border-radius: 10px;
+            --logo-accent: #4a80c0;
+            --logo-gold: #ffd700;
+            --logo-gold-light: #ffec8b;
+            --logo-neon-gold: #ffdf00;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Orbitron', 'Russo One', sans-serif;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            background: transparent;
+            border: none;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            z-index: 2;
+        }
+        .logo:active { transform: scale(0.97); }
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #000, #111, #222);
+            border-radius: 12px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(74, 128, 192, 0.5), inset 0 0 10px rgba(255, 215, 0, 0.2);
+            overflow: hidden;
+            border: 2px solid #ffd700;
+        }
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(from 0deg, transparent, #4a80c0, #c90a0a, #ffd700, transparent);
+            animation: logoRotate 4s linear infinite;
+        }
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #000;
+            border-radius: 8px;
+        }
+        @keyframes logoRotate { 
+            from { transform: rotate(0deg); } 
+            to { transform: rotate(360deg); } 
+        }
+        .logo-icon-inner {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffec8b, #4a80c0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .logo-main {
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffdf00, #ffd700, #4a80c0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textShine 3s ease-in-out infinite alternate;
+        }
+        .logo-sub {
+            font-size: 9px;
+            color: #4a80c0;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            text-shadow: 0 0 4px rgba(74, 128, 192, 0.5);
+        }
+        @keyframes textShine {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); text-shadow: 0 0 10px #ffd700; }
+        }
+
+        /* 玩家資訊樣式 */
+        .nickname-display {
+            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-shadow: 0 2px 3px black, 0 0 10px rgba(255,255,255,0.3);
+            transition: all 0.2s ease;
+            line-height: 1.3;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .nickname-display:hover {
+            color: #ffd966;
+            text-shadow: 0 0 10px #ffd700, 0 2px 3px black;
+        }
+        .points-display {
+            background: linear-gradient(145deg, #4a3a1a, #3a2a0a);
+            padding: 0.15rem 1.5rem;
+            border-radius: 30px;
+            box-shadow: 
+                inset 0 2px 5px rgba(255, 215, 0, 0.5),
+                inset 0 -3px 5px rgba(0, 0, 0, 0.6),
+                0 4px 0 #2a1f0a,
+                0 0 12px #ffd700;
+            border: 1px solid #ffd700;
+            color: #ffd966;
+            font-weight: 900;
+            font-size: 1.1rem;
+            text-shadow: 0 2px 3px black;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            line-height: 1.3;
+            min-width: 100px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .points-display:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 2px 5px rgba(255, 215, 0, 0.6),
+                inset 0 -3px 5px rgba(0, 0, 0, 0.5),
+                0 6px 0 #2a1f0a,
+                0 0 20px #ffd700;
+        }
+        .points-display:active {
+            transform: translateY(2px);
+            box-shadow: 
+                inset 0 5px 8px rgba(0, 0, 0, 0.6),
+                inset 0 -2px 5px rgba(255, 215, 0, 0.3),
+                0 2px 0 #2a1f0a;
+        }
+
+        /* ===== Banner 輪播區域 ===== */
         .banner-area {
             width: 100%;
             height: 120px;
-            background: linear-gradient(145deg, #002244, #001133);
-            border: 1px solid #0099ff60;
-            border-radius: 12px;
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
+            border: 2px solid #4a80c0;
+            border-radius: 30px;
             overflow: hidden;
             position: relative;
             touch-action: pan-y pinch-zoom;
+            box-shadow: 
+                inset 0 2px 5px rgba(255,255,255,0.3),
+                inset 0 -3px 8px rgba(0,0,0,0.6),
+                0 5px 0 #0f121c,
+                0 10px 15px rgba(74, 128, 192, 0.3);
         }
         .banner-slider {
             display: flex;
@@ -84,12 +301,13 @@
             background: rgba(255,255,255,0.5);
             cursor: pointer;
             transition: all 0.2s;
-            border: 1px solid #0099ff60;
+            border: 1px solid #4a80c0;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
         }
         .banner-dot.active {
-            background: #0099ff;
+            background: #4a80c0;
             transform: scale(1.2);
-            box-shadow: 0 0 10px #00ccff;
+            box-shadow: 0 0 15px #4a80c0, inset 0 1px 3px white;
             border-color: white;
         }
         .banner-touch-area {
@@ -104,75 +322,196 @@
         .announce-tab-bar {
             display: flex;
             gap: 2px;
-            background: rgba(0, 30, 60, 0.6);
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
             border-radius: 40px;
-            padding: 4px;
-            border: 1px solid #0099ff40;
-            backdrop-filter: blur(4px);
+            padding: 3px;
+            border: 1px solid #4a80c0;
+            box-shadow: 
+                inset 0 1px 3px rgba(255,255,255,0.2),
+                inset 0 -2px 3px rgba(0,0,0,0.3),
+                0 4px 0 #0f121c;
         }
         .announce-tab {
             flex: 1;
             text-align: center;
-            padding: 0.6rem 0.2rem;
+            padding: 0.3rem 0.1rem;
             border-radius: 32px;
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 0.7rem;
+            font-weight: 600;
             color: #9bb8e0;
-            transition: all 0.2s;
+            transition: all 0.1s ease;
             cursor: pointer;
-            background: transparent;
-            border: none;
+            background: linear-gradient(145deg, #3a4050, #2a2f40);
+            border: 1px solid #4a80c0;
             white-space: nowrap;
+            box-shadow: 
+                inset 0 1px 3px rgba(255,255,255,0.2),
+                inset 0 -2px 3px rgba(0,0,0,0.3),
+                0 3px 0 #0f121c;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            letter-spacing: 0.3px;
         }
         .announce-tab.active {
-            background: linear-gradient(145deg, #0066cc, #0099ff);
+            background: linear-gradient(145deg, #4a5065, #3a4055);
             color: white;
-            box-shadow: 0 2px 10px #00aaff;
+            box-shadow: 
+                0 0 10px #4a80c0,
+                inset 0 1px 5px rgba(255,255,255,0.5),
+                inset 0 -2px 5px rgba(0,0,0,0.3),
+                0 3px 0 #0f121c;
+            text-shadow: 0 0 5px #4a80c0;
         }
 
-        /* 系統公告卡片樣式 */
+        /* ===== 可滾動內容區域 (佔滿剩餘空間，獨立滾動) ===== */
+        .scrollable-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 1rem 0.5rem 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: #4a80c0 #1a1f2f;
+        }
+        .scrollable-main::-webkit-scrollbar {
+            width: 5px;
+        }
+        .scrollable-main::-webkit-scrollbar-track {
+            background: #1a1f2f;
+            border-radius: 8px;
+        }
+        .scrollable-main::-webkit-scrollbar-thumb {
+            background: #4a80c0;
+            border-radius: 8px;
+        }
+
+        /* 系統公告卡片 */
         .system-card {
-            background: rgba(0, 31, 51, 0.8);
-            border: 1px solid #0099ff40;
-            border-radius: 20px;
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
+            border: 2px solid #4a80c0;
+            border-radius: 24px;
             padding: 1rem;
             margin-bottom: 0.75rem;
-            backdrop-filter: blur(4px);
+            box-shadow: 
+                inset 0 2px 5px rgba(255,255,255,0.3),
+                inset 0 -3px 8px rgba(0,0,0,0.6),
+                0 8px 0 #0f121c,
+                0 10px 20px rgba(74, 128, 192, 0.3);
+            cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .system-card:active {
+            transform: translateY(4px);
+            box-shadow: 
+                inset 0 2px 5px rgba(255,255,255,0.2),
+                inset 0 -3px 8px rgba(0,0,0,0.5),
+                0 4px 0 #0f121c;
         }
         .system-badge {
-            background: #1e4b7c;
+            background: linear-gradient(145deg, #3a5065, #2a4055);
             color: white;
             padding: 0.2rem 1rem;
             border-radius: 30px;
             font-size: 0.7rem;
             display: inline-block;
+            border: 1px solid #4a80c0;
+            box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -2px 3px rgba(0,0,0,0.4);
         }
-        
-        /* 信件列表專屬樣式 */
+
+        /* Q&A 可滑動長文章卡片 */
+        .qa-scroll-card {
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
+            border: 2px solid #4a80c0;
+            border-radius: 24px;
+            padding: 0;
+            box-shadow: 
+                inset 0 2px 5px rgba(255,255,255,0.3),
+                inset 0 -3px 8px rgba(0,0,0,0.6),
+                0 8px 0 #0f121c;
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+        }
+        .qa-header {
+            padding: 1.2rem 1.5rem 0.6rem 1.5rem;
+            border-bottom: 1px solid rgba(74, 128, 192, 0.3);
+        }
+        .qa-header h3 {
+            color: #ffdb8e;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-shadow: 0 2px 3px black;
+        }
+        .qa-header .sub {
+            color: #4a80c0;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+        .qa-content {
+            overflow-y: auto;
+            padding: 0.8rem 1.5rem 1.5rem 1.5rem;
+            flex: 1;
+            scrollbar-width: thin;
+            scrollbar-color: #4a80c0 #1a1f2f;
+        }
+        .qa-item {
+            margin-bottom: 1.5rem;
+        }
+        .qa-item .question {
+            font-weight: 600;
+            color: #ffdb8e;
+            margin-bottom: 0.3rem;
+            display: flex;
+            gap: 0.3rem;
+            font-size: 1rem;
+        }
+        .qa-item .answer {
+            padding-left: 1.5rem;
+            border-left: 2px solid #4a80c0;
+            color: #b3d4f0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .qa-footer {
+            margin-top: 0.8rem;
+            color: #4a80c0;
+            font-style: italic;
+            font-size: 0.85rem;
+            text-align: right;
+            border-top: 1px dashed #4a80c0;
+            padding-top: 1rem;
+        }
+
+        /* 信件列表樣式 */
         .letter-container {
-            background: #001f33;
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
             border-radius: 24px;
             padding: 0.5rem;
-            border: 1px solid #0099ff40;
+            border: 2px solid #4a80c0;
+            box-shadow: 
+                inset 0 2px 5px rgba(255,255,255,0.3),
+                inset 0 -3px 8px rgba(0,0,0,0.6),
+                0 8px 0 #0f121c;
         }
         .letter-row {
             display: flex;
             align-items: center;
             padding: 0.8rem 0.5rem;
-            border-bottom: 1px solid #0099ff20;
+            border-bottom: 1px solid rgba(74, 128, 192, 0.2);
             transition: background 0.1s;
             cursor: pointer;
+            border-radius: 18px;
         }
         .letter-row:last-child { border-bottom: none; }
         .letter-row.selected-for-delete {
-            background: rgba(0, 80, 120, 0.6);
-            border-radius: 18px;
+            background: linear-gradient(145deg, #3a5065, #2a4055);
+            border: 1px solid #4a80c0;
         }
         .letter-avatar {
             width: 44px; height: 44px; border-radius: 50%;
-            background: #003c6c; display: flex; align-items: center; justify-content: center;
-            border: 1px solid #0099ff; margin: 0 12px 0 8px;
+            background: linear-gradient(145deg, #3a4050, #2a2f40);
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #4a80c0;
+            margin: 0 12px 0 8px;
             flex-shrink: 0;
+            box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -2px 3px rgba(0,0,0,0.4);
         }
         .letter-info {
             flex: 1;
@@ -184,6 +523,8 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #ffdb8e;
+            text-shadow: 0 2px 3px black;
         }
         .letter-info p {
             font-size: 0.75rem;
@@ -194,53 +535,44 @@
         }
         .checkbox {
             width: 22px; height: 22px;
-            border: 2px solid #0099ff;
+            border: 2px solid #4a80c0;
             border-radius: 6px;
             margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: transparent;
+            background: linear-gradient(145deg, #3a4050, #2a2f40);
             flex-shrink: 0;
             transition: 0.1s;
             pointer-events: auto;
+            box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -2px 3px rgba(0,0,0,0.4);
         }
         .checkbox.checked {
-            background: #0099ff;
+            background: linear-gradient(145deg, #4a5065, #3a4055);
             border-color: white;
+            box-shadow: 0 0 15px #4a80c0, inset 0 2px 5px rgba(255,255,255,0.5);
         }
-        .checkbox.checked i { display: block; color: white; font-size: 14px; }
+        .checkbox.checked i { display: block; color: white; font-size: 14px; text-shadow: 0 0 5px #4a80c0; }
         .checkbox i { display: none; }
-
-        /* 全選列 */
-        .select-all-bar {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 0.5rem;
-            background: #002b4a;
-            border-radius: 40px;
-            margin-bottom: 10px;
-            border: 1px solid #0099ff60;
-        }
         .select-all-checkbox {
             width: 22px; height: 22px;
-            border: 2px solid #0099ff;
+            border: 2px solid #4a80c0;
             border-radius: 6px;
             margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: transparent;
+            background: linear-gradient(145deg, #3a4050, #2a2f40);
             cursor: pointer;
+            box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -2px 3px rgba(0,0,0,0.4);
         }
         .select-all-checkbox.checked {
-            background: #0099ff;
+            background: linear-gradient(145deg, #4a5065, #3a4055);
             border-color: white;
+            box-shadow: 0 0 15px #4a80c0, inset 0 2px 5px rgba(255,255,255,0.5);
         }
         .select-all-checkbox.checked i { display: block; color: white; font-size: 14px; }
         .select-all-checkbox i { display: none; }
-
-        /* 刪除工具列 */
         .delete-bar {
             display: flex;
             align-items: center;
@@ -249,8 +581,8 @@
             padding: 0 6px;
         }
         .delete-btn {
-            background: #aa2222;
-            border: none;
+            background: linear-gradient(145deg, #653a3a, #552a2a);
+            border: 2px solid #ff6666;
             border-radius: 30px;
             padding: 0.3rem 1.2rem;
             color: white;
@@ -260,13 +592,16 @@
             align-items: center;
             gap: 6px;
             cursor: pointer;
-            box-shadow: 0 0 8px #ff4444;
-            transition: 0.1s;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #4a1f1f;
+            transition: all 0.1s ease;
         }
-        .delete-btn:active { transform: scale(0.92); }
-        .delete-btn.disabled { opacity: 0.3; pointer-events: none; }
+        .delete-btn.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            filter: grayscale(0.8);
+        }
 
-        /* 詳細內容模態框 */
+        /* 模態框 */
         .modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -285,762 +620,393 @@
             opacity: 1;
         }
         .modal-card {
-            background: linear-gradient(165deg, #001f33, #000f1f);
-            border: 2px solid #0099ff;
-            border-radius: 32px;
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
+            border: 2px solid #4a80c0;
+            border-radius: 40px;
             width: 85%;
             max-width: 360px;
             padding: 1.8rem 1.5rem;
-            box-shadow: 0 0 30px #00ccff;
+            box-shadow: 0 20px 40px rgba(74, 128, 192, 0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6), 0 8px 0 #0f121c;
             color: white;
         }
 
-        /* Q&A卡片樣式 */
-        .qa-card {
-            background: rgba(0, 31, 51, 0.8);
-            border: 1px solid #0099ff40;
-            border-radius: 20px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-        }
-        .qa-question {
-            color: #aad0ff;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .qa-answer {
-            color: #cce5ff;
-            padding-left: 1rem;
-            border-left: 2px solid #0099ff;
-            font-size: 0.9rem;
-        }
-
-        /* ===== 從 logo.html 移植的 Logo 樣式 (純淨無外框) ===== */
-        :root {
-            --primary-color: #ffd700;
-            --secondary-color: #c90a0a;
-            --dark-bg: #0a0a16;
-            --darker-bg: #050510;
-            --card-bg: rgba(20, 20, 40, 0.9);
-            --text-light: #f0f0f0;
-            --text-gold: #ffd700;
-            --neon-blue: #00e5ff;
-            --neon-pink: #ff00ff;
-            --neon-green: #00ff9d;
-            --neon-purple: #9d00ff;
-            --menu-height: 55px;
-            --border-radius: 10px;
-            --logo-accent: #00e0ff;
-            --logo-gold: #ffd700;
-            --logo-gold-light: #ffec8b;
-            --logo-neon-gold: #ffdf00;
-        }
-
-        .logo {
+        /* 底部導航 - 鎖定在底部 */
+        .bottom-nav {
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
+            border-top: 2px solid #4a80c0;
+            border-bottom: 2px solid #4a80c0;
+            box-shadow: 0 -5px 15px rgba(74, 128, 192, 0.3), 0 8px 10px rgba(0, 0, 0, 0.6), inset 0 2px 5px rgba(255, 255, 255, 0.3), inset 0 -3px 8px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 448px;
+            padding: 0.75rem 1.5rem;
+            margin-top: 0;
+            z-index: 50;
             display: flex;
-            align-items: center;
-            gap: 8px;               /* 手機上間距略縮 */
-            font-family: 'Orbitron', 'Russo One', sans-serif;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: transform 0.2s ease; /* 觸控微動畫 */
-            text-decoration: none;
-            color: inherit;
-            /* 移除所有背景、邊框、外框、陰影框 — 乾乾淨淨 */
-            background: transparent;
-            border: none;
-            backdrop-filter: none;
-            padding: 0;              /* 完全無內距 */
-            margin: 0;
-            -webkit-tap-highlight-color: transparent; /* 移除手機點擊閃塊 */
-        }
-
-        /* 觸控放大回饋 (保留原 hover 但改成 active 更適合觸控) */
-        .logo:active {
-            transform: scale(0.97);
-        }
-
-        .logo-icon {
-            width: 40px;             /* 手機上稍微縮小，但依然醒目 */
-            height: 40px;
-            background: linear-gradient(135deg, #000, #111, #222);
-            border-radius: 8px;       /* 微調圓角 */
+            justify-content: space-between;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                0 0 15px rgba(0, 224, 255, 0.5),
-                inset 0 0 10px rgba(255, 215, 0, 0.2);
             overflow: hidden;
-            border: 2px solid var(--logo-gold);
+            border-radius: 30px 30px 30px 30px;
             flex-shrink: 0;
         }
-
-        .logo-icon::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: conic-gradient(
-                from 0deg,
-                transparent,
-                var(--logo-accent),
-                var(--secondary-color),
-                var(--logo-gold),
-                transparent
-            );
-            animation: logoRotate 4s linear infinite;
-        }
-
-        .logo-icon::after {
-            content: '';
-            position: absolute;
-            width: 30px;             /* 配合小圖示調整 */
-            height: 30px;
-            background: #000;
-            border-radius: 5px;
-        }
-
-        @keyframes logoRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .logo-icon-inner {
-            position: relative;
-            z-index: 2;
-            font-size: 16px;          /* 手機版字級微調 */
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--logo-neon-gold), var(--logo-gold-light), var(--logo-accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 0.5px;
-            font-family: 'Orbitron', sans-serif;
-            text-shadow: 0 0 6px rgba(255, 223, 0, 0.5);
-        }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.1;
-        }
-
-        .logo-main {
-            font-size: 18px;          /* 手機適中大小 */
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--logo-neon-gold), var(--logo-gold), var(--logo-accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            background-size: 200% auto;
-            animation: textShine 3s ease-in-out infinite alternate;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-            white-space: nowrap;
-        }
-
-        .logo-sub {
-            font-size: 9px;           /* 手機上依然清楚 */
-            color: var(--logo-accent);
-            font-weight: 500;
-            letter-spacing: 0.8px;
-            opacity: 0.9;
-            text-shadow: 0 0 4px rgba(0, 224, 255, 0.5);
-            white-space: nowrap;
-        }
-
-        @keyframes textShine {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-
-        .logo:focus-visible {
-            outline: none;
-        }
-        /* ===== Logo樣式結束 ===== */
-
-        /* ===== 新增大通知紅點 ===== */
         .nav-item {
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #b0c4de;
+            transition: all 0.1s ease;
+            border-radius: 20px;
+            padding: 0.5rem 0.75rem;
+            text-decoration: none;
+            background: linear-gradient(145deg, #3a4050, #2a2f40);
+            box-shadow: 0 5px 0 #0f121c, inset 0 2px 5px rgba(255, 255, 255, 0.3), inset 0 -3px 5px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(74, 128, 192, 0.2);
         }
+        .nav-item.current-page {
+            background: linear-gradient(145deg, #4a5065, #3a4055);
+            box-shadow: 0 5px 0 #0f121c, 0 10px 15px rgba(74, 128, 192, 0.5), inset 0 2px 8px rgba(255, 255, 255, 0.6), inset 0 -3px 8px rgba(0, 0, 0, 0.4);
+            color: white;
+            border: 1px solid #4a80c0;
+            transform: scale(1.05);
+        }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 2px; }
+        .nav-item span { font-weight: 700; font-size: 0.7rem; }
         .nav-badge {
             position: absolute;
-            top: 0px;
-            right: 0px;
+            top: 5px;
+            right: 8px;
             width: 10px;
             height: 10px;
             background-color: #ff3b3b;
             border-radius: 50%;
-            border: 2px solid #001a33; /* 與導航底色融合，略為凸顯 */
-            box-shadow: 0 0 8px #ff0000;
-            display: none; /* 預設隱藏 */
-            z-index: 25;
+            border: 2px solid #2a2f3f;
+            display: none;
         }
-        .nav-item.current-page .nav-badge {
-            border-color: #0066cc; /* 當前頁籤的邊框顏色適配 */
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
-
-    <!-- 篩選側欄 (保留) -->
-    <div id="drawerOverlay" class="fixed inset-0 bg-black/70 backdrop-filter backdrop-blur-sm z-50 hidden"></div>
-    <div id="filterDrawer" class="fixed top-0 right-[-100%] w-[85%] max-w-sm h-full bg-[#001a33] border-l-2 border-blue-500 z-[60] p-5 transition-all duration-300 scrollbar-thin overflow-y-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-blue-400 text-lg font-bold flex items-center gap-2"><i class="fa fa-sliders"></i> 篩選</h3>
-            <button id="closeDrawer" class="text-gray-400 text-2xl"><i class="fa fa-times-circle"></i></button>
-        </div>
-        <div class="text-gray-300 text-sm mb-2">比率 / 機種 / 廠商 (示範)</div>
-        <div class="flex flex-wrap gap-2 mt-2">
-            <span class="filter-chip px-3 py-1 bg-[#003355] rounded-full text-xs border border-blue-400">2:1</span>
-            <span class="filter-chip px-3 py-1 bg-[#003355] rounded-full text-xs border border-blue-400">1:1</span>
-        </div>
-        <div class="flex gap-2 mt-8">
-            <button id="resetFilters" class="flex-1 py-2 border border-blue-500 rounded-xl text-blue-400">重置</button>
-            <button id="applyFilters" class="flex-1 py-2 bg-blue-600 rounded-xl text-white">套用</button>
-        </div>
-    </div>
-
-    <!-- 信件詳細內容 Modal -->
-    <div id="letterModal" class="modal">
-        <div class="modal-card">
-            <div id="modalContent" class="text-center">
-                <div class="w-16 h-16 mx-auto rounded-full bg-[#004488] flex items-center justify-center border-2 border-blue-400 mb-3">
-                    <i class="fa fa-envelope-open text-3xl text-blue-300"></i>
-                </div>
-                <h3 id="modalTitle" class="text-xl font-bold">寄件人</h3>
-                <div id="modalTime" class="text-blue-300 text-xs my-2">時間</div>
-                <p id="modalBody" class="text-gray-200 text-sm leading-relaxed mt-4">信件完整內容顯示於此處。</p>
-            </div>
-            <button id="closeModalBtn" class="mt-6 w-full py-2 bg-blue-700 rounded-full border border-blue-300">關閉</button>
-        </div>
-    </div>
-
-    <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
-
-        <!-- 頂部標頭 — 替換為來自 logo.html 的 Logo (點擊返回首頁) + 右側玩家資訊 -->
-        <header class="px-4 py-3 bg-dark-200/90 tech-border flex items-center justify-between">
-            <!-- 左側：全新 Logo (移植自 logo.html，點擊返回 index.html) -->
-            <a href="index.html" class="logo" id="mobileLogoHeader">
-                <div class="logo-icon">
-                    <div class="logo-icon-inner">TP</div>
-                </div>
-                <div class="logo-text">
-                    <div class="logo-main">T-PACHIN</div>
-                    <div class="logo-sub">CYBER PACHINKO SYSTEM</div>
-                </div>
+<body>
+<div class="app-container">
+    <!-- 頂部 Header (固定) -->
+    <header class="metal-header flex-shrink-0">
+        <div class="flex items-center justify-between">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><div class="logo-icon-inner">TP</div></div>
+                <div class="logo-text"><div class="logo-main">T-PACHIN</div><div class="logo-sub">CYBER PACHINKO SYSTEM</div></div>
             </a>
-            <!-- 右邊玩家資訊：純白暱稱 + 金黃代幣 - 修正為連結到 about.html 並統一字体大小 -->
             <div class="text-right flex flex-col items-end">
-                <!-- 暱稱：點擊到「我的」頁面 -->
-                <a href="about.html" class="text-xs text-white hover:text-yellow-400 transition-colors player-nickname">夫人會生氣</a>
-                <!-- 代幣：點擊到「我的」頁面（原本是 news.html） -->
-                <a href="about.html" class="font-bold text-lg text-amber-400 hover:text-yellow-300 transition-colors player-credits">5.280</a>
-            </div>
-        </header>
-
-        <!-- 首頁Banner完整移植 -->
-        <div class="px-4 mt-3">
-            <div class="banner-area" id="bannerArea">
-                <div class="banner-slider" id="bannerSlider">
-                    <div class="banner-slide"><img src="https://static.wixstatic.com/media/d5e540_e351cf64c0eb4ea18ed0bf5aa982a3f4~mv2.jpg" alt="促銷1"></div>
-                    <div class="banner-slide"><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" alt="促銷2"></div>
-                    <div class="banner-slide"><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" alt="促銷3"></div>
-                </div>
-                <div class="banner-touch-area" id="bannerTouchArea"></div>
-                <div class="banner-dots" id="bannerDots">
-                    <span class="banner-dot active" data-slide="0"></span>
-                    <span class="banner-dot" data-slide="1"></span>
-                    <span class="banner-dot" data-slide="2"></span>
-                </div>
+                <a href="about.html" class="nickname-display">夫人會生氣</a>
+                <span class="points-display" id="tokenBtn">6,600</span>
             </div>
         </div>
+    </header>
 
-        <!-- 公告標籤區塊 (初始無active class，由JS控制) -->
-        <div class="px-4 mt-4">
-            <div class="announce-tab-bar">
-                <button class="announce-tab" id="tabSystemBtn">📋 系統公告</button>
-                <button class="announce-tab" id="tabLetterBtn">✉️ 信件</button>
-                <button class="announce-tab" id="tabQaBtn">❓ 玩家Q&A</button>
+    <!-- Banner 輪播區 (固定寬度，不滾動) -->
+    <div class="px-4 mt-3 flex-shrink-0">
+        <div class="banner-area">
+            <div class="banner-slider" id="bannerSlider">
+                <div class="banner-slide"><img src="https://static.wixstatic.com/media/d5e540_e351cf64c0eb4ea18ed0bf5aa982a3f4~mv2.jpg" alt="促銷1"></div>
+                <div class="banner-slide"><img src="https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png" alt="促銷2"></div>
+                <div class="banner-slide"><img src="https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png" alt="促銷3"></div>
             </div>
+            <div class="banner-touch-area" id="bannerTouchArea"></div>
+            <div class="banner-dots" id="bannerDots"><span class="banner-dot active" data-slide="0"></span><span class="banner-dot" data-slide="1"></span><span class="banner-dot" data-slide="2"></span></div>
         </div>
-
-        <!-- 公告動態面板 -->
-        <div class="px-4 mt-4 pb-4 flex-1 overflow-y-auto scrollbar-thin" style="max-height: 60vh;">
-
-            <!-- 系統公告面板 (預設顯示) -->
-            <div id="panelSystem" class="space-y-3">
-                <div class="system-card">
-                    <span class="system-badge">系統公告</span>
-                    <div class="text-white text-lg font-bold mt-2">📌 2/18 伺服器維護</div>
-                    <div class="text-blue-300 text-sm mt-1">2025/02/18 14:00 - 16:00</div>
-                    <div class="text-gray-300 text-sm mt-2">進行資料庫優化，期間配分功能暫停。</div>
-                </div>
-                <div class="system-card">
-                    <span class="system-badge">活動公告</span>
-                    <div class="text-white text-lg font-bold mt-2">🎁 新機「甲賀忍法帖 参」上線</div>
-                    <div class="text-blue-300 text-sm mt-1">即日起 ~ 2/28</div>
-                    <div class="text-gray-300 text-sm mt-2">活動期間獲得雙倍點數</div>
-                </div>
-                <div class="system-card">
-                    <span class="system-badge">補償說明</span>
-                    <div class="text-white text-lg font-bold mt-2">🔧 維護補償發放</div>
-                    <div class="text-blue-300 text-sm mt-1">已發放 500 點</div>
-                    <div class="text-gray-300 text-sm mt-2">補償可於「信件」領取</div>
-                </div>
-                <div class="system-card">
-                    <span class="system-badge">活動預告</span>
-                    <div class="text-white text-lg font-bold mt-2">🌙 元宵節限定活動</div>
-                    <div class="text-blue-300 text-sm mt-1">2/24 敬請期待</div>
-                    <div class="text-gray-300 text-sm mt-2">特殊獎勵機台登場</div>
-                </div>
-            </div>
-
-            <!-- 信件面板 (初始隱藏) -->
-            <div id="panelLetter" class="hidden space-y-3">
-                <!-- 刪除工具列 + 全選整合 -->
-                <div class="delete-bar">
-                    <div class="flex items-center gap-3">
-                        <!-- 全選核取方塊 -->
-                        <div class="select-all-checkbox" id="selectAllCheckbox">
-                            <i class="fa fa-check"></i>
-                        </div>
-                        <span class="text-blue-300 text-sm"><span id="selectedCount">0</span> / <span id="totalCount">4</span></span>
-                    </div>
-                    <button id="deleteSelectedBtn" class="delete-btn disabled"><i class="fa fa-trash"></i> 刪除</button>
-                </div>
-
-                <!-- 信件列表容器 -->
-                <div class="letter-container" id="letterListContainer">
-                    <!-- 信件1 (未讀：有藍色圓點) -->
-                    <div class="letter-row" data-id="1" data-sender="系統管理員" data-time="2分鐘前" data-content="您的帳號於今日下午進行安全驗證，若未操作請盡速變更密碼。">
-                        <div class="checkbox" data-letter-id="1"><i class="fa fa-check"></i></div>
-                        <div class="letter-avatar"><i class="fa fa-envelope text-blue-300"></i></div>
-                        <div class="letter-info">
-                            <h4>系統管理員 <span class="text-blue-400 text-[0.55rem] ml-1">官方</span></h4>
-                            <p>安全驗證通知</p>
-                            <span class="text-gray-500 text-[0.6rem]">2分鐘前</span>
-                        </div>
-                        <i class="fa fa-circle text-blue-400 text-xs" style="opacity: 1;"></i> <!-- 未讀藍點 -->
-                    </div>
-                    <!-- 信件2 (未讀) -->
-                    <div class="letter-row" data-id="2" data-sender="柏青哥達人" data-time="昨天" data-content="關於甲賀忍法帖的設定，我記得是1:2比率，你可以再確認機台資訊。">
-                        <div class="checkbox" data-letter-id="2"><i class="fa fa-check"></i></div>
-                        <div class="letter-avatar"><i class="fa fa-user text-blue-300"></i></div>
-                        <div class="letter-info">
-                            <h4>柏青哥達人</h4>
-                            <p>回覆: 甲賀忍法帖設定</p>
-                            <span class="text-gray-500 text-[0.6rem]">昨天</span>
-                        </div>
-                        <i class="fa fa-circle text-blue-400 text-xs"></i> <!-- 未讀藍點 -->
-                    </div>
-                    <!-- 信件3 (未讀) -->
-                    <div class="letter-row" data-id="3" data-sender="禮物中心" data-time="2/15" data-content="恭喜獲得新春紅包500點，請於一週內至機台領取。">
-                        <div class="checkbox" data-letter-id="3"><i class="fa fa-check"></i></div>
-                        <div class="letter-avatar"><i class="fa fa-gift text-blue-300"></i></div>
-                        <div class="letter-info">
-                            <h4>禮物中心</h4>
-                            <p>新春紅包500點</p>
-                            <span class="text-gray-500 text-[0.6rem]">2/15</span>
-                        </div>
-                        <i class="fa fa-circle text-blue-400 text-xs"></i> <!-- 未讀藍點 -->
-                    </div>
-                    <!-- 信件4 (已讀：無藍點，保留灰色圓點或無) 為了示範紅點，我們讓第四封已讀，不顯示藍點。但若完全無點不好看，故維持無點 -->
-                    <div class="letter-row" data-id="4" data-sender="通知中心" data-time="2/14" data-content="吉宗維護已完成，現在可以正常遊玩。">
-                        <div class="checkbox" data-letter-id="4"><i class="fa fa-check"></i></div>
-                        <div class="letter-avatar"><i class="fa fa-bell text-blue-300"></i></div>
-                        <div class="letter-info">
-                            <h4>通知中心</h4>
-                            <p>吉宗維護完成</p>
-                            <span class="text-gray-500 text-[0.6rem]">2/14</span>
-                        </div>
-                        <!-- 沒有藍色圓點，代表已讀 -->
-                    </div>
-                </div>
-                <div class="text-xs text-blue-400 text-center pt-2" id="letterStats">✉️ 共 4 封信件</div>
-            </div>
-
-            <!-- Q&A面板 (初始隱藏) -->
-            <div id="panelQa" class="hidden space-y-3">
-                <div class="qa-card">
-                    <div class="qa-question"><i class="fa fa-question-circle text-blue-400 mr-1"></i> 如何查詢機台即時比率？</div>
-                    <div class="qa-answer">點選機台卡片上的「進入」，即可在機台頁面看到目前設定值與即時模擬比率。</div>
-                </div>
-                <div class="qa-card">
-                    <div class="qa-question"><i class="fa fa-question-circle text-blue-400 mr-1"></i> 維護中的機台何時恢復？</div>
-                    <div class="qa-answer">維護卡上會有預計時間，也可至公告區查看系統公告。</div>
-                </div>
-                <div class="qa-card">
-                    <div class="qa-question"><i class="fa fa-question-circle text-blue-400 mr-1"></i> 「夫人會生氣」點數如何累積？</div>
-                    <div class="qa-answer">遊玩任何機台每投入10枚代幣可獲得1點，特殊活動加乘。</div>
-                </div>
-                <div class="qa-card">
-                    <div class="qa-question"><i class="fa fa-question-circle text-blue-400 mr-1"></i> 新機入替的標籤代表什麼？</div>
-                    <div class="qa-answer">上架兩週內的機台會標示「新機入替」，通常有機率加成。</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 底部導航 (增加小紅點結構) -->
-<nav class="bottom-nav">
-    <div class="flex justify-between items-center">
-        <a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-        <a href="machines.html" class="nav-item"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-        <a href="news.html" class="nav-item current-page" aria-current="page">
-            <i class="fa fa-bell text-xl"></i>
-            <span class="text-xs mt-1">公告</span>
-            <span class="nav-badge" id="newsBadge" style="display: none;"></span> <!-- 小紅點 -->
-        </a>
-        <a href="about.html" class="nav-item"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
     </div>
-</nav>
 
-    <script>
-        (function() {
-            // 公告標籤切換 - 預設顯示系統公告
-            const tabSystem = document.getElementById('tabSystemBtn');
-            const tabLetter = document.getElementById('tabLetterBtn');
-            const tabQa = document.getElementById('tabQaBtn');
-            const panelSystem = document.getElementById('panelSystem');
-            const panelLetter = document.getElementById('panelLetter');
-            const panelQa = document.getElementById('panelQa');
+    <!-- 標籤列 (固定) -->
+    <div class="px-4 mt-4 flex-shrink-0">
+        <div class="announce-tab-bar">
+            <button class="announce-tab active" id="tabSystemBtn">📋 系統公告</button>
+            <button class="announce-tab" id="tabLetterBtn">✉️ 信件</button>
+            <button class="announce-tab" id="tabQaBtn">❓ 玩家Q&A</button>
+        </div>
+    </div>
 
-            function setActiveTab(active) {
-                // 移除所有標籤的active class
-                [tabSystem, tabLetter, tabQa].forEach(t => t.classList.remove('active'));
-                // 隱藏所有面板
-                [panelSystem, panelLetter, panelQa].forEach(p => p.classList.add('hidden'));
-                
-                // 根據active參數顯示對應面板並添加active class
-                if (active === 'system') {
-                    tabSystem.classList.add('active');
-                    panelSystem.classList.remove('hidden');
-                } else if (active === 'letter') {
-                    tabLetter.classList.add('active');
-                    panelLetter.classList.remove('hidden');
-                } else if (active === 'qa') {
-                    tabQa.classList.add('active');
-                    panelQa.classList.remove('hidden');
+    <!-- 可滾動內容區域 (flex-1 + overflow-auto) 實現中間區域獨立滾動，上下鎖定 -->
+    <div class="scrollable-main" id="scrollableContent">
+        <!-- 系統公告面板 -->
+        <div id="panelSystem" class="space-y-3">
+            <div class="system-card" data-title="📌 2/18 伺服器維護" data-time="2025/02/18 14:00 - 16:00" data-content="進行資料庫優化，期間配分功能暫停。"><span class="system-badge">系統公告</span><div class="text-white text-lg font-bold mt-2" style="color: #ffdb8e;">📌 2/18 伺服器維護</div><div class="text-sm mt-1" style="color: #4a80c0;">2025/02/18 14:00 - 16:00</div><div class="text-gray-300 text-sm mt-2">進行資料庫優化，期間配分功能暫停。</div></div>
+            <div class="system-card" data-title="🎁 新機「甲賀忍法帖 参」上線" data-time="即日起 ~ 2/28" data-content="活動期間獲得雙倍點數"><span class="system-badge">活動公告</span><div class="text-white text-lg font-bold mt-2" style="color: #ffdb8e;">🎁 新機「甲賀忍法帖 参」上線</div><div class="text-sm mt-1" style="color: #4a80c0;">即日起 ~ 2/28</div><div class="text-gray-300 text-sm mt-2">活動期間獲得雙倍點數</div></div>
+            <div class="system-card" data-title="🔧 維護補償發放" data-time="已發放 500 點" data-content="補償可於「信件」領取"><span class="system-badge">補償說明</span><div class="text-white text-lg font-bold mt-2" style="color: #ffdb8e;">🔧 維護補償發放</div><div class="text-sm mt-1" style="color: #4a80c0;">已發放 500 點</div><div class="text-gray-300 text-sm mt-2">補償可於「信件」領取</div></div>
+            <div class="system-card" data-title="🌙 元宵節限定活動" data-time="2/24 敬請期待" data-content="特殊獎勵機台登場"><span class="system-badge">活動預告</span><div class="text-white text-lg font-bold mt-2" style="color: #ffdb8e;">🌙 元宵節限定活動</div><div class="text-sm mt-1" style="color: #4a80c0;">2/24 敬請期待</div><div class="text-gray-300 text-sm mt-2">特殊獎勵機台登場</div></div>
+        </div>
+        <!-- 信件面板 -->
+        <div id="panelLetter" class="hidden space-y-3">
+            <div class="delete-bar"><div class="flex items-center gap-3"><div class="select-all-checkbox" id="selectAllCheckbox"><i class="fa fa-check"></i></div><span class="text-sm" style="color: #4a80c0;"><span id="selectedCount">0</span> / <span id="totalCount">4</span></span></div><button id="deleteSelectedBtn" class="delete-btn disabled"><i class="fa fa-trash"></i> 刪除</button></div>
+            <div class="letter-container" id="letterListContainer">
+                <div class="letter-row" data-id="1" data-sender="系統管理員" data-time="2分鐘前" data-content="您的帳號於今日下午進行安全驗證，若未操作請盡速變更密碼。"><div class="checkbox" data-letter-id="1"><i class="fa fa-check"></i></div><div class="letter-avatar"><i class="fa fa-envelope"></i></div><div class="letter-info"><h4>系統管理員 <span class="text-[0.55rem] ml-1" style="color: #4a80c0;">官方</span></h4><p>安全驗證通知</p><span class="text-gray-500 text-[0.6rem]">2分鐘前</span></div><i class="fa fa-circle" style="color: #4a80c0; text-shadow: 0 0 5px #4a80c0;"></i></div>
+                <div class="letter-row" data-id="2" data-sender="柏青哥達人" data-time="昨天" data-content="關於甲賀忍法帖的設定，我記得是1:2比率，你可以再確認機台資訊。"><div class="checkbox" data-letter-id="2"><i class="fa fa-check"></i></div><div class="letter-avatar"><i class="fa fa-user"></i></div><div class="letter-info"><h4>柏青哥達人</h4><p>回覆: 甲賀忍法帖設定</p><span class="text-gray-500 text-[0.6rem]">昨天</span></div><i class="fa fa-circle" style="color: #4a80c0;"></i></div>
+                <div class="letter-row" data-id="3" data-sender="禮物中心" data-time="2/15" data-content="恭喜獲得新春紅包500點，請於一週內至機台領取。"><div class="checkbox" data-letter-id="3"><i class="fa fa-check"></i></div><div class="letter-avatar"><i class="fa fa-gift"></i></div><div class="letter-info"><h4>禮物中心</h4><p>新春紅包500點</p><span class="text-gray-500 text-[0.6rem]">2/15</span></div><i class="fa fa-circle" style="color: #4a80c0;"></i></div>
+                <div class="letter-row" data-id="4" data-sender="通知中心" data-time="2/14" data-content="吉宗維護已完成，現在可以正常遊玩。"><div class="checkbox" data-letter-id="4"><i class="fa fa-check"></i></div><div class="letter-avatar"><i class="fa fa-bell"></i></div><div class="letter-info"><h4>通知中心</h4><p>吉宗維護完成</p><span class="text-gray-500 text-[0.6rem]">2/14</span></div></div>
+            </div>
+            <div class="text-xs text-center pt-2" style="color: #4a80c0;">✉️ 共 4 封信件</div>
+        </div>
+        <!-- Q&A 面板 -->
+        <div id="panelQa" class="hidden">
+            <div class="qa-scroll-card"><div class="qa-header"><h3><i class="fa fa-question-circle mr-2"></i> 玩家常見問題</h3><div class="sub">📌 最後更新：2025/02/18 · 共8則問答</div></div><div class="qa-content"><div class="qa-item"><div class="question"><i class="fa fa-angle-right mr-1"></i> 如何查詢機台即時比率？</div><div class="answer">點選機台卡片上的「進入」，即可在機台頁面看到目前設定值與即時模擬比率。</div></div><div class="qa-item"><div class="question"><i class="fa fa-angle-right mr-1"></i> 維護中的機台何時恢復？</div><div class="answer">維護卡上會有預計時間，也可至公告區查看系統公告。</div></div><div class="qa-item"><div class="question"><i class="fa fa-angle-right mr-1"></i> 「夫人會生氣」點數如何累積？</div><div class="answer">遊玩任何機台每投入10枚代幣可獲得1點，特殊活動期間點數加倍。</div></div><div class="qa-item"><div class="question"><i class="fa fa-angle-right mr-1"></i> 新機入替的標籤代表什麼？</div><div class="answer">上架兩週內的機台會標示「新機入替」，通常有機率加成或特殊活動。</div></div><div class="qa-item"><div class="question"><i class="fa fa-angle-right mr-1"></i> 如何變更會員密碼？</div><div class="answer">至「我的」頁面點選「帳號設定」，選擇變更密碼。</div></div><div class="qa-item"><div class="question"><i class="fa fa-angle-right mr-1"></i> 點數可以轉移給其他帳號嗎？</div><div class="answer">目前點數與帳號綁定，不支援轉移，贈禮功能即將推出。</div></div><div class="qa-item"><div class="question"><i class="fa fa-angle-right mr-1"></i> 忘記登入密碼怎麼辦？</div><div class="answer">在登入頁點選「忘記密碼」，輸入註冊手機號碼重設。</div></div><div class="qa-item"><div class="question"><i class="fa fa-angle-right mr-1"></i> 機台畫面延遲如何排除？</div><div class="answer">建議檢查網路連線，或嘗試重新整理頁面。</div></div><div class="qa-footer">更多疑問請聯繫客服 LINE @tpachin</div></div></div>
+        </div>
+    </div>
+
+    <!-- 底部導航 (鎖定底部) -->
+    <nav class="bottom-nav mx-auto flex-shrink-0">
+        <a href="index.html" class="nav-item"><i class="fa fa-home"></i><span>首頁</span></a>
+        <a href="machines.html" class="nav-item"><i class="fa fa-gamepad"></i><span>機台</span></a>
+        <a href="news.html" class="nav-item current-page"><i class="fa fa-bell"></i><span>公告</span><span class="nav-badge" id="newsBadge"></span></a>
+        <a href="about.html" class="nav-item"><i class="fa fa-user"></i><span>我的</span></a>
+    </nav>
+</div>
+
+<div id="letterModal" class="modal"><div class="modal-card"><div id="modalContent" class="text-center"><div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center border-2 mb-3" style="background: linear-gradient(145deg, #3a5065, #2a4055); border-color: #4a80c0;"><i class="fa fa-envelope-open text-3xl" style="color: #4a80c0;"></i></div><h3 id="modalTitle" class="text-xl font-bold" style="color: #ffdb8e;"></h3><div id="modalTime" class="text-xs my-2" style="color: #4a80c0;"></div><p id="modalBody" class="text-gray-200 text-sm leading-relaxed mt-4"></p></div><button id="closeModalBtn" class="mt-6 w-full py-2 rounded-full border" style="border-color: #4a80c0;">關閉</button></div></div>
+
+<script>
+    (function(){
+        // ==================== 點數管理 (與其他頁面同步) ====================
+        const POINTS_KEY = 't_pachin_user_points';
+        let userPoints = 6600;
+        
+        function loadPoints() {
+            try {
+                const stored = localStorage.getItem(POINTS_KEY);
+                if (stored !== null) {
+                    userPoints = parseInt(stored, 10);
+                    if (isNaN(userPoints)) userPoints = 6600;
                 }
+            } catch(e) {
+                userPoints = 6600;
             }
-
-            // 綁定點擊事件
-            tabSystem.addEventListener('click', () => setActiveTab('system'));
-            tabLetter.addEventListener('click', () => setActiveTab('letter'));
-            tabQa.addEventListener('click', () => setActiveTab('qa'));
-            
-            // 初始化：顯示系統公告
-            setActiveTab('system');
-
-            // ----- 全選 + 勾選刪除 + 詳細內容 (僅在信件面板作用) -----
-            const letterRows = document.querySelectorAll('.letter-row');
-            const checkboxes = document.querySelectorAll('.checkbox');
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            const deleteBtn = document.getElementById('deleteSelectedBtn');
-            const selectedCountSpan = document.getElementById('selectedCount');
-            const totalCountSpan = document.getElementById('totalCount');
-            const modal = document.getElementById('letterModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalTime = document.getElementById('modalTime');
-            const modalBody = document.getElementById('modalBody');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-
-            // *** 小紅點元素 ***
-            const newsBadge = document.getElementById('newsBadge');
-
-            // 判斷是否有未讀信件 (只看藍色圓點圖示)
-            function hasUnreadLetters() {
-                const unreadIcons = document.querySelectorAll('.letter-row i.fa-circle.text-blue-400');
-                return unreadIcons.length > 0;
-            }
-
-            // 更新導航小紅點顯示
-            function updateNewsBadge() {
-                if (newsBadge) {
-                    if (hasUnreadLetters()) {
-                        newsBadge.style.display = 'block';
-                    } else {
-                        newsBadge.style.display = 'none';
-                    }
-                }
-            }
-
-            // 初始檢查未讀
-            updateNewsBadge();
-
-            let selectedSet = new Set();
-            const totalLetters = letterRows.length;
-            if (totalCountSpan) totalCountSpan.innerText = totalLetters;
-
-            // 更新全選核取方塊狀態
-            function updateSelectAll() {
-                if (!selectAllCheckbox) return;
-                if (selectedSet.size === totalLetters) {
-                    selectAllCheckbox.classList.add('checked');
-                } else {
-                    selectAllCheckbox.classList.remove('checked');
-                }
-                if (selectedCountSpan) selectedCountSpan.innerText = selectedSet.size;
-                // 刪除按鈕啟用/禁用
-                if (deleteBtn) {
-                    if (selectedSet.size === 0) {
-                        deleteBtn.classList.add('disabled');
-                    } else {
-                        deleteBtn.classList.remove('disabled');
-                    }
-                }
-            }
-
-            // 單個checkbox點擊
-            if (checkboxes.length > 0) {
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const letterId = this.getAttribute('data-letter-id');
-                        if (!letterId) return;
-
-                        this.classList.toggle('checked');
-                        const row = this.closest('.letter-row');
-                        if (this.classList.contains('checked')) {
-                            selectedSet.add(letterId);
-                            if (row) row.classList.add('selected-for-delete');
-                        } else {
-                            selectedSet.delete(letterId);
-                            if (row) row.classList.remove('selected-for-delete');
-                        }
-                        updateSelectAll();
-                    });
-                });
-            }
-
-            // 全選點擊
-            if (selectAllCheckbox) {
-                selectAllCheckbox.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const isChecking = !this.classList.contains('checked');
-                    
-                    if (isChecking) {
-                        // 全選：所有checkbox加上checked，selectedSet加入所有id
-                        checkboxes.forEach(cb => {
-                            const id = cb.getAttribute('data-letter-id');
-                            if (id) selectedSet.add(id);
-                            cb.classList.add('checked');
-                        });
-                        letterRows.forEach(row => row.classList.add('selected-for-delete'));
-                    } else {
-                        // 取消全選
-                        checkboxes.forEach(cb => {
-                            const id = cb.getAttribute('data-letter-id');
-                            if (id) selectedSet.delete(id);
-                            cb.classList.remove('checked');
-                        });
-                        letterRows.forEach(row => row.classList.remove('selected-for-delete'));
-                    }
-                    updateSelectAll();
-                });
-            }
-
-            // 點擊信件列開啟詳細 (並將該信標記為已讀)
-            if (letterRows.length > 0) {
-                letterRows.forEach(row => {
-                    row.addEventListener('click', function(e) {
-                        // 如果點擊的是checkbox，不觸發 (已stopPropagation)
-                        // 標記已讀：移除藍色圓點
-                        const blueDot = this.querySelector('i.fa-circle.text-blue-400');
-                        if (blueDot) {
-                            blueDot.remove(); // 直接移除未讀標記
-                        }
-                        // 更新小紅點狀態
-                        updateNewsBadge();
-
-                        const sender = this.getAttribute('data-sender') || '未知';
-                        const time = this.getAttribute('data-time') || '';
-                        const content = this.getAttribute('data-content') || '無內容';
-                        if (modalTitle) modalTitle.innerText = sender;
-                        if (modalTime) modalTime.innerText = time;
-                        if (modalBody) modalBody.innerText = content;
-                        if (modal) modal.classList.add('show');
-                    });
-                });
-            }
-
-            // 關閉modal
-            if (closeModalBtn) {
-                closeModalBtn.addEventListener('click', () => {
-                    if (modal) modal.classList.remove('show');
-                });
-            }
-            if (modal) {
-                modal.addEventListener('click', (e) => { 
-                    if (e.target === modal) modal.classList.remove('show'); 
-                });
-            }
-
-            // 刪除所選信件 (並更新小紅點)
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', function() {
-                    if (selectedSet.size === 0) return;
-                    // 遍歷所有信件列，移除data-id在selectedSet中的
-                    letterRows.forEach(row => {
-                        const id = row.getAttribute('data-id');
-                        if (selectedSet.has(id)) {
-                            row.remove();
-                        }
-                    });
-                    // 清空selectedSet，更新計數
-                    selectedSet.clear();
-                    // 重新取得剩餘信件列和checkbox (但刪除後DOM元素已改變，需重新查詢)
-                    const remainingRows = document.querySelectorAll('.letter-row');
-                    const remainingCheckboxes = document.querySelectorAll('.checkbox');
-                    // 更新總數顯示
-                    if (totalCountSpan) totalCountSpan.innerText = remainingRows.length;
-                    const statsEl = document.getElementById('letterStats');
-                    if (statsEl) statsEl.innerText = `✉️ 共 ${remainingRows.length} 封信件`;
-                    // 若全選核取方塊狀態重置
-                    if (selectAllCheckbox) selectAllCheckbox.classList.remove('checked');
-                    
-                    // 重要：更新小紅點
-                    updateNewsBadge();
-
-                    // 重新綁定checkbox事件? 不用，因為checkbox的監聽是掛在原有的上面，但刪除後原有的checkbox也被移除了
-                    // 但點擊刪除後，新生成的列表沒有事件？ 因為我們沒有重新綁定事件到新checkbox。
-                    // 為了節省複雜度且維持demo可運行，我們重新執行事件綁定(簡易方式：重新執行部分初始化)
-                    // 實務上會用事件代理，但這裡作為展示，重新綁定點擊給新的checkbox
-                    function rebindCheckboxes() {
-                        document.querySelectorAll('.checkbox').forEach(cb => {
-                            cb.removeEventListener('click', window.checkboxHandler); // 避免重複
-                            cb.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                const letterId = this.getAttribute('data-letter-id');
-                                if (!letterId) return;
-                                this.classList.toggle('checked');
-                                const row = this.closest('.letter-row');
-                                if (this.classList.contains('checked')) {
-                                    selectedSet.add(letterId);
-                                    if (row) row.classList.add('selected-for-delete');
-                                } else {
-                                    selectedSet.delete(letterId);
-                                    if (row) row.classList.remove('selected-for-delete');
-                                }
-                                updateSelectAll();
-                            });
-                        });
-                    }
-                    rebindCheckboxes();
-
-                    // 重新綁定row點擊 (未讀標記)
-                    document.querySelectorAll('.letter-row').forEach(row => {
-                        row.removeEventListener('click', window.rowHandler);
-                        row.addEventListener('click', function(e) {
-                            const blueDot = this.querySelector('i.fa-circle.text-blue-400');
-                            if (blueDot) {
-                                blueDot.remove();
-                                updateNewsBadge();
-                            }
-                            const sender = this.getAttribute('data-sender') || '未知';
-                            const time = this.getAttribute('data-time') || '';
-                            const content = this.getAttribute('data-content') || '無內容';
-                            if (modalTitle) modalTitle.innerText = sender;
-                            if (modalTime) modalTime.innerText = time;
-                            if (modalBody) modalBody.innerText = content;
-                            if (modal) modal.classList.add('show');
-                        });
-                    });
-
-                    updateSelectAll();
-                });
-            }
-
-            // 初始化更新
-            updateSelectAll();
-
-            // ----- Banner 輪播 (移植) -----
-            (function banner() {
-                let currentSlide = 0;
-                const slider = document.getElementById('bannerSlider');
-                const dots = document.querySelectorAll('.banner-dot');
-                const touchArea = document.getElementById('bannerTouchArea');
-                const totalSlides = 3;
-                let slideInterval;
-                let startX = 0, isDragging = false, threshold = 30;
-
-                function updateSlide(index) {
-                    currentSlide = (index + totalSlides) % totalSlides;
-                    if (slider) slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-                    dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
-                }
-                if (dots.length > 0) {
-                    dots.forEach(dot => dot.addEventListener('click', function() {
-                        const slideIndex = parseInt(this.getAttribute('data-slide'));
-                        if (!isNaN(slideIndex)) updateSlide(slideIndex);
-                        resetAutoSlide();
-                    }));
-                }
-
-                if (touchArea) {
-                    touchArea.addEventListener('touchstart', (e) => { 
-                        startX = e.touches[0].clientX; isDragging = true; clearInterval(slideInterval); e.preventDefault(); 
-                    }, { passive: false });
-                    touchArea.addEventListener('touchmove', (e) => { if (!isDragging) return; e.preventDefault(); }, { passive: false });
-                    touchArea.addEventListener('touchend', (e) => {
-                        if (!isDragging) return;
-                        const endX = e.changedTouches[0].clientX;
-                        const diff = endX - startX;
-                        if (Math.abs(diff) > threshold) diff > 0 ? updateSlide(currentSlide-1) : updateSlide(currentSlide+1);
-                        isDragging = false;
-                        startAutoSlide();
-                        e.preventDefault();
-                    }, { passive: false });
-                    touchArea.addEventListener('touchcancel', () => { isDragging = false; startAutoSlide(); });
-                }
-                function startAutoSlide() { clearInterval(slideInterval); slideInterval = setInterval(() => updateSlide(currentSlide+1), 5000); }
-                function resetAutoSlide() { clearInterval(slideInterval); startAutoSlide(); }
-                startAutoSlide();
-            })();
-
-            // 篩選側欄功能
-            const openBtn = document.getElementById('openDrawerBtn');
-            const closeBtn = document.getElementById('closeDrawer');
-            const drawer = document.getElementById('filterDrawer');
-            const overlay = document.getElementById('drawerOverlay');
-            
-            function openDrawerFunc() { if (drawer) drawer.style.right = '0'; if (overlay) overlay.classList.remove('hidden'); }
-            function closeDrawerFunc() { if (drawer) drawer.style.right = '-100%'; if (overlay) overlay.classList.add('hidden'); }
-            
-            if (openBtn) openBtn.addEventListener('click', openDrawerFunc);
-            if (closeBtn) closeBtn.addEventListener('click', closeDrawerFunc);
-            if (overlay) overlay.addEventListener('click', closeDrawerFunc);
-            
-            const resetBtn = document.getElementById('resetFilters');
-            const applyBtn = document.getElementById('applyFilters');
-            
-            if (resetBtn) resetBtn.addEventListener('click', ()=> {});
-            if (applyBtn) applyBtn.addEventListener('click', ()=> { 
-                closeDrawerFunc(); 
-                alert('示範篩選套用'); 
-            });
-
-            // 為新Logo添加觸覺反饋 (可選，與原本a連結行為共存)
-            const headerLogo = document.getElementById('mobileLogoHeader');
-            if (headerLogo) {
-                headerLogo.addEventListener('click', function(e) {
-                    // 讓瀏覽器自然導向 index.html，但可以加一點微互動
-                    this.style.transform = 'scale(0.96)';
-                    setTimeout(() => { this.style.transform = ''; }, 120);
-                });
-            }
-        })();
-    </script>
-    <!-- 為了確保沒有遺漏任何光暈，覆寫所有text-shadow (某些瀏覽器可能繼承) -->
-    <style>
-        .player-nickname, .player-credits {
-            text-shadow: none !important;
+            updatePointsDisplay();
         }
-    </style>
- <!-- ⭐ 加入這行引入 shared.js ⭐ -->
-    <script src="shared.js"></script>
+        
+        function updatePointsDisplay() {
+            const pointsEl = document.getElementById('tokenBtn');
+            if (pointsEl) pointsEl.textContent = userPoints.toLocaleString();
+        }
+        
+        function savePoints() {
+            try {
+                localStorage.setItem(POINTS_KEY, userPoints);
+            } catch(e) {}
+        }
+        
+        function updatePoints(changeAmount) {
+            userPoints = Math.max(0, userPoints + changeAmount);
+            savePoints();
+            updatePointsDisplay();
+            // 通知其他頁面點數已更新
+            window.dispatchEvent(new CustomEvent('points-updated', { detail: { points: userPoints } }));
+            return userPoints;
+        }
+        
+        // 監聽其他頁面的點數更新事件
+        window.addEventListener('points-updated', function(e) {
+            if (e.detail && e.detail.points !== undefined) {
+                userPoints = e.detail.points;
+                updatePointsDisplay();
+            }
+        });
+        
+        loadPoints();
+        
+        // 點數顯示點擊事件
+        document.getElementById('tokenBtn')?.addEventListener('click', () => {
+            alert(`💰 目前點數：${userPoints.toLocaleString()}\n\n遊玩機台即可累積點數！`);
+        });
+        
+        // 暱稱點擊編輯
+        const nicknameEl = document.querySelector('.nickname-display');
+        if (nicknameEl) {
+            nicknameEl.addEventListener('click', () => {
+                const newName = prompt('修改暱稱', nicknameEl.textContent);
+                if (newName && newName.trim()) {
+                    nicknameEl.textContent = newName.trim();
+                    // 儲存到 localStorage
+                    const userData = { points: userPoints, nickname: newName.trim(), lastUpdated: Date.now() };
+                    localStorage.setItem('t_pachin_user', JSON.stringify(userData));
+                }
+            });
+        }
+        
+        // ==================== 標籤切換 ====================
+        const tabSystem = document.getElementById('tabSystemBtn');
+        const tabLetter = document.getElementById('tabLetterBtn');
+        const tabQa = document.getElementById('tabQaBtn');
+        const panelSystem = document.getElementById('panelSystem');
+        const panelLetter = document.getElementById('panelLetter');
+        const panelQa = document.getElementById('panelQa');
+        
+        function setActiveTab(active){
+            [tabSystem, tabLetter, tabQa].forEach(t=>t.classList.remove('active'));
+            [panelSystem, panelLetter, panelQa].forEach(p=>p.classList.add('hidden'));
+            if(active==='system'){ tabSystem.classList.add('active'); panelSystem.classList.remove('hidden'); }
+            else if(active==='letter'){ tabLetter.classList.add('active'); panelLetter.classList.remove('hidden'); }
+            else{ tabQa.classList.add('active'); panelQa.classList.remove('hidden'); }
+        }
+        tabSystem.addEventListener('click',()=>setActiveTab('system'));
+        tabLetter.addEventListener('click',()=>setActiveTab('letter'));
+        tabQa.addEventListener('click',()=>setActiveTab('qa'));
+        setActiveTab('system');
+
+        // ==================== 彈窗邏輯 ====================
+        const modal = document.getElementById('letterModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalTime = document.getElementById('modalTime');
+        const modalBody = document.getElementById('modalBody');
+        const closeModal = document.getElementById('closeModalBtn');
+        
+        function showModal(title,time,body){ 
+            modalTitle.innerText=title; 
+            modalTime.innerText=time; 
+            modalBody.innerText=body; 
+            modal.classList.add('show'); 
+        }
+        closeModal.addEventListener('click',()=>modal.classList.remove('show'));
+        modal.addEventListener('click',(e)=>{ if(e.target===modal) modal.classList.remove('show'); });
+
+        // ==================== 系統公告點擊 ====================
+        document.querySelectorAll('#panelSystem .system-card').forEach(card=>{
+            card.addEventListener('click',()=>{
+                const title=card.querySelector('.text-lg')?.innerText||card.dataset.title||'公告';
+                const time=card.querySelector('.text-sm.mt-1')?.innerText||card.dataset.time||'';
+                const content=card.querySelector('.text-gray-300.text-sm.mt-2')?.innerText||card.dataset.content||'';
+                showModal(title,time,content);
+            });
+        });
+
+        // ==================== 信件功能 ====================
+        const letterRows=document.querySelectorAll('.letter-row');
+        const checkboxes=document.querySelectorAll('.checkbox');
+        const selectAllBox=document.getElementById('selectAllCheckbox');
+        const deleteBtn=document.getElementById('deleteSelectedBtn');
+        const selectedSpan=document.getElementById('selectedCount');
+        const totalSpan=document.getElementById('totalCount');
+        const newsBadge=document.getElementById('newsBadge');
+        
+        function hasUnread(){ return document.querySelectorAll('.letter-row i.fa-circle').length>0; }
+        function updateBadge(){ if(newsBadge) newsBadge.style.display=hasUnread()?'block':'none'; }
+        updateBadge();
+        
+        let selectedSet=new Set();
+        const totalLetters=letterRows.length;
+        if(totalSpan) totalSpan.innerText=totalLetters;
+        
+        function updateSelectAllUI(){
+            if(selectAllBox) selectAllBox.classList.toggle('checked',selectedSet.size===totalLetters);
+            if(selectedSpan) selectedSpan.innerText=selectedSet.size;
+            if(deleteBtn) deleteBtn.classList.toggle('disabled',selectedSet.size===0);
+        }
+        
+        checkboxes.forEach(cb=>{
+            cb.addEventListener('click',(e)=>{
+                e.stopPropagation();
+                const id=cb.getAttribute('data-letter-id');
+                if(!id) return;
+                cb.classList.toggle('checked');
+                const row=cb.closest('.letter-row');
+                if(cb.classList.contains('checked')){ selectedSet.add(id); row?.classList.add('selected-for-delete');}
+                else{ selectedSet.delete(id); row?.classList.remove('selected-for-delete');}
+                updateSelectAllUI();
+            });
+        });
+        
+        if(selectAllBox){
+            selectAllBox.addEventListener('click',(e)=>{
+                e.stopPropagation();
+                const isChecking=!selectAllBox.classList.contains('checked');
+                checkboxes.forEach(cb=>{
+                    const id=cb.getAttribute('data-letter-id');
+                    if(id){ if(isChecking) selectedSet.add(id); else selectedSet.delete(id); }
+                    cb.classList.toggle('checked',isChecking);
+                    cb.closest('.letter-row')?.classList.toggle('selected-for-delete',isChecking);
+                });
+                updateSelectAllUI();
+            });
+        }
+        
+        letterRows.forEach(row=>{
+            row.addEventListener('click',(e)=>{
+                if(e.target.closest('.checkbox')) return;
+                const blueDot=row.querySelector('i.fa-circle');
+                if(blueDot){ blueDot.remove(); updateBadge(); }
+                const sender=row.getAttribute('data-sender')||'未知';
+                const time=row.getAttribute('data-time')||'';
+                const content=row.getAttribute('data-content')||'無內容';
+                showModal(sender,time,content);
+            });
+        });
+        
+        deleteBtn?.addEventListener('click',()=>{
+            if(selectedSet.size===0) return;
+            letterRows.forEach(row=>{ if(selectedSet.has(row.getAttribute('data-id'))) row.remove(); });
+            selectedSet.clear();
+            const remain=document.querySelectorAll('.letter-row');
+            if(totalSpan) totalSpan.innerText=remain.length;
+            const statsDiv=document.querySelector('#panelLetter .text-xs.pt-2');
+            if(statsDiv) statsDiv.innerText=`✉️ 共 ${remain.length} 封信件`;
+            if(selectAllBox) selectAllBox.classList.remove('checked');
+            updateSelectAllUI();
+            updateBadge();
+        });
+
+        // ==================== Banner 輪播 ====================
+        (function banner(){
+            let current=0;
+            const slider=document.getElementById('bannerSlider');
+            const dots=document.querySelectorAll('.banner-dot');
+            const touchArea=document.getElementById('bannerTouchArea');
+            const total=3;
+            let interval;
+            
+            function updateSlide(idx){ 
+                current=(idx+total)%total; 
+                if(slider) slider.style.transform=`translateX(-${current*100}%)`; 
+                dots.forEach((d,i)=>d.classList.toggle('active',i===current)); 
+            }
+            
+            dots.forEach(d=>d.addEventListener('click',()=>{ 
+                const idx=parseInt(d.getAttribute('data-slide')); 
+                if(!isNaN(idx)){ updateSlide(idx); resetAuto(); } 
+            }));
+            
+            let startX=0, dragging=false;
+            if(touchArea){
+                touchArea.addEventListener('touchstart',(e)=>{ 
+                    startX=e.touches[0].clientX; 
+                    dragging=true; 
+                    clearInterval(interval); 
+                    e.preventDefault();
+                },{passive:false});
+                touchArea.addEventListener('touchmove',(e)=>{ if(dragging) e.preventDefault();},{passive:false});
+                touchArea.addEventListener('touchend',(e)=>{ 
+                    if(dragging){ 
+                        const diff=e.changedTouches[0].clientX-startX; 
+                        if(Math.abs(diff)>30) diff>0?updateSlide(current-1):updateSlide(current+1); 
+                        dragging=false; 
+                        startAuto(); 
+                    } 
+                    e.preventDefault();
+                },{passive:false});
+                touchArea.addEventListener('touchcancel',()=>{ dragging=false; startAuto();});
+            }
+            
+            function startAuto(){ clearInterval(interval); interval=setInterval(()=>updateSlide(current+1),5000); }
+            function resetAuto(){ clearInterval(interval); startAuto(); }
+            startAuto();
+        })();
+        
+        // ==================== 從 localStorage 載入暱稱 ====================
+        try {
+            const storedUser = localStorage.getItem('t_pachin_user');
+            if (storedUser) {
+                const userData = JSON.parse(storedUser);
+                if (userData.nickname) {
+                    const nickEl = document.querySelector('.nickname-display');
+                    if (nickEl) nickEl.textContent = userData.nickname;
+                }
+            }
+        } catch(e) {}
+    })();
+</script>
 </body>
 </html>
