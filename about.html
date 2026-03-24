@@ -3,639 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>我的 · 點數代幣系統</title>
+    <title>我的 · 注單明細 · 小丑系列</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;500;700;900&family=Noto+Sans+JP:wght@300;500;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
-        /* ===== 完整保留原樣式 ===== */
-        .tech-gradient { background: linear-gradient(180deg, #000814 0%, #001233 50%, #001845 100%); }
-        .tech-border { border: 1px solid rgba(0, 148, 255, 0.4); }
-        body.dark-mode .tech-gradient { background: linear-gradient(180deg, #1a2a3a 0%, #1f3a5f 50%, #2c4c6b 100%); }
-        body.dark-mode .game-card-bg { background: linear-gradient(180deg, rgba(40, 70, 100, 0.8) 0%, rgba(20, 50, 80, 0.9) 100%); }
-        body.dark-mode .filter-drawer { background: linear-gradient(165deg, #2a3f5a 0%, #1b2b40 100%); }
-        body.dark-mode .bottom-nav { background: #2c4058; border-top-color: #3399ff; }
-        .game-card-bg { background: linear-gradient(180deg, rgba(0, 30, 60, 0.8) 0%, rgba(0, 15, 30, 0.9) 100%); transition: background 0.3s ease; }
-        .filter-drawer { position: fixed; top: 0; right: -100%; width: 85%; max-width: 340px; height: 100vh; background: linear-gradient(165deg, #001a33 0%, #000a1a 100%); border-left: 2px solid #0099ff; box-shadow: -5px 0 30px rgba(0, 153, 255, 0.5); z-index: 10000; transition: right 0.3s ease; overflow-y: auto; padding: 1.5rem; }
-        .filter-drawer.open { right: 0; }
-        .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(3px); z-index: 9999; display: none; }
-        .drawer-overlay.open { display: block; }
-        .filter-chip { background: rgba(0, 40, 70, 0.8); border: 1px solid #0099ff60; border-radius: 9999px; padding: 0.4rem 1.2rem; font-size: 0.75rem; color: #cce6ff; transition: all 0.2s; cursor: pointer; display: inline-block; }
-        
-        /* ===== 優化後的滾邊條樣式 ===== */
-        .scrollbar-beauty {
-            scrollbar-width: thin;
-            scrollbar-color: #00aaff #002a4a;
-        }
-        .scrollbar-beauty::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .scrollbar-beauty::-webkit-scrollbar-track {
-            background: linear-gradient(180deg, #001a33, #002a4a);
-            border-radius: 20px;
-            border: 1px solid #0099ff30;
-            margin: 4px 0;
-        }
-        .scrollbar-beauty::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #00aaff, #0066cc);
-            border-radius: 20px;
-            border: 1px solid #80e4ff;
-            box-shadow: 0 0 8px #00aaff;
-        }
-        .scrollbar-beauty::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #33ccff, #0088ee);
-            box-shadow: 0 0 12px #33ccff;
-        }
-        .scrollbar-beauty::-webkit-scrollbar-button {
-            display: none;
-        }
-        
-        /* 針對橫向滾輪 */
-        .scrollbar-beauty-x {
-            scrollbar-width: thin;
-            scrollbar-color: #00aaff #002a4a;
-        }
-        .scrollbar-beauty-x::-webkit-scrollbar {
-            height: 6px;
-        }
-        .scrollbar-beauty-x::-webkit-scrollbar-track {
-            background: linear-gradient(90deg, #001a33, #002a4a);
-            border-radius: 20px;
-            border: 1px solid #0099ff30;
-        }
-        .scrollbar-beauty-x::-webkit-scrollbar-thumb {
-            background: linear-gradient(90deg, #00aaff, #0066cc);
-            border-radius: 20px;
-            border: 1px solid #80e4ff;
-            box-shadow: 0 0 8px #00aaff;
-        }
-        
-        /* 應用滾邊條到所有需要滾動的區域 */
-        .scrollable-area {
-            overflow-y: auto;
-            overflow-x: hidden;
-            scrollbar-width: thin;
-            scrollbar-color: #00aaff #002a4a;
-        }
-        .scrollable-area::-webkit-scrollbar {
-            width: 6px;
-        }
-        .scrollable-area::-webkit-scrollbar-track {
-            background: linear-gradient(180deg, #001a33, #002a4a);
-            border-radius: 20px;
-            border: 1px solid #0099ff30;
-        }
-        .scrollable-area::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #00aaff, #0066cc);
-            border-radius: 20px;
-            border: 1px solid #80e4ff;
-            box-shadow: 0 0 8px #00aaff;
-        }
-        
-        .bottom-nav { background: #001a33; border-top: 2px solid #0066cc; box-shadow: 0 -2px 10px rgba(0, 102, 204, 0.3); width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; margin-top: 1rem; transition: background 0.3s ease, border-top-color 0.3s ease; }
-        .nav-item { position: relative; display: flex; flex-direction: column; align-items: center; color: #4b9cd3; transition: all 0.2s ease; border-radius: 8px; padding: 0.25rem 0.5rem; text-decoration: none; outline: none; }
-        .nav-item:hover { color: #80e4ff; transform: translateY(-2px); text-shadow: 0 0 6px #00ccff; background: rgba(0, 153, 255, 0.15); }
-        .nav-item:active { transform: scale(0.95); color: white; background: rgba(0, 204, 255, 0.3); }
-        .nav-item.current-page { color: white; background: linear-gradient(90deg, #0066cc 0%, #0099ff 100%); border: 1px solid #80e4ff; box-shadow: 0 0 12px #00ccff; transform: scale(1.02); }
-        .nav-badge { position: absolute; top: 0px; right: 0px; width: 10px; height: 10px; background-color: #ff3b3b; border-radius: 50%; border: 2px solid #001a33; box-shadow: 0 0 8px #ff0000; display: none; z-index: 25; }
-        .nav-item.current-page .nav-badge { border-color: #0066cc; }
-        .action-grid-btn { background: rgba(0, 30, 60, 0.8); border: 1px solid #0099ff60; border-radius: 16px; padding: 1rem 0.5rem; text-align: center; transition: all 0.2s; color: #cce6ff; font-size: 0.9rem; backdrop-filter: blur(4px); cursor: pointer; user-select: none; position: relative; }
-        .action-grid-btn i { display: block; font-size: 1.8rem; margin-bottom: 6px; color: #ffd966; }
-        .action-grid-btn:active { transform: scale(0.94); background: #0099ff60; border-color: #00ccff; box-shadow: 0 0 12px #00ccff; }
-        .count-badge { position: absolute; top: 8px; right: 12px; background: #ff4444; color: white; font-size: 0.7rem; font-weight: bold; min-width: 22px; height: 22px; border-radius: 30px; display: flex; align-items: center; justify-content: center; padding: 0 6px; border: 1px solid #ffd966; box-shadow: 0 0 8px #ff4444; animation: pulse 2s infinite; }
-        .count-badge.keep { background: #ff9900; box-shadow: 0 0 8px #ff9900; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0a0c1a; color: #fff; font-family: 'Noto Sans JP', 'Orbitron', sans-serif; min-height: 100vh; display: flex; flex-direction: column; position: relative; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(74, 128, 192, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(153, 0, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+        .max-w-md { max-width: 448px; margin: 0 auto; height: 100vh; position: relative; z-index: 1; background: linear-gradient(145deg, #0f1425, #0a0e1f); box-shadow: 0 0 50px rgba(74, 128, 192, 0.2); border-left: 1px solid rgba(74, 128, 192, 0.2); border-right: 1px solid rgba(153, 0, 255, 0.2); display: flex; flex-direction: column; overflow: hidden; }
+        ::-webkit-scrollbar { width: 4px; height: 0px; background: transparent; }
+        ::-webkit-scrollbar-track { background: rgba(74, 128, 192, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(74, 128, 192, 0.5); border-radius: 10px; }
+        * { scrollbar-width: thin; scrollbar-color: #4a80c0 rgba(74, 128, 192, 0.2); }
+        .metal-header { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border-bottom: 2px solid #4a80c0; border-top: 2px solid #4a80c0; box-shadow: 0 5px 0 #0f121c, 0 10px 15px rgba(74, 128, 192, 0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6); position: relative; overflow: hidden; border-radius: 0 0 30px 30px; padding: 0.75rem 1rem; flex-shrink: 0; }
+        .metal-header::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transform: skewX(-20deg); animation: shine 4s infinite; pointer-events: none; }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 120%; } 100% { left: 120%; } }
+        .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 9999px; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; box-shadow: 0 5px 0 #0f121c, 0 10px 15px rgba(74, 128, 192, 0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6); overflow: hidden; cursor: pointer; }
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(145deg, #3a5065, #2a4055); color: white; font-size: 0.7rem; text-align: center; padding: 3px 0; border-top: 1px solid #4a80c0; text-shadow: 0 2px 3px black; }
+        .nickname-edit { color: #ffffff; text-shadow: 0 2px 3px black, 0 0 10px rgba(255,255,255,0.3); font-weight: 600; transition: all 0.2s ease; font-size: 1.5rem; cursor: pointer; border-bottom: 1px dashed #4a80c0; }
+        .nickname-edit:hover { color: #ffd966; text-shadow: 0 0 10px #ffd700, 0 2px 3px black; }
+        .vip-badge { background: linear-gradient(135deg, #b8860b, #ffd700); color: #000; font-weight: bold; padding: 0.15rem 0.6rem; border-radius: 30px; font-size: 0.7rem; box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 3px 0 #7f4f0a; cursor: pointer; border: 1px solid #ffaa00; }
+        .exp-text { font-size: 0.7rem; color: #b0d4ff; cursor: pointer; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 0.15rem 0.6rem; border-radius: 30px; border: 1px solid #4a80c0; box-shadow: inset 0 2px 3px rgba(255,255,255,0.2); }
+        .points-display { background: linear-gradient(145deg, #4a3a1a, #3a2a0a); padding: 0.15rem 1rem; border-radius: 30px; box-shadow: inset 0 2px 5px rgba(255,215,0,0.5), inset 0 -3px 5px rgba(0,0,0,0.6), 0 4px 0 #2a1f0a, 0 0 12px #ffd700; border: 1px solid #ffd700; color: #ffd966; font-weight: 900; font-size: 1rem; text-shadow: 0 2px 3px black; cursor: pointer; transition: all 0.1s ease; text-align: center; min-width: 80px; }
+        .progress-bar { width: 100%; height: 6px; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border-radius: 10px; overflow: hidden; border: 1px solid #4a80c0; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
+        .progress-fill { height: 100%; width: 28%; background: linear-gradient(90deg, #ffd966, #ffaa33); border-radius: 10px; box-shadow: 0 0 8px #ffaa33; }
+        .vip-info-panel { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #ffd966; border-radius: 16px; padding: 1rem; margin: 0.5rem 0; box-shadow: 0 10px 15px rgba(74,128,192,0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6); }
+        .action-grid-btn { background: linear-gradient(145deg, #3a4050, #2a2f40); border: 1px solid #4a80c0; border-radius: 16px; padding: 1rem 0.5rem; text-align: center; color: #cce6ff; cursor: pointer; position: relative; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c; transition: all 0.1s ease; }
+        .action-grid-btn:hover { transform: translateY(-2px); box-shadow: inset 0 2px 5px rgba(255,255,255,0.4), inset 0 -3px 5px rgba(0,0,0,0.3), 0 7px 0 #0f121c, 0 0 15px #4a80c0; color: white; }
+        .count-badge { position: absolute; top: 8px; right: 12px; background: #ff4444; color: white; font-size: 0.7rem; min-width: 22px; height: 22px; border-radius: 30px; display: flex; align-items: center; justify-content: center; padding: 0 6px; border: 1px solid #ffd966; box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 3px 0 #7f1d1d; animation: pulse 2s infinite; }
+        .count-badge.keep { background: #ff9900; box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 3px 0 #7f4f0a; }
         @keyframes pulse { 0% { opacity: 0.9; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.9; transform: scale(1); } }
-        .machine-card { background: rgba(0, 40, 70, 0.7); border: 1px solid #0099ff60; border-radius: 12px; padding: 0.8rem; display: flex; gap: 12px; align-items: center; transition: 0.2s; backdrop-filter: blur(4px); position: relative; }
-        .machine-card:active { transform: scale(0.98); background: #0099ff30; }
-        .machine-card img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; border: 1px solid #0099ff; }
+        .machine-card { background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 2px solid #4a80c0; border-radius: 24px; padding: 0.8rem; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; transition: all 0.2s ease; position: relative; box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), inset 0 -3px 8px rgba(0,0,0,0.6), 0 8px 0 #0f121c; cursor: pointer; }
+        .machine-card:active { transform: translateY(4px); box-shadow: inset 0 5px 10px rgba(0,0,0,0.7), inset 0 -2px 5px rgba(255,255,255,0.2), 0 4px 0 #0f121c; }
+        .machine-card img { width: 70px; height: 70px; border-radius: 16px; object-fit: cover; border: 2px solid #4a80c0; box-shadow: 0 0 15px rgba(74,128,192,0.3); }
         .machine-info { flex: 1; }
-        .machine-name { font-weight: bold; color: #ffd966; font-size: 1rem; }
-        .machine-meta { display: flex; gap: 8px; margin-top: 4px; font-size: 0.7rem; color: #b0d4ff; }
-        .machine-meta span { background: rgba(0, 153, 255, 0.2); padding: 0.2rem 0.6rem; border-radius: 30px; border: 1px solid #0099ff40; }
-        .countdown-timer { font-size: 0.7rem; color: #ffaa00; background: rgba(0, 0, 0, 0.4); padding: 0.2rem 0.6rem; border-radius: 30px; border: 1px solid #ffaa00; display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; width: fit-content; }
-        .countdown-timer i { color: #ffaa00; font-size: 0.6rem; }
+        .machine-name { font-weight: bold; color: #ffd966; font-size: 1rem; text-shadow: 0 2px 3px black; margin-bottom: 6px; }
+        .machine-meta { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+        .machine-meta span { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 0.2rem 0.6rem; border-radius: 30px; border: 1px solid #4a80c0; color: #b0d4ff; font-size: 0.65rem; box-shadow: inset 0 2px 3px rgba(255,255,255,0.2); }
+        .machine-actions { display: flex; gap: 8px; flex-direction: column; }
+        .countdown-timer { font-size: 0.7rem; color: #ffaa00; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 0.2rem 0.6rem; border-radius: 30px; border: 1px solid #ffaa00; display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; width: fit-content; }
         .countdown-timer.warning { color: #ff6666; border-color: #ff6666; animation: blink 1s infinite; }
-        .countdown-timer.warning i { color: #ff6666; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-        .machine-actions { display: flex; flex-direction: column; gap: 6px; margin-left: 4px; }
-        
-        /* 進入按鈕樣式 - 綠色 */
-        .play-btn { 
-            background: linear-gradient(135deg, #00cc66, #009933); 
-            border: 1px solid #80ff80; 
-            color: white; 
-            font-size: 0.8rem; 
-            padding: 6px 12px; 
-            border-radius: 30px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 4px; 
-            cursor: pointer; 
-            box-shadow: 0 0 8px #00ff80; 
-            transition: 0.15s; 
-            white-space: nowrap; 
-            min-width: 70px;
-        }
-        .play-btn:active { 
-            transform: scale(0.9); 
-            background: #00ff80; 
-            color: #000; 
-        }
-        .play-btn i { 
-            font-size: 0.8rem; 
-        }
-        
-        /* 離開按鈕樣式 - 紅色 */
-        .leave-btn { 
-            background: linear-gradient(135deg, #ff4d4d, #cc0000); 
-            border: 1px solid #ff9999; 
-            color: white; 
-            font-size: 0.8rem; 
-            padding: 6px 12px; 
-            border-radius: 30px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 4px; 
-            cursor: pointer; 
-            box-shadow: 0 0 8px #ff4d4d; 
-            transition: 0.15s; 
-            white-space: nowrap; 
-            min-width: 70px;
-        }
-        .leave-btn:active { 
-            transform: scale(0.9); 
-            background: #ff6666; 
-            color: #000; 
-        }
-        .leave-btn i { 
-            font-size: 0.8rem; 
-        }
-        
-        /* 取消收藏按鈕樣式 - 粉紅色 */
-        .unfavorite-btn {
-            background: linear-gradient(135deg, #ff6680, #cc3355);
-            border: 1px solid #ff99aa;
-            color: white;
-            font-size: 0.8rem;
-            padding: 6px 12px;
-            border-radius: 30px;
+        .play-btn, .leave-btn, .unfavorite-btn { font-size: 0.75rem; padding: 6px 14px; border-radius: 30px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.1s ease; white-space: nowrap; min-width: 80px; font-weight: 700; text-shadow: 0 2px 3px black; border: 1px solid; }
+        .play-btn { background: linear-gradient(145deg, #2a5540, #1a4530); border-color: #4a80c0; color: white; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f4a2a; }
+        .leave-btn { background: linear-gradient(145deg, #553a3a, #452a2a); border-color: #ff6666; color: white; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #4a1a1a; }
+        .unfavorite-btn { background: linear-gradient(145deg, #553a55, #452a45); border-color: #ff6680; color: white; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #4a1a3a; }
+        .list-title { font-size: 1rem; font-weight: bold; color: #ffd966; padding: 12px 0 8px 0; border-bottom: 2px solid #4a80c0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; text-shadow: 0 2px 3px black; }
+        .machine-list-container { display: none; margin-top: 12px; max-height: 400px; overflow-y: auto; padding-right: 4px; }
+        .machine-list-container.show { display: block; }
+        .record-type { display: inline-block; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; min-width: 50px; text-align: center; }
+        .type-bringin { background: linear-gradient(145deg, #1a4530, #0a3520); border: 1px solid #4a80c0; color: #a0ffc0; }
+        .type-bringout { background: linear-gradient(145deg, #452a2a, #351a1a); border: 1px solid #ff6666; color: #ffb0b0; }
+        .type-bb { background: linear-gradient(145deg, #2a2f55, #1a1f45); border: 1px solid #667eea; color: #b0c4ff; }
+        .type-bet { background: linear-gradient(145deg, #554a1a, #453a0a); border: 1px solid #ffaa33; color: #ffd966; }
+        .amount-negative { color: #88ff88; font-weight: 600; }
+        .amount-positive { color: #ff8888; font-weight: 600; }
+        .amount-total { color: #ffd966; font-weight: 600; }
+        .bet-id { font-family: monospace; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 4px 8px; border-radius: 16px; color: #ffd966; cursor: pointer; transition: 0.2s; display: inline-block; font-size: 0.75rem; border: 1px solid #4a80c0; }
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .search-box { flex: 1; min-width: 180px; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 12px; display: flex; align-items: center; gap: 6px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
+        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; }
+        .filter-select { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 28px 6px 12px; color: white; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a80c0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 6px center; cursor: pointer; }
+        .datetime-filter { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+        .datetime-input { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 10px; color: white; font-size: 0.8rem; flex: 1; min-width: 130px; }
+        .datetime-input::-webkit-calendar-picker-indicator { filter: invert(1); }
+        .confirm-btn { background: linear-gradient(145deg, #3a5065, #2a4055); border: 1px solid #4a80c0; border-radius: 30px; padding: 6px 16px; color: white; font-size: 0.9rem; cursor: pointer; transition: all 0.1s ease; font-weight: 700; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c; }
+        .main-row { background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 2px solid #4a80c0; border-radius: 16px; margin-bottom: 8px; cursor: pointer; padding: 12px; transition: all 0.2s ease; box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), inset 0 -3px 8px rgba(0,0,0,0.6), 0 8px 0 #0f121c; }
+        .main-row:hover { border-color: #ffd700; transform: translateY(-2px); }
+        .machine-title { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .machine-title .name { color: #ffd966; font-weight: 700; font-size: 1rem; }
+        .machine-title .number { color: #4a80c0; font-size: 0.85rem; background: rgba(74,128,192,0.2); padding: 2px 8px; border-radius: 30px; border: 1px solid #4a80c0; }
+        .date-range { color: #80e4ff; font-size: 0.8rem; margin-bottom: 6px; }
+        .amount-info { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; flex-wrap: wrap; }
+        .bring-in { color: #88ff88; }
+        .bring-out { color: #ffd966; }
+        .net-profit.positive { color: #ff8888; }
+        .net-profit.negative { color: #88ff88; }
+        .stats-row { display: flex; gap: 6px; padding: 4px 0; justify-content: space-between; width: 100%; margin-bottom: 16px; }
+        .stat-card { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 1px solid #4a80c0; border-radius: 30px; padding: 4px 8px; display: flex; align-items: center; gap: 3px; white-space: nowrap; font-size: 0.65rem; flex: 1; justify-content: center; }
+        .bet-modal, .bet-detail-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 20000; }
+        .bet-modal.active, .bet-detail-modal.active { display: flex; }
+        .bet-modal-content { width: 95%; max-width: 550px; height: 90vh; background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 3px solid #4a80c0; border-radius: 24px; padding: 16px; position: relative; display: flex; flex-direction: column; }
+        .bet-modal-close, .bet-detail-modal .modal-close { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(145deg, #553a3a, #452a2a); border: 2px solid #ff8888; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20001; }
+        .bet-modal-title { font-size: 1.3rem; color: #ffd966; margin-bottom: 16px; padding-right: 40px; border-bottom: 2px solid #4a80c0; padding-bottom: 10px; }
+        .bet-modal-table-container { flex: 1; overflow-x: auto; overflow-y: auto; border-radius: 16px; margin-top: 12px; border: 1px solid #4a80c0; }
+        .bet-modal-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; min-width: 700px; background: #0f1425; }
+        .bet-modal-table th { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); color: #80e4ff; padding: 14px 8px; border-bottom: 2px solid #4a80c0; position: sticky; top: 0; }
+        .bet-modal-table td { padding: 12px 8px; border-bottom: 1px solid #2a4f7a; }
+        .sortable-header { cursor: pointer; display: flex; align-items: center; gap: 4px; justify-content: center; }
+        .bet-detail-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 3px solid #4a80c0; border-radius: 20px; padding: 20px; }
+        .bet-detail-title { font-size: 1.1rem; color: #ffd966; margin-bottom: 15px; text-align: center; padding-right: 30px; }
+        .bet-detail-content .row { display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #4a80c0; }
+        .bet-detail-content .label { color: #80e4ff; }
+        .bet-detail-content .value { color: white; font-weight: 600; }
+        .home-return-btn { background: linear-gradient(145deg, #3a5065, #2a4055); border: 2px solid #4a80c0; color: #ffd966; width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; text-decoration: none; }
+        .bottom-nav { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border-top: 2px solid #4a80c0; width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; margin-top: 1rem; display: flex; justify-content: space-between; border-radius: 30px; position: relative; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #b0c4de; transition: all 0.1s ease; border-radius: 20px; padding: 0.5rem 0.75rem; text-decoration: none; background: linear-gradient(145deg, #3a4050, #2a2f40); box-shadow: 0 5px 0 #0f121c, inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.3); border: 1px solid rgba(74,128,192,0.2); }
+        .nav-item:hover { transform: translateY(-5px); color: white; }
+        .nav-item.current-page { background: linear-gradient(145deg, #4a5065, #3a4055); color: white; border: 1px solid #4a80c0; transform: scale(1.05); }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 2px; }
+        .nav-item span { font-weight: 700; letter-spacing: 0.5px; font-size: 0.7rem; }
+        .hidden { display: none !important; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-1 { gap: 0.25rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .text-xs { font-size: 0.7rem; }
+        .text-sm { font-size: 0.8rem; }
+        .text-lg { font-size: 1.1rem; }
+        .text-xl { font-size: 1.2rem; }
+        .text-center { text-align: center; }
+        .text-blue-300 { color: #93c5fd; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-green-400 { color: #4ade80; }
+        .text-red-400 { color: #f87171; }
+        .text-amber-400 { color: #fbbf24; }
+        .text-cyan-400 { color: #22d3ee; }
+        .text-yellow-300 { color: #fcd34d; }
+        .font-bold { font-weight: 700; }
+        .rounded-xl { border-radius: 12px; }
+        .bg-\[#002b4a\] { background-color: #002b4a; }
+        .border { border: 1px solid; }
+        .border-\[\#0099ff60\] { border-color: #0099ff60; }
+        .grid { display: grid; }
+        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .w-full { width: 100%; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .overflow-y-auto { overflow-y: auto; }
+        .pr-2 { padding-right: 0.5rem; }
+        .pt-2 { padding-top: 0.5rem; }
+        .pb-4 { padding-bottom: 1rem; }
+        .ml-2 { margin-left: 0.5rem; }
+        .mr-1 { margin-right: 0.25rem; }
+        .block { display: block; }
+        /* 子機台確認彈窗樣式 */
+        .sub-confirm-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 25000;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            cursor: pointer;
-            box-shadow: 0 0 8px #ff6680;
-            transition: 0.15s;
-            white-space: nowrap;
-            min-width: 70px;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.25s;
+            padding: 1rem;
         }
-        .unfavorite-btn:active {
+        .sub-confirm-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .sub-confirm-content {
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
+            border: 2px solid #ffd966;
+            border-radius: 40px;
+            max-width: 340px;
+            width: 100%;
+            padding: 1.8rem 1.5rem;
+            box-shadow: 0 20px 40px rgba(74, 128, 192, 0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6), 0 8px 0 #0f121c;
             transform: scale(0.9);
-            background: #ff88aa;
-            color: #000;
+            transition: transform 0.2s;
         }
-        .unfavorite-btn i {
-            font-size: 0.8rem;
+        .sub-confirm-modal.show .sub-confirm-content {
+            transform: scale(1);
         }
-        
-        .machine-list-container { margin-top: 1rem; display: none; }
-        .machine-list-container.show { display: block; }
-        .machine-list { display: flex; flex-direction: column; gap: 10px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
-        .list-title { color: #80e4ff; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        .nickname-edit { cursor: pointer; transition: 0.1s; border-bottom: 1px dashed #aaa; }
-        .home-return-btn { background: rgba(0, 153, 255, 0.25); border: 1.5px solid #80e4ff; color: #ffd966; width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; box-shadow: 0 0 12px #00aaff; backdrop-filter: blur(4px); transition: 0.15s; text-decoration: none; }
-        .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 9999px; border: 3px solid #0099ff; box-shadow: 0 0 15px #00ccff; background: #001d3d; overflow: hidden; cursor: pointer; }
-        .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0, 100, 200, 0.8); color: white; font-size: 0.7rem; text-align: center; padding: 3px 0; backdrop-filter: blur(2px); }
-        .profile-tab { flex: 1; text-align: center; padding: 0.7rem 0; border-radius: 40px; background: transparent; border: 1px solid #0099ff40; color: #b0d4ff; font-weight: 500; transition: 0.2s; cursor: pointer; }
-        .profile-tab.active { background: #0066cc; border-color: #80e4ff; color: white; box-shadow: 0 0 10px #00ccff; }
-        .lang-select { background: rgba(0, 30, 60, 0.9); border: 1px solid #0099ff; border-radius: 40px; padding: 0.6rem 2rem 0.6rem 1.2rem; font-size: 0.9rem; color: #e0f0ff; width: 100%; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230099ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 0.8rem center; background-size: 1.2rem; cursor: pointer; }
-        .theme-switch { width: 48px; height: 24px; background-color: #1e3a5f; border-radius: 40px; border: 1px solid #0099ff; position: relative; cursor: pointer; }
-        .theme-switch .thumb { width: 20px; height: 20px; background-color: #ffd966; border-radius: 50%; position: absolute; top: 1px; left: 2px; transition: left 0.2s; }
-        body.dark-mode .theme-switch .thumb { left: 26px; background-color: #cce6ff; }
-        .vip-badge { background: linear-gradient(135deg, #b8860b, #ffd700); color: #000; font-weight: bold; padding: 0.15rem 0.6rem; border-radius: 30px; font-size: 0.7rem; box-shadow: 0 0 8px #ffaa00; cursor: pointer; }
-        .exp-text { font-size: 0.7rem; color: #b0d4ff; cursor: pointer; }
-        .progress-bar { width: 100%; height: 6px; background: rgba(0, 50, 100, 0.5); border-radius: 10px; overflow: hidden; border: 1px solid #0099ff60; }
-        .progress-fill { height: 100%; width: 68%; background: linear-gradient(90deg, #ffd966, #ffaa33); border-radius: 10px; }
-        .vip-info-panel { background: rgba(0, 20, 40, 0.95); border: 2px solid #ffd966; border-radius: 16px; padding: 1rem; margin: 0.5rem 0; box-shadow: 0 0 20px #ffaa33; backdrop-filter: blur(8px); display: none; }
-        .vip-info-panel.show { display: block; }
-        .vip-tier { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #0099ff60; padding: 0.5rem 0; }
-        
-        /* 子標籤 */
-        .sub-tab { background: rgba(0, 30, 60, 0.5); border: 1px solid #0099ff40; border-radius: 30px; padding: 0.3rem 1rem; font-size: 0.75rem; color: #b0d4ff; cursor: pointer; transition: 0.2s; text-align: center; display: inline-block; }
-        .sub-tab.active { background: #0066cc; border-color: #80e4ff; color: white; box-shadow: 0 0 6px #00ccff; }
-        
-        /* 輸入框 - 移除滾動條 */
-        .input-panel { background: #002b4a; border: 2px solid #0099ff; border-radius: 30px; padding: 1rem; margin: 0.5rem 0; }
-        .number-input { 
-            background: #001d33; 
-            border: 1px solid #33ccff; 
-            border-radius: 40px; 
-            padding: 0.8rem 1.2rem; 
-            font-size: 1.8rem; 
-            font-weight: 800; 
-            color: #ffd966; 
-            width: 100%; 
-            text-align: center; 
-            margin-bottom: 1rem; 
-            font-family: monospace;
-            overflow: hidden;
+        .sub-confirm-header {
+            text-align: center;
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid rgba(74, 128, 192, 0.5);
+            padding-bottom: 0.8rem;
+        }
+        .sub-confirm-header h3 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #ffaa33, #ffd966);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+        .sub-confirm-header p {
+            color: #7ec8ff;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-shadow: 0 1px 2px black;
+        }
+        .sub-confirm-detail {
+            background: linear-gradient(145deg, #1a2a3a, #0a1a2a);
+            border: 1px solid #4a80c0;
+            border-radius: 28px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.2rem;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.1);
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(74, 128, 192, 0.3);
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            color: #b3e4ff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .detail-value {
+            color: #ffd966;
+            font-size: 1.1rem;
+            font-weight: 800;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        .sub-confirm-input-group {
+            margin: 1.2rem 0;
+        }
+        .sub-confirm-input-group label {
+            display: block;
+            color: #b3e4ff;
+            margin-bottom: 0.6rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .sub-confirm-input-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: linear-gradient(145deg, #1a2a3a, #0e1a2a);
+            border: 2px solid #4a80c0;
+            border-radius: 40px;
+            color: #ffd966;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            text-align: center;
             -moz-appearance: textfield;
             appearance: textfield;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 0 1px rgba(74,128,192,0.3);
+            transition: all 0.2s ease;
         }
-        .number-input::-webkit-outer-spin-button,
-        .number-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        .sub-confirm-input-group input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 15px rgba(255,215,0,0.4);
         }
-        .number-input::-webkit-scrollbar { display: none; }
-        .number-input:focus { outline: none; border-color: #ffaa33; box-shadow: 0 0 10px #ffaa33; }
-        
-        .action-btn { border: none; border-radius: 40px; padding: 0.8rem 1rem; font-weight: bold; color: white; cursor: pointer; transition: 0.15s; flex: 1; font-size: 1rem; }
-        .action-btn.in { background: linear-gradient(145deg, #00b37a, #00875a); }
-        .action-btn.out { background: linear-gradient(145deg, #ff8800, #cc6600); }
-        .action-btn.max { background: linear-gradient(145deg, #ffaa33, #ff8800); }
-        .action-btn:active { transform: scale(0.96); }
-        
-        /* 機台卡片 */
-        .machine-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
-        .machine-card-item { background: #003d66; border: 2px solid #0099ff; border-radius: 20px; padding: 1rem 0.5rem; text-align: center; cursor: pointer; transition: 0.2s; }
-        .machine-card-item:hover { transform: scale(1.02); border-color: #ffaa33; }
-        .machine-card-item.selected { border-color: #ffaa33; background: #004d80; box-shadow: 0 0 15px #ffaa33; }
-        .machine-name-text { font-size: 0.9rem; font-weight: 600; color: #ffd966; margin-bottom: 5px; }
-        .machine-points { font-size: 1.3rem; font-weight: 800; color: #33ccff; }
-        .machine-label { font-size: 0.7rem; color: #aaccff; }
-        
-        /* 道具商城卡片 */
-        .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
-        .shop-item { background: #003d66; border: 2px solid #0099ff; border-radius: 20px; padding: 1rem 0.5rem; text-align: center; transition: 0.2s; }
-        .shop-item:hover { transform: scale(1.02); border-color: #ffaa33; box-shadow: 0 0 15px #ffaa33; }
-        .shop-icon { font-size: 2.5rem; margin-bottom: 8px; }
-        .shop-name { font-size: 0.9rem; font-weight: 600; color: #ffd966; margin-bottom: 4px; }
-        .shop-price { font-size: 1rem; font-weight: 800; color: #33ccff; margin-bottom: 8px; }
-        .shop-price span { font-size: 0.7rem; color: #aaccff; margin-left: 2px; }
-        .buy-btn { 
-            background: linear-gradient(135deg, #00cc66, #009933); 
-            border: 1px solid #80ff80; 
-            color: white; 
-            font-size: 0.8rem; 
-            padding: 6px 12px; 
-            border-radius: 30px; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 4px; 
-            cursor: pointer; 
-            box-shadow: 0 0 8px #00ff80; 
-            transition: 0.15s; 
-            width: 100%;
-        }
-        .buy-btn:active { transform: scale(0.9); background: #00ff80; color: #000; }
-        .buy-btn i { font-size: 0.8rem; }
-        
-        /* 明細表格 - 增加左右滑動功能 */
-        .detail-table-container {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            border-radius: 12px;
-        }
-        .detail-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            font-size: 0.85rem;
-            min-width: 500px;
-        }
-        .detail-table th { 
-            text-align: left; 
-            padding: 10px 5px; 
-            color: #80e4ff; 
-            border-bottom: 2px solid #0099ff60; 
-            white-space: nowrap;
-        }
-        .detail-table td { 
-            padding: 8px 5px; 
-            border-bottom: 1px solid #1f4a7a; 
-            white-space: nowrap;
-        }
-        /* 平台贈分明細 - 調整間距 */
-        .bonus-table td:first-child {
-            padding-right: 15px;
-        }
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
-        .badge.green { background: #00a86b20; border: 1px solid #00cc88; color: #a0ffc0; }
-        .badge.orange { background: #ffaa3320; border: 1px solid #ffaa33; color: #ffd966; }
-        
-        .section-title { color: #80e4ff; font-size: 0.9rem; margin: 15px 0 8px 0; border-left: 3px solid #0099ff; padding-left: 8px; }
-        .summary-card { background: #002b4a; border: 1px solid #0099ff60; border-radius: 16px; padding: 12px; margin-bottom: 15px; }
-        .balance-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
-        .balance-row-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-            padding: 10px 0;
-        }
-        .balance-item {
-            display: flex;
-            flex-direction: column;
-        }
-        .balance-item .label {
+        .sub-confirm-balance {
+            text-align: right;
+            color: #ffaa66;
             font-size: 0.8rem;
-            color: #b0d4ff;
-        }
-        .balance-item .value {
-            font-size: 1.4rem;
-            font-weight: bold;
-        }
-        .value.points { color: #ffd966; }
-        .value.tokens { color: #33ccff; }
-        
-        /* 注單相關 */
-        .bet-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
-        .bet-table { min-width: 700px; width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .bet-table th { text-align: left; padding: 12px 10px; color: #80e4ff; border-bottom: 2px solid #0099ff60; white-space: nowrap; cursor: pointer; transition: 0.2s; }
-        .bet-table th:hover { color: #ffd966; text-shadow: 0 0 8px #ffaa00; }
-        .bet-table th i { margin-left: 4px; font-size: 0.8rem; }
-        .bet-table td { padding: 12px 10px; border-bottom: 1px solid #1f4a7a; white-space: nowrap; }
-        .bet-table tr:hover { background: rgba(0, 153, 255, 0.1); }
-        .bet-id { font-size: 0.9rem; font-weight: 600; color: #ffd966; cursor: pointer; background: rgba(0, 153, 255, 0.1); padding: 4px 8px; border-radius: 20px; display: inline-block; transition: 0.2s; }
-        .bet-id:hover { background: #0066cc; color: white; transform: scale(1.05); }
-        .bet-machine { background: rgba(0, 153, 255, 0.15); padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; color: #ffd966; display: inline-block; }
-        .video-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; color: white; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.3); margin-left: 8px; transition: 0.2s; }
-        .video-badge:hover { transform: scale(1.05); box-shadow: 0 0 15px currentColor; }
-        .video-badge.bb { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .video-badge.rb { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .prize-positive { color: #88ff88; font-weight: 600; }
-        .prize-negative { color: #ff8888; font-weight: 600; }
-        
-        /* 搜尋和篩選區域 */
-        .filter-row { display: flex; gap: 8px; margin: 10px 0 15px 0; flex-wrap: wrap; align-items: center; }
-        .filter-datetime { 
-            background: #003366 !important; 
-            border: 2px solid #66ccff !important; 
-            border-radius: 30px; 
-            padding: 0.4rem 1rem; 
-            font-size: 0.8rem; 
-            color: #ffffff !important; 
-            cursor: pointer; 
-            flex: 1 1 auto; 
-            font-weight: 500; 
-            box-shadow: 0 0 8px #3399ff; 
-            min-width: 180px;
-        }
-        .filter-datetime::-webkit-calendar-picker-indicator { 
-            filter: invert(1); 
-            opacity: 0.8; 
-            cursor: pointer; 
-        }
-        .search-box { 
-            background: rgba(0, 40, 70, 0.8); 
-            border: 1px solid #0099ff60; 
-            border-radius: 40px; 
-            padding: 0.5rem 1rem; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            margin-bottom: 15px; 
-            transition: 0.2s; 
-            flex: 2; 
-        }
-        .search-box:focus-within { 
-            border-color: #ffaa33; 
-            box-shadow: 0 0 10px #ffaa33; 
-        }
-        .search-box input { 
-            background: transparent; 
-            border: none; 
-            color: white; 
-            font-size: 0.9rem; 
-            width: 100%; 
-            outline: none; 
-        }
-        .search-box input::placeholder { 
-            color: #7e9bb5; 
-        }
-        .search-box i { 
-            color: #0099ff; 
-        }
-        .search-btn { 
-            background: #0066cc; 
-            border: none; 
-            border-radius: 30px; 
-            padding: 0.5rem 1.5rem; 
-            color: white; 
-            font-size: 0.9rem; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            white-space: nowrap; 
+            margin-top: 0.5rem;
             font-weight: 500;
-            box-shadow: 0 0 8px #3399ff;
         }
-        .search-btn:hover { 
-            background: #0099ff; 
-            transform: scale(1.02);
+        .sub-confirm-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.2rem;
         }
-        .search-btn:active {
-            transform: scale(0.98);
-        }
-        
-        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-        .page-btn { background: rgba(0, 40, 70, 0.8); border: 1px solid #0099ff60; border-radius: 30px; padding: 0.3rem 0.8rem; font-size: 0.8rem; color: #cce6ff; cursor: pointer; min-width: 36px; text-align: center; transition: 0.2s; }
-        .page-btn.active { background: #0066cc; border-color: #80e4ff; color: white; box-shadow: 0 0 6px #00ccff; }
-        .page-btn:active { transform: scale(0.92); }
-        .records-title { font-size: 0.95rem; font-weight: 500; color: #b0d4ff; margin: 15px 0 10px 0; border-left: 3px solid #0099ff; padding-left: 10px; }
-        
-        /* 注單彈窗 */
-        .bet-detail-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 350px;
-            background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
-            border: 2px solid #0099ff;
-            border-radius: 20px;
-            padding: 1.5rem;
-            z-index: 20000;
-            display: none;
-            box-shadow: 0 0 30px #0099ff;
-        }
-        .bet-detail-modal.open { display: block; }
-        .bet-detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #0099ff60; padding-bottom: 0.8rem; }
-        .bet-detail-title { color: #ffd966; font-size: 1.1rem; font-weight: bold; }
-        .bet-detail-close { color: #ff6666; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
-        .bet-detail-close:hover { transform: scale(1.2); color: #ff0000; }
-        .bet-list { max-height: 400px; overflow-y: auto; padding-right: 5px; }
-        .bet-list-item { background: rgba(0, 30, 60, 0.8); border: 1px solid #0099ff40; border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
-        .bet-list-item .bet-number { color: #aad0ff; font-size: 0.9rem; font-weight: 600; }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 19999;
-            display: none;
-        }
-        .modal-overlay.open { display: block; }
-        
-        /* 確認對話框 */
-        .confirm-dialog {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 280px;
-            background: linear-gradient(165deg, #001a33 0%, #000a1a 100%);
-            border: 2px solid #ffaa33;
-            border-radius: 20px;
-            padding: 1.5rem;
-            z-index: 21000;
-            display: none;
-            box-shadow: 0 0 30px #ffaa33;
-            text-align: center;
-        }
-        .confirm-dialog.open { display: block; }
-        .confirm-dialog .icon { font-size: 3rem; color: #ffaa33; margin-bottom: 1rem; }
-        .confirm-dialog .title { color: white; font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
-        .confirm-dialog .message { color: #b0d4ff; font-size: 0.9rem; margin-bottom: 1.5rem; }
-        .confirm-dialog .buttons { display: flex; gap: 10px; justify-content: center; }
-        .confirm-dialog .btn { padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.2s; border: none; }
-        .confirm-dialog .btn.confirm { background: #ffaa33; color: #000; }
-        .confirm-dialog .btn.confirm:hover { background: #ffbb55; transform: scale(1.05); }
-        .confirm-dialog .btn.cancel { background: #3a5a7a; color: white; }
-        .confirm-dialog .btn.cancel:hover { background: #4a6a8a; transform: scale(1.05); }
-        .confirm-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 20999;
-            display: none;
-        }
-        .confirm-overlay.open { display: block; }
-        
-        /* 開關樣式 */
-        .toggle-switch {
-            width: 48px;
-            height: 24px;
-            background-color: #1e3a5f;
+        .sub-confirm-btn {
+            flex: 1;
+            padding: 0.8rem;
             border-radius: 40px;
-            border: 1px solid #0099ff;
-            position: relative;
+            font-weight: 800;
             cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .toggle-switch.active {
-            background-color: #00cc66;
-            border-color: #80ff80;
-        }
-        .toggle-switch .thumb {
-            width: 20px;
-            height: 20px;
-            background-color: #ffd966;
-            border-radius: 50%;
-            position: absolute;
-            top: 1px;
-            left: 2px;
-            transition: left 0.2s;
-        }
-        .toggle-switch.active .thumb {
-            left: 26px;
-            background-color: #ffffff;
-        }
-        
-        .hidden { display: none !important; }
-
-        /* 保留警示彈窗 - 極簡縮小版 */
-        #keepAlertModal {
-            touch-action: pan-y;
-        }
-        .alert-content {
-            background: linear-gradient(135deg, #dc2626, #991b1b);
-            border-bottom: 2px solid #fbbf24;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-        }
-        .alert-content .message {
-            color: white;
-            font-size: 0.8rem;
-            line-height: 1.4;
-            padding-right: 0.5rem;
-        }
-        .alert-content i.fa-exclamation-triangle {
-            color: #fbbf24;
+            text-align: center;
+            transition: all 0.1s ease;
+            font-family: 'Noto Sans TC', 'Noto Sans JP', sans-serif;
+            letter-spacing: 1px;
             font-size: 0.9rem;
         }
-        .drag-hint {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.7rem;
+        .sub-confirm-btn:active {
+            transform: translateY(3px);
+        }
+        .sub-confirm-btn.secondary {
+            background: linear-gradient(145deg, #3a4050, #2a2f40);
+            border: 1px solid #4a80c0;
+            color: #b0c4de;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c;
+        }
+        .sub-confirm-btn.primary {
+            background: linear-gradient(145deg, #ffaa33, #ff8c00);
+            border: 1px solid #ffd700;
+            color: #2a1f0a;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.2), 0 5px 0 #b85e00;
+        }
+        .sub-confirm-btn.primary:active {
+            box-shadow: inset 0 5px 8px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(255,255,255,0.3), 0 2px 0 #b85e00;
+            transform: translateY(3px);
+        }
+        .hologram-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
             display: flex;
             align-items: center;
-            gap: 2px;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+        .hologram-loading.show {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        .hologram-content {
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            min-height: 450px;
+            text-align: center;
+        }
+        .loading-video {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(74,128,192,0.5);
+        }
+        .loading-text {
+            font-size: 24px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            margin-top: 10px;
+        }
+        .progress-bar {
+            width: 80%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 10px auto;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 60%;
+            background: linear-gradient(90deg, #ffd700, #4a80c0);
+            animation: loadingMove 1s ease-in-out infinite alternate;
+        }
+        @keyframes loadingMove {
+            from { width: 20%; }
+            to { width: 80%; }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 to-blue-950 text-white">
-    <!-- 保留警示彈窗 (極簡縮小版) -->
-    <div id="keepAlertModal" class="fixed top-0 left-0 right-0 transform -translate-y-full transition-transform duration-300 ease-in-out z-[15000]" style="max-width: 448px; margin: 0 auto;">
-        <div class="alert-content rounded-b-xl flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <i class="fa fa-exclamation-triangle"></i>
-                <span class="message" id="keepAlertMessage">保留即將到期</span>
-            </div>
-            <div class="drag-hint">
-                <i class="fa fa-chevron-up"></i>
-                <span>向上滑</span>
+<body>
+    <div id="betModal" class="bet-modal">
+        <div class="bet-modal-content">
+            <div class="bet-modal-close" onclick="closeBetModal()">✕</div>
+            <div id="betModalTitle" class="bet-modal-title">機台明細</div>
+            <div class="stats-row" id="betStats"></div>
+            <div class="bet-modal-table-container">
+                <table class="bet-modal-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable-header" onclick="toggleBetSort()">日期 時間 <span id="betSortIcon">▼</span></th>
+                            <th>類型</th>
+                            <th>投注</th>
+                            <th>獲得</th>
+                            <th>合計</th>
+                            <th>注單編號</th>
+                            <th>影片</th>
+                        </tr>
+                    </thead>
+                    <tbody id="betModalTableBody"></tbody>
+                </table>
             </div>
         </div>
     </div>
-
-    <!-- 篩選側拉欄 -->
-    <div id="drawerOverlay" class="drawer-overlay"></div>
-    <div id="filterDrawer" class="filter-drawer scrollbar-beauty">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-primary text-lg font-bold flex items-center gap-2"><i class="fa fa-sliders text-secondary"></i> 進階篩選</h3>
-            <button id="closeDrawer" class="text-gray-400 hover:text-primary text-2xl"><i class="fa fa-times-circle"></i></button>
-        </div>
-    </div>
-
-    <!-- 注單明細彈窗 -->
-    <div id="modalOverlay" class="modal-overlay"></div>
     <div id="betDetailModal" class="bet-detail-modal">
-        <div class="bet-detail-header">
-            <span class="bet-detail-title" id="modalMachineName">甲賀忍法帖</span>
-            <span class="bet-detail-close" id="closeModalBtn">&times;</span>
-        </div>
-        <div class="bet-list" id="betDetailList"></div>
+        <div class="modal-close" onclick="closeBetDetailModal()">✕</div>
+        <div id="betDetailTitle" class="bet-detail-title">注單詳細資訊</div>
+        <div id="betDetailContent" class="bet-detail-content"></div>
     </div>
 
-    <!-- 自定義確認對話框 -->
-    <div id="confirmOverlay" class="confirm-overlay"></div>
-    <div id="confirmDialog" class="confirm-dialog">
-        <div class="icon" id="confirmIcon">❓</div>
-        <div class="title" id="confirmTitle">確認</div>
-        <div class="message" id="confirmMessage">確定要執行此操作嗎？</div>
-        <div class="buttons">
-            <button class="btn cancel" id="confirmCancel">取消</button>
-            <button class="btn confirm" id="confirmOk">確定</button>
-        </div>
-    </div>
-
-    <!-- 主內容 -->
-    <div class="max-w-md mx-auto tech-gradient min-h-screen flex flex-col">
-
-        <!-- ========= 頂部導航 ========= -->
-        <header class="px-4 py-3 bg-dark-200/90 tech-border">
+    <div class="max-w-md mx-auto flex flex-col">
+        <header class="metal-header px-4 py-3 flex-shrink-0">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="avatar-container" id="avatarContainer">
@@ -643,1063 +408,317 @@
                         <div class="avatar-overlay">更換</div>
                     </div>
                     <div class="flex flex-col">
-                        <div class="flex items-center gap-1" id="nicknameEditBlock">
-                            <span id="displayNickname" class="nickname-edit text-white text-xl font-bold">夫人會生氣</span>
+                        <div class="flex items-center gap-1">
+                            <span id="displayNickname" class="nickname-edit text-white text-xl font-bold">郝可愛</span>
                             <i class="fa fa-pencil-square-o text-blue-400 text-sm ml-1"></i>
                         </div>
                         <div class="flex items-center gap-2 mt-1">
-                            <span class="vip-badge" id="vipBadge">VIP 3</span>
-                            <span class="exp-text" id="expText">經驗值 2,480/3,600</span>
-                        </div>
-                        <!-- 點數與代幣分離顯示 -->
-                        <div class="flex items-center gap-4 mt-1">
-                            <div><span class="text-amber-400 text-sm">💰點數</span> <span id="headerPoints" class="font-bold text-amber-300 text-lg">2,300</span></div>
-                            <div><span class="text-cyan-400 text-sm">🎰代幣</span> <span id="headerTotalTokens" class="font-bold text-cyan-300 text-lg">750</span></div>
+                            <span class="vip-badge" id="vipBadge">VIP 1</span>
+                            <span class="exp-text" id="expText">經驗值 680/1,200</span>
                         </div>
                     </div>
                 </div>
-                <a href="#" id="exitToHomeBtn" class="home-return-btn" title="回到首頁"><i class="fa fa-home"></i></a>
+                <div class="flex items-center gap-2">
+                    <div class="points-display" id="headerPoints"><span class="text-xs text-yellow-300 mr-1">💰</span><span class="font-bold text-yellow-300 text-lg" id="userPoints">6,600</span></div>
+                    <a href="index.html" class="home-return-btn" title="回首頁"><i class="fa fa-home"></i></a>
+                </div>
             </div>
-            <div class="mt-2 pl-16 pr-2">
-                <div class="progress-bar"><div class="progress-fill"></div></div>
-            </div>
+            <div class="mt-2"><div class="progress-bar"><div class="progress-fill" style="width: 28%;"></div></div></div>
         </header>
 
-        <!-- VIP 資訊層 -->
-        <div id="vipInfoPanel" class="vip-info-panel mx-4 mt-2">
-            <h3 class="text-amber-400 font-bold text-sm mb-2"><i class="fa fa-crown"></i> VIP 特權說明</h3>
-            <div class="vip-tier"><span class="level">VIP 1</span><span class="benefit">每日紅利 +50</span></div>
-            <div class="vip-tier"><span class="level">VIP 2</span><span class="benefit">保留機台 +2 台</span></div>
-            <div class="vip-tier"><span class="level">VIP 3 (當前)</span><span class="benefit">返水 0.5% + 專屬客服</span></div>
-            <div class="vip-tier"><span class="level">VIP 4</span><span class="benefit">生日禮金 1000</span></div>
-            <div class="vip-tier"><span class="level">VIP 5</span><span class="benefit">提領手續費全免</span></div>
+        <div id="vipInfoPanel" class="vip-info-panel mx-4 mt-2 hidden">
+            <h3 class="text-amber-400 font-bold text-sm mb-2"><i class="fa fa-crown"></i> VIP 1 特權說明</h3>
+            <div class="vip-tier">VIP 1 - 基礎返水 0.2%</div>
         </div>
 
-        <!-- 四大功能按鈕區 -->
         <div class="px-4 mt-4">
-            <div class="banner-area grid grid-cols-4 gap-1 items-center">
-                <div class="action-grid-btn" id="favMachinesBtn">
-                    <span class="count-badge" id="favCount">3</span>
-                    <i class="fa fa-heart" style="color: #ff6680;"></i>
-                    <span class="text-xs block mt-1">收藏</span>
-                </div>
-                <div class="action-grid-btn" id="keepMachinesBtn">
-                    <span class="count-badge keep" id="keepCount">2</span>
-                    <i class="fa fa-bookmark" style="color: #ffb347;"></i>
-                    <span class="text-xs block mt-1">保留</span>
-                </div>
-                <div class="action-grid-btn" id="supportBtn">
-                    <i class="fa fa-headphones" style="color: #7ec8ff;"></i>
-                    <span class="text-xs block mt-1">客服</span>
-                </div>
-                <div class="action-grid-btn" id="settingsBtn">
-                    <i class="fa fa-cog" style="color: #aaccff;"></i>
-                    <span class="text-xs block mt-1">設定</span>
-                </div>
+            <div class="banner-area grid grid-cols-3 gap-1 items-center">
+                <div class="action-grid-btn" id="favMachinesBtn"><span class="count-badge" id="favCount">3</span><i class="fa fa-heart" style="color: #ff6680;"></i><span class="text-xs block mt-1">收藏</span></div>
+                <div class="action-grid-btn" id="keepMachinesBtn"><span class="count-badge keep" id="keepCount">2</span><i class="fa fa-bookmark" style="color: #ffb347;"></i><span class="text-xs block mt-1">保留</span></div>
+                <div class="action-grid-btn" id="supportBtn"><i class="fa fa-headphones" style="color: #aaccff;"></i><span class="text-xs block mt-1">客服</span></div>
             </div>
         </div>
 
-        <!-- 收藏機台列表容器 -->
-        <div id="favMachineList" class="machine-list-container px-4">
-            <div class="list-title"><i class="fa fa-heart text-pink-400"></i> 我收藏的機台 (<span id="favCountDisplay">3</span>)</div>
-            <div class="machine-list scrollbar-beauty" id="favMachineItems"></div>
-        </div>
+        <div id="favMachineList" class="machine-list-container px-4"><div class="list-title"><i class="fa fa-heart text-pink-400"></i> 我收藏的機台 (<span id="favCountDisplay">3</span>)</div><div class="machine-list scrollbar-beauty" id="favMachineItems"></div></div>
+        <div id="keepMachineList" class="machine-list-container px-4"><div class="list-title"><i class="fa fa-bookmark text-amber-400"></i> 我保留的機台 (<span id="keepCountDisplay">2</span>)</div><div class="machine-list scrollbar-beauty" id="keepMachineItems"></div></div>
 
-        <!-- 保留機台列表容器 -->
-        <div id="keepMachineList" class="machine-list-container px-4">
-            <div class="list-title"><i class="fa fa-bookmark text-amber-400"></i> 我保留的機台 (<span id="keepCountDisplay">2</span>)</div>
-            <div class="machine-list scrollbar-beauty" id="keepMachineItems"></div>
-        </div>
-
-        <!-- 標籤欄 -->
-        <div class="px-4 py-3">
-            <div class="flex gap-2" id="profileTabContainer">
-                <button class="profile-tab active" data-tab="points">💰 點數</button>
-                <button class="profile-tab" data-tab="tokens">🎰 代幣</button>
-                <button class="profile-tab" data-tab="betHistory">📋 注單</button>
-                <button class="profile-tab" data-tab="shop">🛒 商城</button>
-            </div>
-        </div>
-
-        <!-- 動態內容區域 -->
-        <main class="flex-1 px-4 pb-4 overflow-y-auto scrollbar-beauty" id="profileContentArea">
-            <!-- 點數面板 -->
-            <div id="pointsPanel" class="tab-panel">
-                <div class="game-card-bg tech-border rounded-xl p-3">
-                    <h3 class="text-amber-400 text-lg mb-3"><i class="fa fa-credit-card"></i> 點數資產</h3>
-                    
-                    <div class="summary-card">
-                        <div class="balance-row-grid">
-                            <div class="balance-item">
-                                <span class="label">點數總計</span>
-                                <span class="value points" id="totalPointsEarnedDisplay">3,100</span>
-                            </div>
-                            <div class="balance-item">
-                                <span class="label">可用點數</span>
-                                <span class="value points" id="pointsBalance">2,300</span>
-                            </div>
-                            <div class="balance-item">
-                                <span class="label">機台代幣總計</span>
-                                <span class="value tokens" id="availableTokensDisplay">750</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section-title"><i class="fa fa-database"></i> 儲值明細</div>
-                    <div class="bg-[#002b4a] rounded-xl p-2 mb-3">
-                        <div class="detail-table-container scrollbar-beauty-x">
-                            <table class="detail-table">
-                                <thead>
-                                    <tr>
-                                        <th>流水編號</th>
-                                        <th>時間</th>
-                                        <th>金額</th>
-                                        <th>方式</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="rechargeDetailList"></tbody>
-                                <tfoot>
-                                    <tr class="border-t border-blue-800">
-                                        <td colspan="3" class="text-right">儲值合計：</td>
-                                        <td class="text-green-400 font-bold" id="totalRecharge">1,800</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="section-title"><i class="fa fa-gift"></i> 平台贈分明細</div>
-                    <div class="bg-[#002b4a] rounded-xl p-2">
-                        <div class="detail-table-container scrollbar-beauty-x">
-                            <table class="detail-table bonus-table">
-                                <thead>
-                                    <tr>
-                                        <th>時間</th>
-                                        <th>點數</th>
-                                        <th>說明</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="bonusDetailList"></tbody>
-                                <tfoot>
-                                    <tr class="border-t border-blue-800">
-                                        <td colspan="2" class="text-right">贈送合計：</td>
-                                        <td class="text-green-400 font-bold" id="totalBonus">1,300</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+        <main class="flex-1 px-4 pb-4 overflow-y-auto scrollbar-beauty">
+            <div class="game-card-bg tech-border rounded-xl p-3">
+                <div class="flex items-center justify-between mb-3"><h3 class="text-primary text-lg flex items-center gap-2"><i class="fa fa-list-alt"></i> 注單總覽</h3></div>
+                <div class="bg-[#002b4a] rounded-xl p-3 mb-4 border border-[#0099ff60]">
+                    <div class="text-blue-300 text-sm mb-2"><i class="fa fa-chart-bar"></i> 全部總計</div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div><div class="text-xs text-blue-300">總投注</div><div class="text-lg font-bold total-bet-color" id="totalBet">0</div></div>
+                        <div><div class="text-xs text-blue-300">總獲得</div><div class="text-lg font-bold total-win-color" id="totalWin">0</div></div>
+                        <div><div class="text-xs text-blue-300">淨損益</div><div class="text-lg font-bold" id="totalNet">0</div></div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 代幣面板 -->
-            <div id="tokensPanel" class="tab-panel hidden">
-                <div class="game-card-bg tech-border rounded-xl p-3">
-                    <!-- 子標籤 -->
-                    <div class="flex gap-2 mb-3 border-b border-blue-900 pb-2 flex-wrap">
-                        <span class="sub-tab active" id="tokenMachinesSub">機台代幣</span>
-                        <span class="sub-tab" id="tokenGameSub">遊戲獲得</span>
-                    </div>
-
-                    <!-- 機台代幣內容 -->
-                    <div id="tokenMachinesContent">
-                        <!-- 代幣總和與目前點數 -->
-                        <div class="flex justify-between items-center mb-3">
-                            <div>
-                                <span class="text-cyan-400">🎰 機台代幣</span>
-                                <span class="text-cyan-300 text-2xl font-bold ml-2" id="totalTokensDisplay">750</span>
-                            </div>
-                            <div>
-                                <span class="text-amber-400">💰 點數</span>
-                                <span class="text-amber-300 text-xl font-bold ml-2" id="tokenPointsDisplay">2,300</span>
-                            </div>
-                        </div>
-                        
-                        <!-- 機台列表 -->
-                        <div class="text-blue-400 text-sm mb-2"><i class="fa fa-gamepad"></i> 我的機台 (代幣)</div>
-                        <div class="machine-grid" id="machineGrid"></div>
-
-                        <!-- 當前選中機台 -->
-                        <div id="selectedMachineInfo" class="bg-[#003355] rounded-xl p-3 mb-3 text-sm">
-                            <div class="flex justify-between items-center">
-                                <span class="text-blue-300">當前選擇：</span>
-                                <span class="text-amber-400 font-bold" id="selectedMachineName">請選擇機台</span>
-                            </div>
-                            <div class="flex justify-between items-center mt-1">
-                                <span class="text-blue-300">機台內代幣：</span>
-                                <span class="text-cyan-400 font-bold" id="selectedMachinePoints">0</span>
-                            </div>
-                        </div>
-
-                        <!-- 兌換輸入面板 - 修改後的版本 -->
-                        <div class="input-panel">
-                            <input type="number" id="pointInput" class="number-input" value="100" min="0" step="100" placeholder="輸入數量">
-                            
-                            <!-- 兩個新按鈕：一鍵轉代幣 和 一鍵轉點數 -->
-                            <div class="flex gap-2 mb-2">
-                                <button class="action-btn max flex-1" id="oneKeyToTokens" style="background: linear-gradient(145deg, #00b37a, #00875a);">一鍵轉代幣</button>
-                                <button class="action-btn max flex-1" id="oneKeyToPoints" style="background: linear-gradient(145deg, #ff8800, #cc6600);">一鍵轉點數</button>
-                            </div>
-                            
-                            <div class="flex gap-2">
-                                <button class="action-btn in flex-1" id="bringInBtn"><i class="fa fa-arrow-down"></i> 點數→代幣</button>
-                                <button class="action-btn out flex-1" id="bringOutBtn"><i class="fa fa-arrow-up"></i> 代幣→點數</button>
-                            </div>
-                        </div>
-
-                        <!-- 帶入帶出明細 -->
-                        <div class="mt-4">
-                            <div class="section-title"><i class="fa fa-exchange"></i> 帶入帶出明細</div>
-                            <div class="bg-[#002b4a] rounded-xl p-2">
-                                <div class="detail-table-container scrollbar-beauty-x">
-                                    <table class="detail-table">
-                                        <thead>
-                                            <tr>
-                                                <th>時間</th>
-                                                <th>機台</th>
-                                                <th>類型</th>
-                                                <th>數量</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="exchangeDetailList"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 遊戲獲得 -->
-                    <div id="tokenGameContent" class="hidden">
-                        <div class="section-title"><i class="fa fa-trophy"></i> 遊戲獲得代幣明細</div>
-                        <div class="bg-[#002b4a] rounded-xl p-2">
-                            <div class="detail-table-container scrollbar-beauty-x">
-                                <table class="detail-table">
-                                    <thead>
-                                        <tr>
-                                            <th>時間</th>
-                                            <th>機台</th>
-                                            <th>獲得代幣</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="gameEarnDetailList"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                <div class="datetime-filter"><input type="date" id="startDate" class="datetime-input" value="2025-02-01"><span>至</span><input type="date" id="endDate" class="datetime-input" value="2025-03-31"><button id="dateSearchBtn" class="confirm-btn">確認</button></div>
+                <div class="filter-bar">
+                    <div class="search-box"><i class="fa fa-search"></i><input type="text" id="searchInput" placeholder="搜尋機台名稱或編號..."></div>
+                    <select id="filterSelect" class="filter-select">
+                        <option value="all">全部記錄</option>
+                    </select>
                 </div>
-            </div>
-
-            <!-- 注單面板 -->
-            <div id="betHistoryPanel" class="tab-panel hidden">
-                <div class="game-card-bg tech-border rounded-xl p-3">
-                    <h3 class="text-primary text-md mb-3"><i class="fa fa-list-alt mr-2"></i>注單記錄</h3>
-                    
-                    <!-- 日期時間區間篩選器 - 同一行 -->
-                    <div class="flex items-center gap-1 mb-3 w-full" style="flex-wrap: nowrap;">
-                        <input type="datetime-local" id="startDateTimeFilter" class="filter-datetime" value="2025-03-01T00:00" 
-                               style="min-width: 0; width: 0; flex: 1; font-size: 0.75rem; padding: 0.35rem 0.5rem; background: #003366; border: 2px solid #66ccff; border-radius: 30px; color: white; box-shadow: 0 0 8px #3399ff;">
-                        <span class="text-blue-300" style="font-size: 0.8rem; white-space: nowrap;">至</span>
-                        <input type="datetime-local" id="endDateTimeFilter" class="filter-datetime" value="2025-03-31T23:59" 
-                               style="min-width: 0; width: 0; flex: 1; font-size: 0.75rem; padding: 0.35rem 0.5rem; background: #003366; border: 2px solid #66ccff; border-radius: 30px; color: white; box-shadow: 0 0 8px #3399ff;">
-                        <button id="searchDateTimeBtn" class="search-btn" 
-                                style="padding: 0.35rem 1rem; font-size: 0.75rem; background: #0066cc; border: none; border-radius: 30px; color: white; white-space: nowrap; box-shadow: 0 0 8px #3399ff;">
-                            <i class="fa fa-search mr-1"></i>搜尋
-                        </button>
-                    </div>
-                    
-                    <!-- 關鍵字搜尋框 -->
-                    <div class="search-box">
-                        <i class="fa fa-search"></i>
-                        <input type="text" id="betSearchInput" placeholder="搜尋注單編號或機台名稱...">
-                        <button id="betSearchBtn" class="search-btn" style="padding: 0.2rem 1rem;">搜尋</button>
-                    </div>
-                    
-                    <!-- 注單記錄列表 -->
-                    <div class="records-title"><i class="fa fa-ticket mr-2"></i>注單記錄列表</div>
-                    <div class="bet-container scrollbar-beauty-x" id="betContainer">
-                        <table class="bet-table" id="betTable">
-                            <thead>
-                                <tr>
-                                    <th id="sortTimeHeader">時間 <i class="fa fa-sort"></i></th>
-                                    <th>機台名稱</th>
-                                    <th>獎項</th>
-                                    <th>注單明細(影片)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="betListBody"></tbody>
-                        </table>
-                    </div>
-                    <div id="betPagination" class="pagination mt-3"></div>
-                </div>
-            </div>
-
-            <!-- 商城面板 -->
-            <div id="shopPanel" class="tab-panel hidden">
-                <div class="game-card-bg tech-border rounded-xl p-3">
-                    <h3 class="text-purple-400 text-lg mb-3"><i class="fa fa-shopping-bag"></i> 道具商城</h3>
-                    
-                    <!-- 目前代幣餘額 -->
-                    <div class="bg-[#003355] rounded-xl p-3 mb-4 text-center">
-                        <span class="text-blue-300">🎰 目前代幣</span>
-                        <span class="text-cyan-400 text-2xl font-bold ml-2" id="shopTokensDisplay">750</span>
-                    </div>
-                    
-                    <!-- 道具列表 -->
-                    <div class="shop-grid" id="shopGrid"></div>
-                    
-                    <!-- 購買紀錄 -->
-                    <div class="section-title mt-4"><i class="fa fa-history"></i> 購買紀錄</div>
-                    <div class="bg-[#002b4a] rounded-xl p-2">
-                        <div class="detail-table-container scrollbar-beauty-x">
-                            <table class="detail-table">
-                                <thead>
-                                    <tr>
-                                        <th>時間</th>
-                                        <th>道具</th>
-                                        <th>花費代幣</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="shopPurchaseList"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                <div id="sessionsContainer" class="space-y-2"></div>
             </div>
         </main>
 
-        <!-- 底部導航 -->
         <nav class="bottom-nav mx-auto">
-            <div class="flex justify-between items-center">
-                <a href="#" class="nav-item" id="nav-home" data-page="home"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-                <a href="#" class="nav-item" id="nav-game" data-page="game"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-                <a href="#" class="nav-item" id="nav-bell" data-page="bell"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span><span class="nav-badge" id="newsBadge"></span></a>
-                <a href="#" class="nav-item current-page" id="nav-user" data-page="user"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
+            <div class="flex justify-between items-center w-full">
+                <a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
+                <a href="machines.html" class="nav-item"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
+                <a href="news.html" class="nav-item"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
+                <a href="#" class="nav-item current-page"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
             </div>
         </nav>
     </div>
 
-    <!-- 設定彈窗 -->
-    <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="game-card-bg tech-border rounded-xl p-4 w-full max-w-sm max-h-[80vh] overflow-y-auto scrollbar-beauty">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-primary text-lg font-bold"><i class="fa fa-cog mr-2"></i>偏好設定</h3>
-                <button id="closeSettingsBtn" class="text-gray-400 hover:text-white text-2xl"><i class="fa fa-times-circle"></i></button>
+    <!-- 點數轉換彈窗 (收藏進入用) -->
+    <div class="sub-confirm-modal" id="subConfirmModal">
+        <div class="sub-confirm-content">
+            <div class="sub-confirm-header">
+                <h3 id="confirmMachineName">GOGO 小丑</h3>
+                <p id="confirmSubName">1號機</p>
             </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <div class="text-sm text-gray-300 mb-2">語言 / Language</div>
-                    <select id="languageSelect" class="lang-select">
-                        <option value="zh-hant" selected>繁體中文</option>
-                        <option value="zh-hans">簡體中文</option>
-                        <option value="ja">日本語</option>
-                        <option value="ko">한국어</option>
-                        <option value="en">English</option>
-                    </select>
+            <div class="sub-confirm-detail">
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fa fa-ticket"></i> 每枚代幣</span>
+                    <span class="detail-value" id="confirmRatio">2.5</span>
                 </div>
-                
-                <!-- 接收通知開關 -->
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-300">接收通知</span>
-                    <div id="notificationToggle" class="toggle-switch active">
-                        <div class="thumb"></div>
-                    </div>
-                </div>
-                
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-300">暗色模式</span>
-                    <div id="themeToggle" class="theme-switch"><div class="thumb"></div></div>
-                </div>
-                
-                <!-- 帳號綁定 -->
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-300">帳號綁定</span>
-                    <span id="bindStatus" class="text-xs text-green-400 cursor-pointer hover:text-green-300">已綁定手機</span>
-                </div>
-                
-                <!-- 其他設定 -->
-                <div class="border-t border-blue-800 pt-4">
-                    <h4 class="text-blue-400 text-sm mb-2">其他設定</h4>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-300">雙重驗證</span>
-                        <span id="twoFactorStatus" class="text-xs text-gray-400 cursor-pointer hover:text-blue-300">未啟用</span>
-                    </div>
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="text-sm text-gray-300">交易密碼</span>
-                        <span id="transactionPwdStatus" class="text-xs text-green-400 cursor-pointer hover:text-green-300">已設定</span>
-                    </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fa fa-database"></i> 目前點數</span>
+                    <span class="detail-value" id="confirmPoints">6,600</span>
                 </div>
             </div>
+            <div class="sub-confirm-input-group">
+                <label><i class="fa fa-arrow-down"></i> 使用代幣數量 <span style="color:#ffaa66;">(最低 100)</span></label>
+                <input type="number" id="confirmTokenInput" min="100" step="1" placeholder="請輸入數量" value="100">
+                <div class="sub-confirm-balance" id="confirmTokenRemain"><i class="fa fa-credit-card"></i> 剩餘點數: 6,600</div>
+            </div>
+            <div class="sub-confirm-actions">
+                <button class="sub-confirm-btn secondary" id="confirmCancel">取消</button>
+                <button class="sub-confirm-btn primary" id="confirmOk">確認進入</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading 動畫 -->
+    <div class="hologram-loading" id="hologramLoading">
+        <div class="hologram-content">
+            <video id="mascotVideo" class="loading-video" autoplay muted loop playsinline src="https://video.wixstatic.com/video/d5e540_d63f842135e8416f891842373bc0f582/720p/mp4/file.mp4"></video>
+            <div class="loading-text" id="loadingMachineTitle">LOADING</div>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
         </div>
     </div>
 
     <script>
         (function() {
-            // ========== 點數數據 (修改為相等版本) ==========
-            const POINTS_STORAGE_KEY = 'tPachin_userPoints';
+            // ==================== 1. 先定義所有全域函數 ====================
             
-            // 從 localStorage 讀取點數，若無則使用預設值 2300
-            function loadPointsFromStorage() {
-                const storedPoints = localStorage.getItem(POINTS_STORAGE_KEY);
-                if (storedPoints !== null) {
-                    return parseInt(storedPoints, 10);
+            // 點數管理變數
+            const POINTS_KEY = 't_pachin_user_points';
+            let userPoints = 6600;
+            
+            // 顯示 Loading 動畫並跳轉 (先定義)
+            function showHologramLoading(machineName, subName, ratio, machineId, coins) {
+                console.log('✅ showHologramLoading 被呼叫', machineName, coins);
+                const loadingDiv = document.getElementById('hologramLoading');
+                const loadingTitle = document.getElementById('loadingMachineTitle');
+                const mascotVideo = document.getElementById('mascotVideo');
+                
+                if (loadingTitle) loadingTitle.textContent = `${machineName} ${subName} 每枚${ratio}`;
+                if (mascotVideo) {
+                    mascotVideo.play().catch(e => console.log('影片播放失敗', e));
                 }
-                return 2300;
+                if (loadingDiv) loadingDiv.classList.add('show');
+                
+                // 儲存機台資訊
+                const machineInfo = {
+                    name: machineName,
+                    subName: subName,
+                    ratio: ratio,
+                    machineId: machineId,
+                    coins: coins
+                };
+                localStorage.setItem('t_pachin_machine_info', JSON.stringify(machineInfo));
+                
+                // 2.5秒後跳轉
+                setTimeout(function() {
+                    window.location.href = 'simulator.html';
+                }, 2500);
             }
-
-            function savePointsToStorage(value) {
-                localStorage.setItem(POINTS_STORAGE_KEY, value);
-            }
-
-            // 修改儲值記錄 - 讓總和等於 1800
-            let rechargeRecords = [
-                { date: '2025-02-10 09:20', amount: 1000, method: '信用卡' },
-                { date: '2025-02-15 14:30', amount: 800, method: '超商付款' }
-            ];
             
-            // 修改贈送記錄 - 讓總和等於 1300
-            let bonusRecords = [
-                { date: '2025-02-18 10:15', amount: 500, description: '註冊禮' },
-                { date: '2025-02-20 16:40', amount: 300, description: '儲值回饋' },
-                { date: '2025-02-25 09:30', amount: 200, description: '每日紅利' },
-                { date: '2025-03-01 12:00', amount: 300, description: 'VIP加碼' }
-            ];
-
-            // 重新計算總和
-            const totalRecharge = rechargeRecords.reduce((sum, r) => sum + r.amount, 0); // 1800
-            const totalBonus = bonusRecords.reduce((sum, b) => sum + b.amount, 0);       // 1300
-            const totalPointsEarned = totalRecharge + totalBonus; // 3100
-            
-            // 當前點數改為從 localStorage 載入
-            let currentPoints = loadPointsFromStorage();
-
-            // ========== 監聽其他分頁的變更 ==========
-            window.addEventListener('storage', function(e) {
-                if (e.key === POINTS_STORAGE_KEY) {
-                    const newPoints = parseInt(e.newValue, 10);
-                    if (!isNaN(newPoints)) {
-                        currentPoints = newPoints;
-                        updateAllUI();
-                    }
+            // 收藏進入：顯示點數轉換彈窗
+            window.openFavoriteGame = function(machineName, subName, ratio, machineId) {
+                console.log('📌 openFavoriteGame 被呼叫', machineName);
+                currentEnterData = { machineName, subName, ratio, machineId, type: 'favorite' };
+                const confirmName = document.getElementById('confirmMachineName');
+                const confirmSub = document.getElementById('confirmSubName');
+                const confirmRatio = document.getElementById('confirmRatio');
+                const confirmPoints = document.getElementById('confirmPoints');
+                const tokenInput = document.getElementById('confirmTokenInput');
+                const tokenRemain = document.getElementById('confirmTokenRemain');
+                
+                if (confirmName) confirmName.textContent = machineName;
+                if (confirmSub) confirmSub.textContent = subName;
+                if (confirmRatio) confirmRatio.textContent = ratio;
+                if (confirmPoints) confirmPoints.textContent = userPoints.toLocaleString();
+                if (tokenInput) {
+                    tokenInput.value = 100;
+                    tokenInput.min = 100;
                 }
-            });
-
-            // ========== 代幣數據 ==========
-            let machines = [
-                { id: 1, name: '甲賀忍法帖', tokens: 200, icon: '🎮' },
-                { id: 2, name: '超級奇蹟小丑', tokens: 150, icon: '🎰' },
-                { id: 3, name: '吉宗', tokens: 250, icon: '🎯' },
-                { id: 4, name: '花月', tokens: 80, icon: '🎲' },
-                { id: 5, name: '新甲賀', tokens: 70, icon: '🎯' }
-            ];
-
-            // ========== 帶入帶出記錄 ==========
-            let exchangeRecords = [
-                { date: '2025-02-18 14:30', machineName: '甲賀忍法帖', amount: 200, type: 'in' },
-                { date: '2025-02-20 09:15', machineName: '吉宗', amount: 150, type: 'in' },
-                { date: '2025-02-25 11:20', machineName: '超級奇蹟小丑', amount: 300, type: 'in' },
-                { date: '2025-03-02 15:40', machineName: '花月', amount: 100, type: 'out' }
-            ];
-
-            let gameEarnRecords = [
-                { date: '2025-02-19 20:30', machineName: '甲賀忍法帖', amount: 80 },
-                { date: '2025-02-21 14:20', machineName: '吉宗', amount: 120 },
-                { date: '2025-02-23 19:45', machineName: '超級奇蹟小丑', amount: 60 },
-                { date: '2025-02-27 22:10', machineName: '花月', amount: 40 },
-                { date: '2025-03-01 16:30', machineName: '新甲賀', amount: 90 }
-            ];
-
-            // ========== 商城道具數據 ==========
-            const shopItems = [
-                { id: 1, name: '幸運護符', icon: '🍀', price: 50, description: '提升幸運值' },
-                { id: 2, name: '經驗加倍卡', icon: '⚡', price: 30, description: '經驗值2倍' },
-                { id: 3, name: '神秘寶箱', icon: '📦', price: 100, description: '隨機獎勵' },
-                { id: 4, name: '道具組合包', icon: '🎁', price: 150, description: '超值組合' }
-            ];
-
-            // 購買紀錄
-            let shopRecords = [
-                { date: '2025-02-22 10:15', itemName: '幸運護符', cost: 50 },
-                { date: '2025-02-24 13:40', itemName: '經驗加倍卡', cost: 30 },
-                { date: '2025-02-26 19:20', itemName: '神秘寶箱', cost: 100 },
-                { date: '2025-02-28 09:30', itemName: '道具組合包', cost: 150 }
-            ];
-
-            // ========== 收藏/保留機台 ==========
-            let favoriteMachines = [
-                { id: 1, name: '甲賀忍法帖 弐', image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', ratio: '1:2', vendor: 'Sammy' },
-                { id: 2, name: '超級奇蹟小丑', image: 'https://static.wixstatic.com/media/d5e540_1c6cd7d36cc24e47a6b359a1abeb3923~mv2.png', ratio: '1:1', vendor: 'Olympia' },
-                { id: 3, name: '吉宗', image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', ratio: '1:2', vendor: 'Daito' }
-            ];
-            
-            // 保留機台
-            let keepMachines = [
-                { 
-                    id: 4, 
-                    name: '花月', 
-                    image: 'https://static.wixstatic.com/media/d5e540_0926089e3da443eebe6bc2ede58f5788~mv2.png', 
-                    ratio: '1:4', 
-                    vendor: 'Olympia',
-                    endTime: new Date(Date.now() + 10 * 60 * 1000)
-                },
-                { 
-                    id: 5, 
-                    name: '新甲賀', 
-                    image: 'https://static.wixstatic.com/media/d5e540_e7da9c3f1fb24a2aa9ef8d180a2cf6fa~mv2.png', 
-                    ratio: '1:4', 
-                    vendor: 'Sammy',
-                    endTime: new Date(Date.now() + 15 * 60 * 1000)
-                }
-            ];
-
-            // ========== 注單數據 ==========
-            function generateBetRecords() {
-                const machines = ['甲賀忍法帖', '超級奇蹟小丑', '吉宗', '花月', '新甲賀'];
-                const dates = ['2025-03-15', '2025-03-14', '2025-03-13', '2025-03-12', '2025-03-11', '2025-03-10', '2025-03-09', '2025-03-08', '2025-03-07', '2025-03-06'];
-                const hours = ['00:30', '01:45', '02:20', '03:10', '04:30', '05:20', '06:45', '07:30', '08:15', '09:40', '10:30', '11:45', '12:20', '13:10', '14:30', '15:20', '16:45', '17:30', '18:15', '19:40', '20:30', '21:45', '22:20', '23:10'];
-                const videoTypes = ['BB', 'RB'];
-                const prizes = ['+2,500', '+1,200', '+3,800', '+1,800', '+2,200', '+3,000', '+1,600', '+900', '+2,800', '-500', '-300', '-200', '-150', '-400', '-100'];
+                if (tokenRemain) tokenRemain.innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${userPoints.toLocaleString()}`;
                 
-                let records = [];
-                let idCounter = 1;
-                
-                machines.forEach(machine => {
-                    for (let i = 0; i < 20; i++) {
-                        const randomDate = dates[Math.floor(Math.random() * dates.length)];
-                        const randomHour = hours[Math.floor(Math.random() * hours.length)];
-                        const randomVideo = videoTypes[Math.floor(Math.random() * videoTypes.length)];
-                        const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
-                        const dateNum = randomDate.replace(/-/g, '');
-                        const betId = `BB${dateNum}-${String(idCounter).padStart(3, '0')}`;
-                        
-                        records.push({
-                            date: `${randomDate} ${randomHour}`,
-                            machine: machine,
-                            betId: betId,
-                            prize: randomPrize,
-                            videoType: randomVideo
-                        });
-                        
-                        idCounter++;
-                        if (idCounter > 99) idCounter = 1;
-                    }
-                });
-                
-                return records.sort((a, b) => new Date(b.date) - new Date(a.date));
-            }
-            
-            const betRecords = generateBetRecords();
-
-            // ========== DOM 元素 ==========
-            const headerPoints = document.getElementById('headerPoints');
-            const headerTotalTokens = document.getElementById('headerTotalTokens');
-            
-            // 點數面板
-            const pointsBalance = document.getElementById('pointsBalance');
-            const totalPointsEarnedDisplay = document.getElementById('totalPointsEarnedDisplay');
-            const rechargeDetailList = document.getElementById('rechargeDetailList');
-            const bonusDetailList = document.getElementById('bonusDetailList');
-            const totalRechargeSpan = document.getElementById('totalRecharge');
-            const totalBonusSpan = document.getElementById('totalBonus');
-            const availableTokensDisplay = document.getElementById('availableTokensDisplay');
-            
-            // 代幣面板
-            const totalTokensDisplay = document.getElementById('totalTokensDisplay');
-            const tokenPointsDisplay = document.getElementById('tokenPointsDisplay');
-            const machineGrid = document.getElementById('machineGrid');
-            const selectedMachineName = document.getElementById('selectedMachineName');
-            const selectedMachinePoints = document.getElementById('selectedMachinePoints');
-            
-            // 兌換相關
-            const pointInput = document.getElementById('pointInput');
-            const maxBtn = document.getElementById('maxBtn');
-            const bringInBtn = document.getElementById('bringInBtn');
-            const bringOutBtn = document.getElementById('bringOutBtn');
-            const exchangeDetailList = document.getElementById('exchangeDetailList');
-            
-            // 新按鈕
-            const oneKeyToTokens = document.getElementById('oneKeyToTokens');
-            const oneKeyToPoints = document.getElementById('oneKeyToPoints');
-            
-            // 遊戲獲得
-            const gameEarnDetailList = document.getElementById('gameEarnDetailList');
-            
-            // 商城
-            const shopTokensDisplay = document.getElementById('shopTokensDisplay');
-            const shopGrid = document.getElementById('shopGrid');
-            const shopPurchaseList = document.getElementById('shopPurchaseList');
-            
-            // 注單相關
-            const betListBody = document.getElementById('betListBody');
-            const betPagination = document.getElementById('betPagination');
-            const betSearchInput = document.getElementById('betSearchInput');
-            const betSearchBtn = document.getElementById('betSearchBtn');
-            const startDateTimeFilter = document.getElementById('startDateTimeFilter');
-            const endDateTimeFilter = document.getElementById('endDateTimeFilter');
-            const searchDateTimeBtn = document.getElementById('searchDateTimeBtn');
-            const sortTimeHeader = document.getElementById('sortTimeHeader');
-            
-            // 注單彈窗
-            const betDetailModal = document.getElementById('betDetailModal');
-            const modalOverlay = document.getElementById('modalOverlay');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const modalMachineName = document.getElementById('modalMachineName');
-            const betDetailList = document.getElementById('betDetailList');
-            
-            // VIP相關
-            const vipPanel = document.getElementById('vipInfoPanel');
-            const vipBadge = document.getElementById('vipBadge');
-            const expText = document.getElementById('expText');
-            
-            // 收藏/保留
-            const favBtn = document.getElementById('favMachinesBtn');
-            const keepBtn = document.getElementById('keepMachinesBtn');
-            const supportBtn = document.getElementById('supportBtn');
-            const favList = document.getElementById('favMachineList');
-            const keepList = document.getElementById('keepMachineList');
-            const favItems = document.getElementById('favMachineItems');
-            const keepItems = document.getElementById('keepMachineItems');
-            const favCount = document.getElementById('favCount');
-            const keepCount = document.getElementById('keepCount');
-            const favCountDisplay = document.getElementById('favCountDisplay');
-            const keepCountDisplay = document.getElementById('keepCountDisplay');
-            
-            // 設定彈窗
-            const settingsBtn = document.getElementById('settingsBtn');
-            const settingsModal = document.getElementById('settingsModal');
-            const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-            
-            // 設定相關元素
-            const notificationToggle = document.getElementById('notificationToggle');
-            const bindStatus = document.getElementById('bindStatus');
-            const twoFactorStatus = document.getElementById('twoFactorStatus');
-            const transactionPwdStatus = document.getElementById('transactionPwdStatus');
-            
-            // 確認對話框
-            const confirmDialog = document.getElementById('confirmDialog');
-            const confirmOverlay = document.getElementById('confirmOverlay');
-            const confirmCancel = document.getElementById('confirmCancel');
-            const confirmOk = document.getElementById('confirmOk');
-
-            // 保留警示彈窗
-            const keepAlertModal = document.getElementById('keepAlertModal');
-            const keepAlertMessage = document.getElementById('keepAlertMessage');
-
-            // ========== 滑動手勢相關 ==========
-            let touchStartY = 0;
-            let touchCurrentY = 0;
-            let isDragging = false;
-            const SWIPE_THRESHOLD = 20;
-
-            keepAlertModal.addEventListener('touchstart', (e) => {
-                touchStartY = e.touches[0].clientY;
-                isDragging = true;
-                keepAlertModal.style.transition = 'none';
-            }, { passive: true });
-
-            keepAlertModal.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
-                touchCurrentY = e.touches[0].clientY;
-                const diff = touchCurrentY - touchStartY;
-                
-                if (diff < 0) {
-                    const translateY = Math.max(diff, -100);
-                    keepAlertModal.style.transform = `translateY(${translateY}px)`;
-                }
-            }, { passive: true });
-
-            keepAlertModal.addEventListener('touchend', () => {
-                if (!isDragging) return;
-                isDragging = false;
-                keepAlertModal.style.transition = 'transform 0.3s ease-in-out';
-                
-                const diff = touchCurrentY - touchStartY;
-                if (diff < -SWIPE_THRESHOLD) {
-                    keepAlertModal.classList.add('-translate-y-full');
-                } else {
-                    keepAlertModal.style.transform = '';
-                }
-                
-                touchStartY = 0;
-                touchCurrentY = 0;
-            });
-
-            // ========== 保留警示相關 ==========
-            let lastAlertTime = 0;
-            const ALERT_INTERVAL = 2 * 60 * 1000;
-
-            function checkAndShowAlert() {
-                if (!keepList.classList.contains('show')) return;
-                
-                const now = Date.now();
-                let hasNearExpiry = false;
-                let nearestMachine = null;
-                let nearestTime = Infinity;
-                
-                keepMachines.forEach(m => {
-                    const endTime = m.endTime.getTime();
-                    const timeLeft = endTime - now;
-                    
-                    if (timeLeft > 0 && timeLeft <= 10 * 60 * 1000) {
-                        hasNearExpiry = true;
-                        if (timeLeft < nearestTime) {
-                            nearestTime = timeLeft;
-                            nearestMachine = m;
-                        }
-                    }
-                });
-                
-                if (hasNearExpiry && now - lastAlertTime >= ALERT_INTERVAL) {
-                    const minutes = Math.floor(nearestTime / (60 * 1000));
-                    const seconds = Math.floor((nearestTime % (60 * 1000)) / 1000);
-                    keepAlertMessage.textContent = `「${nearestMachine.name}」${minutes}分${seconds}秒後到期`;
-                    
-                    keepAlertModal.classList.remove('-translate-y-full');
-                    
-                    setTimeout(() => {
-                        keepAlertModal.classList.add('-translate-y-full');
-                    }, 3000);
-                    
-                    lastAlertTime = now;
-                }
-            }
-
-            // ========== 注單排序狀態 ==========
-            let sortOrder = 'desc';
-
-            // ========== 輔助函數 ==========
-            function getTotalTokens() {
-                return machines.reduce((sum, m) => sum + m.tokens, 0);
-            }
-
-            // ========== 更新所有UI ==========
-            function updateAllUI() {
-                const totalTokens = getTotalTokens();
-                
-                // 頭部
-                if(headerPoints) headerPoints.innerText = currentPoints.toLocaleString();
-                if(headerTotalTokens) headerTotalTokens.innerText = totalTokens.toLocaleString();
-                
-                // 點數面板
-                if(pointsBalance) pointsBalance.innerText = currentPoints.toLocaleString();
-                if(totalPointsEarnedDisplay) totalPointsEarnedDisplay.innerText = totalPointsEarned.toLocaleString();
-                if(availableTokensDisplay) availableTokensDisplay.innerText = totalTokens.toLocaleString();
-                
-                // 儲值明細
-                let rechargeHtml = '';
-                rechargeRecords.forEach((r, index) => {
-                    const serialNumber = 'XDHG' + Math.floor(100000 + Math.random() * 900000);
-                    rechargeHtml += `<tr><td class="text-blue-300 font-mono">${serialNumber}</td><td>${r.date}</td><td class="text-green-400">+${r.amount}</td><td>${r.method}</td></tr>`;
-                });
-                if(rechargeDetailList) rechargeDetailList.innerHTML = rechargeHtml;
-                
-                // 贈分明細
-                let bonusHtml = '';
-                bonusRecords.forEach(b => {
-                    bonusHtml += `<tr><td>${b.date}</td><td class="text-green-400">+${b.amount}</td><td>${b.description}</td></tr>`;
-                });
-                if(bonusDetailList) bonusDetailList.innerHTML = bonusHtml;
-                
-                if(totalRechargeSpan) totalRechargeSpan.innerText = totalRecharge.toLocaleString();
-                if(totalBonusSpan) totalBonusSpan.innerText = totalBonus.toLocaleString();
-                
-                // 代幣面板
-                if(totalTokensDisplay) totalTokensDisplay.innerText = totalTokens.toLocaleString();
-                if(tokenPointsDisplay) tokenPointsDisplay.innerText = currentPoints.toLocaleString();
-                
-                // 商城面板
-                if(shopTokensDisplay) shopTokensDisplay.innerText = totalTokens.toLocaleString();
-                
-                renderMachines();
-                renderShopItems();
-                
-                if(pointInput) pointInput.max = Math.max(currentPoints, 10000);
-                
-                // 兌換明細
-                let exchangeHtml = '';
-                exchangeRecords.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(e => {
-                    const typeText = e.type === 'in' ? '點數→代幣' : '代幣→點數';
-                    const colorClass = e.type === 'in' ? 'text-green-400' : 'text-amber-400';
-                    exchangeHtml += `<tr>
-                        <td class="text-blue-200">${e.date}</td>
-                        <td>${e.machineName}</td>
-                        <td><span class="${e.type === 'in' ? 'badge green' : 'badge orange'}">${typeText}</span></td>
-                        <td class="${colorClass} font-bold">${e.amount}</td>
-                    </tr>`;
-                });
-                if(exchangeDetailList) exchangeDetailList.innerHTML = exchangeHtml || '<tr><td colspan="4" class="text-center text-gray-400 py-4">暫無兌換記錄</td></tr>';
-                
-                // 遊戲獲得
-                let gameHtml = '';
-                gameEarnRecords.forEach(g => {
-                    gameHtml += `<tr><td>${g.date}</td><td>${g.machineName}</td><td class="text-green-400">+${g.amount}</td></tr>`;
-                });
-                if(gameEarnDetailList) gameEarnDetailList.innerHTML = gameHtml;
-                
-                // 商城購買紀錄
-                let shopHtml = '';
-                shopRecords.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(s => {
-                    shopHtml += `<tr><td>${s.date}</td><td>${s.itemName}</td><td class="text-red-400">-${s.cost}</td></tr>`;
-                });
-                if(shopPurchaseList) shopPurchaseList.innerHTML = shopHtml;
-            }
-
-            // ========== 機台渲染 ==========
-            let selectedMachine = null;
-            function renderMachines() {
-                let html = '';
-                machines.forEach(m => {
-                    const selectedClass = (selectedMachine && selectedMachine.id === m.id) ? 'selected' : '';
-                    html += `
-                        <div class="machine-card-item ${selectedClass}" data-id="${m.id}" data-name="${m.name}" data-tokens="${m.tokens}">
-                            <div class="machine-name-text">${m.icon} ${m.name}</div>
-                            <div class="machine-points">${m.tokens.toLocaleString()}</div>
-                            <div class="machine-label">代幣</div>
-                        </div>
-                    `;
-                });
-                machineGrid.innerHTML = html;
-                
-                document.querySelectorAll('.machine-card-item').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const id = parseInt(card.dataset.id);
-                        const name = card.dataset.name;
-                        const tokens = parseInt(card.dataset.tokens);
-                        selectedMachine = { id, name, tokens };
-                        
-                        document.querySelectorAll('.machine-card-item').forEach(c => c.classList.remove('selected'));
-                        card.classList.add('selected');
-                        
-                        selectedMachineName.textContent = name;
-                        selectedMachinePoints.textContent = tokens.toLocaleString();
-                    });
-                });
-            }
-
-            // ========== 商城道具渲染 ==========
-            function renderShopItems() {
-                let html = '';
-                shopItems.forEach(item => {
-                    html += `
-                        <div class="shop-item" data-id="${item.id}">
-                            <div class="shop-icon">${item.icon}</div>
-                            <div class="shop-name">${item.name}</div>
-                            <div class="shop-price">${item.price}<span>代幣</span></div>
-                            <button class="buy-btn" onclick="window.buyItem(${item.id}, '${item.name}', ${item.price})">
-                                <i class="fa fa-shopping-cart"></i> 購買
-                            </button>
-                        </div>
-                    `;
-                });
-                shopGrid.innerHTML = html;
-            }
-
-            // ========== 購買道具 ==========
-            window.buyItem = function(id, name, price) {
-                const totalTokens = getTotalTokens();
-                if (totalTokens < price) {
-                    showConfirm(`代幣不足！\n目前代幣: ${totalTokens}\n需要代幣: ${price}`, () => {});
-                    return;
-                }
-                
-                showConfirm(`確定要購買「${name}」嗎？\n花費 ${price} 代幣`, () => {
-                    let remainingPrice = price;
-                    for (let i = 0; i < machines.length && remainingPrice > 0; i++) {
-                        if (machines[i].tokens >= remainingPrice) {
-                            machines[i].tokens -= remainingPrice;
-                            remainingPrice = 0;
-                        } else {
-                            remainingPrice -= machines[i].tokens;
-                            machines[i].tokens = 0;
-                        }
-                    }
-                    
-                    const now = new Date();
-                    const dateStr = now.toISOString().split('T')[0] + ' ' + 
-                                   String(now.getHours()).padStart(2,'0') + ':' + 
-                                   String(now.getMinutes()).padStart(2,'0');
-                    
-                    shopRecords.push({
-                        date: dateStr,
-                        itemName: name,
-                        cost: price
-                    });
-                    
-                    updateAllUI();
-                    alert(`✅ 成功購買「${name}」！`);
-                });
+                const modal = document.getElementById('subConfirmModal');
+                if (modal) modal.classList.add('show');
             };
-
-            // ========== 兌換邏輯 ==========
-            bringInBtn.addEventListener('click', () => {
-                if(!selectedMachine) { alert('請先選擇機台'); return; }
-                const val = parseInt(pointInput.value);
-                if(isNaN(val) || val <= 0) { alert('請輸入有效數量'); return; }
-                if(val > currentPoints) { 
-                    showConfirm(`點數不足！\n目前點數: ${currentPoints}\n需要點數: ${val}`, () => {});
+            
+            // 保留進入：直接進入
+            window.enterReserveGame = function(machineName, subName, ratio, machineId) {
+                console.log('🎮 enterReserveGame 被呼叫', machineName);
+                showHologramLoading(machineName, subName, ratio, machineId, 100);
+            };
+            
+            // 確認進入（從彈窗）
+            function confirmEnterGame() {
+                console.log('✅ confirmEnterGame 被呼叫', currentEnterData);
+                if (!currentEnterData) return;
+                
+                const tokenInput = document.getElementById('confirmTokenInput');
+                let tokenUsed = tokenInput ? parseInt(tokenInput.value) || 0 : 100;
+                if (tokenUsed < 100) {
+                    alert('最低兌換數量為 100 代幣！');
+                    return;
+                }
+                if (tokenUsed > userPoints) {
+                    alert('點數不足！');
                     return;
                 }
                 
-                showConfirm(`確定要將 ${val} 點數兌換成代幣嗎？`, () => {
-                    currentPoints -= val;
-                    savePointsToStorage(currentPoints);
-                    
-                    const machine = machines.find(m => m.id === selectedMachine.id);
-                    machine.tokens += val;
-                    
-                    const now = new Date();
-                    const dateStr = now.toISOString().split('T')[0] + ' ' + 
-                                   String(now.getHours()).padStart(2,'0') + ':' + 
-                                   String(now.getMinutes()).padStart(2,'0');
-                    exchangeRecords.push({
-                        date: dateStr,
-                        machineName: machine.name,
-                        amount: val,
-                        type: 'in'
-                    });
-                    
-                    updateAllUI();
-                    alert(`✅ 點數 ${val} → 代幣 (${machine.name})`);
-                    pointInput.value = 100;
-                });
-            });
-
-            bringOutBtn.addEventListener('click', () => {
-                if(!selectedMachine) { alert('請先選擇機台'); return; }
-                const val = parseInt(pointInput.value);
-                if(isNaN(val) || val <= 0) { alert('請輸入有效數量'); return; }
-                const machine = machines.find(m => m.id === selectedMachine.id);
-                if(val > machine.tokens) { 
-                    showConfirm(`代幣不足！\n機台代幣: ${machine.tokens}\n需要代幣: ${val}`, () => {});
-                    return; 
-                }
+                // 扣除點數
+                userPoints = Math.max(0, userPoints - tokenUsed);
+                localStorage.setItem(POINTS_KEY, userPoints);
+                updatePointsDisplay();
                 
-                showConfirm(`確定要將 ${val} 代幣兌換成點數嗎？`, () => {
-                    machine.tokens -= val;
-                    currentPoints += val;
-                    savePointsToStorage(currentPoints);
-                    
-                    const now = new Date();
-                    const dateStr = now.toISOString().split('T')[0] + ' ' + 
-                                   String(now.getHours()).padStart(2,'0') + ':' + 
-                                   String(now.getMinutes()).padStart(2,'0');
-                    exchangeRecords.push({
-                        date: dateStr,
-                        machineName: machine.name,
-                        amount: val,
-                        type: 'out'
-                    });
-                    
-                    updateAllUI();
-                    alert(`✅ 代幣 ${val} → 點數 (${machine.name})`);
-                    pointInput.value = 100;
-                });
-            });
-
-            // ========== 一鍵轉換按鈕（全域性） ==========
-            // 一鍵轉代幣：將所有機台的代幣全部轉回點數
-            oneKeyToTokens.addEventListener('click', () => {
-                const totalTokens = getTotalTokens();
-                if(totalTokens <= 0) { 
-                    alert('沒有任何機台有代幣可以轉換'); 
-                    return; 
-                }
+                // 關閉彈窗
+                const modal = document.getElementById('subConfirmModal');
+                if (modal) modal.classList.remove('show');
                 
-                showConfirm(`確定要將全部機台的 ${totalTokens} 代幣兌換成點數嗎？`, () => {
-                    // 把所有機台的代幣加總
-                    let totalConverted = 0;
-                    machines.forEach(machine => {
-                        totalConverted += machine.tokens;
-                        machine.tokens = 0;
-                    });
-                    
-                    // 加到點數
-                    currentPoints += totalConverted;
-                    savePointsToStorage(currentPoints);
-                    
-                    // 記錄一筆總帳
-                    const now = new Date();
-                    const dateStr = now.toISOString().split('T')[0] + ' ' + 
-                                   String(now.getHours()).padStart(2,'0') + ':' + 
-                                   String(now.getMinutes()).padStart(2,'0');
-                    exchangeRecords.push({
-                        date: dateStr,
-                        machineName: '全部機台',
-                        amount: totalConverted,
-                        type: 'out'  // 代幣→點數
-                    });
-                    
-                    updateAllUI();
-                    alert(`✅ 一鍵轉換成功！全部 ${totalConverted} 代幣 → 點數`);
-                    
-                    // 清除選擇的機台
-                    selectedMachine = null;
-                    selectedMachineName.textContent = '請選擇機台';
-                    selectedMachinePoints.textContent = '0';
-                    pointInput.value = 100;
-                });
-            });
-
-            // 一鍵轉點數：將所有點數轉入當前選擇的機台
-            oneKeyToPoints.addEventListener('click', () => {
-                if(!selectedMachine) { 
-                    alert('請先選擇要存入的機台'); 
-                    return; 
+                // 顯示 Loading 並跳轉
+                showHologramLoading(
+                    currentEnterData.machineName,
+                    currentEnterData.subName,
+                    currentEnterData.ratio,
+                    currentEnterData.machineId,
+                    tokenUsed
+                );
+            }
+            
+            // 關閉彈窗
+            function closeSubConfirm() {
+                const modal = document.getElementById('subConfirmModal');
+                if (modal) modal.classList.remove('show');
+                currentEnterData = null;
+            }
+            
+            // 更新點數顯示
+            function updatePointsDisplay() {
+                const userPointsEl = document.getElementById('userPoints');
+                if (userPointsEl) userPointsEl.textContent = userPoints.toLocaleString();
+                const confirmPoints = document.getElementById('confirmPoints');
+                if (confirmPoints) confirmPoints.textContent = userPoints.toLocaleString();
+                const tokenRemain = document.getElementById('confirmTokenRemain');
+                if (tokenRemain) {
+                    const tokenVal = parseInt(document.getElementById('confirmTokenInput')?.value) || 0;
+                    tokenRemain.innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${(userPoints - tokenVal).toLocaleString()}`;
                 }
-                if(currentPoints <= 0) { 
-                    alert('沒有點數可以轉換'); 
-                    return; 
+            }
+            
+            // 保留離開
+            window.leaveKeepMachineWithPoints = function(id, name, coinsEarned = 100) {
+                if (!confirm(`確定要離開保留的機台「${name}」嗎？\n\n離開後將獲得 ${coinsEarned} 點數（代幣已轉換）`)) return;
+                
+                userPoints = Math.max(0, userPoints + coinsEarned);
+                localStorage.setItem(POINTS_KEY, userPoints);
+                updatePointsDisplay();
+                alert(`✅ 已離開機台「${name}」，獲得 ${coinsEarned} 點數！`);
+                
+                keepMachines = keepMachines.filter(m => m.id !== id);
+                renderKeep();
+            };
+            
+            // 取消收藏
+            window.unfavoriteMachine = function(id, name) { 
+                if (!confirm(`確定要取消收藏「${name}」嗎？`)) return; 
+                favoriteMachines = favoriteMachines.filter(m => m.id !== id); 
+                renderFavorites(); 
+                alert(`✅ 已取消收藏「${name}」`); 
+            };
+            
+            // ==================== 2. 載入點數 ====================
+            try {
+                const stored = localStorage.getItem(POINTS_KEY);
+                if (stored !== null) {
+                    userPoints = parseInt(stored, 10);
+                    if (isNaN(userPoints)) userPoints = 6600;
                 }
-                
-                const val = currentPoints;
-                
-                showConfirm(`確定要將全部 ${val} 點數兌換成代幣，存入「${selectedMachine.name}」嗎？`, () => {
-                    currentPoints = 0;
-                    savePointsToStorage(currentPoints);
-                    
-                    const machine = machines.find(m => m.id === selectedMachine.id);
-                    machine.tokens += val;
-                    
-                    const now = new Date();
-                    const dateStr = now.toISOString().split('T')[0] + ' ' + 
-                                   String(now.getHours()).padStart(2,'0') + ':' + 
-                                   String(now.getMinutes()).padStart(2,'0');
-                    exchangeRecords.push({
-                        date: dateStr,
-                        machineName: machine.name,
-                        amount: val,
-                        type: 'in'
-                    });
-                    
-                    updateAllUI();
-                    alert(`✅ 一鍵轉換成功！全部 ${val} 點數 → 代幣 (${machine.name})`);
-                    pointInput.value = 100;
+            } catch(e) {
+                userPoints = 6600;
+            }
+            updatePointsDisplay();
+            
+            // 綁定彈窗按鈕
+            const cancelBtn = document.getElementById('confirmCancel');
+            const okBtn = document.getElementById('confirmOk');
+            if (cancelBtn) cancelBtn.addEventListener('click', closeSubConfirm);
+            if (okBtn) okBtn.addEventListener('click', confirmEnterGame);
+            
+            // 點數輸入框事件
+            const tokenInputField = document.getElementById('confirmTokenInput');
+            if (tokenInputField) {
+                tokenInputField.addEventListener('input', function() {
+                    let val = parseInt(this.value) || 0;
+                    if (val < 100) { this.value = 100; val = 100; }
+                    if (val > userPoints) { val = userPoints; this.value = userPoints; }
+                    const remainSpan = document.getElementById('confirmTokenRemain');
+                    if (remainSpan) remainSpan.innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${(userPoints - val).toLocaleString()}`;
                 });
-            });
+            }
+            
+            // 點數顯示點擊事件
+            const pointsBtn = document.getElementById('headerPoints');
+            if (pointsBtn) {
+                pointsBtn.addEventListener('click', () => {
+                    alert(`💰 目前點數：${userPoints.toLocaleString()}\n\n遊玩機台即可累積點數！`);
+                });
+            }
+            
+            // ==================== 3. 機台資料 ====================
+            let currentEnterData = null;
+            
+            let favoriteMachines = [
+                { id: 1, name: 'GOGO 小丑', number: 'J001', image: 'https://i.pinimg.com/736x/b1/f1/ec/b1f1ec3a191e62e3d0e300ce79c9b593.jpg', ratio: '2.5', vendor: 'Olympia', model: '6號機' },
+                { id: 2, name: '我是小丑-EX', number: 'J002', image: 'https://i.pinimg.com/736x/4a/2a/30/4a2a3089197d997984a7a75921faf2d9.jpg', ratio: '2.8', vendor: 'ELECO', model: '5號機' },
+                { id: 3, name: '快樂小丑 VII', number: 'J003', image: 'https://i.pinimg.com/736x/76/a7/ec/76a7eca59c0b7f7a8404e67e043841cb.jpg', ratio: '2.0', vendor: 'HEIWA', model: '6號機' }
+            ];
+            
+            let keepMachines = [
+                { id: 4, name: '新我是小丑-EX水晶版', number: 'J004', image: 'https://i.pinimg.com/736x/5a/d2/04/5ad204b86a09d1fc30374422fe0a4070.jpg', ratio: '3.0', vendor: 'Sammy', model: '6號機', endTime: new Date(Date.now() + 10 * 60 * 1000), coins: 250 },
+                { id: 5, name: '新我的小丑-EX紅金版', number: 'J005', image: 'https://i.pinimg.com/736x/63/46/aa/6346aaa01a8c68fbf4e8bdb5134cd7b1.jpg', ratio: '3.2', vendor: 'Daito', model: '6號機', endTime: new Date(Date.now() + 15 * 60 * 1000), coins: 380 }
+            ];
 
-            // ========== 收藏/保留功能 ==========
             function renderFavorites() {
                 let html = '';
                 favoriteMachines.forEach(m => {
-                    html += `
-                        <div class="machine-card" data-id="${m.id}">
-                            <img src="${m.image}" alt="${m.name}">
-                            <div class="machine-info">
-                                <div class="machine-name">${m.name}</div>
-                                <div class="machine-meta"><span>${m.ratio}</span><span>${m.vendor}</span></div>
-                            </div>
-                            <div class="machine-actions">
-                                <div class="play-btn" onclick="window.playGame('${m.name}')"><i class="fa fa-play"></i> 進入</div>
-                                <div class="unfavorite-btn" onclick="window.unfavoriteMachine(${m.id}, '${m.name}')">
-                                    <i class="fa fa-heart"></i> 取消收藏
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    html += `<div class="machine-card"><img src="${m.image}" alt="${m.name}"><div class="machine-info"><div class="machine-name">${m.name}</div><div class="machine-meta"><span>${m.number}</span><span>${m.model}</span><span>1:${m.ratio}</span><span>${m.vendor}</span></div></div><div class="machine-actions"><div class="play-btn" onclick="event.stopPropagation(); window.openFavoriteGame('${m.name}', '主機台', '${m.ratio}', ${m.id})"><i class="fa fa-play"></i> 進入</div><div class="unfavorite-btn" onclick="event.stopPropagation(); window.unfavoriteMachine(${m.id}, '${m.name}')"><i class="fa fa-heart"></i> 取消收藏</div></div></div>`;
                 });
-                favItems.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無收藏機台</div>';
-                favCount.textContent = favoriteMachines.length;
-                if(favCountDisplay) favCountDisplay.textContent = favoriteMachines.length;
+                const favItems = document.getElementById('favMachineItems');
+                if (favItems) favItems.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無收藏機台</div>';
+                const favCount = document.getElementById('favCount');
+                const favCountDisplay = document.getElementById('favCountDisplay');
+                if (favCount) favCount.textContent = favoriteMachines.length;
+                if (favCountDisplay) favCountDisplay.textContent = favoriteMachines.length;
             }
 
             function renderKeep() {
@@ -1707,28 +726,14 @@
                 keepMachines.forEach(m => {
                     const endDate = new Date(m.endTime);
                     const endTimeStr = endDate.toLocaleString('zh-TW');
-                    
-                    html += `
-                        <div class="machine-card" data-id="${m.id}">
-                            <img src="${m.image}" alt="${m.name}">
-                            <div class="machine-info">
-                                <div class="machine-name">${m.name}</div>
-                                <div class="machine-meta"><span>${m.ratio}</span><span>${m.vendor}</span></div>
-                                <div class="countdown-timer" data-endtime="${endDate.toISOString()}"><i class="fa fa-hourglass-half"></i> 計算中...</div>
-                                <div style="font-size: 0.6rem; color: #aaa; margin-top: 2px;">結束於 ${endTimeStr}</div>
-                            </div>
-                            <div class="machine-actions">
-                                <div class="play-btn" onclick="window.playGame('${m.name}')"><i class="fa fa-play"></i> 進入</div>
-                                <div class="leave-btn" onclick="window.leaveKeepMachine(${m.id}, '${m.name}')">
-                                    <i class="fa fa-sign-out"></i> 離開
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    html += `<div class="machine-card"><img src="${m.image}" alt="${m.name}"><div class="machine-info"><div class="machine-name">${m.name}</div><div class="machine-meta"><span>${m.number}</span><span>${m.model}</span><span>1:${m.ratio}</span><span>${m.vendor}</span></div><div class="countdown-timer" data-endtime="${endDate.toISOString()}"><i class="fa fa-hourglass-half"></i> 計算中...</div><div style="font-size: 0.6rem; color: #aaa; margin-top: 2px;">結束於 ${endTimeStr}</div></div><div class="machine-actions"><div class="play-btn" onclick="event.stopPropagation(); window.enterReserveGame('${m.name}', '主機台', '${m.ratio}', ${m.id})"><i class="fa fa-play"></i> 進入</div><div class="leave-btn" onclick="event.stopPropagation(); window.leaveKeepMachineWithPoints(${m.id}, '${m.name}', ${m.coins || 100})"><i class="fa fa-sign-out"></i> 離開</div></div></div>`;
                 });
-                keepItems.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無保留機台</div>';
-                keepCount.textContent = keepMachines.length;
-                if(keepCountDisplay) keepCountDisplay.textContent = keepMachines.length;
+                const keepItems = document.getElementById('keepMachineItems');
+                if (keepItems) keepItems.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無保留機台</div>';
+                const keepCount = document.getElementById('keepCount');
+                const keepCountDisplay = document.getElementById('keepCountDisplay');
+                if (keepCount) keepCount.textContent = keepMachines.length;
+                if (keepCountDisplay) keepCountDisplay.textContent = keepMachines.length;
                 updateCountdowns();
             }
 
@@ -1737,454 +742,189 @@
                     const endTime = new Date(el.dataset.endtime).getTime();
                     const now = new Date().getTime();
                     const diff = endTime - now;
-                    
-                    if(diff <= 0) {
-                        el.innerHTML = '<i class="fa fa-hourglass-end"></i> 已到期';
-                        el.classList.add('warning');
-                        return;
-                    }
-                    
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    if(diff <= 0) { el.innerHTML = '<i class="fa fa-hourglass-end"></i> 已到期'; el.classList.add('warning'); return; }
                     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                    
-                    let timeText = '';
-                    if(days > 0) timeText = `${days}天 ${hours}小時`;
-                    else if(hours > 0) timeText = `${hours}小時 ${minutes}分`;
-                    else if(minutes > 0) timeText = `${minutes}分 ${seconds}秒`;
-                    else timeText = `${seconds}秒`;
-                    
-                    if(minutes < 10 && days === 0 && hours === 0) {
-                        el.classList.add('warning');
-                    } else {
-                        el.classList.remove('warning');
-                    }
-                    
+                    let timeText = `${minutes}分 ${seconds}秒`;
+                    if(minutes < 10) el.classList.add('warning');
+                    else el.classList.remove('warning');
                     el.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${timeText}`;
                 });
-                
-                checkAndShowAlert();
             }
 
-            window.playGame = function(name) { alert(`🎮 進入遊戲：${name}\n(示範功能)`); };
-            
-            window.unfavoriteMachine = function(id, name) {
-                showConfirm(`確定要取消收藏「${name}」嗎？`, function() {
-                    favoriteMachines = favoriteMachines.filter(m => m.id !== id);
-                    renderFavorites();
-                    alert(`✅ 已取消收藏「${name}」`);
-                });
-            };
-
-            window.leaveKeepMachine = function(id, name) {
-                showConfirm(`確定要離開保留的機台「${name}」嗎？`, function() {
-                    keepMachines = keepMachines.filter(m => m.id !== id);
-                    renderKeep();
-                    alert(`✅ 已離開保留的機台「${name}」`);
-                });
-            };
-
-            favBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                favList.classList.toggle('show');
-                keepList.classList.remove('show');
-            });
-            
-            keepBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                keepList.classList.toggle('show');
-                favList.classList.remove('show');
-                if(keepList.classList.contains('show')) updateCountdowns();
-            });
+            const favBtn = document.getElementById('favMachinesBtn');
+            const keepBtn = document.getElementById('keepMachinesBtn');
+            const favList = document.getElementById('favMachineList');
+            const keepList = document.getElementById('keepMachineList');
+            const supportBtn = document.getElementById('supportBtn');
+            if (favBtn) favBtn.addEventListener('click', (e) => { e.stopPropagation(); favList.classList.toggle('show'); if(keepList) keepList.classList.remove('show'); });
+            if (keepBtn) keepBtn.addEventListener('click', (e) => { e.stopPropagation(); keepList.classList.toggle('show'); if(favList) favList.classList.remove('show'); if(keepList.classList.contains('show')) updateCountdowns(); });
+            if (supportBtn) supportBtn.addEventListener('click', () => alert('📞 客服與幫助'));
 
             document.addEventListener('click', function(e) {
-                if(!favBtn.contains(e.target) && !keepBtn.contains(e.target) && 
-                   !favList.contains(e.target) && !keepList.contains(e.target)) {
-                    favList.classList.remove('show');
-                    keepList.classList.remove('show');
-                }
-            });
-
-            setInterval(() => {
-                if(keepList.classList.contains('show')) {
-                    updateCountdowns();
-                }
-            }, 1000);
-
-            // ========== 子標籤切換 ==========
-            const tokenMachinesSub = document.getElementById('tokenMachinesSub');
-            const tokenGameSub = document.getElementById('tokenGameSub');
-            
-            const tokenMachinesContent = document.getElementById('tokenMachinesContent');
-            const tokenGameContent = document.getElementById('tokenGameContent');
-
-            if(tokenMachinesSub) {
-                tokenMachinesSub.addEventListener('click', () => {
-                    document.querySelectorAll('#tokensPanel .sub-tab').forEach(t => t.classList.remove('active'));
-                    tokenMachinesSub.classList.add('active');
-                    tokenMachinesContent.classList.remove('hidden');
-                    tokenGameContent.classList.add('hidden');
-                });
-                
-                tokenGameSub.addEventListener('click', () => {
-                    document.querySelectorAll('#tokensPanel .sub-tab').forEach(t => t.classList.remove('active'));
-                    tokenGameSub.classList.add('active');
-                    tokenGameContent.classList.remove('hidden');
-                    tokenMachinesContent.classList.add('hidden');
-                });
-            }
-
-            // ========== 主標籤切換 ==========
-            const tabs = document.querySelectorAll('.profile-tab');
-            const panels = {
-                points: document.getElementById('pointsPanel'),
-                tokens: document.getElementById('tokensPanel'),
-                betHistory: document.getElementById('betHistoryPanel'),
-                shop: document.getElementById('shopPanel')
-            };
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const tabId = tab.dataset.tab;
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    Object.keys(panels).forEach(key => panels[key]?.classList.add('hidden'));
-                    if(panels[tabId]) panels[tabId].classList.remove('hidden');
-                    
-                    if(tabId === 'betHistory') {
-                        currentBetPage = 1;
-                        renderBetList();
+                if(favList && keepList && favBtn && keepBtn) {
+                    if(!favBtn.contains(e.target) && !keepBtn.contains(e.target) && !favList.contains(e.target) && !keepList.contains(e.target)) {
+                        favList.classList.remove('show');
+                        keepList.classList.remove('show');
                     }
-                });
+                }
             });
+            setInterval(() => { if(keepList && keepList.classList.contains('show')) updateCountdowns(); }, 1000);
 
-            // ========== 注單記錄 ==========
-            const BET_ITEMS_PER_PAGE = 10;
-            let currentBetPage = 1;
-            let currentSearchTerm = '';
+            // ==================== 4. 注單資料 (保持原有功能) ====================
+            let betSortOrder = 'desc';
+            let searchTerm = '';
+            let dateStart = new Date('2025-02-01');
+            let dateEnd = new Date('2025-03-31');
+            dateEnd.setHours(23, 59, 59);
 
-            function renderBetList() {
-                let filtered = betRecords;
-                if (currentSearchTerm) {
-                    const term = currentSearchTerm.toLowerCase();
-                    filtered = filtered.filter(bet => 
-                        bet.betId.toLowerCase().includes(term) || 
-                        bet.machine.toLowerCase().includes(term)
-                    );
-                }
-                
-                if (startDateTimeFilter && endDateTimeFilter) {
-                    const startDateTime = new Date(startDateTimeFilter.value);
-                    const endDateTime = new Date(endDateTimeFilter.value);
-                    
-                    filtered = filtered.filter(bet => {
-                        const betDateTime = new Date(bet.date);
-                        return betDateTime >= startDateTime && betDateTime <= endDateTime;
-                    });
-                }
-                
-                filtered.sort((a, b) => {
-                    const dateA = new Date(a.date);
-                    const dateB = new Date(b.date);
-                    return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            function generateSessions() {
+                const sessions = [];
+                let spinCounter = 1;
+                const clownMachines = [
+                    { name: 'GOGO 小丑', number: 'J001', img: 'https://i.pinimg.com/736x/b1/f1/ec/b1f1ec3a191e62e3d0e300ce79c9b593.jpg' },
+                    { name: '我是小丑-EX', number: 'J002', img: 'https://i.pinimg.com/736x/4a/2a/30/4a2a3089197d997984a7a75921faf2d9.jpg' },
+                    { name: '快樂小丑 VII', number: 'J003', img: 'https://i.pinimg.com/736x/76/a7/ec/76a7eca59c0b7f7a8404e67e043841cb.jpg' },
+                    { name: '新我是小丑-EX水晶版', number: 'J004', img: 'https://i.pinimg.com/736x/5a/d2/04/5ad204b86a09d1fc30374422fe0a4070.jpg' },
+                    { name: '新我的小丑-EX紅金版', number: 'J005', img: 'https://i.pinimg.com/736x/63/46/aa/6346aaa01a8c68fbf4e8bdb5134cd7b1.jpg' }
+                ];
+                clownMachines.forEach((machine, idx) => {
+                    const baseDate = new Date(2025, 1, 19 + idx, 20, 30 + idx * 10);
+                    const session = { id: `session-${idx + 1}`, machineName: machine.name, machineNumber: machine.number, bringInTime: new Date(baseDate), bringInAmount: 300 + idx * 50, bringOutTime: new Date(baseDate.getTime() + 45 * 60000), bringOutAmount: 350 + idx * 60, details: [], stats: { totalSpins: 0, totalBet: 0, totalWin: 0, bbCount: 0 } };
+                    session.details.push({ date: new Date(session.bringInTime), type: 'BRING_IN', bet: 0, win: session.bringInAmount, total: session.bringInAmount, betId: `INIT${String(idx + 1).padStart(3, '0')}`, videoType: null });
+                    let currentTotal = session.bringInAmount;
+                    let currentTime = new Date(session.bringInTime);
+                    for (let i = 0; i < 12; i++) {
+                        currentTime = new Date(currentTime.getTime() + (1 + Math.random() * 2) * 60000);
+                        const bet = 3;
+                        const win = Math.random() < 0.3 ? bet * (1 + Math.floor(Math.random() * 2)) : 0;
+                        currentTotal = currentTotal - bet + win;
+                        session.details.push({ date: new Date(currentTime), type: 'SPIN', bet: bet, win: win, total: currentTotal, betId: `SPIN${String(spinCounter++).padStart(4, '0')}`, videoType: null });
+                        session.stats.totalSpins++;
+                        session.stats.totalBet += bet;
+                        session.stats.totalWin += win;
+                    }
+                    for (let i = 0; i < 18; i++) {
+                        currentTime = new Date(currentTime.getTime() + (0.5 + Math.random()) * 60000);
+                        const bet = 2;
+                        const win = 8 + Math.floor(Math.random() * 8);
+                        currentTotal = currentTotal - bet + win;
+                        session.details.push({ date: new Date(currentTime), type: 'BB', bet: bet, win: win, total: currentTotal, betId: `BB${String(spinCounter++).padStart(4, '0')}`, videoType: 'BB' });
+                        session.stats.totalSpins++;
+                        session.stats.totalBet += bet;
+                        session.stats.totalWin += win;
+                        session.stats.bbCount++;
+                    }
+                    session.bringOutAmount = currentTotal;
+                    session.details.push({ date: new Date(session.bringOutTime), type: 'BRING_OUT', bet: session.bringOutAmount, win: 0, total: 0, betId: `OUT${String(idx + 1).padStart(3, '0')}`, videoType: null });
+                    session.netProfit = session.bringOutAmount - session.bringInAmount;
+                    sessions.push(session);
                 });
-                
-                const totalPages = Math.ceil(filtered.length / BET_ITEMS_PER_PAGE) || 1;
-                if(currentBetPage > totalPages) currentBetPage = totalPages;
-                const startIdx = (currentBetPage - 1) * BET_ITEMS_PER_PAGE;
-                const pageItems = filtered.slice(startIdx, startIdx + BET_ITEMS_PER_PAGE);
-                
+                return sessions;
+            }
+
+            let sessions = generateSessions();
+            let currentSession = null;
+
+            function filterSessions() {
+                let filtered = sessions.filter(s => { const sessionDate = new Date(s.bringInTime); const sessionDateStr = sessionDate.toISOString().split('T')[0]; const startStr = dateStart.toISOString().split('T')[0]; const endStr = dateEnd.toISOString().split('T')[0]; return sessionDateStr >= startStr && sessionDateStr <= endStr; });
+                if (searchTerm) { const term = searchTerm.toLowerCase(); filtered = filtered.filter(s => s.machineName.toLowerCase().includes(term) || s.machineNumber.toLowerCase().includes(term)); }
+                return filtered;
+            }
+            function formatDateTime(date) { return date.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }); }
+            function formatDate(date) { return date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '/'); }
+            function formatTime(date) { return date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }); }
+
+            function calculateTotals() {
+                const filtered = filterSessions();
+                let totalBet = 0, totalWin = 0;
+                filtered.forEach(session => { totalBet += session.stats.totalBet; totalWin += session.stats.totalWin; });
+                const totalNet = totalWin - totalBet;
+                const totalBetEl = document.getElementById('totalBet');
+                const totalWinEl = document.getElementById('totalWin');
+                const totalNetEl = document.getElementById('totalNet');
+                if (totalBetEl) totalBetEl.textContent = totalBet;
+                if (totalWinEl) totalWinEl.textContent = totalWin;
+                if (totalNetEl) { totalNetEl.textContent = totalNet >= 0 ? `+${totalNet}` : totalNet; totalNetEl.classList.remove('text-green-400', 'text-red-400'); totalNetEl.classList.add(totalNet >= 0 ? 'text-red-400' : 'text-green-400'); }
+            }
+
+            function renderSessions() {
+                const filtered = filterSessions();
                 let html = '';
-                pageItems.forEach(bet => {
-                    const prizeClass = bet.prize.startsWith('+') ? 'prize-positive' : 'prize-negative';
-                    const videoClass = bet.videoType === 'BB' ? 'video-badge bb' : 'video-badge rb';
-                    
-                    html += `<tr>
-                        <td class="text-blue-200">${bet.date}</td>
-                        <td><span class="bet-machine">${bet.machine}</span></td>
-                        <td class="${prizeClass}">${bet.prize}</td>
-                        <td>
-                            <div class="flex items-center gap-2">
-                                <span class="bet-id" onclick="window.openBetDetail('${bet.machine}')">${bet.betId}</span>
-                                <span class="${videoClass}" onclick="window.playVideo('${bet.betId}', '${bet.videoType}')">
-                                    <i class="fa ${bet.videoType === 'BB' ? 'fa-film' : 'fa-video-camera'}"></i>
-                                    ${bet.videoType}
-                                </span>
-                            </div>
-                        </td>
-                    </tr>`;
+                filtered.forEach((session, index) => {
+                    const bringInDate = formatDate(session.bringInTime);
+                    const bringOutDate = formatDate(session.bringOutTime);
+                    const bringInTime = formatTime(session.bringInTime);
+                    const bringOutTime = formatTime(session.bringOutTime);
+                    const netProfit = session.netProfit;
+                    const netClass = netProfit >= 0 ? 'positive' : 'negative';
+                    const netSign = netProfit >= 0 ? '+' : '';
+                    html += `<div class="main-row" onclick="openBetModal(${index})"><div><div class="machine-title"><span class="name">${session.machineName}</span><span class="number">#${session.machineNumber}</span></div><div class="date-range">${bringInDate} ~ ${bringOutDate}  ${bringInTime}~${bringOutTime}</div><div class="amount-info"><span class="bring-in">帶入 ${session.bringInAmount}</span><span class="text-gray-400">→</span><span class="bring-out">帶出 ${session.bringOutAmount}</span><span class="text-gray-400">|</span><span class="net-profit ${netClass}">淨利 ${netSign}${netProfit}</span></div></div></div>`;
                 });
-                
-                betListBody.innerHTML = html;
-                
-                let pagiHtml = '';
-                for(let i = 1; i <= totalPages; i++) {
-                    pagiHtml += `<span class="page-btn ${i === currentBetPage ? 'active' : ''}" data-page="${i}">${i}</span>`;
-                }
-                betPagination.innerHTML = pagiHtml;
-                
-                document.querySelectorAll('#betPagination .page-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        currentBetPage = parseInt(e.target.dataset.page);
-                        renderBetList();
-                    });
-                });
-
-                const sortIcon = sortTimeHeader.querySelector('i');
-                if (sortIcon) {
-                    sortIcon.className = sortOrder === 'desc' ? 'fa fa-sort-desc' : 'fa fa-sort-asc';
-                }
+                const sessionsContainer = document.getElementById('sessionsContainer');
+                if (sessionsContainer) sessionsContainer.innerHTML = html || '<div class="text-center text-gray-400 py-8">沒有注單記錄</div>';
+                calculateTotals();
             }
 
-            sortTimeHeader.addEventListener('click', () => {
-                sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
-                currentBetPage = 1;
-                renderBetList();
-            });
-
-            betSearchBtn.addEventListener('click', () => {
-                currentSearchTerm = betSearchInput.value;
-                currentBetPage = 1;
-                renderBetList();
-            });
-
-            betSearchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    currentSearchTerm = betSearchInput.value;
-                    currentBetPage = 1;
-                    renderBetList();
-                }
-            });
-
-            searchDateTimeBtn.addEventListener('click', () => {
-                currentBetPage = 1;
-                renderBetList();
-            });
-
-            // ========== 注單彈窗 ==========
-            window.openBetDetail = function(machineName) {
-                const machineBets = betRecords.filter(bet => bet.machine === machineName);
-                
+            window.openBetModal = function(index) {
+                currentSession = sessions[index];
+                const modalTitle = document.getElementById('betModalTitle');
+                if (modalTitle) modalTitle.textContent = `${currentSession.machineName} #${currentSession.machineNumber}`;
+                const winRate = currentSession.stats.totalSpins > 0 ? Math.round((currentSession.stats.totalWin / currentSession.stats.totalBet) * 100) : 0;
+                const betStats = document.getElementById('betStats');
+                if (betStats) betStats.innerHTML = `<div class="stat-card"><i class="fa fa-refresh"></i><span>總轉數</span><span>${currentSession.stats.totalSpins}</span></div><div class="stat-card"><i class="fa fa-arrow-down"></i><span>總投注</span><span>${currentSession.stats.totalBet}</span></div><div class="stat-card"><i class="fa fa-arrow-up"></i><span>總獲得</span><span>${currentSession.stats.totalWin}</span></div><div class="stat-card"><i class="fa fa-film"></i><span>BB</span><span>${currentSession.stats.bbCount}</span></div><div class="stat-card"><i class="fa fa-pie-chart"></i><span>勝率</span><span>${winRate}%</span></div>`;
+                renderBetModalTable();
+                const betModal = document.getElementById('betModal');
+                if (betModal) betModal.classList.add('active');
+            };
+            window.toggleBetSort = function() { betSortOrder = betSortOrder === 'desc' ? 'asc' : 'desc'; const sortIcon = document.getElementById('betSortIcon'); if (sortIcon) sortIcon.textContent = betSortOrder === 'desc' ? '▼' : '▲'; renderBetModalTable(); };
+            function renderBetModalTable() {
+                if (!currentSession) return;
+                let details = [...currentSession.details].sort((a, b) => betSortOrder === 'desc' ? b.date - a.date : a.date - b.date);
                 let html = '';
-                machineBets.slice(0, 30).forEach(bet => {
-                    const videoClass = bet.videoType === 'BB' ? 'video-badge bb' : 'video-badge rb';
-                    html += `
-                        <div class="bet-list-item">
-                            <span class="bet-number">${bet.betId}</span>
-                            <div class="bet-video">
-                                <span class="${videoClass}" onclick="window.playVideo('${bet.betId}', '${bet.videoType}')">
-                                    <i class="fa ${bet.videoType === 'BB' ? 'fa-film' : 'fa-video-camera'}"></i>
-                                    ${bet.videoType}
-                                </span>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                if (machineBets.length > 30) {
-                    html += `<div class="text-center text-blue-300 mt-2">... 還有 ${machineBets.length - 30} 筆</div>`;
-                }
-                
-                betDetailList.innerHTML = html;
-                modalMachineName.textContent = machineName;
-                betDetailModal.classList.add('open');
-                modalOverlay.classList.add('open');
+                details.forEach(d => { let typeClass = '', typeLabel = ''; if(d.type === 'BRING_IN') { typeLabel = '帶入'; typeClass = 'type-bringin'; } else if(d.type === 'BRING_OUT') { typeLabel = '帶出'; typeClass = 'type-bringout'; } else if(d.type === 'BB') { typeLabel = 'BB'; typeClass = 'type-bb'; } else { typeLabel = '一般'; typeClass = 'type-bet'; } html += `<tr><td class="text-blue-200">${formatDateTime(d.date)}</td><td><span class="record-type ${typeClass}">${typeLabel}</span></td><td class="${d.bet > 0 ? 'amount-negative' : ''}">${d.bet > 0 ? `-${d.bet}` : '-'}</td><td class="${d.win > 0 ? 'amount-positive' : ''}">${d.win > 0 ? `+${d.win}` : '-'}</td><td class="amount-total">${d.total}</td><td><span class="bet-id" onclick="event.stopPropagation(); openBetDetail('${d.betId}', '${d.type}', ${d.total})">${d.betId}</span></td><td>${d.videoType ? `<span class="video-tag"><i class="fa fa-film"></i> ${d.videoType}</span>` : '-'}</td></tr>`; });
+                const tableBody = document.getElementById('betModalTableBody');
+                if (tableBody) tableBody.innerHTML = html;
+            }
+            window.openBetDetail = function(betId, type, total) {
+                const detailTitle = document.getElementById('betDetailTitle');
+                if (detailTitle) detailTitle.textContent = `注單 ${betId}`;
+                let content = '';
+                if (type === 'BRING_IN') content = `<div class="row"><span class="label">類型</span><span class="value">點數轉代幣</span></div><div class="row"><span class="label">匯率</span><span class="value">1:1</span></div><div class="row"><span class="label">獲得代幣</span><span class="value positive">+${total}</span></div>`;
+                else if (type === 'BRING_OUT') { const net = currentSession?.bringOutAmount - currentSession?.bringInAmount || 0; const netClass = net >= 0 ? 'positive' : 'negative'; content = `<div class="row"><span class="label">類型</span><span class="value">代幣轉點數</span></div><div class="row"><span class="label">總轉數</span><span class="value">${currentSession?.stats.totalSpins || 0}</span></div><div class="row"><span class="label">淨獲得</span><span class="value ${netClass}">${net >= 0 ? '+' : ''}${net}</span></div>`; }
+                else content = `<div class="row"><span class="label">類型</span><span class="value">${type === 'BB' ? '大當' : '一般轉數'}</span></div><div class="row"><span class="label">注單編號</span><span class="value">${betId}</span></div><div class="row"><span class="label">合計</span><span class="value">${total}</span></div>`;
+                const detailContent = document.getElementById('betDetailContent');
+                if (detailContent) detailContent.innerHTML = content;
+                const detailModal = document.getElementById('betDetailModal');
+                if (detailModal) detailModal.classList.add('active');
             };
+            window.closeBetModal = () => { const modal = document.getElementById('betModal'); if (modal) modal.classList.remove('active'); };
+            window.closeBetDetailModal = () => { const modal = document.getElementById('betDetailModal'); if (modal) modal.classList.remove('active'); };
 
-            window.playVideo = function(betId, videoType) {
-                alert(`🎬 播放 ${videoType} 影片\n注單號: ${betId}\n(示範功能)`);
-            };
+            const searchInput = document.getElementById('searchInput');
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            const dateSearchBtn = document.getElementById('dateSearchBtn');
+            if (searchInput) searchInput.addEventListener('input', (e) => { searchTerm = e.target.value; renderSessions(); });
+            if (dateSearchBtn) dateSearchBtn.addEventListener('click', () => { if (startDateInput && endDateInput) { dateStart = new Date(startDateInput.value); dateEnd = new Date(endDateInput.value); dateEnd.setHours(23, 59, 59); renderSessions(); } });
 
-            closeModalBtn.addEventListener('click', () => {
-                betDetailModal.classList.remove('open');
-                modalOverlay.classList.remove('open');
-            });
-
-            modalOverlay.addEventListener('click', () => {
-                betDetailModal.classList.remove('open');
-                modalOverlay.classList.remove('open');
-            });
-
-            // ========== 確認對話框 ==========
-            let pendingAction = null;
-            
-            function showConfirm(message, onConfirm) {
-                document.getElementById('confirmMessage').textContent = message;
-                confirmDialog.classList.add('open');
-                confirmOverlay.classList.add('open');
-                pendingAction = onConfirm;
-            }
-
-            function hideConfirm() {
-                confirmDialog.classList.remove('open');
-                confirmOverlay.classList.remove('open');
-                pendingAction = null;
-            }
-
-            confirmCancel.addEventListener('click', hideConfirm);
-            confirmOk.addEventListener('click', function() {
-                if (pendingAction) {
-                    pendingAction();
-                }
-                hideConfirm();
-            });
-            confirmOverlay.addEventListener('click', hideConfirm);
-
-            // ========== VIP面板切換 ==========
-            function toggleVipPanel(e) {
-                e.stopPropagation();
-                vipPanel.classList.toggle('show');
-            }
-            
-            vipBadge.addEventListener('click', toggleVipPanel);
-            expText.addEventListener('click', toggleVipPanel);
-            
-            document.addEventListener('click', function(e) {
-                if(!vipPanel?.contains(e.target) && !vipBadge?.contains(e.target) && !expText?.contains(e.target)) {
-                    vipPanel?.classList.remove('show');
-                }
-            });
-
-            // ========== 設定彈窗 ==========
-            settingsBtn.addEventListener('click', () => {
-                settingsModal.classList.remove('hidden');
-                settingsModal.classList.add('flex');
-            });
-
-            closeSettingsBtn.addEventListener('click', () => {
-                settingsModal.classList.add('hidden');
-                settingsModal.classList.remove('flex');
-            });
-
-            settingsModal.addEventListener('click', (e) => {
-                if(e.target === settingsModal) {
-                    settingsModal.classList.add('hidden');
-                    settingsModal.classList.remove('flex');
-                }
-            });
-
-            // ========== 設定連動效果 ==========
-            
-            let notificationEnabled = true;
-            notificationToggle.addEventListener('click', () => {
-                notificationEnabled = !notificationEnabled;
-                if (notificationEnabled) {
-                    notificationToggle.classList.add('active');
-                    alert('📢 通知已開啟');
-                } else {
-                    notificationToggle.classList.remove('active');
-                    alert('🔕 通知已關閉');
-                }
-            });
-
-            let isBound = true;
-            bindStatus.addEventListener('click', () => {
-                if (isBound) {
-                    showConfirm('確定要解除帳號綁定嗎？', () => {
-                        isBound = false;
-                        bindStatus.textContent = '未綁定';
-                        bindStatus.classList.remove('text-green-400');
-                        bindStatus.classList.add('text-red-400');
-                        alert('📱 帳號已解除綁定');
-                    });
-                } else {
-                    showConfirm('確定要綁定手機帳號嗎？', () => {
-                        isBound = true;
-                        bindStatus.textContent = '已綁定手機';
-                        bindStatus.classList.remove('text-red-400');
-                        bindStatus.classList.add('text-green-400');
-                        alert('📱 帳號綁定成功');
-                    });
-                }
-            });
-
-            let twoFactorEnabled = false;
-            twoFactorStatus.addEventListener('click', () => {
-                if (!twoFactorEnabled) {
-                    showConfirm('確定要啟用雙重驗證嗎？\n這將提高帳號安全性', () => {
-                        twoFactorEnabled = true;
-                        twoFactorStatus.textContent = '已啟用';
-                        twoFactorStatus.classList.remove('text-gray-400', 'hover:text-blue-300');
-                        twoFactorStatus.classList.add('text-green-400');
-                        alert('🔐 雙重驗證已啟用');
-                    });
-                } else {
-                    showConfirm('確定要關閉雙重驗證嗎？', () => {
-                        twoFactorEnabled = false;
-                        twoFactorStatus.textContent = '未啟用';
-                        twoFactorStatus.classList.remove('text-green-400');
-                        twoFactorStatus.classList.add('text-gray-400', 'hover:text-blue-300');
-                        alert('🔓 雙重驗證已關閉');
-                    });
-                }
-            });
-
-            let hasTransactionPwd = true;
-            transactionPwdStatus.addEventListener('click', () => {
-                if (hasTransactionPwd) {
-                    showConfirm('確定要修改交易密碼嗎？', () => {
-                        alert('🔑 請輸入新交易密碼 (示範功能)');
-                    });
-                } else {
-                    showConfirm('確定要設定交易密碼嗎？', () => {
-                        hasTransactionPwd = true;
-                        transactionPwdStatus.textContent = '已設定';
-                        transactionPwdStatus.classList.remove('text-red-400');
-                        transactionPwdStatus.classList.add('text-green-400');
-                        alert('🔑 交易密碼設定成功');
-                    });
-                }
-            });
-
-            const themeToggle = document.getElementById('themeToggle');
-            const body = document.body;
-            if(localStorage.getItem('theme') === 'dark') body.classList.add('dark-mode');
-            themeToggle?.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
-            });
-
-            document.getElementById('languageSelect')?.addEventListener('change', function(e) {
-                alert(`語言切換至：${this.options[this.selectedIndex].text}`);
-            });
-
-            const avatarImg = document.getElementById('avatarImage');
+            const vipPanel = document.getElementById('vipInfoPanel');
+            const vipBadge = document.getElementById('vipBadge');
+            const expTextEl = document.getElementById('expText');
+            if (vipBadge) vipBadge.addEventListener('click', () => vipPanel?.classList.toggle('hidden'));
+            if (expTextEl) expTextEl.addEventListener('click', () => vipPanel?.classList.toggle('hidden'));
             const avatarContainer = document.getElementById('avatarContainer');
-            const avatars = ['https://i.pravatar.cc/150?img=7','https://i.pravatar.cc/150?img=5','https://i.pravatar.cc/150?img=9','https://i.pravatar.cc/150?img=12'];
-            let avatarIdx = 0;
-            avatarContainer?.addEventListener('click', () => {
-                avatarIdx = (avatarIdx + 1) % avatars.length;
-                avatarImg.src = avatars[avatarIdx];
-                alert('大頭照已更換');
-            });
+            if (avatarContainer) avatarContainer.addEventListener('click', () => { const avatars = ['https://i.pravatar.cc/150?img=7','https://i.pravatar.cc/150?img=5','https://i.pravatar.cc/150?img=9']; const avatarImage = document.getElementById('avatarImage'); if (avatarImage) avatarImage.src = avatars[Math.floor(Math.random() * avatars.length)]; alert('大頭照已更換'); });
+            const displayNickname = document.getElementById('displayNickname');
+            if (displayNickname) displayNickname.addEventListener('click', () => { let name = prompt('修改暱稱', '郝可愛'); if(name) displayNickname.textContent = name; });
 
-            const displayName = document.getElementById('displayNickname');
-            let currentName = '夫人會生氣';
-            displayName?.addEventListener('click', () => {
-                let newName = prompt('修改暱稱', currentName);
-                if(newName && newName.trim()) {
-                    currentName = newName.trim();
-                    displayName.textContent = currentName;
-                }
-            });
-
-            document.getElementById('exitToHomeBtn')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                alert('返回首頁');
-            });
-
-            supportBtn.addEventListener('click', () => alert('📞 客服與幫助'));
-
-            // ========== 初始化 ==========
             renderFavorites();
             renderKeep();
-            renderMachines();
-            renderBetList();
-            updateAllUI();
-
-            keepAlertModal.classList.add('-translate-y-full');
+            renderSessions();
+            
+            const style = document.createElement('style');
+            style.textContent = `.machine-list-container.show { display: block; } .machine-list-container { display: none; } .positive { color: #ff8888; } .negative { color: #88ff88; } .video-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; }`;
+            document.head.appendChild(style);
         })();
     </script>
 </body>
