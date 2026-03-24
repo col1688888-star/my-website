@@ -81,6 +81,7 @@
             padding: 10px;
             border-radius: 20px;
             border: 1px solid #4a80c0;
+            cursor: pointer;
         }
         .chart-labels {
             display: flex;
@@ -185,9 +186,9 @@
 
         .video-section {
             position: relative;
-            margin: 50px 8px;  /* 上下各 50px */
-            margin-top: 50px;
-            margin-bottom: 50px;
+            margin: 15px 8px;  /* 從 50px 改為 15px，往上移動 */
+            margin-top: 15px;
+            margin-bottom: 35px;
         }
         .video-area {
             background: #000;
@@ -195,7 +196,7 @@
             overflow: hidden;
             border: 2px solid #4a80c0;
             position: relative;
-            height: 600px;  /* 一般螢幕 600px */
+            height: 600px;
         }
         video {
             width: 100%;
@@ -225,14 +226,11 @@
             transform: scale(0.95);
         }
 
-        /* 公告容器區域 */
         .notice-wrapper {
             margin: 8px;
             margin-top: 0;
             margin-bottom: 8px;
         }
-        
-        /* 完整公告卡片 */
         .notice-card {
             background: linear-gradient(135deg, rgba(10, 20, 30, 0.92), rgba(5, 12, 18, 0.96));
             backdrop-filter: blur(12px);
@@ -245,8 +243,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
         }
-        
-        /* 純大聲公圖示 - 無外框 */
         .megaphone-icon-only {
             font-size: 28px;
             cursor: pointer;
@@ -255,28 +251,23 @@
             filter: drop-shadow(0 0 4px rgba(255, 100, 50, 0.5));
             animation: megaphoneWave 1.2s ease-in-out infinite;
         }
-        
         .megaphone-icon-only:hover {
             transform: scale(1.1);
             filter: drop-shadow(0 0 8px rgba(255, 100, 50, 0.8));
             animation: none;
         }
-        
         @keyframes megaphoneWave {
             0%, 100% { transform: rotate(0deg) scale(1); }
             25% { transform: rotate(12deg) scale(1.05); }
             75% { transform: rotate(-8deg) scale(1.02); }
         }
-        
         .notice-icon {
             font-size: 20px;
             animation: iconPulse 1.5s ease-in-out infinite;
         }
-        
         .notice-content {
             flex: 1;
         }
-        
         .notice-title {
             font-size: 12px;
             font-weight: bold;
@@ -284,13 +275,11 @@
             margin-bottom: 2px;
             letter-spacing: 0.5px;
         }
-        
         .notice-text {
             font-size: 11px;
             color: #ffddbb;
             line-height: 1.3;
         }
-        
         .notice-close {
             background: rgba(255,255,255,0.15);
             border: none;
@@ -305,38 +294,32 @@
             align-items: center;
             justify-content: center;
         }
-        
         .notice-close:hover {
             background: rgba(255,100,50,0.5);
             color: white;
             transform: scale(1.05);
         }
-        
         @keyframes iconPulse {
             0%, 100% { transform: scale(1); opacity: 0.8; }
             50% { transform: scale(1.1); opacity: 1; }
         }
-        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
         @keyframes fadeOut {
             from { opacity: 1; transform: translateY(0); }
             to { opacity: 0; transform: translateY(-10px); }
         }
-        
         .fade-in {
             animation: fadeIn 0.3s ease forwards;
         }
-        
         .fade-out {
             animation: fadeOut 0.2s ease forwards;
         }
 
         .video-spacer {
-            height: 50px;
+            height: 35px;
         }
 
         .drawer-trigger {
@@ -656,13 +639,13 @@
         }
         @media (max-width: 430px) {
             .machine { max-width: 100%; }
-            .video-area { height: 500px; }  /* 手機版 500px */
+            .video-area { height: 500px; }
             .video-section {
-                margin: 35px 8px;  /* 手機版上下各 35px */
-                margin-top: 35px;
-                margin-bottom: 35px;
+                margin: 10px 8px;  /* 手機版也往上移動 */
+                margin-top: 10px;
+                margin-bottom: 20px;
             }
-            .video-spacer { height: 40px; }
+            .video-spacer { height: 25px; }
             .stat-number { font-size: 18px; }
             .stat-label { font-size: 10px; }
             .notice-card { padding: 8px 12px; }
@@ -677,12 +660,12 @@
     <div class="machine">
         <div class="top-bar">
             <div class="vip-btn" id="vipBtn">⭐ VIP1</div>
-            <div class="machine-name">減之</div>
-            <div class="machine-info">NO.001｜每枚2</div>
+            <div class="machine-name" id="machineNameDisplay">減之</div>
+            <div class="machine-info" id="machineInfoDisplay">NO.001｜每枚2</div>
         </div>
 
         <div class="data-container">
-            <div class="chart-area">
+            <div class="chart-area" id="chartClickArea">
                 <div class="chart-labels" id="chartLabels"></div>
                 <div class="chart-bars" id="chartBars"></div>
                 <div class="chart-values" id="chartValues"></div>
@@ -711,7 +694,6 @@
             </div>
         </div>
 
-        <!-- 可收合的公告容器 -->
         <div class="notice-wrapper" id="noticeWrapper">
             <div class="notice-card" id="noticeCard">
                 <div class="notice-icon">🔧</div>
@@ -761,6 +743,73 @@
 
     <script>
         (function(){
+            // ==================== 點數管理 (與 index.html 共用) ====================
+            const POINTS_KEY = 't_pachin_user_points';
+            let globalPoints = 6600;
+            
+            function loadPoints() {
+                try {
+                    const stored = localStorage.getItem(POINTS_KEY);
+                    if (stored !== null) {
+                        globalPoints = parseInt(stored, 10);
+                        if (isNaN(globalPoints)) globalPoints = 6600;
+                    }
+                } catch(e) {
+                    globalPoints = 6600;
+                }
+            }
+            loadPoints();
+            
+            function savePointsToStorage() {
+                try {
+                    localStorage.setItem(POINTS_KEY, globalPoints);
+                } catch(e) {}
+                updatePointsDisplay();
+            }
+            
+            function updatePointsDisplay() {
+                const pointsSpan = document.getElementById('drawerPoints');
+                if (pointsSpan) pointsSpan.innerText = globalPoints.toLocaleString();
+            }
+            
+            // ==================== 接收從 index.html 傳來的機台資訊 ====================
+            let currentMachine = {
+                name: '減之',
+                subName: '001號機',
+                ratio: 2,
+                machineId: 1,
+                coins: 0
+            };
+            
+            function loadMachineInfo() {
+                try {
+                    const stored = localStorage.getItem('t_pachin_machine_info');
+                    if (stored) {
+                        const info = JSON.parse(stored);
+                        currentMachine = {
+                            name: info.name || '減之',
+                            subName: info.subName || '001號機',
+                            ratio: parseFloat(info.ratio) || 2,
+                            machineId: info.machineId || 1,
+                            coins: info.coins || 0
+                        };
+                        localStorage.removeItem('t_pachin_machine_info');
+                    }
+                } catch(e) {
+                    console.log('讀取機台資訊失敗', e);
+                }
+                
+                document.getElementById('machineNameDisplay').innerText = currentMachine.name;
+                document.getElementById('machineInfoDisplay').innerHTML = `NO.${currentMachine.machineId}｜每枚${currentMachine.ratio}`;
+                
+                const noticeTextEl = document.getElementById('noticeText');
+                if (noticeTextEl) {
+                    noticeTextEl.innerHTML = `${currentMachine.name} ${currentMachine.subName} 遊玩中`;
+                }
+            }
+            loadMachineInfo();
+            
+            // ==================== 模擬器核心功能 ====================
             const toast = document.getElementById('toast');
             function showMessage(msg) {
                 toast.innerText = msg;
@@ -774,13 +823,12 @@
             let machineTotalSpins = 12589;
             let machineTotalBB = 156;
             let machineTotalRB = 289;
-            let machineCoins = 2062390;
-            let playerPoints = 0;
+            let machineCoins = currentMachine.coins;
+            let playerPoints = globalPoints;
             let reservedList = [];
 
             const chartValues = [25, 30, 35, 40, 45, 50, 55, 60, 65, 70];
             
-            // 公告相關元素
             const noticeWrapper = document.getElementById('noticeWrapper');
             const noticeCard = document.getElementById('noticeCard');
             const noticeCloseBtn = document.getElementById('noticeCloseBtn');
@@ -789,7 +837,6 @@
             
             let maintenanceDateStr = '';
             
-            // 設定維護公告內容
             function setMaintenanceNotice() {
                 const now = new Date();
                 const maintenanceDate = new Date(now);
@@ -797,15 +844,13 @@
                 maintenanceDate.setHours(8, 0, 0, 0);
                 maintenanceDateStr = `${maintenanceDate.getMonth()+1}/${maintenanceDate.getDate()} ${maintenanceDate.getHours().toString().padStart(2,'0')}:00`;
                 noticeTitle.innerHTML = '🔧 系統維護預告';
-                noticeText.innerHTML = `減之001 將在 ${maintenanceDateStr} 進行維護，請留意時間`;
+                noticeText.innerHTML = `${currentMachine.name} ${currentMachine.subName} 將在 ${maintenanceDateStr} 進行維護`;
             }
             
-            // 關閉公告，顯示純大聲公圖示
             function closeNotice() {
                 noticeCard.classList.add('fade-out');
                 setTimeout(() => {
                     noticeCard.style.display = 'none';
-                    // 顯示純大聲公圖示 - 無外框
                     const megaphoneIcon = document.createElement('div');
                     megaphoneIcon.className = 'megaphone-icon-only';
                     megaphoneIcon.id = 'megaphoneIcon';
@@ -815,7 +860,6 @@
                 }, 200);
             }
             
-            // 開啟公告，移除大聲公圖示
             function openNotice(megaphoneIcon) {
                 megaphoneIcon.remove();
                 noticeCard.style.display = 'flex';
@@ -826,39 +870,43 @@
                 }, 300);
             }
             
-            // 綁定關閉按鈕事件
-            noticeCloseBtn.addEventListener('click', closeNotice);
+            if (noticeCloseBtn) noticeCloseBtn.addEventListener('click', closeNotice);
             
-            // 原有功能
             function initChart() {
                 const labelsDiv = document.getElementById('chartLabels');
                 const barsDiv = document.getElementById('chartBars');
                 const valuesDiv = document.getElementById('chartValues');
                 
-                labelsDiv.innerHTML = '';
-                for(let i=1; i<=10; i++) {
-                    let span = document.createElement('span');
-                    span.innerText = i;
-                    labelsDiv.appendChild(span);
-                }
-                
-                barsDiv.innerHTML = '';
-                for(let i=0; i<10; i++) {
-                    let bar = document.createElement('div');
-                    bar.className = 'bar';
-                    for(let b=0; b<5; b++) {
-                        let block = document.createElement('div');
-                        block.className = 'block';
-                        bar.appendChild(block);
+                if (labelsDiv) {
+                    labelsDiv.innerHTML = '';
+                    for(let i=1; i<=10; i++) {
+                        let span = document.createElement('span');
+                        span.innerText = i;
+                        labelsDiv.appendChild(span);
                     }
-                    barsDiv.appendChild(bar);
                 }
                 
-                valuesDiv.innerHTML = '';
-                for(let i=0; i<10; i++) {
-                    let span = document.createElement('span');
-                    span.innerText = chartValues[i];
-                    valuesDiv.appendChild(span);
+                if (barsDiv) {
+                    barsDiv.innerHTML = '';
+                    for(let i=0; i<10; i++) {
+                        let bar = document.createElement('div');
+                        bar.className = 'bar';
+                        for(let b=0; b<5; b++) {
+                            let block = document.createElement('div');
+                            block.className = 'block';
+                            bar.appendChild(block);
+                        }
+                        barsDiv.appendChild(bar);
+                    }
+                }
+                
+                if (valuesDiv) {
+                    valuesDiv.innerHTML = '';
+                    for(let i=0; i<10; i++) {
+                        let span = document.createElement('span');
+                        span.innerText = chartValues[i];
+                        valuesDiv.appendChild(span);
+                    }
                 }
                 updateChartColors();
             }
@@ -889,10 +937,14 @@
             }
             
             function updateStatsDisplay() {
-                document.getElementById('totalSpins').innerText = machineTotalSpins;
-                document.getElementById('totalBB').innerText = machineTotalBB;
-                document.getElementById('currentSpins').innerText = playerCurrentSpins;
-                document.getElementById('totalRB').innerText = machineTotalRB;
+                const totalSpinsEl = document.getElementById('totalSpins');
+                const totalBBEl = document.getElementById('totalBB');
+                const currentSpinsEl = document.getElementById('currentSpins');
+                const totalRBEl = document.getElementById('totalRB');
+                if (totalSpinsEl) totalSpinsEl.innerText = machineTotalSpins;
+                if (totalBBEl) totalBBEl.innerText = machineTotalBB;
+                if (currentSpinsEl) currentSpinsEl.innerText = playerCurrentSpins;
+                if (totalRBEl) totalRBEl.innerText = machineTotalRB;
             }
             
             function updateDrawerUI() {
@@ -909,12 +961,12 @@
                         reserveContainer.innerHTML = reservedList.map((item, idx) => `
                             <div class="machine-item">
                                 <div class="machine-item-info">
-                                    <div class="machine-item-name">減之 NO.001</div>
+                                    <div class="machine-item-name">${currentMachine.name} NO.${currentMachine.machineId}</div>
                                     <div class="machine-item-sub">${item.time}</div>
                                 </div>
                                 <div class="machine-item-actions">
-                                    <button class="item-btn enter" onclick="enterReserve(${idx})">進入</button>
-                                    <button class="item-btn leave" onclick="removeReserve(${idx})">離開</button>
+                                    <button class="item-btn enter" onclick="window.enterReserve(${idx})">進入</button>
+                                    <button class="item-btn leave" onclick="window.removeReserve(${idx})">離開</button>
                                 </div>
                             </div>
                         `).join('');
@@ -932,6 +984,11 @@
             };
             
             function addSpin() {
+                if (machineCoins < currentMachine.ratio) {
+                    showMessage(`⚠️ 代幣不足！需要 ${currentMachine.ratio} 枚代幣`);
+                    return;
+                }
+                machineCoins -= currentMachine.ratio;
                 playerCurrentSpins++;
                 const rand = Math.random();
                 if(rand < 0.08) {
@@ -947,6 +1004,7 @@
                 }
                 machineTotalSpins++;
                 updateStatsDisplay();
+                updateDrawerUI();
             }
             
             function addAllPoints() {
@@ -955,6 +1013,8 @@
                     showMessage(`上分 +${playerPoints.toLocaleString()} 代幣`);
                     playerPoints = 0;
                     updateDrawerUI();
+                    globalPoints = playerPoints;
+                    savePointsToStorage();
                 } else {
                     showMessage('沒有點數可以上分！');
                 }
@@ -966,18 +1026,22 @@
                     showMessage(`下分 +${machineCoins.toLocaleString()} 點數`);
                     machineCoins = 0;
                     updateDrawerUI();
+                    globalPoints = playerPoints;
+                    savePointsToStorage();
                 } else {
                     showMessage('沒有代幣可以下分！');
                 }
             }
             
             function addCustomPoints() {
-                const amount = parseInt(document.getElementById('exchangeAmount').value) || 0;
+                const amount = parseInt(document.getElementById('exchangeAmount')?.value) || 0;
                 if(amount <= 0) { showMessage('請輸入大於0的數量'); return; }
                 if(playerPoints >= amount) {
                     machineCoins += amount;
                     playerPoints -= amount;
                     updateDrawerUI();
+                    globalPoints = playerPoints;
+                    savePointsToStorage();
                     showMessage(`上分 +${amount.toLocaleString()} 代幣`);
                 } else {
                     showMessage(`點數不足！目前持有: ${playerPoints.toLocaleString()}`);
@@ -985,12 +1049,14 @@
             }
             
             function subCustomPoints() {
-                const amount = parseInt(document.getElementById('exchangeAmount').value) || 0;
+                const amount = parseInt(document.getElementById('exchangeAmount')?.value) || 0;
                 if(amount <= 0) { showMessage('請輸入大於0的數量'); return; }
                 if(machineCoins >= amount) {
                     playerPoints += amount;
                     machineCoins -= amount;
                     updateDrawerUI();
+                    globalPoints = playerPoints;
+                    savePointsToStorage();
                     showMessage(`下分 +${amount.toLocaleString()} 點數`);
                 } else {
                     showMessage(`代幣不足！目前持有: ${machineCoins.toLocaleString()}`);
@@ -1000,16 +1066,22 @@
             function exitMachine() {
                 if(machineCoins > 0) {
                     playerPoints += machineCoins;
+                    globalPoints = playerPoints;
+                    savePointsToStorage();
                     showMessage(`離開機台，自動兌換 ${machineCoins.toLocaleString()} 代幣 → 點數`);
                     machineCoins = 0;
                 }
-                showMessage('已離開機台');
+                showMessage('已離開機台，返回首頁');
                 drawer.classList.remove('open');
                 updateDrawerUI();
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
             }
             
             function initDrawer() {
                 const drawerContent = document.getElementById('drawerContent');
+                if (!drawerContent) return;
                 drawerContent.innerHTML = `
                     <div class="exchange-card">
                         <div class="balance-row">
@@ -1048,12 +1120,11 @@
                         <div class="collapsible-content" id="playingContent">
                             <div class="machine-item">
                                 <div class="machine-item-info">
-                                    <div class="machine-item-name">超級奇蹟小丑 EX版</div>
-                                    <div class="machine-item-sub">每枚2</div>
+                                    <div class="machine-item-name">${currentMachine.name} NO.${currentMachine.machineId}</div>
+                                    <div class="machine-item-sub">每枚${currentMachine.ratio}</div>
                                 </div>
                                 <div class="machine-item-actions">
-                                    <button class="item-btn enter">進入</button>
-                                    <button class="item-btn leave">離開</button>
+                                    <button class="item-btn enter">遊玩中</button>
                                 </div>
                             </div>
                         </div>
@@ -1120,8 +1191,8 @@
                 updateDrawerUI();
             }
             
-            const chartArea = document.querySelector('.chart-area');
-            chartArea.addEventListener('click', addSpin);
+            const chartArea = document.getElementById('chartClickArea');
+            if (chartArea) chartArea.addEventListener('click', addSpin);
             document.getElementById('reserveBtn')?.addEventListener('click', addReserve);
             
             function addReserve() {
@@ -1140,10 +1211,10 @@
             const drawer = document.getElementById('drawer');
             const drawerTrigger = document.getElementById('drawerTrigger');
             const drawerClose = document.getElementById('drawerClose');
-            drawerTrigger.addEventListener('click', () => drawer.classList.add('open'));
-            drawerClose.addEventListener('click', () => drawer.classList.remove('open'));
+            if (drawerTrigger) drawerTrigger.addEventListener('click', () => drawer.classList.add('open'));
+            if (drawerClose) drawerClose.addEventListener('click', () => drawer.classList.remove('open'));
             document.addEventListener('click', (e) => {
-                if(!drawer.contains(e.target) && !drawerTrigger.contains(e.target)) {
+                if(drawer && drawerTrigger && !drawer.contains(e.target) && !drawerTrigger.contains(e.target)) {
                     drawer.classList.remove('open');
                 }
             });
@@ -1169,6 +1240,8 @@
             initDrawer();
             updateStatsDisplay();
             setMaintenanceNotice();
+            
+            showMessage(`歡迎進入 ${currentMachine.name} ${currentMachine.subName}！`);
         })();
     </script>
 </body>
