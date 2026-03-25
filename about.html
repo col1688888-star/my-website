@@ -62,14 +62,42 @@
         .amount-positive { color: #ff8888; font-weight: 600; }
         .amount-total { color: #ffd966; font-weight: 600; }
         .bet-id { font-family: monospace; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 4px 8px; border-radius: 16px; color: #ffd966; cursor: pointer; transition: 0.2s; display: inline-block; font-size: 0.75rem; border: 1px solid #4a80c0; }
-        .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-        .search-box { flex: 1; min-width: 180px; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 12px; display: flex; align-items: center; gap: 6px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
-        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; }
-        .filter-select { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 28px 6px 12px; color: white; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a80c0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 6px center; cursor: pointer; }
-        .datetime-filter { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-        .datetime-input { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 10px; color: white; font-size: 0.8rem; flex: 1; min-width: 130px; }
-        .datetime-input::-webkit-calendar-picker-indicator { filter: invert(1); }
-        .confirm-btn { background: linear-gradient(145deg, #3a5065, #2a4055); border: 1px solid #4a80c0; border-radius: 30px; padding: 6px 16px; color: white; font-size: 0.9rem; cursor: pointer; transition: all 0.1s ease; font-weight: 700; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c; }
+        
+        .search-layout { display: grid; grid-template-rows: auto auto; gap: 10px; margin-bottom: 16px; }
+        .search-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; }
+        .date-group { display: flex; gap: 6px; align-items: center; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 10px; height: 40px; }
+        .date-group .date-input { background: transparent; border: none; color: white; font-size: 0.7rem; padding: 4px; width: 100%; min-width: 0; text-align: center; }
+        .date-group .date-input:focus { outline: none; }
+        .date-group span { font-size: 0.65rem; color: #b0c4de; }
+        .date-input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.7; }
+        .search-btn { background: linear-gradient(145deg, #3a5065, #2a4055); border: 1px solid #4a80c0; border-radius: 30px; padding: 8px 0; color: white; font-size: 0.75rem; cursor: pointer; text-align: center; font-weight: 700; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .search-btn:active { transform: translateY(3px); }
+        .search-box { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 12px; display: flex; align-items: center; gap: 6px; height: 40px; }
+        .search-box i { font-size: 0.75rem; color: #80e4ff; }
+        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 0.75rem; }
+        .search-box input::placeholder { color: #7a8aa0; font-size: 0.7rem; }
+        .filter-select { width: 100%; background: #ffffff; border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 28px 6px 14px; color: #1a1f2f; font-weight: 600; font-size: 0.75rem; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a80c0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; cursor: pointer; height: 40px; }
+        .filter-select option { background: white; color: #1a1f2f; }
+        
+        .transaction-card { background: linear-gradient(145deg, #1a2a3a, #0f1f2f); border-radius: 20px; padding: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: inset 0 2px 5px rgba(255,255,255,0.1), inset 0 -3px 8px rgba(0,0,0,0.5), 0 6px 0 #2a3a4a; }
+        .transaction-card:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #2a3a4a; }
+        .transaction-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(74,128,192,0.3); }
+        .transaction-name { font-size: 1rem; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .transaction-type { font-size: 0.7rem; padding: 3px 10px; border-radius: 30px; font-weight: bold; }
+        .transaction-amount { font-size: 1.2rem; font-weight: bold; font-family: 'Orbitron', monospace; }
+        .transaction-amount.positive { color: #ff8888; }
+        .transaction-amount.negative { color: #88ff88; }
+        .transaction-detail { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaccff; margin-top: 8px; flex-wrap: wrap; gap: 8px; }
+        
+        .card-token_in { border: 2px solid #4ac0ff; }
+        .card-token_out { border: 2px solid #ffaa66; }
+        .card-bonus { border: 2px solid #ff66cc; background: linear-gradient(145deg, #2a2a4a, #1a1a3a); }
+        .card-manual_add { border: 2px solid #66ff88; background: linear-gradient(145deg, #2a4a2a, #1a3a1a); }
+        .card-manual_sub { border: 2px solid #ff8866; background: linear-gradient(145deg, #4a2a2a, #3a1a1a); }
+        .card-shop { border: 2px solid #ffaa44; background: linear-gradient(145deg, #4a3a2a, #3a2a1a); }
+        .card-platform_in { border: 2px solid #4ac0ff; }
+        .card-platform_out { border: 2px solid #ffaa66; }
+        
         .main-row { background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 2px solid #4a80c0; border-radius: 16px; margin-bottom: 8px; cursor: pointer; padding: 12px; transition: all 0.2s ease; box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), inset 0 -3px 8px rgba(0,0,0,0.6), 0 8px 0 #0f121c; }
         .main-row:hover { border-color: #ffd700; transform: translateY(-2px); }
         .machine-title { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
@@ -136,308 +164,57 @@
         .border-\[\#0099ff60\] { border-color: #0099ff60; }
         .grid { display: grid; }
         .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
         .space-y-2 > * + * { margin-top: 0.5rem; }
         .w-full { width: 100%; }
         .mx-auto { margin-left: auto; margin-right: auto; }
         .overflow-y-auto { overflow-y: auto; }
-        .pr-2 { padding-right: 0.5rem; }
-        .pt-2 { padding-top: 0.5rem; }
-        .pb-4 { padding-bottom: 1rem; }
-        .ml-2 { margin-left: 0.5rem; }
-        .mr-1 { margin-right: 0.25rem; }
-        .block { display: block; }
-        /* 子機台確認彈窗樣式 */
-        .sub-confirm-modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 25000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.25s;
-            padding: 1rem;
-        }
-        .sub-confirm-modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        .sub-confirm-content {
-            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
-            border: 2px solid #ffd966;
-            border-radius: 40px;
-            max-width: 340px;
-            width: 100%;
-            padding: 1.8rem 1.5rem;
-            box-shadow: 0 20px 40px rgba(74, 128, 192, 0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6), 0 8px 0 #0f121c;
-            transform: scale(0.9);
-            transition: transform 0.2s;
-        }
-        .sub-confirm-modal.show .sub-confirm-content {
-            transform: scale(1);
-        }
-        .sub-confirm-header {
-            text-align: center;
-            margin-bottom: 1.2rem;
-            border-bottom: 2px solid rgba(74, 128, 192, 0.5);
-            padding-bottom: 0.8rem;
-        }
-        .sub-confirm-header h3 {
-            font-size: 1.6rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ffd700, #ffaa33, #ffd966);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.25rem;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            letter-spacing: 1px;
-        }
-        .sub-confirm-header p {
-            color: #7ec8ff;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-shadow: 0 1px 2px black;
-        }
-        .sub-confirm-detail {
-            background: linear-gradient(145deg, #1a2a3a, #0a1a2a);
-            border: 1px solid #4a80c0;
-            border-radius: 28px;
-            padding: 1rem 1.2rem;
-            margin-bottom: 1.2rem;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.1);
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.6rem 0;
-            border-bottom: 1px solid rgba(74, 128, 192, 0.3);
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .detail-label {
-            color: #b3e4ff;
-            font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-        .detail-value {
-            color: #ffd966;
-            font-size: 1.1rem;
-            font-weight: 800;
-            font-family: 'Orbitron', monospace;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-        }
-        .sub-confirm-input-group {
-            margin: 1.2rem 0;
-        }
-        .sub-confirm-input-group label {
-            display: block;
-            color: #b3e4ff;
-            margin-bottom: 0.6rem;
-            font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-        .sub-confirm-input-group input {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            background: linear-gradient(145deg, #1a2a3a, #0e1a2a);
-            border: 2px solid #4a80c0;
-            border-radius: 40px;
-            color: #ffd966;
-            font-size: 1rem;
-            font-weight: 700;
-            font-family: 'Orbitron', monospace;
-            text-align: center;
-            -moz-appearance: textfield;
-            appearance: textfield;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 0 1px rgba(74,128,192,0.3);
-            transition: all 0.2s ease;
-        }
-        .sub-confirm-input-group input:focus {
-            outline: none;
-            border-color: #ffd700;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 15px rgba(255,215,0,0.4);
-        }
-        .sub-confirm-balance {
-            text-align: right;
-            color: #ffaa66;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-            font-weight: 500;
-        }
-        .sub-confirm-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.2rem;
-        }
-        .sub-confirm-btn {
-            flex: 1;
-            padding: 0.8rem;
-            border-radius: 40px;
-            font-weight: 800;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.1s ease;
-            font-family: 'Noto Sans TC', 'Noto Sans JP', sans-serif;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
-        .sub-confirm-btn:active {
-            transform: translateY(3px);
-        }
-        .sub-confirm-btn.secondary {
-            background: linear-gradient(145deg, #3a4050, #2a2f40);
-            border: 1px solid #4a80c0;
-            color: #b0c4de;
-            box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c;
-        }
-        .sub-confirm-btn.primary {
-            background: linear-gradient(145deg, #ffaa33, #ff8c00);
-            border: 1px solid #ffd700;
-            color: #2a1f0a;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.3);
-            box-shadow: inset 0 2px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.2), 0 5px 0 #b85e00;
-        }
-        .sub-confirm-btn.primary:active {
-            box-shadow: inset 0 5px 8px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(255,255,255,0.3), 0 2px 0 #b85e00;
-            transform: translateY(3px);
-        }
-        .hologram-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(8px);
-            z-index: 99999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.3s;
-        }
-        .hologram-loading.show {
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-        .hologram-content {
-            position: relative;
-            width: 90%;
-            max-width: 400px;
-            min-height: 450px;
-            text-align: center;
-        }
-        .loading-video {
-            width: 100%;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(74,128,192,0.5);
-        }
-        .loading-text {
-            font-size: 24px;
-            font-weight: 900;
-            color: #ffd700;
-            text-shadow: 0 0 10px #ffd700;
-            margin-top: 10px;
-        }
-        .progress-bar {
-            width: 80%;
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            margin: 10px auto;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            width: 60%;
-            background: linear-gradient(90deg, #ffd700, #4a80c0);
-            animation: loadingMove 1s ease-in-out infinite alternate;
-        }
-        @keyframes loadingMove {
-            from { width: 20%; }
-            to { width: 80%; }
-        }
+        @media (max-width: 480px) { .search-row { grid-template-columns: 1fr; gap: 8px; } }
+        .sub-confirm-modal, .hologram-loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 25000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.25s; padding: 1rem; }
+        .sub-confirm-modal.show, .hologram-loading.show { opacity: 1; visibility: visible; }
+        .sub-confirm-content { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #ffd966; border-radius: 40px; max-width: 340px; width: 100%; padding: 1.8rem 1.5rem; transform: scale(0.9); transition: transform 0.2s; }
+        .sub-confirm-modal.show .sub-confirm-content { transform: scale(1); }
+        .sub-confirm-header { text-align: center; margin-bottom: 1.2rem; border-bottom: 2px solid rgba(74, 128, 192, 0.5); padding-bottom: 0.8rem; }
+        .sub-confirm-header h3 { font-size: 1.6rem; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ffaa33, #ffd966); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.25rem; }
+        .sub-confirm-header p { color: #7ec8ff; font-size: 0.9rem; }
+        .sub-confirm-detail { background: linear-gradient(145deg, #1a2a3a, #0a1a2a); border: 1px solid #4a80c0; border-radius: 28px; padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid rgba(74, 128, 192, 0.3); }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #b3e4ff; font-size: 0.85rem; }
+        .detail-value { color: #ffd966; font-size: 1.1rem; font-weight: 800; font-family: 'Orbitron', monospace; }
+        .sub-confirm-input-group { margin: 1.2rem 0; }
+        .sub-confirm-input-group label { display: block; color: #b3e4ff; margin-bottom: 0.6rem; }
+        .sub-confirm-input-group input { width: 100%; padding: 0.8rem 1rem; background: linear-gradient(145deg, #1a2a3a, #0e1a2a); border: 2px solid #4a80c0; border-radius: 40px; color: #ffd966; font-size: 1rem; font-weight: 700; text-align: center; }
+        .sub-confirm-balance { text-align: right; color: #ffaa66; font-size: 0.8rem; margin-top: 0.5rem; }
+        .sub-confirm-actions { display: flex; gap: 1rem; margin-top: 1.2rem; }
+        .sub-confirm-btn { flex: 1; padding: 0.8rem; border-radius: 40px; font-weight: 800; cursor: pointer; text-align: center; font-size: 0.9rem; }
+        .sub-confirm-btn.secondary { background: linear-gradient(145deg, #3a4050, #2a2f40); border: 1px solid #4a80c0; color: #b0c4de; box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c; }
+        .sub-confirm-btn.primary { background: linear-gradient(145deg, #ffaa33, #ff8c00); border: 1px solid #ffd700; color: #2a1f0a; box-shadow: inset 0 2px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.2), 0 5px 0 #b85e00; }
+        .sub-confirm-btn.primary:active { transform: translateY(3px); }
+        .hologram-content { position: relative; width: 90%; max-width: 400px; min-height: 450px; text-align: center; }
+        .loading-video { width: 100%; border-radius: 20px; box-shadow: 0 0 30px rgba(74,128,192,0.5); }
+        .loading-text { font-size: 24px; font-weight: 900; color: #ffd700; text-shadow: 0 0 10px #ffd700; margin-top: 10px; }
+        .video-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
     </style>
 </head>
 <body>
-    <div id="betModal" class="bet-modal">
-        <div class="bet-modal-content">
-            <div class="bet-modal-close" onclick="closeBetModal()">✕</div>
-            <div id="betModalTitle" class="bet-modal-title">機台明細</div>
-            <div class="stats-row" id="betStats"></div>
-            <div class="bet-modal-table-container">
-                <table class="bet-modal-table">
-                    <thead>
-                        <tr>
-                            <th class="sortable-header" onclick="toggleBetSort()">日期 時間 <span id="betSortIcon">▼</span></th>
-                            <th>類型</th>
-                            <th>投注</th>
-                            <th>獲得</th>
-                            <th>合計</th>
-                            <th>注單編號</th>
-                            <th>影片</th>
-                        </tr>
-                    </thead>
-                    <tbody id="betModalTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div id="betDetailModal" class="bet-detail-modal">
-        <div class="modal-close" onclick="closeBetDetailModal()">✕</div>
-        <div id="betDetailTitle" class="bet-detail-title">注單詳細資訊</div>
-        <div id="betDetailContent" class="bet-detail-content"></div>
-    </div>
+    <div id="betModal" class="bet-modal"><div class="bet-modal-content"><div class="bet-modal-close" onclick="closeBetModal()">✕</div><div id="betModalTitle" class="bet-modal-title">機台明細</div><div class="stats-row" id="betStats"></div><div class="bet-modal-table-container"><table class="bet-modal-table"><thead><tr><th class="sortable-header" onclick="toggleBetSort()">日期 時間 <span id="betSortIcon">▼</span></th><th>類型</th><th>投注</th><th>獲得</th><th>合計</th><th>注單編號</th><th>影片</th></tr></thead><tbody id="betModalTableBody"></tbody></table></div></div></div>
+    <div id="betDetailModal" class="bet-detail-modal"><div class="modal-close" onclick="closeBetDetailModal()">✕</div><div id="betDetailTitle" class="bet-detail-title">明細詳細資訊</div><div id="betDetailContent" class="bet-detail-content"></div></div>
 
     <div class="max-w-md mx-auto flex flex-col">
         <header class="metal-header px-4 py-3 flex-shrink-0">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="avatar-container" id="avatarContainer">
-                        <img id="avatarImage" src="https://i.pravatar.cc/150?img=7" alt="user avatar">
-                        <div class="avatar-overlay">更換</div>
-                    </div>
-                    <div class="flex flex-col">
-                        <div class="flex items-center gap-1">
-                            <span id="displayNickname" class="nickname-edit text-white text-xl font-bold">郝可愛</span>
-                            <i class="fa fa-pencil-square-o text-blue-400 text-sm ml-1"></i>
-                        </div>
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="vip-badge" id="vipBadge">VIP 1</span>
-                            <span class="exp-text" id="expText">經驗值 680/1,200</span>
-                        </div>
-                    </div>
+                    <div class="avatar-container" id="avatarContainer"><img id="avatarImage" src="https://i.pravatar.cc/150?img=7" alt="user avatar"><div class="avatar-overlay">更換</div></div>
+                    <div class="flex flex-col"><div class="flex items-center gap-1"><span id="displayNickname" class="nickname-edit text-white text-xl font-bold">郝可愛</span><i class="fa fa-pencil-square-o text-blue-400 text-sm ml-1"></i></div><div class="flex items-center gap-2 mt-1"><span class="vip-badge" id="vipBadge">VIP 1</span><span class="exp-text" id="expText">經驗值 680/1,200</span></div></div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <div class="points-display" id="headerPoints"><span class="text-xs text-yellow-300 mr-1">💰</span><span class="font-bold text-yellow-300 text-lg" id="userPoints">6,600</span></div>
-                    <a href="index.html" class="home-return-btn" title="回首頁"><i class="fa fa-home"></i></a>
-                </div>
+                <div class="flex items-center gap-2"><div class="points-display" id="headerPoints"><span class="text-xs text-yellow-300 mr-1">💰</span><span class="font-bold text-yellow-300 text-lg" id="userPoints">6,600</span></div><a href="index.html" class="home-return-btn" title="回首頁"><i class="fa fa-home"></i></a></div>
             </div>
             <div class="mt-2"><div class="progress-bar"><div class="progress-fill" style="width: 28%;"></div></div></div>
         </header>
 
-        <div id="vipInfoPanel" class="vip-info-panel mx-4 mt-2 hidden">
-            <h3 class="text-amber-400 font-bold text-sm mb-2"><i class="fa fa-crown"></i> VIP 1 特權說明</h3>
-            <div class="vip-tier">VIP 1 - 基礎返水 0.2%</div>
-        </div>
+        <div id="vipInfoPanel" class="vip-info-panel mx-4 mt-2 hidden"><h3 class="text-amber-400 font-bold text-sm mb-2"><i class="fa fa-crown"></i> VIP 1 特權說明</h3><div class="vip-tier">VIP 1 - 基礎返水 0.2%</div></div>
 
-        <div class="px-4 mt-4">
-            <div class="banner-area grid grid-cols-3 gap-1 items-center">
-                <div class="action-grid-btn" id="favMachinesBtn"><span class="count-badge" id="favCount">3</span><i class="fa fa-heart" style="color: #ff6680;"></i><span class="text-xs block mt-1">收藏</span></div>
-                <div class="action-grid-btn" id="keepMachinesBtn"><span class="count-badge keep" id="keepCount">2</span><i class="fa fa-bookmark" style="color: #ffb347;"></i><span class="text-xs block mt-1">保留</span></div>
-                <div class="action-grid-btn" id="supportBtn"><i class="fa fa-headphones" style="color: #aaccff;"></i><span class="text-xs block mt-1">客服</span></div>
-            </div>
-        </div>
+        <div class="px-4 mt-4"><div class="banner-area grid grid-cols-3 gap-1 items-center"><div class="action-grid-btn" id="favMachinesBtn"><span class="count-badge" id="favCount">3</span><i class="fa fa-heart" style="color: #ff6680;"></i><span class="text-xs block mt-1">收藏</span></div><div class="action-grid-btn" id="keepMachinesBtn"><span class="count-badge keep" id="keepCount">2</span><i class="fa fa-bookmark" style="color: #ffb347;"></i><span class="text-xs block mt-1">保留</span></div><div class="action-grid-btn" id="supportBtn"><i class="fa fa-headphones" style="color: #aaccff;"></i><span class="text-xs block mt-1">客服</span></div></div></div>
 
         <div id="favMachineList" class="machine-list-container px-4"><div class="list-title"><i class="fa fa-heart text-pink-400"></i> 我收藏的機台 (<span id="favCountDisplay">3</span>)</div><div class="machine-list scrollbar-beauty" id="favMachineItems"></div></div>
         <div id="keepMachineList" class="machine-list-container px-4"><div class="list-title"><i class="fa fa-bookmark text-amber-400"></i> 我保留的機台 (<span id="keepCountDisplay">2</span>)</div><div class="machine-list scrollbar-beauty" id="keepMachineItems"></div></div>
@@ -447,484 +224,266 @@
                 <div class="flex items-center justify-between mb-3"><h3 class="text-primary text-lg flex items-center gap-2"><i class="fa fa-list-alt"></i> 注單總覽</h3></div>
                 <div class="bg-[#002b4a] rounded-xl p-3 mb-4 border border-[#0099ff60]">
                     <div class="text-blue-300 text-sm mb-2"><i class="fa fa-chart-bar"></i> 全部總計</div>
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div><div class="text-xs text-blue-300">總投注</div><div class="text-lg font-bold total-bet-color" id="totalBet">0</div></div>
-                        <div><div class="text-xs text-blue-300">總獲得</div><div class="text-lg font-bold total-win-color" id="totalWin">0</div></div>
-                        <div><div class="text-xs text-blue-300">淨損益</div><div class="text-lg font-bold" id="totalNet">0</div></div>
-                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center"><div><div class="text-xs text-blue-300">總投注</div><div class="text-lg font-bold" id="totalBet">0</div></div><div><div class="text-xs text-blue-300">總獲得</div><div class="text-lg font-bold" id="totalWin">0</div></div><div><div class="text-xs text-blue-300">淨損益</div><div class="text-lg font-bold" id="totalNet">0</div></div></div>
                 </div>
-                <div class="datetime-filter"><input type="date" id="startDate" class="datetime-input" value="2025-02-01"><span>至</span><input type="date" id="endDate" class="datetime-input" value="2025-03-31"><button id="dateSearchBtn" class="confirm-btn">確認</button></div>
-                <div class="filter-bar">
-                    <div class="search-box"><i class="fa fa-search"></i><input type="text" id="searchInput" placeholder="搜尋機台名稱或編號..."></div>
-                    <select id="filterSelect" class="filter-select">
-                        <option value="all">全部記錄</option>
-                    </select>
+                
+                <div class="search-layout">
+                    <div class="search-row"><div class="date-group"><input type="date" id="startDate" class="date-input" value="2025-02-01"><span>~</span><input type="date" id="endDate" class="date-input" value="2025-03-31"></div><button id="dateSearchBtn" class="search-btn">搜尋</button></div>
+                    <div class="search-row"><div class="search-box"><i class="fa fa-search"></i><input type="text" id="searchInput" placeholder="搜尋機台名稱或編號..."></div><select id="filterSelect" class="filter-select"><option value="all">全部記錄</option><option value="platform_in">平台轉入</option><option value="platform_out">平台轉出</option><option value="token_in">代幣帶入</option><option value="token_out">代幣帶出</option><option value="bonus">活動贈分</option><option value="manual_add">人工上分</option><option value="manual_sub">人工下分</option><option value="shop">購買道具</option></select></div>
                 </div>
+                
+                <div id="transactionContainer" class="space-y-2 mb-4"></div>
                 <div id="sessionsContainer" class="space-y-2"></div>
             </div>
         </main>
 
-        <nav class="bottom-nav mx-auto">
-            <div class="flex justify-between items-center w-full">
-                <a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a>
-                <a href="machines.html" class="nav-item"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a>
-                <a href="news.html" class="nav-item"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a>
-                <a href="#" class="nav-item current-page"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a>
-            </div>
-        </nav>
+        <nav class="bottom-nav mx-auto"><div class="flex justify-between items-center w-full"><a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a><a href="machines.html" class="nav-item"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a><a href="news.html" class="nav-item"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a><a href="#" class="nav-item current-page"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a></div></nav>
     </div>
 
-    <!-- 點數轉換彈窗 (收藏進入用) -->
-    <div class="sub-confirm-modal" id="subConfirmModal">
-        <div class="sub-confirm-content">
-            <div class="sub-confirm-header">
-                <h3 id="confirmMachineName">GOGO 小丑</h3>
-                <p id="confirmSubName">1號機</p>
-            </div>
-            <div class="sub-confirm-detail">
-                <div class="detail-row">
-                    <span class="detail-label"><i class="fa fa-ticket"></i> 每枚代幣</span>
-                    <span class="detail-value" id="confirmRatio">2.5</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label"><i class="fa fa-database"></i> 目前點數</span>
-                    <span class="detail-value" id="confirmPoints">6,600</span>
-                </div>
-            </div>
-            <div class="sub-confirm-input-group">
-                <label><i class="fa fa-arrow-down"></i> 使用代幣數量 <span style="color:#ffaa66;">(最低 100)</span></label>
-                <input type="number" id="confirmTokenInput" min="100" step="1" placeholder="請輸入數量" value="100">
-                <div class="sub-confirm-balance" id="confirmTokenRemain"><i class="fa fa-credit-card"></i> 剩餘點數: 6,600</div>
-            </div>
-            <div class="sub-confirm-actions">
-                <button class="sub-confirm-btn secondary" id="confirmCancel">取消</button>
-                <button class="sub-confirm-btn primary" id="confirmOk">確認進入</button>
-            </div>
-        </div>
-    </div>
+    <div class="sub-confirm-modal" id="subConfirmModal"><div class="sub-confirm-content"><div class="sub-confirm-header"><h3 id="confirmMachineName">GOGO 小丑</h3><p id="confirmSubName">1號機</p></div><div class="sub-confirm-detail"><div class="detail-row"><span class="detail-label"><i class="fa fa-ticket"></i> 每枚代幣</span><span class="detail-value" id="confirmRatio">2.5</span></div><div class="detail-row"><span class="detail-label"><i class="fa fa-database"></i> 目前點數</span><span class="detail-value" id="confirmPoints">6,600</span></div></div><div class="sub-confirm-input-group"><label><i class="fa fa-arrow-down"></i> 使用代幣數量 <span style="color:#ffaa66;">(最低 100)</span></label><input type="number" id="confirmTokenInput" min="100" step="1" placeholder="請輸入數量" value="100"><div class="sub-confirm-balance" id="confirmTokenRemain"><i class="fa fa-credit-card"></i> 剩餘點數: 6,600</div></div><div class="sub-confirm-actions"><button class="sub-confirm-btn secondary" id="confirmCancel">取消</button><button class="sub-confirm-btn primary" id="confirmOk">確認進入</button></div></div></div>
 
-    <!-- Loading 動畫 -->
-    <div class="hologram-loading" id="hologramLoading">
-        <div class="hologram-content">
-            <video id="mascotVideo" class="loading-video" autoplay muted loop playsinline src="https://video.wixstatic.com/video/d5e540_d63f842135e8416f891842373bc0f582/720p/mp4/file.mp4"></video>
-            <div class="loading-text" id="loadingMachineTitle">LOADING</div>
-            <div class="progress-bar"><div class="progress-fill"></div></div>
-        </div>
-    </div>
+    <div class="hologram-loading" id="hologramLoading"><div class="hologram-content"><video id="mascotVideo" class="loading-video" autoplay muted loop playsinline src="https://video.wixstatic.com/video/d5e540_d63f842135e8416f891842373bc0f582/720p/mp4/file.mp4"></video><div class="loading-text" id="loadingMachineTitle">LOADING</div><div class="progress-bar"><div class="progress-fill"></div></div></div></div>
 
     <script>
         (function() {
-            // ==================== 1. 先定義所有全域函數 ====================
+            const platforms = ['BBIN', 'TZ', '搖錢樹', 'FDY', '富大爺', '富游', 'LIVE7', '包你發'];
             
-            // 點數管理變數
+            function generateAllTransactions() {
+                const transactions = [];
+                const now = new Date();
+                const types = [
+                    { type: 'platform_in', name: '平台轉入', icon: 'fa-download', colors: 'card-platform_in', isPositive: true },
+                    { type: 'platform_out', name: '平台轉出', icon: 'fa-upload', colors: 'card-platform_out', isPositive: false },
+                    { type: 'token_in', name: '代幣帶入', icon: 'fa-arrow-down', colors: 'card-token_in', isPositive: true },
+                    { type: 'token_out', name: '代幣帶出', icon: 'fa-arrow-up', colors: 'card-token_out', isPositive: false },
+                    { type: 'bonus', name: '活動贈分', icon: 'fa-gift', colors: 'card-bonus', isPositive: true },
+                    { type: 'manual_add', name: '人工上分', icon: 'fa-user-plus', colors: 'card-manual_add', isPositive: true },
+                    { type: 'manual_sub', name: '人工下分', icon: 'fa-user-minus', colors: 'card-manual_sub', isPositive: false },
+                    { type: 'shop', name: '購買道具', icon: 'fa-shopping-cart', colors: 'card-shop', isPositive: false }
+                ];
+                
+                types.forEach((t) => {
+                    const count = Math.floor(Math.random() * 3) + 3;
+                    for (let i = 0; i < count; i++) {
+                        const date = new Date(now);
+                        const daysAgo = Math.floor(Math.random() * 30);
+                        date.setDate(now.getDate() - daysAgo);
+                        date.setHours(10 + Math.floor(Math.random() * 12), Math.floor(Math.random() * 60), Math.floor(Math.random() * 60));
+                        
+                        let amount, detailText;
+                        if (t.type === 'platform_in' || t.type === 'platform_out') {
+                            const platform = platforms[Math.floor(Math.random() * platforms.length)];
+                            amount = Math.floor(Math.random() * 5000) + 500;
+                            detailText = platform;
+                        } else if (t.type === 'token_in' || t.type === 'token_out') {
+                            amount = Math.floor(Math.random() * 3000) + 100;
+                            detailText = `代幣 ${Math.floor(amount / 2.5)} 枚`;
+                        } else if (t.type === 'bonus') {
+                            amount = Math.floor(Math.random() * 1000) + 50;
+                            detailText = ['週年慶', '每日簽到', '推薦獎勵', 'VIP禮包'][Math.floor(Math.random() * 4)];
+                        } else if (t.type === 'manual_add' || t.type === 'manual_sub') {
+                            amount = Math.floor(Math.random() * 2000) + 100;
+                            detailText = `客服 ${['小美', '小華', '阿明', '小芳'][Math.floor(Math.random() * 4)]}`;
+                        } else {
+                            amount = Math.floor(Math.random() * 500) + 50;
+                            const items = ['幸運符', '經驗加倍卡', '神秘寶箱', '頭像框', '特效道具'];
+                            detailText = items[Math.floor(Math.random() * items.length)];
+                        }
+                        
+                        transactions.push({
+                            id: `${t.type}_${i}_${Date.now()}_${Math.random()}`,
+                            type: t.type,
+                            typeName: t.name,
+                            icon: t.icon,
+                            cardClass: t.colors,
+                            amount: t.isPositive ? amount : -amount,
+                            date: date,
+                            orderId: `${t.type.substring(0,2).toUpperCase()}${String(i+1).padStart(4,'0')}${Math.floor(Math.random() * 100)}`,
+                            detail: detailText,
+                            status: 'success'
+                        });
+                    }
+                });
+                return transactions.sort((a, b) => b.date - a.date);
+            }
+            
+            let allTransactions = generateAllTransactions();
+            
+            function renderTransactionCards() {
+                const container = document.getElementById('transactionContainer');
+                if (!container) return;
+                let html = '';
+                allTransactions.forEach(trans => {
+                    const isPositive = trans.amount > 0;
+                    const amountSign = isPositive ? '+' : '';
+                    const amountClass = isPositive ? 'positive' : 'negative';
+                    const dateStr = trans.date.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+                    html += `<div class="transaction-card ${trans.cardClass}" onclick="openTransactionDetail('${trans.id}', '${trans.typeName}', ${Math.abs(trans.amount)}, '${trans.orderId}', '${dateStr}', '${trans.detail}', ${isPositive})"><div class="transaction-card-header"><div class="transaction-name"><i class="fa ${trans.icon}"></i> ${trans.typeName}</div><span class="transaction-type" style="background: ${isPositive ? '#2a6e8a' : '#8a5a2a'}; color: white;">${isPositive ? '收入' : '支出'}</span></div><div class="transaction-amount ${amountClass}">${amountSign}${Math.abs(trans.amount)} 點</div><div class="transaction-detail"><span><i class="fa fa-calendar"></i> ${dateStr}</span><span><i class="fa fa-hashtag"></i> ${trans.orderId}</span><span><i class="fa fa-info-circle"></i> ${trans.detail}</span></div></div>`;
+                });
+                container.innerHTML = html || '<div class="text-center text-gray-400 py-4">暫無交易記錄</div>';
+            }
+            
+            window.openTransactionDetail = function(id, typeName, amount, orderId, dateStr, detail, isPositive) {
+                const amountClass = isPositive ? 'positive' : 'negative';
+                const amountSign = isPositive ? '+' : '';
+                const content = `<div class="row"><span class="label">訂單編號</span><span class="value">${orderId}</span></div><div class="row"><span class="label">交易類型</span><span class="value">${typeName}</span></div><div class="row"><span class="label">交易金額</span><span class="value ${amountClass}">${amountSign}${amount} 點</span></div><div class="row"><span class="label">詳細資訊</span><span class="value">${detail}</span></div><div class="row"><span class="label">交易時間</span><span class="value">${dateStr}</span></div><div class="row"><span class="label">交易狀態</span><span class="value" style="color: #88ff88;">成功</span></div>`;
+                document.getElementById('betDetailTitle').textContent = `${typeName}明細`;
+                document.getElementById('betDetailContent').innerHTML = content;
+                document.getElementById('betDetailModal').classList.add('active');
+            };
+            
             const POINTS_KEY = 't_pachin_user_points';
             let userPoints = 6600;
-            
-            // 顯示 Loading 動畫並跳轉 (先定義)
-            function showHologramLoading(machineName, subName, ratio, machineId, coins) {
-                console.log('✅ showHologramLoading 被呼叫', machineName, coins);
-                const loadingDiv = document.getElementById('hologramLoading');
-                const loadingTitle = document.getElementById('loadingMachineTitle');
-                const mascotVideo = document.getElementById('mascotVideo');
-                
-                if (loadingTitle) loadingTitle.textContent = `${machineName} ${subName} 每枚${ratio}`;
-                if (mascotVideo) {
-                    mascotVideo.play().catch(e => console.log('影片播放失敗', e));
-                }
-                if (loadingDiv) loadingDiv.classList.add('show');
-                
-                // 儲存機台資訊
-                const machineInfo = {
-                    name: machineName,
-                    subName: subName,
-                    ratio: ratio,
-                    machineId: machineId,
-                    coins: coins
-                };
-                localStorage.setItem('t_pachin_machine_info', JSON.stringify(machineInfo));
-                
-                // 2.5秒後跳轉
-                setTimeout(function() {
-                    window.location.href = 'simulator.html';
-                }, 2500);
-            }
-            
-            // 收藏進入：顯示點數轉換彈窗
-            window.openFavoriteGame = function(machineName, subName, ratio, machineId) {
-                console.log('📌 openFavoriteGame 被呼叫', machineName);
-                currentEnterData = { machineName, subName, ratio, machineId, type: 'favorite' };
-                const confirmName = document.getElementById('confirmMachineName');
-                const confirmSub = document.getElementById('confirmSubName');
-                const confirmRatio = document.getElementById('confirmRatio');
-                const confirmPoints = document.getElementById('confirmPoints');
-                const tokenInput = document.getElementById('confirmTokenInput');
-                const tokenRemain = document.getElementById('confirmTokenRemain');
-                
-                if (confirmName) confirmName.textContent = machineName;
-                if (confirmSub) confirmSub.textContent = subName;
-                if (confirmRatio) confirmRatio.textContent = ratio;
-                if (confirmPoints) confirmPoints.textContent = userPoints.toLocaleString();
-                if (tokenInput) {
-                    tokenInput.value = 100;
-                    tokenInput.min = 100;
-                }
-                if (tokenRemain) tokenRemain.innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${userPoints.toLocaleString()}`;
-                
-                const modal = document.getElementById('subConfirmModal');
-                if (modal) modal.classList.add('show');
-            };
-            
-            // 保留進入：直接進入
-            window.enterReserveGame = function(machineName, subName, ratio, machineId) {
-                console.log('🎮 enterReserveGame 被呼叫', machineName);
-                showHologramLoading(machineName, subName, ratio, machineId, 100);
-            };
-            
-            // 確認進入（從彈窗）
-            function confirmEnterGame() {
-                console.log('✅ confirmEnterGame 被呼叫', currentEnterData);
-                if (!currentEnterData) return;
-                
-                const tokenInput = document.getElementById('confirmTokenInput');
-                let tokenUsed = tokenInput ? parseInt(tokenInput.value) || 0 : 100;
-                if (tokenUsed < 100) {
-                    alert('最低兌換數量為 100 代幣！');
-                    return;
-                }
-                if (tokenUsed > userPoints) {
-                    alert('點數不足！');
-                    return;
-                }
-                
-                // 扣除點數
-                userPoints = Math.max(0, userPoints - tokenUsed);
-                localStorage.setItem(POINTS_KEY, userPoints);
-                updatePointsDisplay();
-                
-                // 關閉彈窗
-                const modal = document.getElementById('subConfirmModal');
-                if (modal) modal.classList.remove('show');
-                
-                // 顯示 Loading 並跳轉
-                showHologramLoading(
-                    currentEnterData.machineName,
-                    currentEnterData.subName,
-                    currentEnterData.ratio,
-                    currentEnterData.machineId,
-                    tokenUsed
-                );
-            }
-            
-            // 關閉彈窗
-            function closeSubConfirm() {
-                const modal = document.getElementById('subConfirmModal');
-                if (modal) modal.classList.remove('show');
-                currentEnterData = null;
-            }
-            
-            // 更新點數顯示
             function updatePointsDisplay() {
                 const userPointsEl = document.getElementById('userPoints');
                 if (userPointsEl) userPointsEl.textContent = userPoints.toLocaleString();
                 const confirmPoints = document.getElementById('confirmPoints');
                 if (confirmPoints) confirmPoints.textContent = userPoints.toLocaleString();
-                const tokenRemain = document.getElementById('confirmTokenRemain');
-                if (tokenRemain) {
-                    const tokenVal = parseInt(document.getElementById('confirmTokenInput')?.value) || 0;
-                    tokenRemain.innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${(userPoints - tokenVal).toLocaleString()}`;
-                }
             }
-            
-            // 保留離開
-            window.leaveKeepMachineWithPoints = function(id, name, coinsEarned = 100) {
-                if (!confirm(`確定要離開保留的機台「${name}」嗎？\n\n離開後將獲得 ${coinsEarned} 點數（代幣已轉換）`)) return;
-                
-                userPoints = Math.max(0, userPoints + coinsEarned);
-                localStorage.setItem(POINTS_KEY, userPoints);
-                updatePointsDisplay();
-                alert(`✅ 已離開機台「${name}」，獲得 ${coinsEarned} 點數！`);
-                
-                keepMachines = keepMachines.filter(m => m.id !== id);
-                renderKeep();
-            };
-            
-            // 取消收藏
-            window.unfavoriteMachine = function(id, name) { 
-                if (!confirm(`確定要取消收藏「${name}」嗎？`)) return; 
-                favoriteMachines = favoriteMachines.filter(m => m.id !== id); 
-                renderFavorites(); 
-                alert(`✅ 已取消收藏「${name}」`); 
-            };
-            
-            // ==================== 2. 載入點數 ====================
-            try {
-                const stored = localStorage.getItem(POINTS_KEY);
-                if (stored !== null) {
-                    userPoints = parseInt(stored, 10);
-                    if (isNaN(userPoints)) userPoints = 6600;
-                }
-            } catch(e) {
-                userPoints = 6600;
-            }
+            try { const stored = localStorage.getItem(POINTS_KEY); if (stored !== null) { userPoints = parseInt(stored, 10); if (isNaN(userPoints)) userPoints = 6600; } } catch(e) { userPoints = 6600; }
             updatePointsDisplay();
             
-            // 綁定彈窗按鈕
-            const cancelBtn = document.getElementById('confirmCancel');
-            const okBtn = document.getElementById('confirmOk');
-            if (cancelBtn) cancelBtn.addEventListener('click', closeSubConfirm);
-            if (okBtn) okBtn.addEventListener('click', confirmEnterGame);
+            let favoriteMachines = [{ id: 1, name: 'GOGO 小丑', number: 'J001', image: 'https://i.pinimg.com/736x/b1/f1/ec/b1f1ec3a191e62e3d0e300ce79c9b593.jpg', ratio: '2.5', vendor: 'Olympia', model: '6號機' },{ id: 2, name: '我是小丑-EX', number: 'J002', image: 'https://i.pinimg.com/736x/4a/2a/30/4a2a3089197d997984a7a75921faf2d9.jpg', ratio: '2.8', vendor: 'ELECO', model: '5號機' },{ id: 3, name: '快樂小丑 VII', number: 'J003', image: 'https://i.pinimg.com/736x/76/a7/ec/76a7eca59c0b7f7a8404e67e043841cb.jpg', ratio: '2.0', vendor: 'HEIWA', model: '6號機' }];
+            let keepMachines = [{ id: 4, name: '新我是小丑-EX水晶版', number: 'J004', image: 'https://i.pinimg.com/736x/5a/d2/04/5ad204b86a09d1fc30374422fe0a4070.jpg', ratio: '3.0', vendor: 'Sammy', model: '6號機', endTime: new Date(Date.now() + 10 * 60 * 1000), coins: 250 },{ id: 5, name: '新我的小丑-EX紅金版', number: 'J005', image: 'https://i.pinimg.com/736x/63/46/aa/6346aaa01a8c68fbf4e8bdb5134cd7b1.jpg', ratio: '3.2', vendor: 'Daito', model: '6號機', endTime: new Date(Date.now() + 15 * 60 * 1000), coins: 380 }];
+
+            function renderFavorites() { let html = ''; favoriteMachines.forEach(m => { html += `<div class="machine-card"><img src="${m.image}" alt="${m.name}"><div class="machine-info"><div class="machine-name">${m.name}</div><div class="machine-meta"><span>${m.number}</span><span>${m.model}</span><span>1:${m.ratio}</span><span>${m.vendor}</span></div></div><div class="machine-actions"><div class="play-btn" onclick="event.stopPropagation(); openFavoriteGame('${m.name}', '主機台', '${m.ratio}', ${m.id})"><i class="fa fa-play"></i> 進入</div><div class="unfavorite-btn" onclick="event.stopPropagation(); unfavoriteMachine(${m.id}, '${m.name}')"><i class="fa fa-heart"></i> 取消收藏</div></div></div>`; }); document.getElementById('favMachineItems').innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無收藏機台</div>'; document.getElementById('favCount').textContent = favoriteMachines.length; document.getElementById('favCountDisplay').textContent = favoriteMachines.length; }
+            function renderKeep() { let html = ''; keepMachines.forEach(m => { const endDate = new Date(m.endTime); const endTimeStr = endDate.toLocaleString('zh-TW'); html += `<div class="machine-card"><img src="${m.image}" alt="${m.name}"><div class="machine-info"><div class="machine-name">${m.name}</div><div class="machine-meta"><span>${m.number}</span><span>${m.model}</span><span>1:${m.ratio}</span><span>${m.vendor}</span></div><div class="countdown-timer" data-endtime="${endDate.toISOString()}"><i class="fa fa-hourglass-half"></i> 計算中...</div><div style="font-size: 0.6rem; color: #aaa; margin-top: 2px;">結束於 ${endTimeStr}</div></div><div class="machine-actions"><div class="play-btn" onclick="event.stopPropagation(); enterReserveGame('${m.name}', '主機台', '${m.ratio}', ${m.id})"><i class="fa fa-play"></i> 進入</div><div class="leave-btn" onclick="event.stopPropagation(); leaveKeepMachine(${m.id}, '${m.name}', ${m.coins || 100})"><i class="fa fa-sign-out"></i> 離開</div></div></div>`; }); document.getElementById('keepMachineItems').innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無保留機台</div>'; document.getElementById('keepCount').textContent = keepMachines.length; document.getElementById('keepCountDisplay').textContent = keepMachines.length; updateCountdowns(); }
+            function updateCountdowns() { document.querySelectorAll('.countdown-timer[data-endtime]').forEach(el => { const endTime = new Date(el.dataset.endtime).getTime(); const now = new Date().getTime(); const diff = endTime - now; if(diff <= 0) { el.innerHTML = '<i class="fa fa-hourglass-end"></i> 已到期'; el.classList.add('warning'); return; } const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); const seconds = Math.floor((diff % (1000 * 60)) / 1000); el.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${minutes}分 ${seconds}秒`; if(minutes < 10) el.classList.add('warning'); else el.classList.remove('warning'); }); }
+            window.openFavoriteGame = function(machineName, subName, ratio, machineId) { currentEnterData = { machineName, subName, ratio, machineId }; document.getElementById('confirmMachineName').textContent = machineName; document.getElementById('confirmSubName').textContent = subName; document.getElementById('confirmRatio').textContent = ratio; document.getElementById('confirmPoints').textContent = userPoints.toLocaleString(); document.getElementById('confirmTokenInput').value = 100; document.getElementById('confirmTokenRemain').innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${(userPoints - 100).toLocaleString()}`; document.getElementById('subConfirmModal').classList.add('show'); };
+            window.enterReserveGame = function(machineName, subName, ratio, machineId) { showHologramLoading(machineName, subName, ratio, machineId, 100); };
+            window.unfavoriteMachine = function(id, name) { if (!confirm(`確定要取消收藏「${name}」嗎？`)) return; favoriteMachines = favoriteMachines.filter(m => m.id !== id); renderFavorites(); alert(`✅ 已取消收藏「${name}」`); };
+            window.leaveKeepMachine = function(id, name, coinsEarned) { if (!confirm(`確定要離開保留的機台「${name}」嗎？\n\n離開後將獲得 ${coinsEarned} 點數`)) return; userPoints += coinsEarned; localStorage.setItem(POINTS_KEY, userPoints); updatePointsDisplay(); keepMachines = keepMachines.filter(m => m.id !== id); renderKeep(); alert(`✅ 已離開機台「${name}」，獲得 ${coinsEarned} 點數！`); };
+            function showHologramLoading(machineName, subName, ratio, machineId, coins) { document.getElementById('loadingMachineTitle').textContent = `${machineName} ${subName} 每枚${ratio}`; document.getElementById('hologramLoading').classList.add('show'); localStorage.setItem('t_pachin_machine_info', JSON.stringify({ name: machineName, subName, ratio, machineId, coins })); setTimeout(() => { window.location.href = 'simulator.html'; }, 2500); }
+            function confirmEnterGame() { if (!currentEnterData) return; let tokenUsed = parseInt(document.getElementById('confirmTokenInput').value) || 0; if (tokenUsed < 100) { alert('最低兌換數量為 100 代幣！'); return; } if (tokenUsed > userPoints) { alert('點數不足！'); return; } userPoints -= tokenUsed; localStorage.setItem(POINTS_KEY, userPoints); updatePointsDisplay(); document.getElementById('subConfirmModal').classList.remove('show'); showHologramLoading(currentEnterData.machineName, currentEnterData.subName, currentEnterData.ratio, currentEnterData.machineId, tokenUsed); }
+            function closeSubConfirm() { document.getElementById('subConfirmModal').classList.remove('show'); currentEnterData = null; }
+            document.getElementById('confirmCancel')?.addEventListener('click', closeSubConfirm); document.getElementById('confirmOk')?.addEventListener('click', confirmEnterGame); document.getElementById('confirmTokenInput')?.addEventListener('input', function() { let val = parseInt(this.value) || 0; if (val < 100) { this.value = 100; val = 100; } if (val > userPoints) { val = userPoints; this.value = userPoints; } document.getElementById('confirmTokenRemain').innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${(userPoints - val).toLocaleString()}`; });
+            document.getElementById('favMachinesBtn')?.addEventListener('click', () => { document.getElementById('favMachineList').classList.toggle('show'); document.getElementById('keepMachineList').classList.remove('show'); });
+            document.getElementById('keepMachinesBtn')?.addEventListener('click', () => { document.getElementById('keepMachineList').classList.toggle('show'); document.getElementById('favMachineList').classList.remove('show'); updateCountdowns(); });
+            document.getElementById('supportBtn')?.addEventListener('click', () => alert('📞 客服與幫助'));
+            document.getElementById('vipBadge')?.addEventListener('click', () => document.getElementById('vipInfoPanel').classList.toggle('hidden'));
+            document.getElementById('expText')?.addEventListener('click', () => document.getElementById('vipInfoPanel').classList.toggle('hidden'));
+            document.getElementById('avatarContainer')?.addEventListener('click', () => { const avatars = ['https://i.pravatar.cc/150?img=7','https://i.pravatar.cc/150?img=5','https://i.pravatar.cc/150?img=9']; document.getElementById('avatarImage').src = avatars[Math.floor(Math.random() * avatars.length)]; alert('大頭照已更換'); });
+            document.getElementById('displayNickname')?.addEventListener('click', () => { let name = prompt('修改暱稱', '郝可愛'); if(name) document.getElementById('displayNickname').textContent = name; });
+            document.getElementById('headerPoints')?.addEventListener('click', () => alert(`💰 目前點數：${userPoints.toLocaleString()}`));
             
-            // 點數輸入框事件
-            const tokenInputField = document.getElementById('confirmTokenInput');
-            if (tokenInputField) {
-                tokenInputField.addEventListener('input', function() {
-                    let val = parseInt(this.value) || 0;
-                    if (val < 100) { this.value = 100; val = 100; }
-                    if (val > userPoints) { val = userPoints; this.value = userPoints; }
-                    const remainSpan = document.getElementById('confirmTokenRemain');
-                    if (remainSpan) remainSpan.innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${(userPoints - val).toLocaleString()}`;
-                });
-            }
-            
-            // 點數顯示點擊事件
-            const pointsBtn = document.getElementById('headerPoints');
-            if (pointsBtn) {
-                pointsBtn.addEventListener('click', () => {
-                    alert(`💰 目前點數：${userPoints.toLocaleString()}\n\n遊玩機台即可累積點數！`);
-                });
-            }
-            
-            // ==================== 3. 機台資料 ====================
             let currentEnterData = null;
-            
-            let favoriteMachines = [
-                { id: 1, name: 'GOGO 小丑', number: 'J001', image: 'https://i.pinimg.com/736x/b1/f1/ec/b1f1ec3a191e62e3d0e300ce79c9b593.jpg', ratio: '2.5', vendor: 'Olympia', model: '6號機' },
-                { id: 2, name: '我是小丑-EX', number: 'J002', image: 'https://i.pinimg.com/736x/4a/2a/30/4a2a3089197d997984a7a75921faf2d9.jpg', ratio: '2.8', vendor: 'ELECO', model: '5號機' },
-                { id: 3, name: '快樂小丑 VII', number: 'J003', image: 'https://i.pinimg.com/736x/76/a7/ec/76a7eca59c0b7f7a8404e67e043841cb.jpg', ratio: '2.0', vendor: 'HEIWA', model: '6號機' }
-            ];
-            
-            let keepMachines = [
-                { id: 4, name: '新我是小丑-EX水晶版', number: 'J004', image: 'https://i.pinimg.com/736x/5a/d2/04/5ad204b86a09d1fc30374422fe0a4070.jpg', ratio: '3.0', vendor: 'Sammy', model: '6號機', endTime: new Date(Date.now() + 10 * 60 * 1000), coins: 250 },
-                { id: 5, name: '新我的小丑-EX紅金版', number: 'J005', image: 'https://i.pinimg.com/736x/63/46/aa/6346aaa01a8c68fbf4e8bdb5134cd7b1.jpg', ratio: '3.2', vendor: 'Daito', model: '6號機', endTime: new Date(Date.now() + 15 * 60 * 1000), coins: 380 }
-            ];
-
-            function renderFavorites() {
-                let html = '';
-                favoriteMachines.forEach(m => {
-                    html += `<div class="machine-card"><img src="${m.image}" alt="${m.name}"><div class="machine-info"><div class="machine-name">${m.name}</div><div class="machine-meta"><span>${m.number}</span><span>${m.model}</span><span>1:${m.ratio}</span><span>${m.vendor}</span></div></div><div class="machine-actions"><div class="play-btn" onclick="event.stopPropagation(); window.openFavoriteGame('${m.name}', '主機台', '${m.ratio}', ${m.id})"><i class="fa fa-play"></i> 進入</div><div class="unfavorite-btn" onclick="event.stopPropagation(); window.unfavoriteMachine(${m.id}, '${m.name}')"><i class="fa fa-heart"></i> 取消收藏</div></div></div>`;
-                });
-                const favItems = document.getElementById('favMachineItems');
-                if (favItems) favItems.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無收藏機台</div>';
-                const favCount = document.getElementById('favCount');
-                const favCountDisplay = document.getElementById('favCountDisplay');
-                if (favCount) favCount.textContent = favoriteMachines.length;
-                if (favCountDisplay) favCountDisplay.textContent = favoriteMachines.length;
-            }
-
-            function renderKeep() {
-                let html = '';
-                keepMachines.forEach(m => {
-                    const endDate = new Date(m.endTime);
-                    const endTimeStr = endDate.toLocaleString('zh-TW');
-                    html += `<div class="machine-card"><img src="${m.image}" alt="${m.name}"><div class="machine-info"><div class="machine-name">${m.name}</div><div class="machine-meta"><span>${m.number}</span><span>${m.model}</span><span>1:${m.ratio}</span><span>${m.vendor}</span></div><div class="countdown-timer" data-endtime="${endDate.toISOString()}"><i class="fa fa-hourglass-half"></i> 計算中...</div><div style="font-size: 0.6rem; color: #aaa; margin-top: 2px;">結束於 ${endTimeStr}</div></div><div class="machine-actions"><div class="play-btn" onclick="event.stopPropagation(); window.enterReserveGame('${m.name}', '主機台', '${m.ratio}', ${m.id})"><i class="fa fa-play"></i> 進入</div><div class="leave-btn" onclick="event.stopPropagation(); window.leaveKeepMachineWithPoints(${m.id}, '${m.name}', ${m.coins || 100})"><i class="fa fa-sign-out"></i> 離開</div></div></div>`;
-                });
-                const keepItems = document.getElementById('keepMachineItems');
-                if (keepItems) keepItems.innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無保留機台</div>';
-                const keepCount = document.getElementById('keepCount');
-                const keepCountDisplay = document.getElementById('keepCountDisplay');
-                if (keepCount) keepCount.textContent = keepMachines.length;
-                if (keepCountDisplay) keepCountDisplay.textContent = keepMachines.length;
-                updateCountdowns();
-            }
-
-            function updateCountdowns() {
-                document.querySelectorAll('.countdown-timer[data-endtime]').forEach(el => {
-                    const endTime = new Date(el.dataset.endtime).getTime();
-                    const now = new Date().getTime();
-                    const diff = endTime - now;
-                    if(diff <= 0) { el.innerHTML = '<i class="fa fa-hourglass-end"></i> 已到期'; el.classList.add('warning'); return; }
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                    let timeText = `${minutes}分 ${seconds}秒`;
-                    if(minutes < 10) el.classList.add('warning');
-                    else el.classList.remove('warning');
-                    el.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${timeText}`;
-                });
-            }
-
-            const favBtn = document.getElementById('favMachinesBtn');
-            const keepBtn = document.getElementById('keepMachinesBtn');
-            const favList = document.getElementById('favMachineList');
-            const keepList = document.getElementById('keepMachineList');
-            const supportBtn = document.getElementById('supportBtn');
-            if (favBtn) favBtn.addEventListener('click', (e) => { e.stopPropagation(); favList.classList.toggle('show'); if(keepList) keepList.classList.remove('show'); });
-            if (keepBtn) keepBtn.addEventListener('click', (e) => { e.stopPropagation(); keepList.classList.toggle('show'); if(favList) favList.classList.remove('show'); if(keepList.classList.contains('show')) updateCountdowns(); });
-            if (supportBtn) supportBtn.addEventListener('click', () => alert('📞 客服與幫助'));
-
-            document.addEventListener('click', function(e) {
-                if(favList && keepList && favBtn && keepBtn) {
-                    if(!favBtn.contains(e.target) && !keepBtn.contains(e.target) && !favList.contains(e.target) && !keepList.contains(e.target)) {
-                        favList.classList.remove('show');
-                        keepList.classList.remove('show');
-                    }
-                }
-            });
-            setInterval(() => { if(keepList && keepList.classList.contains('show')) updateCountdowns(); }, 1000);
-
-            // ==================== 4. 注單資料 (保持原有功能) ====================
             let betSortOrder = 'desc';
             let searchTerm = '';
             let dateStart = new Date('2025-02-01');
             let dateEnd = new Date('2025-03-31');
             dateEnd.setHours(23, 59, 59);
-
+            
             function generateSessions() {
-                const sessions = [];
-                let spinCounter = 1;
-                const clownMachines = [
-                    { name: 'GOGO 小丑', number: 'J001', img: 'https://i.pinimg.com/736x/b1/f1/ec/b1f1ec3a191e62e3d0e300ce79c9b593.jpg' },
-                    { name: '我是小丑-EX', number: 'J002', img: 'https://i.pinimg.com/736x/4a/2a/30/4a2a3089197d997984a7a75921faf2d9.jpg' },
-                    { name: '快樂小丑 VII', number: 'J003', img: 'https://i.pinimg.com/736x/76/a7/ec/76a7eca59c0b7f7a8404e67e043841cb.jpg' },
-                    { name: '新我是小丑-EX水晶版', number: 'J004', img: 'https://i.pinimg.com/736x/5a/d2/04/5ad204b86a09d1fc30374422fe0a4070.jpg' },
-                    { name: '新我的小丑-EX紅金版', number: 'J005', img: 'https://i.pinimg.com/736x/63/46/aa/6346aaa01a8c68fbf4e8bdb5134cd7b1.jpg' }
-                ];
-                clownMachines.forEach((machine, idx) => {
+                const sessions = []; let spinCounter = 1;
+                const machines = [{ name: 'GOGO 小丑', number: 'J001' },{ name: '我是小丑-EX', number: 'J002' },{ name: '快樂小丑 VII', number: 'J003' },{ name: '新我是小丑-EX水晶版', number: 'J004' },{ name: '新我的小丑-EX紅金版', number: 'J005' }];
+                machines.forEach((machine, idx) => {
                     const baseDate = new Date(2025, 1, 19 + idx, 20, 30 + idx * 10);
                     const session = { id: `session-${idx + 1}`, machineName: machine.name, machineNumber: machine.number, bringInTime: new Date(baseDate), bringInAmount: 300 + idx * 50, bringOutTime: new Date(baseDate.getTime() + 45 * 60000), bringOutAmount: 350 + idx * 60, details: [], stats: { totalSpins: 0, totalBet: 0, totalWin: 0, bbCount: 0 } };
-                    session.details.push({ date: new Date(session.bringInTime), type: 'BRING_IN', bet: 0, win: session.bringInAmount, total: session.bringInAmount, betId: `INIT${String(idx + 1).padStart(3, '0')}`, videoType: null });
-                    let currentTotal = session.bringInAmount;
-                    let currentTime = new Date(session.bringInTime);
-                    for (let i = 0; i < 12; i++) {
-                        currentTime = new Date(currentTime.getTime() + (1 + Math.random() * 2) * 60000);
-                        const bet = 3;
-                        const win = Math.random() < 0.3 ? bet * (1 + Math.floor(Math.random() * 2)) : 0;
-                        currentTotal = currentTotal - bet + win;
-                        session.details.push({ date: new Date(currentTime), type: 'SPIN', bet: bet, win: win, total: currentTotal, betId: `SPIN${String(spinCounter++).padStart(4, '0')}`, videoType: null });
-                        session.stats.totalSpins++;
-                        session.stats.totalBet += bet;
-                        session.stats.totalWin += win;
-                    }
-                    for (let i = 0; i < 18; i++) {
-                        currentTime = new Date(currentTime.getTime() + (0.5 + Math.random()) * 60000);
-                        const bet = 2;
-                        const win = 8 + Math.floor(Math.random() * 8);
-                        currentTotal = currentTotal - bet + win;
-                        session.details.push({ date: new Date(currentTime), type: 'BB', bet: bet, win: win, total: currentTotal, betId: `BB${String(spinCounter++).padStart(4, '0')}`, videoType: 'BB' });
-                        session.stats.totalSpins++;
-                        session.stats.totalBet += bet;
-                        session.stats.totalWin += win;
-                        session.stats.bbCount++;
-                    }
-                    session.bringOutAmount = currentTotal;
-                    session.details.push({ date: new Date(session.bringOutTime), type: 'BRING_OUT', bet: session.bringOutAmount, win: 0, total: 0, betId: `OUT${String(idx + 1).padStart(3, '0')}`, videoType: null });
-                    session.netProfit = session.bringOutAmount - session.bringInAmount;
-                    sessions.push(session);
+                    session.details.push({ date: new Date(session.bringInTime), type: 'BRING_IN', bet: 0, win: session.bringInAmount, total: session.bringInAmount, betId: `INIT${idx+1}` });
+                    let currentTotal = session.bringInAmount, currentTime = new Date(session.bringInTime);
+                    for (let i = 0; i < 12; i++) { currentTime = new Date(currentTime.getTime() + (1 + Math.random() * 2) * 60000); const bet = 3; const win = Math.random() < 0.3 ? bet * (1 + Math.floor(Math.random() * 2)) : 0; currentTotal = currentTotal - bet + win; session.details.push({ date: new Date(currentTime), type: 'SPIN', bet: bet, win: win, total: currentTotal, betId: `SPIN${spinCounter++}` }); session.stats.totalSpins++; session.stats.totalBet += bet; session.stats.totalWin += win; }
+                    for (let i = 0; i < 18; i++) { currentTime = new Date(currentTime.getTime() + (0.5 + Math.random()) * 60000); const bet = 2; const win = 8 + Math.floor(Math.random() * 8); currentTotal = currentTotal - bet + win; session.details.push({ date: new Date(currentTime), type: 'BB', bet: bet, win: win, total: currentTotal, betId: `BB${spinCounter++}`, videoType: 'BB' }); session.stats.totalSpins++; session.stats.totalBet += bet; session.stats.totalWin += win; session.stats.bbCount++; }
+                    session.bringOutAmount = currentTotal; session.details.push({ date: new Date(session.bringOutTime), type: 'BRING_OUT', bet: session.bringOutAmount, win: 0, total: 0, betId: `OUT${idx+1}` }); session.netProfit = session.bringOutAmount - session.bringInAmount; sessions.push(session);
                 });
                 return sessions;
             }
-
+            
             let sessions = generateSessions();
             let currentSession = null;
-
+            
             function filterSessions() {
-                let filtered = sessions.filter(s => { const sessionDate = new Date(s.bringInTime); const sessionDateStr = sessionDate.toISOString().split('T')[0]; const startStr = dateStart.toISOString().split('T')[0]; const endStr = dateEnd.toISOString().split('T')[0]; return sessionDateStr >= startStr && sessionDateStr <= endStr; });
+                let filtered = sessions.filter(s => { const sessionDate = new Date(s.bringInTime); return sessionDate >= dateStart && sessionDate <= dateEnd; });
                 if (searchTerm) { const term = searchTerm.toLowerCase(); filtered = filtered.filter(s => s.machineName.toLowerCase().includes(term) || s.machineNumber.toLowerCase().includes(term)); }
                 return filtered;
             }
-            function formatDateTime(date) { return date.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }); }
-            function formatDate(date) { return date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '/'); }
-            function formatTime(date) { return date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }); }
-
+            
+            function formatDateTime(date) { return date.toLocaleString('zh-TW'); }
+            function formatDate(date) { return date.toLocaleDateString('zh-TW'); }
+            function formatTime(date) { return date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }); }
+            
             function calculateTotals() {
                 const filtered = filterSessions();
                 let totalBet = 0, totalWin = 0;
-                filtered.forEach(session => { totalBet += session.stats.totalBet; totalWin += session.stats.totalWin; });
-                const totalNet = totalWin - totalBet;
-                const totalBetEl = document.getElementById('totalBet');
-                const totalWinEl = document.getElementById('totalWin');
-                const totalNetEl = document.getElementById('totalNet');
-                if (totalBetEl) totalBetEl.textContent = totalBet;
-                if (totalWinEl) totalWinEl.textContent = totalWin;
-                if (totalNetEl) { totalNetEl.textContent = totalNet >= 0 ? `+${totalNet}` : totalNet; totalNetEl.classList.remove('text-green-400', 'text-red-400'); totalNetEl.classList.add(totalNet >= 0 ? 'text-red-400' : 'text-green-400'); }
+                filtered.forEach(s => { totalBet += s.stats.totalBet; totalWin += s.stats.totalWin; });
+                document.getElementById('totalBet').textContent = totalBet;
+                document.getElementById('totalWin').textContent = totalWin;
+                const net = totalWin - totalBet;
+                document.getElementById('totalNet').textContent = net >= 0 ? `+${net}` : net;
             }
-
+            
             function renderSessions() {
                 const filtered = filterSessions();
                 let html = '';
-                filtered.forEach((session, index) => {
-                    const bringInDate = formatDate(session.bringInTime);
-                    const bringOutDate = formatDate(session.bringOutTime);
-                    const bringInTime = formatTime(session.bringInTime);
-                    const bringOutTime = formatTime(session.bringOutTime);
-                    const netProfit = session.netProfit;
-                    const netClass = netProfit >= 0 ? 'positive' : 'negative';
-                    const netSign = netProfit >= 0 ? '+' : '';
-                    html += `<div class="main-row" onclick="openBetModal(${index})"><div><div class="machine-title"><span class="name">${session.machineName}</span><span class="number">#${session.machineNumber}</span></div><div class="date-range">${bringInDate} ~ ${bringOutDate}  ${bringInTime}~${bringOutTime}</div><div class="amount-info"><span class="bring-in">帶入 ${session.bringInAmount}</span><span class="text-gray-400">→</span><span class="bring-out">帶出 ${session.bringOutAmount}</span><span class="text-gray-400">|</span><span class="net-profit ${netClass}">淨利 ${netSign}${netProfit}</span></div></div></div>`;
+                filtered.forEach((session, idx) => {
+                    html += `<div class="main-row" onclick="openBetModal(${idx})"><div><div class="machine-title"><span class="name">${session.machineName}</span><span class="number">#${session.machineNumber}</span></div><div class="date-range">${formatDate(session.bringInTime)} ~ ${formatDate(session.bringOutTime)}  ${formatTime(session.bringInTime)}~${formatTime(session.bringOutTime)}</div><div class="amount-info"><span class="bring-in">帶入 ${session.bringInAmount}</span><span class="text-gray-400">→</span><span class="bring-out">帶出 ${session.bringOutAmount}</span><span class="text-gray-400">|</span><span class="net-profit ${session.netProfit >= 0 ? 'positive' : 'negative'}">淨利 ${session.netProfit >= 0 ? '+' : ''}${session.netProfit}</span></div></div></div>`;
                 });
-                const sessionsContainer = document.getElementById('sessionsContainer');
-                if (sessionsContainer) sessionsContainer.innerHTML = html || '<div class="text-center text-gray-400 py-8">沒有注單記錄</div>';
+                document.getElementById('sessionsContainer').innerHTML = html || '<div class="text-center text-gray-400 py-8">沒有注單記錄</div>';
                 calculateTotals();
             }
-
-            window.openBetModal = function(index) {
-                currentSession = sessions[index];
-                const modalTitle = document.getElementById('betModalTitle');
-                if (modalTitle) modalTitle.textContent = `${currentSession.machineName} #${currentSession.machineNumber}`;
+            
+            window.openBetModal = function(idx) {
+                currentSession = sessions[idx];
+                document.getElementById('betModalTitle').textContent = `${currentSession.machineName} #${currentSession.machineNumber}`;
                 const winRate = currentSession.stats.totalSpins > 0 ? Math.round((currentSession.stats.totalWin / currentSession.stats.totalBet) * 100) : 0;
-                const betStats = document.getElementById('betStats');
-                if (betStats) betStats.innerHTML = `<div class="stat-card"><i class="fa fa-refresh"></i><span>總轉數</span><span>${currentSession.stats.totalSpins}</span></div><div class="stat-card"><i class="fa fa-arrow-down"></i><span>總投注</span><span>${currentSession.stats.totalBet}</span></div><div class="stat-card"><i class="fa fa-arrow-up"></i><span>總獲得</span><span>${currentSession.stats.totalWin}</span></div><div class="stat-card"><i class="fa fa-film"></i><span>BB</span><span>${currentSession.stats.bbCount}</span></div><div class="stat-card"><i class="fa fa-pie-chart"></i><span>勝率</span><span>${winRate}%</span></div>`;
+                document.getElementById('betStats').innerHTML = `<div class="stat-card"><i class="fa fa-refresh"></i><span>總轉數</span><span>${currentSession.stats.totalSpins}</span></div><div class="stat-card"><i class="fa fa-arrow-down"></i><span>總投注</span><span>${currentSession.stats.totalBet}</span></div><div class="stat-card"><i class="fa fa-arrow-up"></i><span>總獲得</span><span>${currentSession.stats.totalWin}</span></div><div class="stat-card"><i class="fa fa-film"></i><span>BB</span><span>${currentSession.stats.bbCount}</span></div><div class="stat-card"><i class="fa fa-pie-chart"></i><span>勝率</span><span>${winRate}%</span></div>`;
                 renderBetModalTable();
-                const betModal = document.getElementById('betModal');
-                if (betModal) betModal.classList.add('active');
+                document.getElementById('betModal').classList.add('active');
             };
-            window.toggleBetSort = function() { betSortOrder = betSortOrder === 'desc' ? 'asc' : 'desc'; const sortIcon = document.getElementById('betSortIcon'); if (sortIcon) sortIcon.textContent = betSortOrder === 'desc' ? '▼' : '▲'; renderBetModalTable(); };
+            
             function renderBetModalTable() {
                 if (!currentSession) return;
                 let details = [...currentSession.details].sort((a, b) => betSortOrder === 'desc' ? b.date - a.date : a.date - b.date);
                 let html = '';
-                details.forEach(d => { let typeClass = '', typeLabel = ''; if(d.type === 'BRING_IN') { typeLabel = '帶入'; typeClass = 'type-bringin'; } else if(d.type === 'BRING_OUT') { typeLabel = '帶出'; typeClass = 'type-bringout'; } else if(d.type === 'BB') { typeLabel = 'BB'; typeClass = 'type-bb'; } else { typeLabel = '一般'; typeClass = 'type-bet'; } html += `<tr><td class="text-blue-200">${formatDateTime(d.date)}</td><td><span class="record-type ${typeClass}">${typeLabel}</span></td><td class="${d.bet > 0 ? 'amount-negative' : ''}">${d.bet > 0 ? `-${d.bet}` : '-'}</td><td class="${d.win > 0 ? 'amount-positive' : ''}">${d.win > 0 ? `+${d.win}` : '-'}</td><td class="amount-total">${d.total}</td><td><span class="bet-id" onclick="event.stopPropagation(); openBetDetail('${d.betId}', '${d.type}', ${d.total})">${d.betId}</span></td><td>${d.videoType ? `<span class="video-tag"><i class="fa fa-film"></i> ${d.videoType}</span>` : '-'}</td></tr>`; });
-                const tableBody = document.getElementById('betModalTableBody');
-                if (tableBody) tableBody.innerHTML = html;
+                details.forEach(d => {
+                    let typeLabel = '', typeClass = '';
+                    if (d.type === 'BRING_IN') { typeLabel = '帶入'; typeClass = 'type-bringin'; }
+                    else if (d.type === 'BRING_OUT') { typeLabel = '帶出'; typeClass = 'type-bringout'; }
+                    else if (d.type === 'BB') { typeLabel = 'BB'; typeClass = 'type-bb'; }
+                    else { typeLabel = '一般'; typeClass = 'type-bet'; }
+                    html += `<tr><td class="text-blue-200">${formatDateTime(d.date)}</td><td><span class="record-type ${typeClass}">${typeLabel}</span></td><td class="${d.bet > 0 ? 'amount-negative' : ''}">${d.bet > 0 ? `-${d.bet}` : '-'}</td><td class="${d.win > 0 ? 'amount-positive' : ''}">${d.win > 0 ? `+${d.win}` : '-'}</td><td class="amount-total">${d.total}</td><td><span class="bet-id" onclick="event.stopPropagation(); openBetDetail('${d.betId}', '${d.type}', ${d.total})">${d.betId}</span></td><td>${d.videoType ? `<span class="video-tag"><i class="fa fa-film"></i> ${d.videoType}</span>` : '-'}</td></tr>`;
+                });
+                document.getElementById('betModalTableBody').innerHTML = html;
             }
+            
             window.openBetDetail = function(betId, type, total) {
-                const detailTitle = document.getElementById('betDetailTitle');
-                if (detailTitle) detailTitle.textContent = `注單 ${betId}`;
+                document.getElementById('betDetailTitle').textContent = `注單 ${betId}`;
                 let content = '';
-                if (type === 'BRING_IN') content = `<div class="row"><span class="label">類型</span><span class="value">點數轉代幣</span></div><div class="row"><span class="label">匯率</span><span class="value">1:1</span></div><div class="row"><span class="label">獲得代幣</span><span class="value positive">+${total}</span></div>`;
-                else if (type === 'BRING_OUT') { const net = currentSession?.bringOutAmount - currentSession?.bringInAmount || 0; const netClass = net >= 0 ? 'positive' : 'negative'; content = `<div class="row"><span class="label">類型</span><span class="value">代幣轉點數</span></div><div class="row"><span class="label">總轉數</span><span class="value">${currentSession?.stats.totalSpins || 0}</span></div><div class="row"><span class="label">淨獲得</span><span class="value ${netClass}">${net >= 0 ? '+' : ''}${net}</span></div>`; }
+                if (type === 'BRING_IN') content = `<div class="row"><span class="label">類型</span><span class="value">點數轉代幣</span></div><div class="row"><span class="label">獲得代幣</span><span class="value positive">+${total}</span></div>`;
+                else if (type === 'BRING_OUT') { const net = currentSession?.bringOutAmount - currentSession?.bringInAmount || 0; content = `<div class="row"><span class="label">類型</span><span class="value">代幣轉點數</span></div><div class="row"><span class="label">淨獲得</span><span class="value ${net >= 0 ? 'positive' : 'negative'}">${net >= 0 ? '+' : ''}${net}</span></div>`; }
                 else content = `<div class="row"><span class="label">類型</span><span class="value">${type === 'BB' ? '大當' : '一般轉數'}</span></div><div class="row"><span class="label">注單編號</span><span class="value">${betId}</span></div><div class="row"><span class="label">合計</span><span class="value">${total}</span></div>`;
-                const detailContent = document.getElementById('betDetailContent');
-                if (detailContent) detailContent.innerHTML = content;
-                const detailModal = document.getElementById('betDetailModal');
-                if (detailModal) detailModal.classList.add('active');
+                document.getElementById('betDetailContent').innerHTML = content;
+                document.getElementById('betDetailModal').classList.add('active');
             };
-            window.closeBetModal = () => { const modal = document.getElementById('betModal'); if (modal) modal.classList.remove('active'); };
-            window.closeBetDetailModal = () => { const modal = document.getElementById('betDetailModal'); if (modal) modal.classList.remove('active'); };
-
-            const searchInput = document.getElementById('searchInput');
-            const startDateInput = document.getElementById('startDate');
-            const endDateInput = document.getElementById('endDate');
-            const dateSearchBtn = document.getElementById('dateSearchBtn');
-            if (searchInput) searchInput.addEventListener('input', (e) => { searchTerm = e.target.value; renderSessions(); });
-            if (dateSearchBtn) dateSearchBtn.addEventListener('click', () => { if (startDateInput && endDateInput) { dateStart = new Date(startDateInput.value); dateEnd = new Date(endDateInput.value); dateEnd.setHours(23, 59, 59); renderSessions(); } });
-
-            const vipPanel = document.getElementById('vipInfoPanel');
-            const vipBadge = document.getElementById('vipBadge');
-            const expTextEl = document.getElementById('expText');
-            if (vipBadge) vipBadge.addEventListener('click', () => vipPanel?.classList.toggle('hidden'));
-            if (expTextEl) expTextEl.addEventListener('click', () => vipPanel?.classList.toggle('hidden'));
-            const avatarContainer = document.getElementById('avatarContainer');
-            if (avatarContainer) avatarContainer.addEventListener('click', () => { const avatars = ['https://i.pravatar.cc/150?img=7','https://i.pravatar.cc/150?img=5','https://i.pravatar.cc/150?img=9']; const avatarImage = document.getElementById('avatarImage'); if (avatarImage) avatarImage.src = avatars[Math.floor(Math.random() * avatars.length)]; alert('大頭照已更換'); });
-            const displayNickname = document.getElementById('displayNickname');
-            if (displayNickname) displayNickname.addEventListener('click', () => { let name = prompt('修改暱稱', '郝可愛'); if(name) displayNickname.textContent = name; });
-
+            
+            window.toggleBetSort = function() { betSortOrder = betSortOrder === 'desc' ? 'asc' : 'desc'; document.getElementById('betSortIcon').textContent = betSortOrder === 'desc' ? '▼' : '▲'; renderBetModalTable(); };
+            window.closeBetModal = () => document.getElementById('betModal').classList.remove('active');
+            window.closeBetDetailModal = () => document.getElementById('betDetailModal').classList.remove('active');
+            
+            document.getElementById('searchInput')?.addEventListener('input', (e) => { searchTerm = e.target.value; renderSessions(); });
+            document.getElementById('dateSearchBtn')?.addEventListener('click', () => { dateStart = new Date(document.getElementById('startDate').value); dateEnd = new Date(document.getElementById('endDate').value); dateEnd.setHours(23, 59, 59); renderSessions(); });
+            document.getElementById('filterSelect')?.addEventListener('change', (e) => {
+                const selectedType = e.target.value;
+                const container = document.getElementById('transactionContainer');
+                if (selectedType === 'all') { renderTransactionCards(); }
+                else {
+                    const filtered = allTransactions.filter(t => t.type === selectedType).sort((a, b) => b.date - a.date);
+                    let html = '';
+                    filtered.forEach(trans => {
+                        const isPositive = trans.amount > 0;
+                        const amountSign = isPositive ? '+' : '';
+                        const amountClass = isPositive ? 'positive' : 'negative';
+                        const dateStr = trans.date.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+                        html += `<div class="transaction-card ${trans.cardClass}" onclick="openTransactionDetail('${trans.id}', '${trans.typeName}', ${Math.abs(trans.amount)}, '${trans.orderId}', '${dateStr}', '${trans.detail}', ${isPositive})"><div class="transaction-card-header"><div class="transaction-name"><i class="fa ${trans.icon}"></i> ${trans.typeName}</div><span class="transaction-type" style="background: ${isPositive ? '#2a6e8a' : '#8a5a2a'}; color: white;">${isPositive ? '收入' : '支出'}</span></div><div class="transaction-amount ${amountClass}">${amountSign}${Math.abs(trans.amount)} 點</div><div class="transaction-detail"><span><i class="fa fa-calendar"></i> ${dateStr}</span><span><i class="fa fa-hashtag"></i> ${trans.orderId}</span><span><i class="fa fa-info-circle"></i> ${trans.detail}</span></div></div>`;
+                    });
+                    container.innerHTML = html || '<div class="text-center text-gray-400 py-4">暫無此類型交易記錄</div>';
+                }
+            });
+            
             renderFavorites();
             renderKeep();
+            renderTransactionCards();
             renderSessions();
-            
-            const style = document.createElement('style');
-            style.textContent = `.machine-list-container.show { display: block; } .machine-list-container { display: none; } .positive { color: #ff8888; } .negative { color: #88ff88; } .video-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; }`;
-            document.head.appendChild(style);
+            setInterval(() => { if(document.getElementById('keepMachineList').classList.contains('show')) updateCountdowns(); }, 1000);
         })();
     </script>
 </body>
