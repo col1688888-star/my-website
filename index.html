@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>T-PACHIN · 小丑系列專場 · 4.5.6號機完整版 · 倍率篩選</title>
+    <title>T-PACHIN · 小丑系列專場 · 4.5.6號機完整版 · 子機台三態系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;500;700;900&family=Noto+Sans+JP:wght@300;500;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
+        /* 所有樣式保持不變，此處省略以節省空間，實際使用時會完整保留 */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0c1a; color: #fff; font-family: 'Noto Sans JP', 'Orbitron', sans-serif; min-height: 100vh; display: flex; flex-direction: column; position: relative; }
         body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(74, 128, 192, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(153, 0, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
@@ -16,7 +17,6 @@
         ::-webkit-scrollbar { width: 4px; height: 0px; background: transparent; }
         ::-webkit-scrollbar-track { background: rgba(74, 128, 192, 0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: rgba(74, 128, 192, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4a80c0; }
         * { scrollbar-width: thin; scrollbar-color: #4a80c0 rgba(74, 128, 192, 0.2); }
         
         .metal-header { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border-bottom: 2px solid #4a80c0; border-top: 2px solid #4a80c0; box-shadow: 0 5px 0 #0f121c, 0 10px 15px rgba(74, 128, 192, 0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6); position: relative; overflow: hidden; border-radius: 0 0 30px 30px; padding: 0.75rem 1rem; flex-shrink: 0; }
@@ -109,8 +109,8 @@
         .drawer-btn:active { transform: translateY(2px); box-shadow: inset 0 1px 2px rgba(0,0,0,0.4), 0 1px 0 #0f121c; }
         .drawer-btn.clear { background: linear-gradient(145deg, #4a2a2a, #2a1a1a); color: #ffaaaa; }
         .drawer-btn.apply { background: linear-gradient(145deg, #2a5a7a, #1a4a6a); color: white; }
-        .machine-modal, .sub-confirm-modal, .hologram-loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 20000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.2s; }
-        .machine-modal.show, .sub-confirm-modal.show, .hologram-loading.show { opacity: 1; visibility: visible; }
+        .machine-modal, .sub-confirm-modal, .hologram-loading, .settlement-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 20000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.2s; }
+        .machine-modal.show, .sub-confirm-modal.show, .hologram-loading.show, .settlement-modal.show { opacity: 1; visibility: visible; }
         .modal-content { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; padding: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.1); scrollbar-width: thin; }
         .modal-header { display: flex; justify-content: space-between; border-bottom: 1px solid #4a80c0; padding-bottom: 0.5rem; margin-bottom: 1rem; }
         .modal-close { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(145deg, #3a4050, #2a2f40); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 2px 3px rgba(0,0,0,0.3); }
@@ -137,16 +137,21 @@
         .submachine-container { display: flex; flex-direction: column; gap: 0.8rem; max-height: 55vh; overflow-y: auto; scrollbar-width: thin; }
         .sub-card { background: linear-gradient(145deg, #1a2a3a, #0a1a2a); border: 2px solid #4a80c0; border-radius: 20px; padding: 10px; cursor: pointer; position: relative; transition: all 0.2s ease; box-shadow: 0 4px 0 #0a1a2a; }
         .sub-card:active { transform: translateY(2px); box-shadow: 0 2px 0 #0a1a2a; }
-        .sub-card.maintenance-card { background: linear-gradient(145deg, #2a2a1a, #1a1a0a); border: 3px solid #ffaa44; box-shadow: 0 0 15px rgba(255, 170, 68, 0.6); }
+        .sub-card.occupied-card { background: linear-gradient(145deg, #2a4a3a, #1a3a2a); border: 3px solid #ffaa44; box-shadow: 0 0 15px rgba(255, 170, 68, 0.6); }
         .sub-card.using-card { border: 2px solid #ff4444; background: linear-gradient(145deg, #2a1a1a, #1a0a0a); box-shadow: 0 0 10px rgba(255,68,68,0.3); }
-        .sub-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
-        .sub-machine-name { font-size: 0.85rem; color: #ffd966; font-weight: bold; text-shadow: 0 1px 2px black; }
-        .using-badge-small { background: linear-gradient(145deg, #ff4444, #cc2222); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 20px; padding: 3px 8px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(0,0,0,0.3); animation: pulseRed 1.5s infinite; }
-        .maintenance-badge-small { background: linear-gradient(135deg, #ffaa44, #ff8844); color: #2a2a0a; font-size: 0.65rem; font-weight: bold; border-radius: 20px; padding: 3px 8px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 5px rgba(255,170,68,0.5); }
-        .empty-badge-small { background: linear-gradient(145deg, #00aa55, #008844); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 20px; padding: 3px 8px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; }
-        .maintenance-time { font-size: 0.6rem; color: #ffaa66; margin-top: 4px; }
-        @keyframes pulseRed { 0%, 100% { box-shadow: 0 0 5px rgba(255,68,68,0.5); } 50% { box-shadow: 0 0 12px rgba(255,68,68,0.8); } }
+        .sub-card.maintenance-card { background: linear-gradient(145deg, #3a2a2a, #2a1a1a); border: 3px solid #ff6666; box-shadow: 0 0 20px rgba(255,102,102,0.9), inset 0 0 15px rgba(255,0,0,0.3); animation: maintenancePulse 1.2s ease-in-out infinite; }
+        @keyframes maintenancePulse { 0%, 100% { border-color: #ff6666; box-shadow: 0 0 15px rgba(255,102,102,0.7); } 50% { border-color: #ff0000; box-shadow: 0 0 30px rgba(255,0,0,1); } }
+        .sub-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; width: 100%; }
+        .sub-machine-name { font-size: 0.85rem; color: #ffd966; font-weight: bold; text-shadow: 0 1px 2px black; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+        .using-badge-small { background: linear-gradient(145deg, #ff4444, #cc2222); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 20px; padding: 3px 8px; display: inline-flex; align-items: center; gap: 4px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(0,0,0,0.3); animation: pulseRed 1.5s infinite; }
+        .occupied-badge-small { background: linear-gradient(135deg, #ffaa44, #ff8844); color: #2a2a0a; font-size: 0.65rem; font-weight: bold; border-radius: 20px; padding: 3px 8px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 5px rgba(255,170,68,0.5); }
+        .maintenance-badge-small { background: linear-gradient(135deg, #ff6666, #cc3333); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 20px; padding: 3px 8px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 8px rgba(255,0,0,0.8); animation: pulseRed 1s infinite; }
+        .empty-badge-small { background: linear-gradient(145deg, #00aa55, #008844); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 20px; padding: 3px 8px; display: inline-flex; align-items: center; gap: 4px; }
+        .maintenance-time { font-size: 0.75rem; color: #ffaa66; margin-top: 6px; font-weight: bold; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 16px; display: inline-block; width: auto; }
+        @keyframes pulseRed { 0%, 100% { box-shadow: 0 0 5px rgba(255,68,68,0.5); } 50% { box-shadow: 0 0 15px rgba(255,68,68,1); } }
+        .rate-info-group { display: inline-flex; gap: 6px; align-items: center; flex-shrink: 0; margin-left: auto; }
         .sub-ratio-badge { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 1px solid #ffd700; border-radius: 20px; padding: 2px 8px; font-size: 0.65rem; color: #ffd700; box-shadow: inset 0 1px 1px rgba(255,255,255,0.1); flex-shrink: 0; }
+        .point-value-badge { background: linear-gradient(145deg, #3a2a4a, #2a1a3a); border: 1px solid #ff66cc; border-radius: 20px; padding: 2px 8px; font-size: 0.65rem; color: #ffaaee; box-shadow: inset 0 1px 1px rgba(255,255,255,0.1); flex-shrink: 0; }
         .sub-page { display: none; }
         .sub-page.active { display: block; }
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin: 8px 0; }
@@ -168,10 +173,12 @@
         .sub-page-indicator { display: flex; justify-content: center; gap: 6px; margin: 6px 0; }
         .sub-dot { width: 6px; height: 6px; border-radius: 50%; background: #3a4050; border: 1px solid #4a80c0; cursor: pointer; transition: all 0.1s; }
         .sub-dot.active { background: #ffd700; transform: scale(1.2); }
-        .sub-card-actions { display: flex; gap: 6px; margin-top: 6px; }
-        .enter-small { flex: 1; background: linear-gradient(145deg, #3a5065, #2a4055); border: 1px solid #4a80c0; color: white; font-size: 0.7rem; padding: 5px 0; border-radius: 20px; text-align: center; cursor: pointer; font-weight: 600; box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 2px 3px rgba(0,0,0,0.3); transition: all 0.08s linear; }
+        .sub-card-actions { display: flex; gap: 8px; margin-top: 6px; }
+        .enter-small { flex: 1; background: linear-gradient(145deg, #3a5065, #2a4055); border: 1px solid #4a80c0; color: white; font-size: 0.7rem; padding: 6px 0; border-radius: 20px; text-align: center; cursor: pointer; font-weight: 600; box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 2px 3px rgba(0,0,0,0.3); transition: all 0.08s linear; }
         .enter-small:active:not(.disabled) { transform: translateY(1px); box-shadow: inset 0 1px 2px rgba(0,0,0,0.4), 0 1px 0 #0f121c; }
-        .favorite-small { width: 26px; height: 26px; background: linear-gradient(145deg, #3a4050, #2a2f40); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 2px 3px rgba(0,0,0,0.3); transition: all 0.08s linear; }
+        .leave-small { flex: 1; background: linear-gradient(145deg, #aa5533, #884422); border: 1px solid #ffaa66; color: #ffe6cc; font-size: 0.7rem; padding: 6px 0; border-radius: 20px; text-align: center; cursor: pointer; font-weight: 600; box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 2px 3px rgba(0,0,0,0.3); transition: all 0.08s linear; }
+        .leave-small:active { transform: translateY(1px); }
+        .favorite-small { width: 32px; height: 32px; background: linear-gradient(145deg, #3a4050, #2a2f40); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 2px 3px rgba(0,0,0,0.3); transition: all 0.08s linear; flex-shrink: 0; }
         .favorite-small:active { transform: translateY(1px); }
         .favorite-small.active { background: linear-gradient(145deg, #ff69b4, #d43f8a); color: white; box-shadow: 0 0 10px #ff69b4; }
         
@@ -211,6 +218,27 @@
         .sub-confirm-btn.secondary:active { box-shadow: inset 0 5px 8px rgba(0,0,0,0.6), inset 0 -2px 5px rgba(255,255,255,0.2), 0 2px 0 #0f121c; }
         .sub-confirm-btn.primary { background: linear-gradient(145deg, #ffaa33, #ff8c00); border: 1px solid #ffd700; color: #2a1f0a; text-shadow: 0 1px 2px rgba(255,255,255,0.3); box-shadow: inset 0 2px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.2), 0 5px 0 #b85e00; }
         .sub-confirm-btn.primary:active { box-shadow: inset 0 5px 8px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(255,255,255,0.3), 0 2px 0 #b85e00; transform: translateY(3px); }
+        
+        .settlement-content {
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
+            border: 2px solid #ffd700;
+            border-radius: 40px;
+            max-width: 340px;
+            width: 100%;
+            padding: 1.8rem 1.5rem;
+            box-shadow: 0 20px 40px rgba(74, 128, 192, 0.5), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6), 0 8px 0 #0f121c;
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+        .settlement-modal.show .settlement-content { transform: scale(1); }
+        .settlement-detail { background: linear-gradient(145deg, #1a2a3a, #0a1a2a); border: 1px solid #4a80c0; border-radius: 28px; padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
+        .settlement-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(74,128,192,0.3); }
+        .settlement-row.total { border-top: 2px solid #ffd700; border-bottom: none; margin-top: 0.5rem; padding-top: 0.8rem; font-size: 1.1rem; font-weight: bold; }
+        .settlement-label { color: #b3e4ff; }
+        .settlement-value { color: #ffd966; font-weight: bold; }
+        .settlement-actions { display: flex; gap: 1rem; margin-top: 1.2rem; }
+        .settlement-btn { flex: 1; padding: 0.8rem; border-radius: 40px; font-weight: 800; cursor: pointer; text-align: center; background: linear-gradient(145deg, #ffaa33, #ff8c00); border: 1px solid #ffd700; color: #2a1f0a; box-shadow: inset 0 2px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.2), 0 5px 0 #b85e00; transition: all 0.1s ease; }
+        .settlement-btn:active { transform: translateY(3px); }
         
         .hologram-content { position: relative; width: 90%; max-width: 400px; min-height: 450px; text-align: center; }
         .loading-video { width: 100%; height: auto; border-radius: 20px; box-shadow: 0 0 30px rgba(74,128,192,0.5); }
@@ -253,7 +281,7 @@
 <div id="filterDrawer" class="filter-drawer">
     <div class="filter-section"><h3><i class="fa fa-building"></i> 廠商</h3><div class="filter-options" id="vendorFilters"><span class="filter-chip selected" data-vendor="all">全部</span><span class="filter-chip" data-vendor="ELECO">ELECO (埃利科)</span><span class="filter-chip" data-vendor="ENTER RISE">ENTER RISE (進入上升)</span><span class="filter-chip" data-vendor="Olympia">Olympia (奧林匹亞)</span><span class="filter-chip" data-vendor="Kita Denshi">Kita Denshi (北電子)</span><span class="filter-chip" data-vendor="Sammy">Sammy (薩米)</span><span class="filter-chip" data-vendor="Daito">Daito (大東技研)</span><span class="filter-chip" data-vendor="HEIWA">HEIWA (和平)</span><span class="filter-chip" data-vendor="Bellco">Bellco (貝爾科)</span><span class="filter-chip" data-vendor="Mizuho">Mizuho (ミズホ)</span><span class="filter-chip" data-vendor="Universal Bros">Universal Bros</span><span class="filter-chip" data-vendor="Rodeo">Rodeo</span></div></div>
     <div class="filter-section"><h3><i class="fa fa-cube"></i> 機種</h3><div class="filter-options" id="modelFilters"><span class="filter-chip selected" data-model="all">全部</span><span class="filter-chip" data-model="新機">新機</span><span class="filter-chip" data-model="人氣機台">人氣機台</span><span class="filter-chip" data-model="4號機">4號機</span><span class="filter-chip" data-model="5號機">5號機</span><span class="filter-chip" data-model="6號機">6號機</span></div></div>
-    <div class="filter-section"><h3><i class="fa fa-star"></i> 狀態</h3><div class="filter-options" id="statusFilters"><span class="filter-chip selected" data-status="all">全部</span><span class="filter-chip" data-status="empty">空檯</span><span class="filter-chip" data-status="using">使用中</span><span class="filter-chip" data-status="maintenance">維護中</span></div></div>
+    <div class="filter-section"><h3><i class="fa fa-star"></i> 狀態</h3><div class="filter-options" id="statusFilters"><span class="filter-chip selected" data-status="all">全部</span><span class="filter-chip" data-status="empty">空檯</span><span class="filter-chip" data-status="using">使用中</span></div></div>
     <div class="drawer-actions"><div class="drawer-btn clear" id="clearFilters">清除</div><div class="drawer-btn apply" id="applyFilters">套用</div></div>
 </div>
 
@@ -266,7 +294,7 @@
     </header>
     
     <div class="px-4">
-        <div class="announcement-combo"><div class="combo-announce-btn"><i class="fa fa-bullhorn"></i><span>公告</span></div><div class="combo-marquee"><div class="marquee-content">⚡ 小丑系列完全集結 · 4·5·6號機 榮耀回歸 ⚡ 全新機台登場 · 人氣爆棚 ⚡</div></div></div>
+        <div class="announcement-combo"><div class="combo-announce-btn"><i class="fa fa-bullhorn"></i><span>公告</span></div><div class="combo-marquee"><div class="marquee-content">⚡ 小丑系列完全集結 · 4·5·6號機 榮耀回歸 ⚡ 每枚代幣兌換 · 離座可兌回點數(價差10%) ⚡</div></div></div>
     </div>
     
     <main class="main-content" id="machineList">
@@ -291,6 +319,7 @@
 
 <div class="machine-modal" id="machineModal"><div class="modal-content"><div class="modal-header"><h2 id="modalMachineName">GOGO 小丑</h2><div class="modal-close" id="modalCloseBtn"><i class="fa fa-times"></i></div></div><div id="submachineContainer"></div></div></div>
 
+<!-- 華麗的兌換版面 -->
 <div class="sub-confirm-modal" id="subConfirmModal">
     <div class="sub-confirm-content">
         <div class="sub-confirm-header">
@@ -309,12 +338,27 @@
         </div>
         <div class="sub-confirm-input-group">
             <label><i class="fa fa-arrow-down"></i> 使用代幣數量 <span style="color:#ffaa66;">(最低 100)</span></label>
-            <input type="number" id="confirmTokenInput" min="100" step="1" placeholder="請輸入數量" value="100">
+            <input type="number" id="confirmTokenInput" min="100" step="1" placeholder="請輸入數量" value="500">
             <div class="sub-confirm-balance" id="confirmTokenRemain"><i class="fa fa-credit-card"></i> 剩餘點數: 6,600</div>
         </div>
         <div class="sub-confirm-actions">
             <button class="sub-confirm-btn secondary" id="confirmCancel">取消</button>
             <button class="sub-confirm-btn primary" id="confirmOk">確認進入</button>
+        </div>
+    </div>
+</div>
+
+<!-- 離座結算視窗 -->
+<div class="settlement-modal" id="settlementModal">
+    <div class="settlement-content">
+        <div class="sub-confirm-header">
+            <h3>📊 離座結算</h3>
+            <p id="settlementSubName">GOGO 小丑 1號機</p>
+        </div>
+        <div class="settlement-detail" id="settlementDetail"></div>
+        <div class="settlement-actions">
+            <button class="settlement-btn" id="settlementCancelBtn" style="background: linear-gradient(145deg, #3a4050, #2a2f40); border-color: #4a80c0; color: #b0c4de;">取消</button>
+            <button class="settlement-btn" id="settlementConfirmBtn">確認離座</button>
         </div>
     </div>
 </div>
@@ -331,6 +375,7 @@
 // ==================== 點數管理 ====================
 const POINTS_KEY = 't_pachin_user_points';
 let userPoints = 6600;
+const REDEEM_RATE = 0.9;
 
 function initPoints() {
     try {
@@ -372,42 +417,23 @@ function updatePoints(changeAmount) {
     return userPoints;
 }
 
-// ==================== 機台資料（廠商已更新） ====================
+// ==================== 機台資料 ====================
 const machines = [
     { name:"GOGO 小丑", vendor:"Olympia", model:"6號機", setting:"6", status:"using", popular:true, isNew:true, img:"https://i.pinimg.com/736x/b1/f1/ec/b1f1ec3a191e62e3d0e300ce79c9b593.jpg" },
     { name:"我是小丑-EX", vendor:"Sanyo", model:"5號機", setting:"5", status:"using", popular:true, isNew:true, img:"https://i.pinimg.com/736x/4a/2a/30/4a2a3089197d997984a7a75921faf2d9.jpg" },
-    { name:"快樂小丑 VII", vendor:"HEIWA", model:"6號機", setting:"4", status:"empty", popular:false, isNew:true, img:"https://i.pinimg.com/736x/76/a7/ec/76a7eca59c0b7f7a8404e67e043841cb.jpg" },
-    { name:"新我是小丑-EX水晶版", vendor:"Sammy", model:"6號機", setting:"6", status:"using", popular:true, isNew:false, img:"https://i.pinimg.com/736x/5a/d2/04/5ad204b86a09d1fc30374422fe0a4070.jpg" },
-    { name:"新我的小丑-EX紅金版", vendor:"Daito", model:"6號機", setting:"5", status:"using", popular:true, isNew:false, img:"https://i.pinimg.com/736x/63/46/aa/6346aaa01a8c68fbf4e8bdb5134cd7b1.jpg" },
-    { name:"新我是小丑-EX", vendor:"ELECO", model:"5號機", setting:"5", status:"using", popular:false, isNew:false, img:"https://i.pinimg.com/736x/81/d8/d8/81d8d8db9dcaf5927554067d9c20f3a8.jpg" },
-    { name:"快樂小丑 V", vendor:"ENTER RISE", model:"5號機", setting:"4", status:"empty", popular:true, isNew:false, img:"https://i.pinimg.com/736x/bf/04/bc/bf04bc7520d6ed64ae763eab1543acf3.jpg" },
-    { name:"我的小丑 Ⅳ", vendor:"Kita Denshi", model:"4號機", setting:"4", status:"using", popular:true, isNew:false, img:"https://i.pinimg.com/736x/2f/00/9e/2f009ea16819074ce0173e46d0b8697f.jpg" },
-    { name:"我的小丑 Ⅲ", vendor:"Bellco", model:"4號機", setting:"3", status:"empty", popular:true, isNew:false, img:"https://i.pinimg.com/736x/81/d8/d8/81d8d8db9dcaf5927554067d9c20f3a8.jpg" },
-    { name:"我的小丑 II", vendor:"Mizuho", model:"4號機", setting:"2", status:"empty", popular:true, isNew:false, img:"https://i.pinimg.com/736x/06/6a/87/066a87a5d76251868eee928066be9bdb.jpg" },
-    { name:"我的小丑 II-KK", vendor:"Universal Bros", model:"4號機", setting:"2", status:"using", popular:true, isNew:false, img:"https://i.pinimg.com/736x/bf/04/bc/bf04bc7520d6ed64ae763eab1543acf3.jpg" },
-    { name:"我是小丑-EX 特別版", vendor:"Rodeo", model:"5號機", setting:"4", status:"maintenance", popular:false, isNew:false, img:"https://i.pinimg.com/736x/4a/2a/30/4a2a3089197d997984a7a75921faf2d9.jpg" },
-    { name:"新我是小丑-EX 金版", vendor:"Sammy", model:"6號機", setting:"5", status:"using", popular:false, isNew:false, img:"https://i.pinimg.com/736x/5a/d2/04/5ad204b86a09d1fc30374422fe0a4070.jpg" }
+    { name:"快樂小丑 VII", vendor:"HEIWA", model:"6號機", setting:"4", status:"empty", popular:false, isNew:true, img:"https://i.pinimg.com/736x/76/a7/ec/76a7eca59c0b7f7a8404e67e043841cb.jpg" }
 ];
 
-// 更新子機台資料的廠商
 const subData = {
-    "GOGO 小丑": { ratios:[2.5,3.0,3.5,4.0], ids:[1,2,3,4], bb:[1200,1100,1300,1250], rb:[600,550,650,620], curr:[180,200,210,195], total:[4200,4300,4400,4250], status:["using","maintenance","empty","using"], maintenanceTime:["", "2025-03-25 14:00", "", ""] },
-    "我是小丑-EX": { ratios:[2.8,3.2,3.6,4.2], ids:[1,2,3,4], bb:[1100,1150,1200,1180], rb:[520,540,560,550], curr:[210,220,230,215], total:[3800,3900,4000,3850], status:["using","empty","maintenance","using"], maintenanceTime:["", "", "2025-03-26 10:30", ""] },
-    "快樂小丑 VII": { ratios:[2.0,2.5,3.0,3.5], ids:[1,2,3,4], bb:[1000,1050,1100,1080], rb:[480,500,520,510], curr:[160,170,180,175], total:[3500,3600,3700,3550], status:["empty","using","using","maintenance"], maintenanceTime:["", "", "", "2025-03-27 09:00"] },
-    "新我是小丑-EX水晶版": { ratios:[3.0,3.5,4.0,4.5], ids:[1,2,3,4], bb:[1300,1350,1400,1380], rb:[650,680,700,690], curr:[230,245,260,250], total:[4600,4700,4800,4750], status:["using","using","empty","using"], maintenanceTime:["","","",""] },
-    "新我的小丑-EX紅金版": { ratios:[3.2,3.7,4.2,4.8], ids:[1,2,3,4], bb:[1400,1450,1500,1480], rb:[700,720,750,730], curr:[250,265,280,270], total:[4900,5000,5100,5050], status:["maintenance","using","using","empty"], maintenanceTime:["2025-03-24 16:00","","",""] },
-    "新我是小丑-EX": { ratios:[2.8,3.2,3.6,4.0], ids:[1,2,3,4], bb:[1150,1200,1250,1220], rb:[540,560,580,570], curr:[200,210,220,215], total:[3900,4000,4100,3950], status:["using","empty","using","using"], maintenanceTime:["","","",""] },
-    "快樂小丑 V": { ratios:[2.2,2.6,3.0,3.4], ids:[1,2,3,4], bb:[950,980,1020,1000], rb:[450,470,490,480], curr:[150,160,170,165], total:[3300,3400,3500,3350], status:["using","maintenance","empty","using"], maintenanceTime:["", "2025-03-25 11:00", "", ""] },
-    "我的小丑 Ⅳ": { ratios:[2.0,2.4,2.8,3.2], ids:[1,2,3,4], bb:[880,920,960,940], rb:[420,440,460,450], curr:[140,150,160,155], total:[3100,3200,3300,3150], status:["empty","using","maintenance","using"], maintenanceTime:["", "", "2025-03-26 15:30", ""] },
-    "我的小丑 Ⅲ": { ratios:[1.8,2.2,2.6,3.0], ids:[1,2,3,4], bb:[820,860,900,880], rb:[380,400,420,410], curr:[120,130,140,135], total:[2900,3000,3100,2950], status:["maintenance","empty","using","empty"], maintenanceTime:["2025-03-24 13:00","","",""] },
-    "我的小丑 II": { ratios:[1.5,1.9,2.3,2.7], ids:[1,2,3,4], bb:[780,820,860,840], rb:[350,370,390,380], curr:[100,110,120,115], total:[2700,2800,2900,2750], status:["using","using","empty","maintenance"], maintenanceTime:["","","", "2025-03-27 08:30"] },
-    "我的小丑 II-KK": { ratios:[1.6,2.0,2.4,2.8], ids:[1,2,3,4], bb:[800,840,880,860], rb:[360,380,400,390], curr:[110,120,130,125], total:[2800,2900,3000,2850], status:["using","empty","using","using"], maintenanceTime:["","","",""] },
-    "我是小丑-EX 特別版": { ratios:[2.5,3.0,3.5,4.0], ids:[1,2,3,4], bb:[1000,1050,1100,1080], rb:[480,500,520,510], curr:[150,160,170,165], total:[3200,3300,3400,3350], status:["maintenance","maintenance","empty","using"], maintenanceTime:["2025-03-28 10:00","2025-03-28 14:00","",""] },
-    "新我是小丑-EX 金版": { ratios:[2.9,3.4,3.9,4.4], ids:[1,2,3,4], bb:[1250,1300,1350,1320], rb:[600,620,640,630], curr:[220,230,240,235], total:[4100,4200,4300,4250], status:["using","using","using","empty"], maintenanceTime:["","","",""] }
+    "GOGO 小丑": { ratios:[2.5,3.0,3.5,4.0], pointValues:[2.3,2.7,3.2,3.6], ids:[1,2,3,4], bb:[1200,1100,1300,1250], rb:[600,550,650,620], curr:[180,200,210,195], total:[4200,4300,4400,4250], status:["occupied","using","maintenance","empty"], maintenanceTime:["佔用中 (您的機台)", "", "維護中 預計 2025/03/28 14:00 恢復", ""] },
+    "我是小丑-EX": { ratios:[2.8,3.2,3.6,4.2], pointValues:[2.5,2.9,3.2,3.8], ids:[1,2,3,4], bb:[1100,1150,1200,1180], rb:[520,540,560,550], curr:[210,220,230,215], total:[3800,3900,4000,3850], status:["using","occupied","maintenance","empty"], maintenanceTime:["", "佔用中 (您的機台)", "維護中 預計 2025/03/29 10:30 恢復", ""] },
+    "快樂小丑 VII": { ratios:[2.0,2.5,3.0,3.5], pointValues:[1.8,2.3,2.7,3.2], ids:[1,2,3,4], bb:[1000,1050,1100,1080], rb:[480,500,520,510], curr:[160,170,180,175], total:[3500,3600,3700,3550], status:["empty","using","occupied","maintenance"], maintenanceTime:["", "", "佔用中 (您的機台)", "維護中 預計 2025/03/30 09:00 恢復"] }
 };
 
 let currentSubDataInfo = null;
 let currentRatioFilter = "all";
+let currentOccupiedTokens = {};
+let pendingLeaveInfo = null;
 
 function getMachineStats(machineName) {
     let data = subData[machineName];
@@ -470,6 +496,57 @@ function filterSubByRatio() {
     });
 }
 
+// 開啟離座結算視窗
+function openSettlementModal(machineName, subName, machineId, pointValue) {
+    let usedTokens = currentOccupiedTokens[`${machineName}_${machineId}`] || 0;
+    if(usedTokens === 0) {
+        alert('此機台沒有使用中的代幣可兌回\n請先點擊「進入遊戲」兌換代幣後再離座');
+        return;
+    }
+    
+    let redeemPoints = Math.floor(usedTokens * pointValue * REDEEM_RATE);
+    let lostPoints = usedTokens * pointValue - redeemPoints;
+    
+    pendingLeaveInfo = { machineName, machineId, usedTokens, redeemPoints, subName, pointValue };
+    
+    const detailHtml = `
+        <div class="settlement-row"><span class="settlement-label"><i class="fa fa-ticket"></i> 使用代幣</span><span class="settlement-value">${usedTokens.toLocaleString()} 枚</span></div>
+        <div class="settlement-row"><span class="settlement-label"><i class="fa fa-exchange"></i> 得點倍率</span><span class="settlement-value">${pointValue}</span></div>
+        <div class="settlement-row"><span class="settlement-label"><i class="fa fa-calculator"></i> 原始價值</span><span class="settlement-value">${(usedTokens * pointValue).toLocaleString()} 點</span></div>
+        <div class="settlement-row"><span class="settlement-label"><i class="fa fa-percent"></i> 兌回比例</span><span class="settlement-value">${(REDEEM_RATE * 100)}%</span></div>
+        <div class="settlement-row"><span class="settlement-label"><i class="fa fa-minus-circle"></i> 手續費(10%)</span><span class="settlement-value" style="color:#ff8888">-${lostPoints.toLocaleString()} 點</span></div>
+        <div class="settlement-row total"><span class="settlement-label"><i class="fa fa-credit-card"></i> 可獲得點數</span><span class="settlement-value" style="color:#ffd700; font-size:1.2rem">${redeemPoints.toLocaleString()} 點</span></div>
+    `;
+    
+    document.getElementById('settlementSubName').textContent = `${machineName} ${subName}`;
+    document.getElementById('settlementDetail').innerHTML = detailHtml;
+    document.getElementById('settlementModal').classList.add('show');
+}
+
+// 執行離座
+function executeLeave() {
+    if(pendingLeaveInfo) {
+        let { machineName, machineId, usedTokens, redeemPoints, subName, pointValue } = pendingLeaveInfo;
+        
+        if(subData[machineName] && subData[machineName].status[machineId-1]) {
+            subData[machineName].status[machineId-1] = 'empty';
+            subData[machineName].maintenanceTime[machineId-1] = '';
+            updatePoints(redeemPoints);
+            delete currentOccupiedTokens[`${machineName}_${machineId}`];
+        }
+        generateSubMachines(machineName);
+        document.getElementById('settlementModal').classList.remove('show');
+        alert(`✅ 已離開 ${machineName} ${subName}\n💰 獲得 ${redeemPoints.toLocaleString()} 點數`);
+        pendingLeaveInfo = null;
+    }
+}
+
+// 關閉結算視窗
+function closeSettlementModal() {
+    document.getElementById('settlementModal').classList.remove('show');
+    pendingLeaveInfo = null;
+}
+
 function generateSubMachines(machineName) {
     let data = subData[machineName];
     if(!data) return;
@@ -482,20 +559,52 @@ function generateSubMachines(machineName) {
         let status = data.status[i];
         let isMaint = status === 'maintenance';
         let isUsing = status === 'using';
-        let statusClass = isUsing ? 'using-card' : (isMaint ? 'maintenance-card' : '');
+        let isOccupied = status === 'occupied';
+        let statusClass = '';
         let statusBadge = '';
-        if(isUsing) statusBadge = '<span class="using-badge-small"><i class="fa fa-bolt"></i> 使用中</span>';
-        else if(isMaint) statusBadge = '<span class="maintenance-badge-small"><i class="fa fa-wrench"></i> 維護中</span>';
-        else statusBadge = '<span class="empty-badge-small"><i class="fa fa-circle-o"></i> 空檯</span>';
-        let maintTimeHtml = (isMaint && data.maintenanceTime[i]) ? `<div class="maintenance-time"><i class="fa fa-calendar"></i> 預計 ${data.maintenanceTime[i]} 恢復</div>` : '';
+        
+        if(isOccupied) {
+            statusClass = 'occupied-card';
+            statusBadge = '<span class="occupied-badge-small"><i class="fa fa-user"></i> 佔用中</span>';
+        } else if(isUsing) {
+            statusClass = 'using-card';
+            statusBadge = '<span class="using-badge-small"><i class="fa fa-bolt"></i> 使用中</span>';
+        } else if(isMaint) {
+            statusClass = 'maintenance-card';
+            statusBadge = '<span class="maintenance-badge-small"><i class="fa fa-wrench"></i> 維護中</span>';
+        } else {
+            statusBadge = '<span class="empty-badge-small"><i class="fa fa-circle-o"></i> 空檯</span>';
+        }
+        
+        let maintTimeHtml = (isMaint && data.maintenanceTime[i]) ? `<div class="maintenance-time"><i class="fa fa-calendar"></i> ${data.maintenanceTime[i]}</div>` : '';
         let miniCardsHtml = generateMiniCards(data, i);
+        
+        let canEnter = (status === 'empty' || status === 'occupied');
+        let btnText = '';
+        if(isUsing) btnText = '🔴 使用中';
+        else if(isMaint) btnText = '🔧 維護中';
+        else if(isOccupied) btnText = '🎮 進入遊戲';
+        else btnText = '進入遊戲';
+        
+        let leaveBtnHtml = (isOccupied) ? `<div class="leave-small" onclick="event.stopPropagation(); openSettlementModal('${machineName}','${data.ids[i]}號機',${data.ids[i]}, ${data.pointValues[i]})"><i class="fa fa-sign-out"></i> 離座</div>` : '';
+        
         html += `<div class="sub-card ${statusClass}" onclick="switchCardPage(this)" data-ratio-value="${data.ratios[i]}">
-            <div class="sub-title-row"><span class="sub-machine-name">${machineName} ${data.ids[i]}號機 ${statusBadge}</span><span class="sub-ratio-badge"><i class="fa fa-ticket"></i> 每枚 ${data.ratios[i]} 代幣</span></div>
+            <div class="sub-title-row">
+                <span class="sub-machine-name">${machineName} ${data.ids[i]}號機 ${statusBadge}</span>
+                <div class="rate-info-group">
+                    <span class="sub-ratio-badge"><i class="fa fa-ticket"></i> 每枚 ${data.ratios[i]}</span>
+                    <span class="point-value-badge"><i class="fa fa-exchange"></i> 得點 ${data.pointValues[i]}</span>
+                </div>
+            </div>
             ${maintTimeHtml}
             <div class="sub-page page1 active"><div class="stats-grid"><div class="stat-cell"><div class="stat-label">BIG BONUS</div><div class="stat-number bb-number">${data.bb[i].toLocaleString()}</div></div><div class="stat-cell"><div class="stat-label">REG BONUS</div><div class="stat-number rb-number">${data.rb[i].toLocaleString()}</div></div><div class="stat-cell"><div class="stat-label">目前累積</div><div class="stat-number curr-number">${data.curr[i].toLocaleString()}</div></div><div class="stat-cell"><div class="stat-label">總計</div><div class="stat-number total-number">${data.total[i].toLocaleString()}</div></div></div></div>
             <div class="sub-page page2"><div class="mini-cards-row">${miniCardsHtml}</div></div>
             <div class="sub-page-indicator"><span class="sub-dot active" onclick="event.stopPropagation(); switchPage(this,1)"></span><span class="sub-dot" onclick="event.stopPropagation(); switchPage(this,2)"></span></div>
-            <div class="sub-card-actions"><div class="enter-small" onclick="event.stopPropagation(); openSubConfirm('${machineName}','${data.ids[i]}號機','${data.ratios[i]}',${data.ids[i]}, ${isUsing || isMaint})">${(isUsing || isMaint) ? (isUsing ? '🔴 使用中' : '🔧 維護中') : '進入遊戲'}</div><div class="favorite-small" onclick="event.stopPropagation(); this.classList.toggle('active');"><i class="fa fa-heart-o"></i></div></div>
+            <div class="sub-card-actions">
+                <div class="enter-small ${!canEnter ? 'disabled' : ''}" onclick="event.stopPropagation(); ${canEnter ? `openSubConfirm('${machineName}','${data.ids[i]}號機','${data.ratios[i]}',${data.ids[i]}, '${data.pointValues[i]}')` : `alert('此機台${isUsing?'使用中':isMaint?'維護中':''}，無法進入！');`}">${btnText}</div>
+                ${leaveBtnHtml}
+                <div class="favorite-small" onclick="event.stopPropagation(); this.classList.toggle('active');"><i class="fa fa-heart-o"></i></div>
+            </div>
         </div>`;
     }
     html += `</div>`;
@@ -541,15 +650,14 @@ function renderMachines() {
 function openMachineModal(name) { document.getElementById('modalMachineName').textContent = name; generateSubMachines(name); document.getElementById('machineModal').classList.add('show'); }
 function closeMachineModal() { document.getElementById('machineModal').classList.remove('show'); }
 
-function openSubConfirm(machineName, subName, ratio, machineId, isBlocked) { 
-    if(isBlocked) { alert('⚠️ 此機台目前無法遊玩\n原因：使用中或維護中，請選擇其他機台！'); return; } 
-    currentSubDataInfo = { machineName, subName, ratio, machineId }; 
+function openSubConfirm(machineName, subName, ratio, machineId, pointValue) { 
+    currentSubDataInfo = { machineName, subName, ratio, machineId, pointValue: parseFloat(pointValue) }; 
     document.getElementById('confirmMachineName').textContent = machineName; 
     document.getElementById('confirmSubName').textContent = subName; 
     document.getElementById('confirmRatio').textContent = ratio; 
     document.getElementById('confirmPoints').textContent = userPoints; 
     document.getElementById('confirmTokenInput').min = 100;
-    document.getElementById('confirmTokenInput').value = 100;
+    document.getElementById('confirmTokenInput').value = 500;
     document.getElementById('confirmTokenRemain').innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${userPoints}`; 
     document.getElementById('subConfirmModal').classList.add('show'); 
 }
@@ -571,10 +679,18 @@ function showHologramLoading(machineName, machineId, ratio) {
 function doJumpToSimulator() {
     if(currentSubDataInfo) {
         const usedCoins = parseInt(document.getElementById('confirmTokenInput').value) || 0;
+        if(usedCoins <= 0) { alert('請輸入大於0的代幣數量'); return; }
+        if(usedCoins < 100) { alert('最低兌換數量為 100 代幣！'); return; }
+        if(usedCoins > userPoints) { alert('點數不足！'); return; }
+        updatePoints(-usedCoins);
+        const occupiedKey = `${currentSubDataInfo.machineName}_${currentSubDataInfo.machineId}`;
+        currentOccupiedTokens[occupiedKey] = usedCoins;
+        
         const machineInfo = { 
             name: currentSubDataInfo.machineName, 
             subName: currentSubDataInfo.subName, 
             ratio: currentSubDataInfo.ratio, 
+            pointValue: currentSubDataInfo.pointValue,
             machineId: currentSubDataInfo.machineId, 
             coins: usedCoins 
         };
@@ -679,6 +795,8 @@ function init() {
         closeSubConfirm(); 
         doJumpToSimulator();
     });
+    document.getElementById('settlementConfirmBtn')?.addEventListener('click', executeLeave);
+    document.getElementById('settlementCancelBtn')?.addEventListener('click', closeSettlementModal);
     
     let tokenInput = document.getElementById('confirmTokenInput'); 
     if(tokenInput) { 
@@ -719,6 +837,7 @@ window.switchPage = switchPage;
 window.openSubConfirm = openSubConfirm;
 window.filterSubByRatio = filterSubByRatio;
 window.currentRatioFilter = currentRatioFilter;
+window.openSettlementModal = openSettlementModal;
 
 init();
 </script>
