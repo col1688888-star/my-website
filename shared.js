@@ -2,10 +2,10 @@
 const T_PACHIN_STORAGE = {
     // 儲存 KEY
     FAVORITE_KEY: 't_pachin_favorites',
-    RESERVE_KEY: 't_pachin_reserved',  // 修改：與其他頁面統一
+    RESERVE_KEY: 't_pachin_reserved',
     USER_KEY: 't_pachin_user',
     PLAYED_KEY: 't_pachin_played',
-    POINTS_KEY: 't_pachin_user_points',  // 新增：獨立的點數 Key
+    POINTS_KEY: 't_pachin_user_points',
     
     // ==================== 使用者資料 ====================
     getUserData() {
@@ -90,11 +90,13 @@ const T_PACHIN_STORAGE = {
                 el.textContent = points.toLocaleString();
             }
         });
-        document.querySelectorAll('#userPoints, #headerPoints .points-value, #tokenBtn').forEach(el => {
+        document.querySelectorAll('#userPoints, #headerPoints .points-value, #tokenBtn, #headerPoints').forEach(el => {
             if (el.id === 'userPoints') {
                 el.textContent = points;
             } else if (el.id === 'tokenBtn') {
                 el.textContent = points.toLocaleString();
+            } else if (el.id === 'headerPoints') {
+                el.innerHTML = `💰 <span id="userPoints">${points}</span>`;
             } else {
                 el.textContent = points.toLocaleString();
             }
@@ -123,7 +125,6 @@ const T_PACHIN_STORAGE = {
         window.dispatchEvent(new CustomEvent('t-pachin:favorites-updated', {
             detail: favorites
         }));
-        // 同時觸發 favorites-updated 事件
         window.dispatchEvent(new CustomEvent('favorites-updated', { detail: { favorites } }));
         return favorites;
     },
@@ -153,16 +154,12 @@ const T_PACHIN_STORAGE = {
             try {
                 const reserves = JSON.parse(stored);
                 const now = Date.now();
-                // 過濾過期的保留
                 return reserves.filter(r => !r.expiresAt || r.expiresAt > now);
             } catch (e) {
                 return [];
             }
         }
-        // 預設保留（與 about.html 一致）
-        return [
-            { id: 4, name: '新我是小丑-EX水晶版', number: 'J004', image: 'https://i.pinimg.com/736x/c3/72/db/c372db1b020ebf778ef707f63c122bf7.jpg', ratio: '3.0', reservedAt: Date.now() }
-        ];
+        return [];
     },
     
     saveReserves(reserves) {
@@ -170,7 +167,6 @@ const T_PACHIN_STORAGE = {
         window.dispatchEvent(new CustomEvent('t-pachin:reserves-updated', {
             detail: reserves
         }));
-        // 同時觸發 reserved-updated 事件
         window.dispatchEvent(new CustomEvent('reserved-updated', { detail: { reserved: reserves } }));
         return reserves;
     },
@@ -379,7 +375,6 @@ function initializeSharedFeatures() {
     T_PACHIN_STORAGE.updateAllPointsDisplay();
     T_PACHIN_STORAGE.highlightCurrentNav();
     
-    // 監聽點數更新事件
     window.addEventListener('t-pachin:user-updated', () => {
         T_PACHIN_STORAGE.updateAllPointsDisplay();
     });
@@ -390,14 +385,12 @@ function initializeSharedFeatures() {
         }
     });
     
-    // 點數顯示點擊事件
     document.querySelectorAll('.points-display, #tokenBtn').forEach(el => {
         el.addEventListener('click', () => {
             alert(`💰 目前點數：${T_PACHIN_STORAGE.getPoints().toLocaleString()}\n\n遊玩機台即可累積點數！`);
         });
     });
     
-    // 暱稱編輯
     document.querySelectorAll('.nickname-display, .nickname-edit, #displayNickname').forEach(el => {
         el.addEventListener('click', () => {
             const currentName = T_PACHIN_STORAGE.getNickname();
@@ -408,7 +401,6 @@ function initializeSharedFeatures() {
         });
     });
     
-    // VIP 點擊
     document.querySelectorAll('.vip-badge, #vipBadge').forEach(el => {
         el.addEventListener('click', () => {
             const userData = T_PACHIN_STORAGE.getUserData();
@@ -417,14 +409,12 @@ function initializeSharedFeatures() {
     });
 }
 
-// 頁面載入完成後自動初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeSharedFeatures);
 } else {
     initializeSharedFeatures();
 }
 
-// 匯出到全域
 window.T_PACHIN_STORAGE = T_PACHIN_STORAGE;
 window.CountdownManager = CountdownManager;
 window.initializeSharedFeatures = initializeSharedFeatures;
