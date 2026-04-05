@@ -8,483 +8,863 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;500;700;900&family=Noto+Sans+JP:wght@300;500;700;900&family=Russo+One&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #0a0c1a; color: #fff; font-family: 'Noto Sans JP', 'Orbitron', sans-serif; min-height: 100vh; display: flex; flex-direction: column; position: relative; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(74, 128, 192, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(153, 0, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
-        .max-w-md { max-width: 448px; margin: 0 auto; height: 100vh; position: relative; z-index: 1; background: linear-gradient(145deg, #0f1425, #0a0e1f); box-shadow: 0 0 50px rgba(74, 128, 192, 0.2); border-left: 1px solid rgba(74, 128, 192, 0.2); border-right: 1px solid rgba(153, 0, 255, 0.2); display: flex; flex-direction: column; overflow: hidden; }
-        ::-webkit-scrollbar { width: 4px; height: 0px; background: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0c1a; color: #fff; font-family: 'Noto Sans TC', 'Orbitron', sans-serif; min-height: 100vh; }
+        .max-w-md { max-width: 448px; margin: 0 auto; height: 100vh; background: linear-gradient(145deg, #0f1425, #0a0e1f); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 50px rgba(74,128,192,0.2); border-left: 1px solid rgba(74,128,192,0.2); border-right: 1px solid rgba(153,0,255,0.2); }
+        
+        ::-webkit-scrollbar { width: 4px; background: transparent; }
         ::-webkit-scrollbar-track { background: rgba(74, 128, 192, 0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: rgba(74, 128, 192, 0.5); border-radius: 10px; }
-        * { scrollbar-width: thin; scrollbar-color: #4a80c0 rgba(74, 128, 192, 0.2); }
-        .metal-header { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border-bottom: 2px solid #4a80c0; border-top: 2px solid #4a80c0; box-shadow: 0 5px 0 #0f121c, 0 10px 15px rgba(74, 128, 192, 0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6); position: relative; overflow: hidden; border-radius: 0 0 30px 30px; padding: 0.75rem 1rem; flex-shrink: 0; }
-        .metal-header::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transform: skewX(-20deg); animation: shine 4s infinite; pointer-events: none; }
-        @keyframes shine { 0% { left: -100%; } 20% { left: 120%; } 100% { left: 120%; } }
-        .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 9999px; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; box-shadow: 0 5px 0 #0f121c, 0 10px 15px rgba(74, 128, 192, 0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6); overflow: hidden; cursor: pointer; }
+        
+        .metal-header { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border-bottom: 2px solid #4a80c0; padding: 16px; flex-shrink: 0; border-radius: 0 0 24px 24px; }
+        .avatar-container { width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; overflow: hidden; cursor: pointer; position: relative; }
         .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(145deg, #3a5065, #2a4055); color: white; font-size: 0.7rem; text-align: center; padding: 3px 0; border-top: 1px solid #4a80c0; text-shadow: 0 2px 3px black; }
-        .nickname-edit { color: #ffffff; text-shadow: 0 2px 3px black, 0 0 10px rgba(255,255,255,0.3); font-weight: 600; transition: all 0.2s ease; font-size: 1.5rem; cursor: pointer; border-bottom: 1px dashed #4a80c0; }
-        .nickname-edit:hover { color: #ffd966; text-shadow: 0 0 10px #ffd700, 0 2px 3px black; }
-        .vip-badge { background: linear-gradient(135deg, #b8860b, #ffd700); color: #000; font-weight: bold; padding: 0.15rem 0.6rem; border-radius: 30px; font-size: 0.7rem; box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 3px 0 #7f4f0a; cursor: pointer; border: 1px solid #ffaa00; }
-        .exp-text { font-size: 0.7rem; color: #b0d4ff; cursor: pointer; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 0.15rem 0.6rem; border-radius: 30px; border: 1px solid #4a80c0; box-shadow: inset 0 2px 3px rgba(255,255,255,0.2); }
-        .points-display { background: linear-gradient(145deg, #4a3a1a, #3a2a0a); padding: 0.15rem 1rem; border-radius: 30px; box-shadow: inset 0 2px 5px rgba(255,215,0,0.5), inset 0 -3px 5px rgba(0,0,0,0.6), 0 4px 0 #2a1f0a, 0 0 12px #ffd700; border: 1px solid #ffd700; color: #ffd966; font-weight: 900; font-size: 1rem; text-shadow: 0 2px 3px black; cursor: pointer; transition: all 0.1s ease; text-align: center; min-width: 80px; }
-        .progress-bar { width: 100%; height: 6px; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border-radius: 10px; overflow: hidden; border: 1px solid #4a80c0; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
-        .progress-fill { height: 100%; width: 28%; background: linear-gradient(90deg, #ffd966, #ffaa33); border-radius: 10px; box-shadow: 0 0 8px #ffaa33; }
-        .vip-info-panel { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #ffd966; border-radius: 16px; padding: 1rem; margin: 0.5rem 0; box-shadow: 0 10px 15px rgba(74,128,192,0.3), inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.6); }
-        .action-grid-btn { background: linear-gradient(145deg, #3a4050, #2a2f40); border: 1px solid #4a80c0; border-radius: 16px; padding: 1rem 0.5rem; text-align: center; color: #cce6ff; cursor: pointer; position: relative; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c; transition: all 0.1s ease; }
-        .action-grid-btn:hover { transform: translateY(-2px); box-shadow: inset 0 2px 5px rgba(255,255,255,0.4), inset 0 -3px 5px rgba(0,0,0,0.3), 0 7px 0 #0f121c, 0 0 15px #4a80c0; color: white; }
-        .count-badge { position: absolute; top: 8px; right: 12px; background: #ff4444; color: white; font-size: 0.7rem; min-width: 22px; height: 22px; border-radius: 30px; display: flex; align-items: center; justify-content: center; padding: 0 6px; border: 1px solid #ffd966; box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 3px 0 #7f1d1d; animation: pulse 2s infinite; }
-        .count-badge.keep { background: #ff9900; box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 3px 0 #7f4f0a; }
-        @keyframes pulse { 0% { opacity: 0.9; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.9; transform: scale(1); } }
-        .machine-card { background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 2px solid #4a80c0; border-radius: 24px; padding: 0.8rem; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; transition: all 0.2s ease; position: relative; box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), inset 0 -3px 8px rgba(0,0,0,0.6), 0 8px 0 #0f121c; cursor: pointer; }
-        .machine-card:active { transform: translateY(4px); box-shadow: inset 0 5px 10px rgba(0,0,0,0.7), inset 0 -2px 5px rgba(255,255,255,0.2), 0 4px 0 #0f121c; }
-        .machine-card img { width: 70px; height: 70px; border-radius: 16px; object-fit: cover; border: 2px solid #4a80c0; box-shadow: 0 0 15px rgba(74,128,192,0.3); }
-        .machine-info { flex: 1; }
-        .machine-name { font-weight: bold; color: #ffd966; font-size: 1rem; text-shadow: 0 2px 3px black; margin-bottom: 6px; }
-        .machine-meta { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
-        .machine-meta span { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 0.2rem 0.6rem; border-radius: 30px; border: 1px solid #4a80c0; color: #b0d4ff; font-size: 0.65rem; box-shadow: inset 0 2px 3px rgba(255,255,255,0.2); }
-        .machine-actions { display: flex; gap: 8px; flex-direction: column; }
-        .countdown-timer { font-size: 0.7rem; color: #ffaa00; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 0.2rem 0.6rem; border-radius: 30px; border: 1px solid #ffaa00; display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; width: fit-content; }
-        .countdown-timer.warning { color: #ff6666; border-color: #ff6666; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-        .play-btn, .leave-btn, .unfavorite-btn { font-size: 0.75rem; padding: 6px 14px; border-radius: 30px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.1s ease; white-space: nowrap; min-width: 80px; font-weight: 700; text-shadow: 0 2px 3px black; border: 1px solid; }
-        .play-btn { background: linear-gradient(145deg, #2a5540, #1a4530); border-color: #4a80c0; color: white; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f4a2a; }
-        .leave-btn { background: linear-gradient(145deg, #553a3a, #452a2a); border-color: #ff6666; color: white; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #4a1a1a; }
-        .unfavorite-btn { background: linear-gradient(145deg, #553a55, #452a45); border-color: #ff6680; color: white; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #4a1a3a; }
-        .list-title { font-size: 1rem; font-weight: bold; color: #ffd966; padding: 12px 0 8px 0; border-bottom: 2px solid #4a80c0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; text-shadow: 0 2px 3px black; }
-        .machine-list-container { display: none; margin-top: 12px; max-height: 400px; overflow-y: auto; padding-right: 4px; }
-        .machine-list-container.show { display: block; }
-        .record-type { display: inline-block; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; min-width: 50px; text-align: center; }
-        .type-bringin { background: linear-gradient(145deg, #1a4530, #0a3520); border: 1px solid #4a80c0; color: #a0ffc0; }
-        .type-bringout { background: linear-gradient(145deg, #452a2a, #351a1a); border: 1px solid #ff6666; color: #ffb0b0; }
-        .type-bb { background: linear-gradient(145deg, #2a2f55, #1a1f45); border: 1px solid #667eea; color: #b0c4ff; }
-        .type-bet { background: linear-gradient(145deg, #554a1a, #453a0a); border: 1px solid #ffaa33; color: #ffd966; }
-        .amount-negative { color: #88ff88; font-weight: 600; }
-        .amount-positive { color: #ff8888; font-weight: 600; }
-        .amount-total { color: #ffd966; font-weight: 600; }
-        .bet-id { font-family: monospace; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 4px 8px; border-radius: 16px; color: #ffd966; cursor: pointer; transition: 0.2s; display: inline-block; font-size: 0.75rem; border: 1px solid #4a80c0; }
+        .avatar-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); font-size: 10px; text-align: center; }
+        .nickname-edit { font-size: 1.3rem; font-weight: bold; cursor: pointer; border-bottom: 1px dashed #4a80c0; }
+        .vip-badge { background: linear-gradient(135deg, #b8860b, #ffd700); color: #000; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .points-display { background: linear-gradient(145deg, #4a3a1a, #3a2a0a); padding: 5px 14px; border-radius: 30px; color: #ffd966; font-weight: bold; border: 1px solid #ffd700; cursor: pointer; }
+        .progress-bar { height: 5px; background: #2a2f3f; border-radius: 10px; overflow: hidden; margin-top: 12px; }
+        .progress-fill { width: 28%; height: 100%; background: linear-gradient(90deg, #ffd966, #ffaa33); border-radius: 10px; }
         
-        .search-layout { display: grid; grid-template-rows: auto auto; gap: 10px; margin-bottom: 16px; }
-        .search-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; }
-        .date-group { display: flex; gap: 6px; align-items: center; background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 10px; height: 40px; }
-        .date-group .date-input { background: transparent; border: none; color: white; font-size: 0.7rem; padding: 4px; width: 100%; min-width: 0; text-align: center; }
-        .date-group .date-input:focus { outline: none; }
-        .date-group span { font-size: 0.65rem; color: #b0c4de; }
-        .date-input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.7; }
-        .search-btn { background: linear-gradient(145deg, #3a5065, #2a4055); border: 1px solid #4a80c0; border-radius: 30px; padding: 8px 0; color: white; font-size: 0.75rem; cursor: pointer; text-align: center; font-weight: 700; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c; height: 40px; display: flex; align-items: center; justify-content: center; }
-        .search-btn:active { transform: translateY(3px); }
-        .search-box { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 12px; display: flex; align-items: center; gap: 6px; height: 40px; }
-        .search-box i { font-size: 0.75rem; color: #80e4ff; }
-        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 0.75rem; }
-        .search-box input::placeholder { color: #7a8aa0; font-size: 0.7rem; }
-        .filter-select { width: 100%; background: #ffffff; border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 28px 6px 14px; color: #1a1f2f; font-weight: 600; font-size: 0.75rem; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a80c0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; cursor: pointer; height: 40px; }
-        .filter-select option { background: white; color: #1a1f2f; }
+        .action-grid-btn { background: linear-gradient(145deg, #3a4050, #2a2f40); border: 1px solid #4a80c0; border-radius: 16px; padding: 12px; text-align: center; cursor: pointer; position: relative; box-shadow: 0 4px 0 #0f121c; }
+        .count-badge { position: absolute; top: -8px; right: -8px; background: #ff4444; color: white; font-size: 11px; min-width: 22px; height: 22px; border-radius: 30px; display: flex; align-items: center; justify-content: center; border: 1px solid #ffd966; }
         
-        .transaction-card { background: linear-gradient(145deg, #1a2a3a, #0f1f2f); border-radius: 20px; padding: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: inset 0 2px 5px rgba(255,255,255,0.1), inset 0 -3px 8px rgba(0,0,0,0.5), 0 6px 0 #2a3a4a; }
-        .transaction-card:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #2a3a4a; }
-        .transaction-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(74,128,192,0.3); }
-        .transaction-name { font-size: 1rem; font-weight: bold; display: flex; align-items: center; gap: 8px; }
-        .transaction-type { font-size: 0.7rem; padding: 3px 10px; border-radius: 30px; font-weight: bold; }
-        .transaction-amount { font-size: 1.2rem; font-weight: bold; font-family: 'Orbitron', monospace; }
-        .transaction-amount.positive { color: #ff8888; }
-        .transaction-amount.negative { color: #88ff88; }
-        .transaction-detail { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaccff; margin-top: 8px; flex-wrap: wrap; gap: 8px; }
+        .search-layout { display: grid; gap: 10px; margin-bottom: 16px; }
+        .search-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .date-group { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 1px solid #4a80c0; border-radius: 30px; padding: 8px 12px; display: flex; gap: 6px; }
+        .date-group input { background: transparent; border: none; color: white; font-size: 12px; width: 100px; cursor: pointer; }
+        .date-group input::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        .search-btn { background: linear-gradient(145deg, #3a5065, #2a4055); border: 1px solid #4a80c0; border-radius: 30px; padding: 8px; color: white; cursor: pointer; text-align: center; font-weight: bold; }
+        .search-box { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 1px solid #4a80c0; border-radius: 30px; padding: 8px 14px; display: flex; gap: 8px; flex: 1; }
+        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; }
+        .filter-select { width: 100%; background: #ffffff; border: 2px solid #4a80c0; border-radius: 30px; padding: 6px 28px 6px 14px; color: #1a1f2f; font-weight: 600; font-size: 0.75rem; appearance: none; cursor: pointer; height: 40px; }
         
-        .card-token_in { border: 2px solid #4ac0ff; }
-        .card-token_out { border: 2px solid #ffaa66; }
-        .card-bonus { border: 2px solid #ff66cc; background: linear-gradient(145deg, #2a2a4a, #1a1a3a); }
-        .card-manual_add { border: 2px solid #66ff88; background: linear-gradient(145deg, #2a4a2a, #1a3a1a); }
-        .card-manual_sub { border: 2px solid #ff8866; background: linear-gradient(145deg, #4a2a2a, #3a1a1a); }
-        .card-shop { border: 2px solid #ffaa44; background: linear-gradient(145deg, #4a3a2a, #3a2a1a); }
-        .card-platform_in { border: 2px solid #4ac0ff; }
-        .card-platform_out { border: 2px solid #ffaa66; }
+        .stats-card { background: linear-gradient(145deg, #002b4a, #001a2a); border-radius: 16px; padding: 14px; margin-bottom: 16px; border: 1px solid #4a80c0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; }
+        .stats-label { font-size: 11px; color: #80e4ff; }
+        .stats-value { font-size: 18px; font-weight: bold; color: #ffd966; }
         
-        .main-row { background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 2px solid #4a80c0; border-radius: 16px; margin-bottom: 8px; cursor: pointer; padding: 12px; transition: all 0.2s ease; box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), inset 0 -3px 8px rgba(0,0,0,0.6), 0 8px 0 #0f121c; }
+        .main-row { background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 2px solid #4a80c0; border-radius: 16px; margin-bottom: 12px; cursor: pointer; padding: 14px 16px; transition: 0.2s; }
         .main-row:hover { border-color: #ffd700; transform: translateY(-2px); }
-        .machine-title { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-        .machine-title .name { color: #ffd966; font-weight: 700; font-size: 1rem; }
-        .machine-title .number { color: #4a80c0; font-size: 0.85rem; background: rgba(74,128,192,0.2); padding: 2px 8px; border-radius: 30px; border: 1px solid #4a80c0; }
-        .date-range { color: #80e4ff; font-size: 0.8rem; margin-bottom: 6px; }
-        .amount-info { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; flex-wrap: wrap; }
-        .bring-in { color: #88ff88; }
-        .bring-out { color: #ffd966; }
-        .net-profit.positive { color: #ff8888; }
-        .net-profit.negative { color: #88ff88; }
-        .stats-row { display: flex; gap: 6px; padding: 4px 0; justify-content: space-between; width: 100%; margin-bottom: 16px; }
-        .stat-card { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 1px solid #4a80c0; border-radius: 30px; padding: 4px 8px; display: flex; align-items: center; gap: 3px; white-space: nowrap; font-size: 0.65rem; flex: 1; justify-content: center; }
-        .bet-modal, .bet-detail-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 20000; }
-        .bet-modal.active, .bet-detail-modal.active { display: flex; }
-        .bet-modal-content { width: 95%; max-width: 550px; height: 90vh; background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 3px solid #4a80c0; border-radius: 24px; padding: 16px; position: relative; display: flex; flex-direction: column; }
-        .bet-modal-close, .bet-detail-modal .modal-close { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(145deg, #553a3a, #452a2a); border: 2px solid #ff8888; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20001; }
-        .bet-modal-title { font-size: 1.3rem; color: #ffd966; margin-bottom: 16px; padding-right: 40px; border-bottom: 2px solid #4a80c0; padding-bottom: 10px; }
-        .bet-modal-table-container { flex: 1; overflow-x: auto; overflow-y: auto; border-radius: 16px; margin-top: 12px; border: 1px solid #4a80c0; }
-        .bet-modal-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; min-width: 700px; background: #0f1425; }
-        .bet-modal-table th { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); color: #80e4ff; padding: 14px 8px; border-bottom: 2px solid #4a80c0; position: sticky; top: 0; }
-        .bet-modal-table td { padding: 12px 8px; border-bottom: 1px solid #2a4f7a; }
-        .sortable-header { cursor: pointer; display: flex; align-items: center; gap: 4px; justify-content: center; }
-        .bet-detail-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 3px solid #4a80c0; border-radius: 20px; padding: 20px; }
-        .bet-detail-title { font-size: 1.1rem; color: #ffd966; margin-bottom: 15px; text-align: center; padding-right: 30px; }
-        .bet-detail-content .row { display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #4a80c0; }
-        .bet-detail-content .label { color: #80e4ff; }
-        .bet-detail-content .value { color: white; font-weight: 600; }
-        .home-return-btn { background: linear-gradient(145deg, #3a5065, #2a4055); border: 2px solid #4a80c0; color: #ffd966; width: 44px; height: 44px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; text-decoration: none; }
-        .bottom-nav { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border-top: 2px solid #4a80c0; width: 100%; max-width: 448px; padding: 0.75rem 1.5rem; margin-top: 1rem; display: flex; justify-content: space-between; border-radius: 30px; position: relative; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #b0c4de; transition: all 0.1s ease; border-radius: 20px; padding: 0.5rem 0.75rem; text-decoration: none; background: linear-gradient(145deg, #3a4050, #2a2f40); box-shadow: 0 5px 0 #0f121c, inset 0 2px 5px rgba(255,255,255,0.3), inset 0 -3px 5px rgba(0,0,0,0.3); border: 1px solid rgba(74,128,192,0.2); }
-        .nav-item:hover { transform: translateY(-5px); color: white; }
-        .nav-item.current-page { background: linear-gradient(145deg, #4a5065, #3a4055); color: white; border: 1px solid #4a80c0; transform: scale(1.05); }
-        .nav-item i { font-size: 1.4rem; margin-bottom: 2px; }
-        .nav-item span { font-weight: 700; letter-spacing: 0.5px; font-size: 0.7rem; }
-        .hidden { display: none !important; }
-        .px-4 { padding-left: 1rem; padding-right: 1rem; }
-        .mt-2 { margin-top: 0.5rem; }
-        .mt-4 { margin-top: 1rem; }
-        .mb-3 { margin-bottom: 0.75rem; }
-        .mb-4 { margin-bottom: 1rem; }
+        .machine-title .name { font-size: 16px; font-weight: bold; color: #ffd966; }
+        .machine-title .number { font-size: 12px; color: #80e4ff; margin-left: 6px; }
+        .date-range { font-size: 11px; color: #b0c4de; margin: 8px 0; }
+        .bring-in { color: #88ffaa; }
+        .bring-out { color: #ffaa88; }
+        .net-profit.positive { color: #ffaa66; }
+        .net-profit.negative { color: #ff6666; }
+        
+        .tx-card { background: linear-gradient(145deg, #1a2a3a, #0f1f2f); border: 2px solid #4a80c0; border-radius: 20px; padding: 12px 16px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
+        .tx-card:hover { border-color: #ffd966; transform: translateY(-1px); }
+        .tx-name { font-size: 1rem; font-weight: bold; color: #ffd966; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .tx-platform { font-size: 0.8rem; color: #80e4ff; margin-bottom: 6px; }
+        .tx-points { font-size: 1rem; font-weight: bold; margin-bottom: 6px; }
+        .tx-points.positive-red { color: #ff6666; }
+        .tx-points.negative-green { color: #88ff88; }
+        .tx-date { font-size: 0.65rem; color: #aaccff; display: flex; align-items: center; gap: 4px; }
+        
+        .tx-detail-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.96); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .tx-detail-modal.active { display: flex; }
+        .tx-detail-modal .modal-content { width: 90%; max-width: 380px; background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 3px solid #4a80c0; border-radius: 28px; padding: 20px; }
+        
+        .bet-modal, .favorite-modal, .keep-modal, .video-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.96); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .bet-modal.active, .favorite-modal.active, .keep-modal.active, .video-modal.active { display: flex; }
+        .bet-modal-content { width: 92%; max-width: 550px; height: 85vh; background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 3px solid #4a80c0; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; overflow: hidden; }
+        .favorite-modal-content, .keep-modal-content { width: 90%; max-width: 420px; max-height: 80vh; background: linear-gradient(145deg, #1a1f2f, #0f1425); border: 3px solid #ff6680; border-radius: 28px; padding: 20px; overflow-y: auto; }
+        .video-modal-content { width: 90%; max-width: 500px; background: #000; border-radius: 28px; border: 3px solid #ff66aa; overflow: hidden; }
+        .video-modal-content video { width: 100%; max-height: 60vh; background: #000; }
+        .video-header { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); padding: 12px 16px; display: flex; justify-content: space-between; color: #ffd966; border-bottom: 1px solid #ff66aa; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; color: #ffd966; font-size: 18px; font-weight: bold; margin-bottom: 16px; }
+        .modal-close { cursor: pointer; font-size: 24px; width: 32px; text-align: center; }
+        .stats-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+        .stat-card { background: #2a2f3f; padding: 4px 12px; border-radius: 30px; font-size: 11px; }
+        .bet-modal-table-container { flex: 1; overflow: auto; border-radius: 16px; border: 1px solid #4a80c0; }
+        .bet-modal-table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 650px; }
+        .bet-modal-table th, .bet-modal-table td { padding: 10px 6px; border-bottom: 1px solid #2a4f7a; text-align: left; }
+        .bet-modal-table th { background: #2a2f3f; color: #ffd966; position: sticky; top: 0; cursor: pointer; user-select: none; }
+        .bet-modal-table th:hover { background: #3a4055; }
+        .sort-icon { display: inline-block; margin-left: 4px; font-size: 10px; }
+        .record-type { display: inline-block; padding: 2px 10px; border-radius: 30px; font-size: 10px; font-weight: bold; }
+        .type-bringin { background: #1a4530; color: #a0ffc0; }
+        .type-bringout { background: #452a2a; color: #ffb0b0; }
+        .type-spin { background: #554a1a; color: #ffd966; }
+        .amount-negative { color: #88ff88; }
+        .amount-positive { color: #ff8888; }
+        .amount-total { font-weight: bold; color: #ffd966; }
+        .total-positive { color: #88ff88; font-weight: bold; }
+        .total-negative { color: #ff8888; font-weight: bold; }
+        .video-bet-row { cursor: pointer; background: linear-gradient(90deg, rgba(59,130,246,0.25), transparent); border-left: 4px solid #3b82f6; }
+        .video-bet-row:hover { background: linear-gradient(90deg, rgba(59,130,246,0.45), rgba(59,130,246,0.1)); }
+        .play-hint { display: inline-flex; align-items: center; gap: 4px; background: #1e3a8a; padding: 2px 8px; border-radius: 20px; font-size: 9px; margin-left: 8px; color: #93c5fd; }
+        
+        /* 收藏/保留卡片增強樣式 */
+        .machine-card {
+            background: linear-gradient(145deg, #1a1f2f, #0f1425);
+            border: 2px solid #4a80c0;
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .machine-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        .machine-card:hover::before {
+            left: 100%;
+        }
+        .machine-card:hover {
+            transform: translateX(4px);
+            border-color: #ffd966;
+            box-shadow: 0 0 15px rgba(255,217,102,0.3);
+        }
+        .machine-card img {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            object-fit: cover;
+            border: 2px solid #ffd966;
+            box-shadow: 0 0 12px rgba(255,217,102,0.5);
+            background: linear-gradient(145deg, #2a2a3a, #1a1a2a);
+        }
+        .machine-info {
+            flex: 1;
+        }
+        .machine-name {
+            font-weight: bold;
+            color: #ffd966;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .machine-stats {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+            font-size: 0.7rem;
+            flex-wrap: wrap;
+        }
+        .machine-stats span {
+            background: rgba(74,128,192,0.2);
+            padding: 2px 8px;
+            border-radius: 20px;
+            color: #80e4ff;
+        }
+        .hot-badge {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .play-btn {
+            background: linear-gradient(145deg, #2a6a4a, #1a4a3a);
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            display: inline-block;
+            transition: all 0.15s ease;
+            border: 1px solid #88ffaa;
+            box-shadow: 0 3px 0 #0a2a1a;
+        }
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #0a2a1a;
+            background: linear-gradient(145deg, #3a8a5a, #2a5a4a);
+        }
+        .play-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #0a2a1a;
+        }
+        .cancel-btn {
+            background: linear-gradient(145deg, #7f2a2a, #5f1a1a);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #ff8888;
+            box-shadow: 0 3px 0 #3a0a0a;
+            transition: all 0.15s ease;
+        }
+        .cancel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #3a0a0a;
+            background: linear-gradient(145deg, #9f3a3a, #7f2a2a);
+        }
+        .cancel-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #3a0a0a;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #9ca3af;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            color: #4a80c0;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+        .empty-state .hint {
+            font-size: 0.7rem;
+            margin-top: 12px;
+            color: #ffd966;
+        }
+        
+        /* ========== 下方導覽列樣式 - 按鈕寬度 50px，間距自動平均分配 ========== */
+        .bottom-nav {
+            background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
+            border-top: 2px solid #4a80c0;
+            border-bottom: 2px solid #4a80c0;
+            box-shadow: 
+                0 -5px 15px rgba(74, 128, 192, 0.3),
+                0 8px 10px rgba(0, 0, 0, 0.6),
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -3px 8px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px 30px 30px 30px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        /* 金屬流光特效 */
+        .bottom-nav::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-20deg);
+            animation: shine 4s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 120%; }
+            100% { left: 120%; }
+        }
+
+        /* 導覽項目容器 - 自動平均分配間距 */
+        .nav-items-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 0;
+        }
+
+        /* 每個導覽按鈕樣式 — 立體金屬凸起效果，寬度固定 50px */
+        .nav-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #b0c4de;
+            transition: all 0.1s ease;
+            border-radius: 20px;
+            padding: 0.5rem 0;
+            text-decoration: none;
+            outline: none;
+            font-family: 'Noto Sans TC', 'Noto Sans JP', 'Orbitron', sans-serif;
+            background: linear-gradient(145deg, #3a4050, #2a2f40);
+            box-shadow: 
+                0 5px 0 #0f121c,
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -3px 5px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(74, 128, 192, 0.2);
+            cursor: pointer;
+            text-align: center;
+            
+            /* 固定寬度 50px */
+            flex: none;
+            width: 50px;
+        }
+
+        /* 懸浮效果: 向上浮起 */
+        .nav-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 8px 0 #0f121c,
+                0 12px 20px rgba(74, 128, 192, 0.4),
+                inset 0 2px 5px rgba(255, 255, 255, 0.5),
+                inset 0 -3px 5px rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            border-color: rgba(74, 128, 192, 0.6);
+        }
+
+        /* 點擊按壓效果 */
+        .nav-item:active {
+            transform: translateY(3px);
+            box-shadow: 
+                0 2px 0 #0f121c,
+                inset 0 5px 8px rgba(0, 0, 0, 0.5),
+                inset 0 -2px 5px rgba(255, 255, 255, 0.2);
+            color: #4a80c0;
+        }
+
+        /* 當前頁面（active）高亮效果 */
+        .nav-item.current-page {
+            background: linear-gradient(145deg, #4a5065, #3a4055);
+            box-shadow: 
+                0 5px 0 #0f121c,
+                0 10px 15px rgba(74, 128, 192, 0.5),
+                inset 0 2px 8px rgba(255, 255, 255, 0.6),
+                inset 0 -3px 8px rgba(0, 0, 0, 0.4);
+            color: white;
+            border: 1px solid #4a80c0;
+            transform: scale(1.05);
+            text-shadow: 0 0 8px #4a80c0;
+        }
+
+        /* 圖示大小與陰影 */
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 2px;
+            filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.5));
+        }
+
+        /* 導覽文字 */
+        .nav-item span {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-size: 0.7rem;
+        }
+
+        /* 小紅點 (公告未讀標記) */
+        .nav-badge {
+            position: absolute;
+            top: 4px;
+            right: 12px;
+            width: 10px;
+            height: 10px;
+            background-color: #ff4d4d;
+            border-radius: 50%;
+            border: 1px solid rgba(255,215,0,0.6);
+            box-shadow: 0 0 6px #ff4d4d;
+            display: none;
+        }
+
+        .nav-badge.show {
+            display: block;
+        }
+
+        /* 適應觸控螢幕 */
+        @media (hover: hover) {
+            .nav-item:hover {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* 手機小螢幕時稍微縮減 */
+        @media (max-width: 420px) {
+            .bottom-nav {
+                padding: 0.5rem 1rem;
+            }
+            .nav-item {
+                padding: 0.4rem 0;
+                width: 45px;
+            }
+            .nav-item i {
+                font-size: 1.2rem;
+            }
+            .nav-item span {
+                font-size: 0.6rem;
+            }
+        }
+        
+        .section-title { color: #ffd966; font-size: 18px; font-weight: bold; border-bottom: 2px solid #ffaa33; padding-bottom: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .flex { display: flex; }
         .items-center { align-items: center; }
         .justify-between { justify-content: space-between; }
-        .gap-1 { gap: 0.25rem; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-3 { gap: 0.75rem; }
-        .text-xs { font-size: 0.7rem; }
-        .text-sm { font-size: 0.8rem; }
-        .text-lg { font-size: 1.1rem; }
-        .text-xl { font-size: 1.2rem; }
-        .text-center { text-align: center; }
-        .text-blue-300 { color: #93c5fd; }
-        .text-gray-400 { color: #9ca3af; }
-        .text-green-400 { color: #4ade80; }
-        .text-red-400 { color: #f87171; }
-        .text-amber-400 { color: #fbbf24; }
-        .text-cyan-400 { color: #22d3ee; }
-        .text-yellow-300 { color: #fcd34d; }
-        .font-bold { font-weight: 700; }
-        .rounded-xl { border-radius: 12px; }
-        .bg-\[#002b4a\] { background-color: #002b4a; }
-        .border { border: 1px solid; }
-        .border-\[\#0099ff60\] { border-color: #0099ff60; }
-        .grid { display: grid; }
-        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .space-y-2 > * + * { margin-top: 0.5rem; }
-        .w-full { width: 100%; }
-        .mx-auto { margin-left: auto; margin-right: auto; }
+        .gap-2 { gap: 8px; }
+        .mt-2 { margin-top: 8px; }
+        .px-4 { padding-left: 16px; padding-right: 16px; }
         .overflow-y-auto { overflow-y: auto; }
-        @media (max-width: 480px) { .search-row { grid-template-columns: 1fr; gap: 8px; } }
-        .sub-confirm-modal, .hologram-loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 25000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.25s; padding: 1rem; }
-        .sub-confirm-modal.show, .hologram-loading.show { opacity: 1; visibility: visible; }
-        .sub-confirm-content { background: linear-gradient(145deg, #2a2f3f, #1a1f2f); border: 2px solid #ffd966; border-radius: 40px; max-width: 340px; width: 100%; padding: 1.8rem 1.5rem; transform: scale(0.9); transition: transform 0.2s; }
-        .sub-confirm-modal.show .sub-confirm-content { transform: scale(1); }
-        .sub-confirm-header { text-align: center; margin-bottom: 1.2rem; border-bottom: 2px solid rgba(74, 128, 192, 0.5); padding-bottom: 0.8rem; }
-        .sub-confirm-header h3 { font-size: 1.6rem; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ffaa33, #ffd966); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.25rem; }
-        .sub-confirm-header p { color: #7ec8ff; font-size: 0.9rem; }
-        .sub-confirm-detail { background: linear-gradient(145deg, #1a2a3a, #0a1a2a); border: 1px solid #4a80c0; border-radius: 28px; padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
-        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid rgba(74, 128, 192, 0.3); }
-        .detail-row:last-child { border-bottom: none; }
-        .detail-label { color: #b3e4ff; font-size: 0.85rem; }
-        .detail-value { color: #ffd966; font-size: 1.1rem; font-weight: 800; font-family: 'Orbitron', monospace; }
-        .sub-confirm-input-group { margin: 1.2rem 0; }
-        .sub-confirm-input-group label { display: block; color: #b3e4ff; margin-bottom: 0.6rem; }
-        .sub-confirm-input-group input { width: 100%; padding: 0.8rem 1rem; background: linear-gradient(145deg, #1a2a3a, #0e1a2a); border: 2px solid #4a80c0; border-radius: 40px; color: #ffd966; font-size: 1rem; font-weight: 700; text-align: center; }
-        .sub-confirm-balance { text-align: right; color: #ffaa66; font-size: 0.8rem; margin-top: 0.5rem; }
-        .sub-confirm-actions { display: flex; gap: 1rem; margin-top: 1.2rem; }
-        .sub-confirm-btn { flex: 1; padding: 0.8rem; border-radius: 40px; font-weight: 800; cursor: pointer; text-align: center; font-size: 0.9rem; }
-        .sub-confirm-btn.secondary { background: linear-gradient(145deg, #3a4050, #2a2f40); border: 1px solid #4a80c0; color: #b0c4de; box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), inset 0 -3px 5px rgba(0,0,0,0.4), 0 5px 0 #0f121c; }
-        .sub-confirm-btn.primary { background: linear-gradient(145deg, #ffaa33, #ff8c00); border: 1px solid #ffd700; color: #2a1f0a; box-shadow: inset 0 2px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.2), 0 5px 0 #b85e00; }
-        .sub-confirm-btn.primary:active { transform: translateY(3px); }
-        .hologram-content { position: relative; width: 90%; max-width: 400px; min-height: 450px; text-align: center; }
-        .loading-video { width: 100%; border-radius: 20px; box-shadow: 0 0 30px rgba(74,128,192,0.5); }
-        .loading-text { font-size: 24px; font-weight: 900; color: #ffd700; text-shadow: 0 0 10px #ffd700; margin-top: 10px; }
-        .video-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .flex-1 { flex: 1; }
+        .text-center { text-align: center; }
+        .text-gray-400 { color: #9ca3af; }
+        .hidden { display: none; }
+        .space-y-2 > * + * { margin-top: 8px; }
+        .mb-4 { margin-bottom: 16px; }
+        .cursor-pointer { cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="betModal" class="bet-modal"><div class="bet-modal-content"><div class="bet-modal-close" onclick="closeBetModal()">✕</div><div id="betModalTitle" class="bet-modal-title">機台明細</div><div class="stats-row" id="betStats"></div><div class="bet-modal-table-container"><table class="bet-modal-table"><thead><tr><th class="sortable-header" onclick="toggleBetSort()">日期 時間 <span id="betSortIcon">▼</span></th><th>類型</th><th>投注</th><th>獲得</th><th>合計</th><th>注單編號</th><th>影片</th></tr></thead><tbody id="betModalTableBody"></tbody></table></div></div></div>
-    <div id="betDetailModal" class="bet-detail-modal"><div class="modal-close" onclick="closeBetDetailModal()">✕</div><div id="betDetailTitle" class="bet-detail-title">明細詳細資訊</div><div id="betDetailContent" class="bet-detail-content"></div></div>
-
-    <div class="max-w-md mx-auto flex flex-col">
-        <header class="metal-header px-4 py-3 flex-shrink-0">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="avatar-container" id="avatarContainer"><img id="avatarImage" src="https://i.pravatar.cc/150?img=7" alt="user avatar"><div class="avatar-overlay">更換</div></div>
-                    <div class="flex flex-col"><div class="flex items-center gap-1"><span id="displayNickname" class="nickname-edit text-white text-xl font-bold">郝可愛</span><i class="fa fa-pencil-square-o text-blue-400 text-sm ml-1"></i></div><div class="flex items-center gap-2 mt-1"><span class="vip-badge" id="vipBadge">VIP 1</span><span class="exp-text" id="expText">經驗值 680/1,200</span></div></div>
+<div class="max-w-md flex flex-col">
+    <header class="metal-header">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="avatar-container" id="avatarContainer">
+                    <img id="avatarImage" src="https://i.pravatar.cc/150?img=7">
+                    <div class="avatar-overlay">更換</div>
                 </div>
-                <div class="flex items-center gap-2"><div class="points-display" id="headerPoints"><span class="text-xs text-yellow-300 mr-1">💰</span><span class="font-bold text-yellow-300 text-lg" id="userPoints">6,600</span></div><a href="index.html" class="home-return-btn" title="回首頁"><i class="fa fa-home"></i></a></div>
+                <div>
+                    <div class="flex items-center gap-1">
+                        <span id="displayNickname" class="nickname-edit">郝可愛</span>
+                        <i class="fa fa-pencil-square-o text-blue-400 text-sm"></i>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="vip-badge" id="vipBadge">VIP 1</span>
+                        <span class="text-blue-300 text-xs cursor-pointer">經驗值 680/1,200</span>
+                    </div>
+                </div>
             </div>
-            <div class="mt-2"><div class="progress-bar"><div class="progress-fill" style="width: 28%;"></div></div></div>
-        </header>
-
-        <div id="vipInfoPanel" class="vip-info-panel mx-4 mt-2 hidden"><h3 class="text-amber-400 font-bold text-sm mb-2"><i class="fa fa-crown"></i> VIP 1 特權說明</h3><div class="vip-tier">VIP 1 - 基礎返水 0.2%</div></div>
-
-        <div class="px-4 mt-4"><div class="banner-area grid grid-cols-3 gap-1 items-center"><div class="action-grid-btn" id="favMachinesBtn"><span class="count-badge" id="favCount">3</span><i class="fa fa-heart" style="color: #ff6680;"></i><span class="text-xs block mt-1">收藏</span></div><div class="action-grid-btn" id="keepMachinesBtn"><span class="count-badge keep" id="keepCount">2</span><i class="fa fa-bookmark" style="color: #ffb347;"></i><span class="text-xs block mt-1">保留</span></div><div class="action-grid-btn" id="supportBtn"><i class="fa fa-headphones" style="color: #aaccff;"></i><span class="text-xs block mt-1">客服</span></div></div></div>
-
-        <div id="favMachineList" class="machine-list-container px-4"><div class="list-title"><i class="fa fa-heart text-pink-400"></i> 我收藏的機台 (<span id="favCountDisplay">3</span>)</div><div class="machine-list scrollbar-beauty" id="favMachineItems"></div></div>
-        <div id="keepMachineList" class="machine-list-container px-4"><div class="list-title"><i class="fa fa-bookmark text-amber-400"></i> 我保留的機台 (<span id="keepCountDisplay">2</span>)</div><div class="machine-list scrollbar-beauty" id="keepMachineItems"></div></div>
-
-        <main class="flex-1 px-4 pb-4 overflow-y-auto scrollbar-beauty">
-            <div class="game-card-bg tech-border rounded-xl p-3">
-                <div class="flex items-center justify-between mb-3"><h3 class="text-primary text-lg flex items-center gap-2"><i class="fa fa-list-alt"></i> 注單總覽</h3></div>
-                <div class="bg-[#002b4a] rounded-xl p-3 mb-4 border border-[#0099ff60]">
-                    <div class="text-blue-300 text-sm mb-2"><i class="fa fa-chart-bar"></i> 全部總計</div>
-                    <div class="grid grid-cols-3 gap-2 text-center"><div><div class="text-xs text-blue-300">總投注</div><div class="text-lg font-bold" id="totalBet">0</div></div><div><div class="text-xs text-blue-300">總獲得</div><div class="text-lg font-bold" id="totalWin">0</div></div><div><div class="text-xs text-blue-300">淨損益</div><div class="text-lg font-bold" id="totalNet">0</div></div></div>
-                </div>
-                
-                <div class="search-layout">
-                    <div class="search-row"><div class="date-group"><input type="date" id="startDate" class="date-input" value="2025-02-01"><span>~</span><input type="date" id="endDate" class="date-input" value="2025-03-31"></div><button id="dateSearchBtn" class="search-btn">搜尋</button></div>
-                    <div class="search-row"><div class="search-box"><i class="fa fa-search"></i><input type="text" id="searchInput" placeholder="搜尋機台名稱或編號..."></div><select id="filterSelect" class="filter-select"><option value="all">全部記錄</option><option value="platform_in">平台轉入</option><option value="platform_out">平台轉出</option><option value="token_in">代幣帶入</option><option value="token_out">代幣帶出</option><option value="bonus">活動贈分</option><option value="manual_add">人工上分</option><option value="manual_sub">人工下分</option><option value="shop">購買道具</option></select></div>
-                </div>
-                
-                <div id="transactionContainer" class="space-y-2 mb-4"></div>
-                <div id="sessionsContainer" class="space-y-2"></div>
+            <div class="flex items-center gap-2">
+                <div class="points-display" id="headerPoints">💰 <span id="userPoints">6,600</span></div>
+                <a href="index.html" class="bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center"><i class="fa fa-home"></i></a>
             </div>
-        </main>
+        </div>
+        <div class="progress-bar mt-2"><div class="progress-fill"></div></div>
+    </header>
 
-        <nav class="bottom-nav mx-auto"><div class="flex justify-between items-center w-full"><a href="index.html" class="nav-item"><i class="fa fa-home text-xl"></i><span class="text-xs mt-1">首頁</span></a><a href="machines.html" class="nav-item"><i class="fa fa-gamepad text-xl"></i><span class="text-xs mt-1">機台</span></a><a href="news.html" class="nav-item"><i class="fa fa-bell text-xl"></i><span class="text-xs mt-1">公告</span></a><a href="#" class="nav-item current-page"><i class="fa fa-user text-xl"></i><span class="text-xs mt-1">我的</span></a></div></nav>
+    <div class="px-4 mt-4">
+        <div class="grid grid-cols-3 gap-2">
+            <div class="action-grid-btn" id="favMachinesBtn"><span class="count-badge" id="favCount">2</span><i class="fa fa-heart text-pink-400 text-xl"></i><div class="text-xs mt-1">收藏</div></div>
+            <div class="action-grid-btn" id="keepMachinesBtn"><span class="count-badge keep" id="keepCount">1</span><i class="fa fa-bookmark text-orange-400 text-xl"></i><div class="text-xs mt-1">保留</div></div>
+            <div class="action-grid-btn" id="supportBtn"><i class="fa fa-headphones text-blue-400 text-xl"></i><div class="text-xs mt-1">客服</div></div>
+        </div>
     </div>
 
-    <div class="sub-confirm-modal" id="subConfirmModal"><div class="sub-confirm-content"><div class="sub-confirm-header"><h3 id="confirmMachineName">GOGO 小丑</h3><p id="confirmSubName">1號機</p></div><div class="sub-confirm-detail"><div class="detail-row"><span class="detail-label"><i class="fa fa-ticket"></i> 每枚代幣</span><span class="detail-value" id="confirmRatio">2.5</span></div><div class="detail-row"><span class="detail-label"><i class="fa fa-database"></i> 目前點數</span><span class="detail-value" id="confirmPoints">6,600</span></div></div><div class="sub-confirm-input-group"><label><i class="fa fa-arrow-down"></i> 使用代幣數量 <span style="color:#ffaa66;">(最低 100)</span></label><input type="number" id="confirmTokenInput" min="100" step="1" placeholder="請輸入數量" value="100"><div class="sub-confirm-balance" id="confirmTokenRemain"><i class="fa fa-credit-card"></i> 剩餘點數: 6,600</div></div><div class="sub-confirm-actions"><button class="sub-confirm-btn secondary" id="confirmCancel">取消</button><button class="sub-confirm-btn primary" id="confirmOk">確認進入</button></div></div></div>
+    <main class="flex-1 overflow-y-auto px-4 py-3">
+        <div class="section-title"><i class="fa fa-list-alt"></i> 記錄總覽</div>
+        
+        <div class="search-layout">
+            <div class="search-row">
+                <div class="date-group">
+                    <input type="date" id="startDate" value="2026-03-01">
+                    <span>~</span>
+                    <input type="date" id="endDate" value="2026-03-31">
+                </div>
+                <button id="dateSearchBtn" class="search-btn">搜尋</button>
+            </div>
+            <div class="search-row">
+                <div class="search-box">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="搜尋機台名稱或編號...">
+                </div>
+                <select id="filterSelect" class="filter-select">
+                    <option value="all" selected>全部記錄</option>
+                    <option value="bet_detail">注單明細</option>
+                    <option value="platform_in">平台轉入</option>
+                    <option value="platform_out">平台轉出</option>
+                    <option value="platform_add">人工上分</option>
+                    <option value="platform_sub">人工下分</option>
+                    <option value="token_in">代幣帶入</option>
+                    <option value="token_out">代幣帶出</option>
+                    <option value="bonus">活動贈分</option>
+                    <option value="shop">購買道具</option>
+                </select>
+            </div>
+        </div>
 
-    <div class="hologram-loading" id="hologramLoading"><div class="hologram-content"><video id="mascotVideo" class="loading-video" autoplay muted loop playsinline src="https://video.wixstatic.com/video/d5e540_d63f842135e8416f891842373bc0f582/720p/mp4/file.mp4"></video><div class="loading-text" id="loadingMachineTitle">LOADING</div><div class="progress-bar"><div class="progress-fill"></div></div></div></div>
+        <div id="statsContainer" class="stats-card"></div>
+        <div id="transactionContainer" class="space-y-2 mb-4"></div>
+        <div id="sessionsContainer" class="space-y-2"></div>
+    </main>
 
-    <script>
-        (function() {
-            const platforms = ['BBIN', 'TZ', '搖錢樹', 'FDY', '富大爺', '富游', 'LIVE7', '包你發'];
-            
-            function generateAllTransactions() {
-                const transactions = [];
-                const now = new Date();
-                const types = [
-                    { type: 'platform_in', name: '平台轉入', icon: 'fa-download', colors: 'card-platform_in', isPositive: true },
-                    { type: 'platform_out', name: '平台轉出', icon: 'fa-upload', colors: 'card-platform_out', isPositive: false },
-                    { type: 'token_in', name: '代幣帶入', icon: 'fa-arrow-down', colors: 'card-token_in', isPositive: true },
-                    { type: 'token_out', name: '代幣帶出', icon: 'fa-arrow-up', colors: 'card-token_out', isPositive: false },
-                    { type: 'bonus', name: '活動贈分', icon: 'fa-gift', colors: 'card-bonus', isPositive: true },
-                    { type: 'manual_add', name: '人工上分', icon: 'fa-user-plus', colors: 'card-manual_add', isPositive: true },
-                    { type: 'manual_sub', name: '人工下分', icon: 'fa-user-minus', colors: 'card-manual_sub', isPositive: false },
-                    { type: 'shop', name: '購買道具', icon: 'fa-shopping-cart', colors: 'card-shop', isPositive: false }
-                ];
-                
-                types.forEach((t) => {
-                    const count = Math.floor(Math.random() * 3) + 3;
-                    for (let i = 0; i < count; i++) {
-                        const date = new Date(now);
-                        const daysAgo = Math.floor(Math.random() * 30);
-                        date.setDate(now.getDate() - daysAgo);
-                        date.setHours(10 + Math.floor(Math.random() * 12), Math.floor(Math.random() * 60), Math.floor(Math.random() * 60));
-                        
-                        let amount, detailText;
-                        if (t.type === 'platform_in' || t.type === 'platform_out') {
-                            const platform = platforms[Math.floor(Math.random() * platforms.length)];
-                            amount = Math.floor(Math.random() * 5000) + 500;
-                            detailText = platform;
-                        } else if (t.type === 'token_in' || t.type === 'token_out') {
-                            amount = Math.floor(Math.random() * 3000) + 100;
-                            detailText = `代幣 ${Math.floor(amount / 2.5)} 枚`;
-                        } else if (t.type === 'bonus') {
-                            amount = Math.floor(Math.random() * 1000) + 50;
-                            detailText = ['週年慶', '每日簽到', '推薦獎勵', 'VIP禮包'][Math.floor(Math.random() * 4)];
-                        } else if (t.type === 'manual_add' || t.type === 'manual_sub') {
-                            amount = Math.floor(Math.random() * 2000) + 100;
-                            detailText = `客服 ${['小美', '小華', '阿明', '小芳'][Math.floor(Math.random() * 4)]}`;
-                        } else {
-                            amount = Math.floor(Math.random() * 500) + 50;
-                            const items = ['幸運符', '經驗加倍卡', '神秘寶箱', '頭像框', '特效道具'];
-                            detailText = items[Math.floor(Math.random() * items.length)];
-                        }
-                        
-                        transactions.push({
-                            id: `${t.type}_${i}_${Date.now()}_${Math.random()}`,
-                            type: t.type,
-                            typeName: t.name,
-                            icon: t.icon,
-                            cardClass: t.colors,
-                            amount: t.isPositive ? amount : -amount,
-                            date: date,
-                            orderId: `${t.type.substring(0,2).toUpperCase()}${String(i+1).padStart(4,'0')}${Math.floor(Math.random() * 100)}`,
-                            detail: detailText,
-                            status: 'success'
-                        });
-                    }
-                });
-                return transactions.sort((a, b) => b.date - a.date);
-            }
-            
-            let allTransactions = generateAllTransactions();
-            
-            function renderTransactionCards() {
-                const container = document.getElementById('transactionContainer');
-                if (!container) return;
-                let html = '';
-                allTransactions.forEach(trans => {
-                    const isPositive = trans.amount > 0;
-                    const amountSign = isPositive ? '+' : '';
-                    const amountClass = isPositive ? 'positive' : 'negative';
-                    const dateStr = trans.date.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-                    html += `<div class="transaction-card ${trans.cardClass}" onclick="openTransactionDetail('${trans.id}', '${trans.typeName}', ${Math.abs(trans.amount)}, '${trans.orderId}', '${dateStr}', '${trans.detail}', ${isPositive})"><div class="transaction-card-header"><div class="transaction-name"><i class="fa ${trans.icon}"></i> ${trans.typeName}</div><span class="transaction-type" style="background: ${isPositive ? '#2a6e8a' : '#8a5a2a'}; color: white;">${isPositive ? '收入' : '支出'}</span></div><div class="transaction-amount ${amountClass}">${amountSign}${Math.abs(trans.amount)} 點</div><div class="transaction-detail"><span><i class="fa fa-calendar"></i> ${dateStr}</span><span><i class="fa fa-hashtag"></i> ${trans.orderId}</span><span><i class="fa fa-info-circle"></i> ${trans.detail}</span></div></div>`;
-                });
-                container.innerHTML = html || '<div class="text-center text-gray-400 py-4">暫無交易記錄</div>';
-            }
-            
-            window.openTransactionDetail = function(id, typeName, amount, orderId, dateStr, detail, isPositive) {
-                const amountClass = isPositive ? 'positive' : 'negative';
-                const amountSign = isPositive ? '+' : '';
-                const content = `<div class="row"><span class="label">訂單編號</span><span class="value">${orderId}</span></div><div class="row"><span class="label">交易類型</span><span class="value">${typeName}</span></div><div class="row"><span class="label">交易金額</span><span class="value ${amountClass}">${amountSign}${amount} 點</span></div><div class="row"><span class="label">詳細資訊</span><span class="value">${detail}</span></div><div class="row"><span class="label">交易時間</span><span class="value">${dateStr}</span></div><div class="row"><span class="label">交易狀態</span><span class="value" style="color: #88ff88;">成功</span></div>`;
-                document.getElementById('betDetailTitle').textContent = `${typeName}明細`;
-                document.getElementById('betDetailContent').innerHTML = content;
-                document.getElementById('betDetailModal').classList.add('active');
-            };
-            
-            const POINTS_KEY = 't_pachin_user_points';
-            let userPoints = 6600;
-            function updatePointsDisplay() {
-                const userPointsEl = document.getElementById('userPoints');
-                if (userPointsEl) userPointsEl.textContent = userPoints.toLocaleString();
-                const confirmPoints = document.getElementById('confirmPoints');
-                if (confirmPoints) confirmPoints.textContent = userPoints.toLocaleString();
-            }
-            try { const stored = localStorage.getItem(POINTS_KEY); if (stored !== null) { userPoints = parseInt(stored, 10); if (isNaN(userPoints)) userPoints = 6600; } } catch(e) { userPoints = 6600; }
-            updatePointsDisplay();
-            
-            let favoriteMachines = [{ id: 1, name: 'GOGO 小丑', number: 'J001', image: 'https://i.pinimg.com/736x/b1/f1/ec/b1f1ec3a191e62e3d0e300ce79c9b593.jpg', ratio: '2.5', vendor: 'Olympia', model: '6號機' },{ id: 2, name: '我是小丑-EX', number: 'J002', image: 'https://i.pinimg.com/736x/4a/2a/30/4a2a3089197d997984a7a75921faf2d9.jpg', ratio: '2.8', vendor: 'ELECO', model: '5號機' },{ id: 3, name: '快樂小丑 VII', number: 'J003', image: 'https://i.pinimg.com/736x/76/a7/ec/76a7eca59c0b7f7a8404e67e043841cb.jpg', ratio: '2.0', vendor: 'HEIWA', model: '6號機' }];
-            let keepMachines = [{ id: 4, name: '新我是小丑-EX水晶版', number: 'J004', image: 'https://i.pinimg.com/736x/5a/d2/04/5ad204b86a09d1fc30374422fe0a4070.jpg', ratio: '3.0', vendor: 'Sammy', model: '6號機', endTime: new Date(Date.now() + 10 * 60 * 1000), coins: 250 },{ id: 5, name: '新我的小丑-EX紅金版', number: 'J005', image: 'https://i.pinimg.com/736x/63/46/aa/6346aaa01a8c68fbf4e8bdb5134cd7b1.jpg', ratio: '3.2', vendor: 'Daito', model: '6號機', endTime: new Date(Date.now() + 15 * 60 * 1000), coins: 380 }];
+    <!-- 下方導覽列 (按鈕寬度固定 50px，間距自動平均分配) -->
+    <nav class="bottom-nav">
+        <div class="nav-items-container">
+            <a href="index.html" class="nav-item" id="navHome">
+                <i class="fa fa-home"></i>
+                <span>首頁</span>
+            </a>
+            <a href="machines.html" class="nav-item" id="navMachines">
+                <i class="fa fa-gamepad"></i>
+                <span>機台</span>
+            </a>
+            <a href="news.html" class="nav-item" id="navNews">
+                <i class="fa fa-bell"></i>
+                <span>公告</span>
+                <span class="nav-badge show" id="newsBadge"></span>
+            </a>
+            <a href="#" class="nav-item current-page" id="navProfile">
+                <i class="fa fa-user"></i>
+                <span>我的</span>
+            </a>
+        </div>
+    </nav>
+</div>
 
-            function renderFavorites() { let html = ''; favoriteMachines.forEach(m => { html += `<div class="machine-card"><img src="${m.image}" alt="${m.name}"><div class="machine-info"><div class="machine-name">${m.name}</div><div class="machine-meta"><span>${m.number}</span><span>${m.model}</span><span>1:${m.ratio}</span><span>${m.vendor}</span></div></div><div class="machine-actions"><div class="play-btn" onclick="event.stopPropagation(); openFavoriteGame('${m.name}', '主機台', '${m.ratio}', ${m.id})"><i class="fa fa-play"></i> 進入</div><div class="unfavorite-btn" onclick="event.stopPropagation(); unfavoriteMachine(${m.id}, '${m.name}')"><i class="fa fa-heart"></i> 取消收藏</div></div></div>`; }); document.getElementById('favMachineItems').innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無收藏機台</div>'; document.getElementById('favCount').textContent = favoriteMachines.length; document.getElementById('favCountDisplay').textContent = favoriteMachines.length; }
-            function renderKeep() { let html = ''; keepMachines.forEach(m => { const endDate = new Date(m.endTime); const endTimeStr = endDate.toLocaleString('zh-TW'); html += `<div class="machine-card"><img src="${m.image}" alt="${m.name}"><div class="machine-info"><div class="machine-name">${m.name}</div><div class="machine-meta"><span>${m.number}</span><span>${m.model}</span><span>1:${m.ratio}</span><span>${m.vendor}</span></div><div class="countdown-timer" data-endtime="${endDate.toISOString()}"><i class="fa fa-hourglass-half"></i> 計算中...</div><div style="font-size: 0.6rem; color: #aaa; margin-top: 2px;">結束於 ${endTimeStr}</div></div><div class="machine-actions"><div class="play-btn" onclick="event.stopPropagation(); enterReserveGame('${m.name}', '主機台', '${m.ratio}', ${m.id})"><i class="fa fa-play"></i> 進入</div><div class="leave-btn" onclick="event.stopPropagation(); leaveKeepMachine(${m.id}, '${m.name}', ${m.coins || 100})"><i class="fa fa-sign-out"></i> 離開</div></div></div>`; }); document.getElementById('keepMachineItems').innerHTML = html || '<div class="text-gray-400 text-sm p-4 text-center">暫無保留機台</div>'; document.getElementById('keepCount').textContent = keepMachines.length; document.getElementById('keepCountDisplay').textContent = keepMachines.length; updateCountdowns(); }
-            function updateCountdowns() { document.querySelectorAll('.countdown-timer[data-endtime]').forEach(el => { const endTime = new Date(el.dataset.endtime).getTime(); const now = new Date().getTime(); const diff = endTime - now; if(diff <= 0) { el.innerHTML = '<i class="fa fa-hourglass-end"></i> 已到期'; el.classList.add('warning'); return; } const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); const seconds = Math.floor((diff % (1000 * 60)) / 1000); el.innerHTML = `<i class="fa fa-hourglass-half"></i> 剩餘 ${minutes}分 ${seconds}秒`; if(minutes < 10) el.classList.add('warning'); else el.classList.remove('warning'); }); }
-            window.openFavoriteGame = function(machineName, subName, ratio, machineId) { currentEnterData = { machineName, subName, ratio, machineId }; document.getElementById('confirmMachineName').textContent = machineName; document.getElementById('confirmSubName').textContent = subName; document.getElementById('confirmRatio').textContent = ratio; document.getElementById('confirmPoints').textContent = userPoints.toLocaleString(); document.getElementById('confirmTokenInput').value = 100; document.getElementById('confirmTokenRemain').innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${(userPoints - 100).toLocaleString()}`; document.getElementById('subConfirmModal').classList.add('show'); };
-            window.enterReserveGame = function(machineName, subName, ratio, machineId) { showHologramLoading(machineName, subName, ratio, machineId, 100); };
-            window.unfavoriteMachine = function(id, name) { if (!confirm(`確定要取消收藏「${name}」嗎？`)) return; favoriteMachines = favoriteMachines.filter(m => m.id !== id); renderFavorites(); alert(`✅ 已取消收藏「${name}」`); };
-            window.leaveKeepMachine = function(id, name, coinsEarned) { if (!confirm(`確定要離開保留的機台「${name}」嗎？\n\n離開後將獲得 ${coinsEarned} 點數`)) return; userPoints += coinsEarned; localStorage.setItem(POINTS_KEY, userPoints); updatePointsDisplay(); keepMachines = keepMachines.filter(m => m.id !== id); renderKeep(); alert(`✅ 已離開機台「${name}」，獲得 ${coinsEarned} 點數！`); };
-            function showHologramLoading(machineName, subName, ratio, machineId, coins) { document.getElementById('loadingMachineTitle').textContent = `${machineName} ${subName} 每枚${ratio}`; document.getElementById('hologramLoading').classList.add('show'); localStorage.setItem('t_pachin_machine_info', JSON.stringify({ name: machineName, subName, ratio, machineId, coins })); setTimeout(() => { window.location.href = 'simulator.html'; }, 2500); }
-            function confirmEnterGame() { if (!currentEnterData) return; let tokenUsed = parseInt(document.getElementById('confirmTokenInput').value) || 0; if (tokenUsed < 100) { alert('最低兌換數量為 100 代幣！'); return; } if (tokenUsed > userPoints) { alert('點數不足！'); return; } userPoints -= tokenUsed; localStorage.setItem(POINTS_KEY, userPoints); updatePointsDisplay(); document.getElementById('subConfirmModal').classList.remove('show'); showHologramLoading(currentEnterData.machineName, currentEnterData.subName, currentEnterData.ratio, currentEnterData.machineId, tokenUsed); }
-            function closeSubConfirm() { document.getElementById('subConfirmModal').classList.remove('show'); currentEnterData = null; }
-            document.getElementById('confirmCancel')?.addEventListener('click', closeSubConfirm); document.getElementById('confirmOk')?.addEventListener('click', confirmEnterGame); document.getElementById('confirmTokenInput')?.addEventListener('input', function() { let val = parseInt(this.value) || 0; if (val < 100) { this.value = 100; val = 100; } if (val > userPoints) { val = userPoints; this.value = userPoints; } document.getElementById('confirmTokenRemain').innerHTML = `<i class="fa fa-credit-card"></i> 剩餘點數: ${(userPoints - val).toLocaleString()}`; });
-            document.getElementById('favMachinesBtn')?.addEventListener('click', () => { document.getElementById('favMachineList').classList.toggle('show'); document.getElementById('keepMachineList').classList.remove('show'); });
-            document.getElementById('keepMachinesBtn')?.addEventListener('click', () => { document.getElementById('keepMachineList').classList.toggle('show'); document.getElementById('favMachineList').classList.remove('show'); updateCountdowns(); });
-            document.getElementById('supportBtn')?.addEventListener('click', () => alert('📞 客服與幫助'));
-            document.getElementById('vipBadge')?.addEventListener('click', () => document.getElementById('vipInfoPanel').classList.toggle('hidden'));
-            document.getElementById('expText')?.addEventListener('click', () => document.getElementById('vipInfoPanel').classList.toggle('hidden'));
-            document.getElementById('avatarContainer')?.addEventListener('click', () => { const avatars = ['https://i.pravatar.cc/150?img=7','https://i.pravatar.cc/150?img=5','https://i.pravatar.cc/150?img=9']; document.getElementById('avatarImage').src = avatars[Math.floor(Math.random() * avatars.length)]; alert('大頭照已更換'); });
-            document.getElementById('displayNickname')?.addEventListener('click', () => { let name = prompt('修改暱稱', '郝可愛'); if(name) document.getElementById('displayNickname').textContent = name; });
-            document.getElementById('headerPoints')?.addEventListener('click', () => alert(`💰 目前點數：${userPoints.toLocaleString()}`));
-            
-            let currentEnterData = null;
-            let betSortOrder = 'desc';
-            let searchTerm = '';
-            let dateStart = new Date('2025-02-01');
-            let dateEnd = new Date('2025-03-31');
-            dateEnd.setHours(23, 59, 59);
-            
-            function generateSessions() {
-                const sessions = []; let spinCounter = 1;
-                const machines = [{ name: 'GOGO 小丑', number: 'J001' },{ name: '我是小丑-EX', number: 'J002' },{ name: '快樂小丑 VII', number: 'J003' },{ name: '新我是小丑-EX水晶版', number: 'J004' },{ name: '新我的小丑-EX紅金版', number: 'J005' }];
-                machines.forEach((machine, idx) => {
-                    const baseDate = new Date(2025, 1, 19 + idx, 20, 30 + idx * 10);
-                    const session = { id: `session-${idx + 1}`, machineName: machine.name, machineNumber: machine.number, bringInTime: new Date(baseDate), bringInAmount: 300 + idx * 50, bringOutTime: new Date(baseDate.getTime() + 45 * 60000), bringOutAmount: 350 + idx * 60, details: [], stats: { totalSpins: 0, totalBet: 0, totalWin: 0, bbCount: 0 } };
-                    session.details.push({ date: new Date(session.bringInTime), type: 'BRING_IN', bet: 0, win: session.bringInAmount, total: session.bringInAmount, betId: `INIT${idx+1}` });
-                    let currentTotal = session.bringInAmount, currentTime = new Date(session.bringInTime);
-                    for (let i = 0; i < 12; i++) { currentTime = new Date(currentTime.getTime() + (1 + Math.random() * 2) * 60000); const bet = 3; const win = Math.random() < 0.3 ? bet * (1 + Math.floor(Math.random() * 2)) : 0; currentTotal = currentTotal - bet + win; session.details.push({ date: new Date(currentTime), type: 'SPIN', bet: bet, win: win, total: currentTotal, betId: `SPIN${spinCounter++}` }); session.stats.totalSpins++; session.stats.totalBet += bet; session.stats.totalWin += win; }
-                    for (let i = 0; i < 18; i++) { currentTime = new Date(currentTime.getTime() + (0.5 + Math.random()) * 60000); const bet = 2; const win = 8 + Math.floor(Math.random() * 8); currentTotal = currentTotal - bet + win; session.details.push({ date: new Date(currentTime), type: 'BB', bet: bet, win: win, total: currentTotal, betId: `BB${spinCounter++}`, videoType: 'BB' }); session.stats.totalSpins++; session.stats.totalBet += bet; session.stats.totalWin += win; session.stats.bbCount++; }
-                    session.bringOutAmount = currentTotal; session.details.push({ date: new Date(session.bringOutTime), type: 'BRING_OUT', bet: session.bringOutAmount, win: 0, total: 0, betId: `OUT${idx+1}` }); session.netProfit = session.bringOutAmount - session.bringInAmount; sessions.push(session);
-                });
-                return sessions;
+<!-- 注單明細彈窗 -->
+<div id="betModal" class="bet-modal">
+    <div class="bet-modal-content">
+        <div class="modal-header"><span><i class="fa fa-list-alt"></i> <span id="betModalTitle">機台明細</span></span><span class="modal-close" onclick="closeBetModal()">✕</span></div>
+        <div class="stats-row" id="betStats"></div>
+        <div class="bet-modal-table-container"><table class="bet-modal-table"><thead id="betTableHead"></thead><tbody id="betModalTableBody"></tbody></table></div>
+    </div>
+</div>
+
+<div id="videoModal" class="video-modal">
+    <div class="video-modal-content">
+        <div class="video-header"><span><i class="fa fa-video-camera"></i> 遊戲錄影回放</span><span class="modal-close" onclick="closeVideoModal()">✕</span></div>
+        <video id="videoPlayer" controls autoplay></video>
+        <div class="text-center text-gray-400 text-xs py-2">🎬 從帶入代幣到帶出代幣 · 完整遊戲過程</div>
+    </div>
+</div>
+
+<div id="txDetailModal" class="tx-detail-modal">
+    <div class="modal-content">
+        <div class="modal-header"><span>交易明細</span><span class="modal-close" onclick="closeTxModal()">✕</span></div>
+        <div id="txDetailContent"></div>
+    </div>
+</div>
+
+<div id="favoriteModal" class="favorite-modal"><div class="favorite-modal-content"><div class="modal-header"><span><i class="fa fa-heart"></i> 我的收藏</span><span class="modal-close" onclick="closeFavoriteModal()">✕</span></div><div id="favoriteModalBody"></div></div></div>
+<div id="keepModal" class="keep-modal"><div class="keep-modal-content"><div class="modal-header"><span><i class="fa fa-bookmark"></i> 我的保留</span><span class="modal-close" onclick="closeKeepModal()">✕</span></div><div id="keepModalBody"></div></div></div>
+
+<script>
+(function() {
+    let userPoints = 6600;
+    let betSortOrder = 'desc';
+    const videoUrls = ["https://www.w3schools.com/html/mov_bbb.mp4", "https://www.w3schools.com/html/movie.mp4", "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4", "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/earth.mp4"];
+    
+    const JOKER_IMAGE_URL = "https://i.pinimg.com/736x/c3/72/db/c372db1b020ebf778ef707f63c122bf7.jpg";
+    
+    function generateSessions() {
+        const machines = [{ name: 'GOGO 小丑', number: 'J001' }, { name: '我是小丑-EX', number: 'J002' }, { name: '快樂小丑 VII', number: 'J003' }, { name: '新我是小丑-EX水晶版', number: 'J004' }];
+        const sessions = [];
+        for (let i = 0; i < machines.length; i++) {
+            const m = machines[i];
+            const day = 5 + i * 6;
+            const bringInTime = new Date(2026, 2, day, 14, 30);
+            const bringOutTime = new Date(2026, 2, day, 15, 45);
+            const bringInAmount = 500 + i * 150;
+            const details = [];
+            details.push({ date: new Date(bringInTime), type: 'BRING_IN', bet: 0, win: bringInAmount, total: bringInAmount, betId: `IN${i+1}` });
+            let currentTotal = bringInAmount;
+            let totalBet = 0, totalWin = 0;
+            const spinCount = 10 + Math.floor(Math.random() * 10);
+            for (let s = 0; s < spinCount; s++) {
+                const spinTime = new Date(bringInTime.getTime() + (s + 1) * 75000);
+                const bet = 6 + Math.floor(Math.random() * 14);
+                const win = Math.random() < 0.42 ? bet * (1 + Math.floor(Math.random() * 3)) : 0;
+                currentTotal = currentTotal - bet + win;
+                totalBet += bet;
+                totalWin += win;
+                details.push({ date: spinTime, type: 'SPIN', bet: bet, win: win, total: currentTotal, betId: `SP${i+1}-${s+1}`, isFirstSpin: (s === 0) });
             }
-            
-            let sessions = generateSessions();
-            let currentSession = null;
-            
-            function filterSessions() {
-                let filtered = sessions.filter(s => { const sessionDate = new Date(s.bringInTime); return sessionDate >= dateStart && sessionDate <= dateEnd; });
-                if (searchTerm) { const term = searchTerm.toLowerCase(); filtered = filtered.filter(s => s.machineName.toLowerCase().includes(term) || s.machineNumber.toLowerCase().includes(term)); }
-                return filtered;
-            }
-            
-            function formatDateTime(date) { return date.toLocaleString('zh-TW'); }
-            function formatDate(date) { return date.toLocaleDateString('zh-TW'); }
-            function formatTime(date) { return date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }); }
-            
-            function calculateTotals() {
-                const filtered = filterSessions();
-                let totalBet = 0, totalWin = 0;
-                filtered.forEach(s => { totalBet += s.stats.totalBet; totalWin += s.stats.totalWin; });
-                document.getElementById('totalBet').textContent = totalBet;
-                document.getElementById('totalWin').textContent = totalWin;
-                const net = totalWin - totalBet;
-                document.getElementById('totalNet').textContent = net >= 0 ? `+${net}` : net;
-            }
-            
-            function renderSessions() {
-                const filtered = filterSessions();
-                let html = '';
-                filtered.forEach((session, idx) => {
-                    html += `<div class="main-row" onclick="openBetModal(${idx})"><div><div class="machine-title"><span class="name">${session.machineName}</span><span class="number">#${session.machineNumber}</span></div><div class="date-range">${formatDate(session.bringInTime)} ~ ${formatDate(session.bringOutTime)}  ${formatTime(session.bringInTime)}~${formatTime(session.bringOutTime)}</div><div class="amount-info"><span class="bring-in">帶入 ${session.bringInAmount}</span><span class="text-gray-400">→</span><span class="bring-out">帶出 ${session.bringOutAmount}</span><span class="text-gray-400">|</span><span class="net-profit ${session.netProfit >= 0 ? 'positive' : 'negative'}">淨利 ${session.netProfit >= 0 ? '+' : ''}${session.netProfit}</span></div></div></div>`;
-                });
-                document.getElementById('sessionsContainer').innerHTML = html || '<div class="text-center text-gray-400 py-8">沒有注單記錄</div>';
-                calculateTotals();
-            }
-            
-            window.openBetModal = function(idx) {
-                currentSession = sessions[idx];
-                document.getElementById('betModalTitle').textContent = `${currentSession.machineName} #${currentSession.machineNumber}`;
-                const winRate = currentSession.stats.totalSpins > 0 ? Math.round((currentSession.stats.totalWin / currentSession.stats.totalBet) * 100) : 0;
-                document.getElementById('betStats').innerHTML = `<div class="stat-card"><i class="fa fa-refresh"></i><span>總轉數</span><span>${currentSession.stats.totalSpins}</span></div><div class="stat-card"><i class="fa fa-arrow-down"></i><span>總投注</span><span>${currentSession.stats.totalBet}</span></div><div class="stat-card"><i class="fa fa-arrow-up"></i><span>總獲得</span><span>${currentSession.stats.totalWin}</span></div><div class="stat-card"><i class="fa fa-film"></i><span>BB</span><span>${currentSession.stats.bbCount}</span></div><div class="stat-card"><i class="fa fa-pie-chart"></i><span>勝率</span><span>${winRate}%</span></div>`;
-                renderBetModalTable();
-                document.getElementById('betModal').classList.add('active');
-            };
-            
-            function renderBetModalTable() {
-                if (!currentSession) return;
-                let details = [...currentSession.details].sort((a, b) => betSortOrder === 'desc' ? b.date - a.date : a.date - b.date);
-                let html = '';
-                details.forEach(d => {
-                    let typeLabel = '', typeClass = '';
-                    if (d.type === 'BRING_IN') { typeLabel = '帶入'; typeClass = 'type-bringin'; }
-                    else if (d.type === 'BRING_OUT') { typeLabel = '帶出'; typeClass = 'type-bringout'; }
-                    else if (d.type === 'BB') { typeLabel = 'BB'; typeClass = 'type-bb'; }
-                    else { typeLabel = '一般'; typeClass = 'type-bet'; }
-                    html += `<tr><td class="text-blue-200">${formatDateTime(d.date)}</td><td><span class="record-type ${typeClass}">${typeLabel}</span></td><td class="${d.bet > 0 ? 'amount-negative' : ''}">${d.bet > 0 ? `-${d.bet}` : '-'}</td><td class="${d.win > 0 ? 'amount-positive' : ''}">${d.win > 0 ? `+${d.win}` : '-'}</td><td class="amount-total">${d.total}</td><td><span class="bet-id" onclick="event.stopPropagation(); openBetDetail('${d.betId}', '${d.type}', ${d.total})">${d.betId}</span></td><td>${d.videoType ? `<span class="video-tag"><i class="fa fa-film"></i> ${d.videoType}</span>` : '-'}</td></tr>`;
-                });
-                document.getElementById('betModalTableBody').innerHTML = html;
-            }
-            
-            window.openBetDetail = function(betId, type, total) {
-                document.getElementById('betDetailTitle').textContent = `注單 ${betId}`;
-                let content = '';
-                if (type === 'BRING_IN') content = `<div class="row"><span class="label">類型</span><span class="value">點數轉代幣</span></div><div class="row"><span class="label">獲得代幣</span><span class="value positive">+${total}</span></div>`;
-                else if (type === 'BRING_OUT') { const net = currentSession?.bringOutAmount - currentSession?.bringInAmount || 0; content = `<div class="row"><span class="label">類型</span><span class="value">代幣轉點數</span></div><div class="row"><span class="label">淨獲得</span><span class="value ${net >= 0 ? 'positive' : 'negative'}">${net >= 0 ? '+' : ''}${net}</span></div>`; }
-                else content = `<div class="row"><span class="label">類型</span><span class="value">${type === 'BB' ? '大當' : '一般轉數'}</span></div><div class="row"><span class="label">注單編號</span><span class="value">${betId}</span></div><div class="row"><span class="label">合計</span><span class="value">${total}</span></div>`;
-                document.getElementById('betDetailContent').innerHTML = content;
-                document.getElementById('betDetailModal').classList.add('active');
-            };
-            
-            window.toggleBetSort = function() { betSortOrder = betSortOrder === 'desc' ? 'asc' : 'desc'; document.getElementById('betSortIcon').textContent = betSortOrder === 'desc' ? '▼' : '▲'; renderBetModalTable(); };
-            window.closeBetModal = () => document.getElementById('betModal').classList.remove('active');
-            window.closeBetDetailModal = () => document.getElementById('betDetailModal').classList.remove('active');
-            
-            document.getElementById('searchInput')?.addEventListener('input', (e) => { searchTerm = e.target.value; renderSessions(); });
-            document.getElementById('dateSearchBtn')?.addEventListener('click', () => { dateStart = new Date(document.getElementById('startDate').value); dateEnd = new Date(document.getElementById('endDate').value); dateEnd.setHours(23, 59, 59); renderSessions(); });
-            document.getElementById('filterSelect')?.addEventListener('change', (e) => {
-                const selectedType = e.target.value;
-                const container = document.getElementById('transactionContainer');
-                if (selectedType === 'all') { renderTransactionCards(); }
-                else {
-                    const filtered = allTransactions.filter(t => t.type === selectedType).sort((a, b) => b.date - a.date);
-                    let html = '';
-                    filtered.forEach(trans => {
-                        const isPositive = trans.amount > 0;
-                        const amountSign = isPositive ? '+' : '';
-                        const amountClass = isPositive ? 'positive' : 'negative';
-                        const dateStr = trans.date.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-                        html += `<div class="transaction-card ${trans.cardClass}" onclick="openTransactionDetail('${trans.id}', '${trans.typeName}', ${Math.abs(trans.amount)}, '${trans.orderId}', '${dateStr}', '${trans.detail}', ${isPositive})"><div class="transaction-card-header"><div class="transaction-name"><i class="fa ${trans.icon}"></i> ${trans.typeName}</div><span class="transaction-type" style="background: ${isPositive ? '#2a6e8a' : '#8a5a2a'}; color: white;">${isPositive ? '收入' : '支出'}</span></div><div class="transaction-amount ${amountClass}">${amountSign}${Math.abs(trans.amount)} 點</div><div class="transaction-detail"><span><i class="fa fa-calendar"></i> ${dateStr}</span><span><i class="fa fa-hashtag"></i> ${trans.orderId}</span><span><i class="fa fa-info-circle"></i> ${trans.detail}</span></div></div>`;
-                    });
-                    container.innerHTML = html || '<div class="text-center text-gray-400 py-4">暫無此類型交易記錄</div>';
-                }
+            const bringOutAmount = Math.max(100, currentTotal - Math.random() * 280);
+            details.push({ date: new Date(bringOutTime), type: 'BRING_OUT', bet: 0, win: 0, total: bringOutAmount, betId: `OUT${i+1}` });
+            sessions.push({
+                machineName: m.name, machineNumber: m.number, bringInTime, bringOutTime,
+                bringInAmount, bringOutAmount: Math.floor(bringOutAmount),
+                netProfit: Math.floor(bringOutAmount - bringInAmount),
+                details, stats: { totalSpins: spinCount, totalBet, totalWin },
+                videoUrl: videoUrls[i % videoUrls.length]
             });
-            
-            renderFavorites();
-            renderKeep();
-            renderTransactionCards();
+        }
+        return sessions;
+    }
+    
+    function generateTransactions() {
+        const platforms = ['BBIN', 'TZ', '搖錢樹', 'FDY', '富大爺'];
+        const types = [
+            { type: 'platform_in', name: '平台轉入', icon: 'fa-download', isPositive: false, unit: '點' },
+            { type: 'platform_out', name: '平台轉出', icon: 'fa-upload', isPositive: true, unit: '點' },
+            { type: 'platform_add', name: '人工上分', icon: 'fa-user-plus', isPositive: true, unit: '點' },
+            { type: 'platform_sub', name: '人工下分', icon: 'fa-user-minus', isPositive: false, unit: '點' },
+            { type: 'token_in', name: '代幣帶入', icon: 'fa-arrow-down', isPositive: false, unit: '枚' },
+            { type: 'token_out', name: '代幣帶出', icon: 'fa-arrow-up', isPositive: true, unit: '枚' },
+            { type: 'bonus', name: '活動贈分', icon: 'fa-gift', isPositive: true, unit: '點' },
+            { type: 'shop', name: '購買道具', icon: 'fa-shopping-cart', isPositive: false, unit: '點' }
+        ];
+        let txs = [];
+        let idCounter = 1;
+        types.forEach(tt => {
+            for (let i = 0; i < 5; i++) {
+                let day = 5 + Math.floor(Math.random() * 25);
+                let date = new Date(2026, 2, day, Math.floor(Math.random() * 24), Math.floor(Math.random() * 60));
+                let points = Math.floor(Math.random() * 3000) + 100;
+                let platformName = tt.type === 'shop' ? '商城' : platforms[Math.floor(Math.random() * platforms.length)];
+                txs.push({ 
+                    id: `${tt.type}_${idCounter++}`, 
+                    type: tt.type, 
+                    name: tt.name, 
+                    icon: tt.icon, 
+                    platform: platformName, 
+                    points: tt.isPositive ? -points : points, 
+                    unit: tt.unit,
+                    date: date 
+                });
+            }
+        });
+        return txs.sort((a, b) => b.date - a.date);
+    }
+    
+    let allSessions = generateSessions();
+    let allTransactions = generateTransactions();
+    let currentSession = null;
+    let dateStart = new Date('2026-03-01'), dateEnd = new Date('2026-03-31');
+    dateEnd.setHours(23, 59, 59, 999);
+    let searchTerm = '';
+    let currentFilter = 'all';
+    
+    let favoriteMachines = [
+        { id: 1, name: 'GOGO 小丑', number: 'J001', image: JOKER_IMAGE_URL, ratio: '2.5' },
+        { id: 2, name: '我是小丑-EX', number: 'J002', image: JOKER_IMAGE_URL, ratio: '2.8' }
+    ];
+    let keepMachines = [
+        { id: 4, name: '新我是小丑-EX水晶版', number: 'J004', image: JOKER_IMAGE_URL, ratio: '3.0' }
+    ];
+    
+    function updateBadges() {
+        document.getElementById('favCount').innerText = favoriteMachines.length;
+        document.getElementById('keepCount').innerText = keepMachines.length;
+    }
+    
+    window.removeFromFavorite = function(machineId) {
+        favoriteMachines = favoriteMachines.filter(m => m.id !== machineId);
+        updateBadges();
+        renderFavoriteModal();
+    };
+    
+    window.removeFromKeep = function(machineId) {
+        keepMachines = keepMachines.filter(m => m.id !== machineId);
+        updateBadges();
+        renderKeepModal();
+    };
+    
+    window.enterMachine = function(machineName) {
+        alert(`小丑狂歡樂園 · 正在進入「${machineName}」機台，祝您幸運連連！`);
+    };
+    
+    function renderFavoriteModal() {
+        let html = '';
+        if (favoriteMachines.length === 0) {
+            html = `<div class="empty-state">
+                        <i class="fa fa-heart-o"></i>
+                        <p>暫無收藏機台</p>
+                        <p class="hint">可至機台頁面點擊收藏您喜愛的機台</p>
+                    </div>`;
+        } else {
+            favoriteMachines.forEach((m, idx) => {
+                const lastPlay = `2026/03/${10 + idx} 14:30`;
+                const hotText = idx === 0 ? '<span class="hot-badge">熱門</span>' : '';
+                html += `
+                    <div class="machine-card">
+                        <img src="${m.image}" alt="小丑機台" onerror="this.src='https://i.pravatar.cc/150?img=13'">
+                        <div class="machine-info">
+                            <div class="machine-name">
+                                ${m.name}
+                                ${hotText}
+                            </div>
+                            <div class="machine-stats">
+                                <span>${m.number}</span>
+                                <span>每枚 ${m.ratio}</span>
+                                <span>上次 ${lastPlay}</span>
+                                <span>天井 1280</span>
+                            </div>
+                            <div class="action-buttons">
+                                <div class="play-btn" onclick="enterMachine('${m.name}')">進入遊戲</div>
+                                <div class="cancel-btn" onclick="removeFromFavorite(${m.id})">取消收藏</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('favoriteModalBody').innerHTML = html;
+        document.getElementById('favoriteModal').classList.add('active');
+    }
+    
+    function renderKeepModal() {
+        let html = '';
+        if (keepMachines.length === 0) {
+            html = `<div class="empty-state">
+                        <i class="fa fa-bookmark-o"></i>
+                        <p>暫無保留機台</p>
+                        <p class="hint">可至機台頁面點擊保留，下次快速進入</p>
+                    </div>`;
+        } else {
+            keepMachines.forEach((m, idx) => {
+                const lastPlay = `2026/03/${15 + idx} 20:15`;
+                const saveNote = idx === 0 ? '最愛玩這台' : '試試手氣';
+                html += `
+                    <div class="machine-card">
+                        <img src="${m.image}" alt="小丑保留機台" onerror="this.src='https://i.pravatar.cc/150?img=13'">
+                        <div class="machine-info">
+                            <div class="machine-name">
+                                ${m.name}
+                            </div>
+                            <div class="machine-stats">
+                                <span>${m.number}</span>
+                                <span>每枚 ${m.ratio}</span>
+                                <span>上次 ${lastPlay}</span>
+                                <span>${saveNote}</span>
+                                <span>天井 980</span>
+                            </div>
+                            <div class="action-buttons">
+                                <div class="play-btn" onclick="enterMachine('${m.name}')">進入遊戲</div>
+                                <div class="cancel-btn" onclick="removeFromKeep(${m.id})">取消保留</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('keepModalBody').innerHTML = html;
+        document.getElementById('keepModal').classList.add('active');
+    }
+    
+    function formatDateTime(d) { return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+    function formatDate(d) { return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`; }
+    function formatTime(d) { return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+    
+    function getFilteredSessions() {
+        let f = allSessions.filter(s => s.bringInTime >= dateStart && s.bringInTime <= dateEnd);
+        if (searchTerm) f = f.filter(s => s.machineName.toLowerCase().includes(searchTerm) || s.machineNumber.toLowerCase().includes(searchTerm));
+        return f;
+    }
+    
+    function getFilteredTransactions() {
+        let f = allTransactions.filter(t => t.date >= dateStart && t.date <= dateEnd);
+        if (currentFilter !== 'all' && currentFilter !== 'bet_detail') f = f.filter(t => t.type === currentFilter);
+        if (searchTerm && currentFilter !== 'bet_detail') f = f.filter(t => t.name.toLowerCase().includes(searchTerm));
+        return f;
+    }
+    
+    function render() {
+        if (currentFilter === 'bet_detail') {
+            document.getElementById('transactionContainer').style.display = 'none';
+            document.getElementById('sessionsContainer').style.display = 'block';
             renderSessions();
-            setInterval(() => { if(document.getElementById('keepMachineList').classList.contains('show')) updateCountdowns(); }, 1000);
-        })();
-    </script>
+        } else {
+            document.getElementById('transactionContainer').style.display = 'block';
+            document.getElementById('sessionsContainer').style.display = 'none';
+            renderTransactions();
+        }
+    }
+    
+    function renderSessions() {
+        let f = getFilteredSessions();
+        let totalBet = f.reduce((a, b) => a + b.stats.totalBet, 0);
+        let totalWin = f.reduce((a, b) => a + b.stats.totalWin, 0);
+        let net = totalWin - totalBet;
+        document.getElementById('statsContainer').innerHTML = `<div class="stats-grid"><div><div class="stats-label">總投注</div><div class="stats-value">${totalBet}</div></div><div><div class="stats-label">總獲得</div><div class="stats-value">${totalWin}</div></div><div><div class="stats-label">淨損益</div><div class="stats-value" style="color:${net >= 0 ? '#ffaa66' : '#ff6666'}">${net >= 0 ? '+' : ''}${net}</div></div></div>`;
+        if (f.length === 0) { document.getElementById('sessionsContainer').innerHTML = '<div class="text-center text-gray-400 py-8">沒有注單記錄</div>'; return; }
+        let html = '';
+        f.forEach((s, idx) => {
+            let profitClass = s.netProfit >= 0 ? 'positive' : 'negative';
+            html += `<div class="main-row" onclick="openBetModal(${idx})"><div><div class="machine-title"><span class="name">${s.machineName}</span><span class="number">${s.machineNumber}</span></div><div class="date-range">${formatDate(s.bringInTime)} ~ ${formatDate(s.bringOutTime)} ${formatTime(s.bringInTime)}~${formatTime(s.bringOutTime)}</div><div class="amount-info"><span class="bring-in">帶入 ${s.bringInAmount}</span> → <span class="bring-out">帶出 ${s.bringOutAmount}</span> | <span class="net-profit ${profitClass}">淨利 ${s.netProfit >= 0 ? '+' : ''}${s.netProfit}</span></div></div></div>`;
+        });
+        document.getElementById('sessionsContainer').innerHTML = html;
+    }
+    
+    function renderTransactions() {
+        let f = getFilteredTransactions();
+        let totalIn = f.filter(t => t.points < 0).reduce((a, b) => a + Math.abs(b.points), 0);
+        let totalOut = f.filter(t => t.points > 0).reduce((a, b) => a + b.points, 0);
+        let net = totalOut - totalIn;
+        document.getElementById('statsContainer').innerHTML = `<div class="stats-grid"><div><div class="stats-label">總存入</div><div class="stats-value">${totalIn}</div></div><div><div class="stats-label">總提出</div><div class="stats-value">${totalOut}</div></div><div><div class="stats-label">淨變化</div><div class="stats-value" style="color:${net >= 0 ? '#ffaa66' : '#ff6666'}">${net >= 0 ? '+' : ''}${net}</div></div></div>`;
+        if (f.length === 0) { document.getElementById('transactionContainer').innerHTML = '<div class="text-center text-gray-400 py-8">沒有交易記錄</div>'; return; }
+        let html = '';
+        f.forEach((tx) => {
+            let isPositive = tx.points > 0;
+            let symbol = isPositive ? '-' : '+';
+            let colorClass = isPositive ? 'negative-green' : 'positive-red';
+            html += `<div class="tx-card" onclick="showTxDetail('${tx.id}','${tx.name}','${tx.platform}',${Math.abs(tx.points)},'${formatDateTime(tx.date)}',${isPositive},'${tx.unit}')"><div class="tx-name">${tx.name}</div><div class="tx-platform">${tx.platform}</div><div class="tx-points ${colorClass}">${symbol}${Math.abs(tx.points)} ${tx.unit}</div><div class="tx-date">${formatDateTime(tx.date)}</div></div>`;
+        });
+        document.getElementById('transactionContainer').innerHTML = html;
+    }
+    
+    window.showTxDetail = function(id, name, platform, points, dateStr, isPositive, unit) {
+        let symbol = isPositive ? '-' : '+';
+        let color = isPositive ? '#ff6666' : '#88ff88';
+        let detailHtml = `<div class="space-y-3"><div class="flex justify-between py-2 border-b border-gray-700"><span class="text-gray-400">明細編號</span><span class="text-yellow-400">${id}</span></div><div class="flex justify-between py-2 border-b border-gray-700"><span class="text-gray-400">平台</span><span class="text-yellow-400">${platform}</span></div><div class="flex justify-between py-2 border-b border-gray-700"><span class="text-gray-400">點數數量</span><span class="text-xl font-bold" style="color:${color}">${symbol}${points} ${unit}</span></div><div class="flex justify-between py-2"><span class="text-gray-400">時間日期</span><span class="text-yellow-400">${dateStr}</span></div></div>`;
+        document.getElementById('txDetailContent').innerHTML = detailHtml;
+        document.getElementById('txDetailModal').classList.add('active');
+    };
+    
+    function renderBetModalTable() {
+        if (!currentSession) return;
+        let details = [...currentSession.details].sort((a, b) => betSortOrder === 'desc' ? new Date(b.date) - new Date(a.date) : new Date(a.date) - new Date(b.date));
+        let rows = '';
+        let bringInAmount = currentSession.bringInAmount;
+        details.forEach(d => {
+            let typeLabel = '', typeClass = '';
+            if (d.type === 'BRING_IN') { typeLabel = '帶入'; typeClass = 'type-bringin'; }
+            else if (d.type === 'BRING_OUT') { typeLabel = '帶出'; typeClass = 'type-bringout'; }
+            else { typeLabel = '一般轉'; typeClass = 'type-spin'; }
+            let betDisplay = d.type === 'SPIN' ? `-${d.bet}` : '-';
+            let winDisplay = d.type === 'SPIN' ? (d.win > 0 ? `+${d.win}` : '-') : '-';
+            let totalDisplay = d.type === 'BRING_IN' ? `+${d.win}` : (d.type === 'BRING_OUT' ? `${d.total - bringInAmount >= 0 ? '+' : ''}${Math.floor(d.total - bringInAmount)}` : Math.floor(d.total));
+            let totalClass = d.type === 'BRING_IN' ? 'total-positive' : (d.type === 'BRING_OUT' ? (d.total - bringInAmount >= 0 ? 'total-positive' : 'total-negative') : 'amount-total');
+            let isFirstSpinBet = (d.type === 'SPIN' && d.isFirstSpin === true);
+            rows += `<tr class="${isFirstSpinBet ? 'video-bet-row' : ''}" ${isFirstSpinBet ? `onclick="playCurrentVideo()"` : ''} style="${isFirstSpinBet ? 'cursor:pointer' : ''}"><td style="white-space:nowrap">${formatDateTime(d.date)}</td><td><span class="record-type ${typeClass}">${typeLabel}</span></td><td class="${d.bet > 0 ? 'amount-negative' : ''}">${betDisplay}</td><td class="${d.win > 0 ? 'amount-positive' : ''}">${winDisplay}</td><td class="${totalClass}">${totalDisplay}</td><td><span class="text-blue-300 text-xs">${d.betId}</span>${isFirstSpinBet ? `<span class="play-hint">點擊觀看</span>` : ''}</td></tr>`;
+        });
+        document.getElementById('betTableHead').innerHTML = `<tr><th onclick="toggleBetSort()">日期時間 <span class="sort-icon">${betSortOrder === 'desc' ? '▼' : '▲'}</span></th><th>類型</th><th>投注</th><th>獲得</th><th>小計</th><th>注單編號</th></tr>`;
+        document.getElementById('betModalTableBody').innerHTML = rows;
+    }
+    
+    window.toggleBetSort = function() { betSortOrder = betSortOrder === 'desc' ? 'asc' : 'desc'; renderBetModalTable(); };
+    window.openBetModal = function(idx) {
+        let f = getFilteredSessions();
+        currentSession = f[idx];
+        if (!currentSession) return;
+        document.getElementById('betModalTitle').innerHTML = `${currentSession.machineName} ${currentSession.machineNumber}`;
+        document.getElementById('betStats').innerHTML = `<div class="stat-card">總轉數 ${currentSession.stats.totalSpins}</div><div class="stat-card">總投注 ${currentSession.stats.totalBet}</div><div class="stat-card">總獲得 ${currentSession.stats.totalWin}</div>`;
+        renderBetModalTable();
+        document.getElementById('betModal').classList.add('active');
+    };
+    window.playCurrentVideo = function() { if (currentSession && currentSession.videoUrl) { let v = document.getElementById('videoPlayer'); v.src = currentSession.videoUrl; v.load(); v.play().catch(e=>console.log); document.getElementById('videoModal').classList.add('active'); } else { alert('影片載入中'); } };
+    window.closeBetModal = () => document.getElementById('betModal').classList.remove('active');
+    window.closeVideoModal = () => { let v = document.getElementById('videoPlayer'); v.pause(); v.src = ''; document.getElementById('videoModal').classList.remove('active'); };
+    window.closeTxModal = () => document.getElementById('txDetailModal').classList.remove('active');
+    window.closeFavoriteModal = () => document.getElementById('favoriteModal').classList.remove('active');
+    window.closeKeepModal = () => document.getElementById('keepModal').classList.remove('active');
+    
+    document.getElementById('favMachinesBtn').onclick = renderFavoriteModal;
+    document.getElementById('keepMachinesBtn').onclick = renderKeepModal;
+    document.getElementById('supportBtn').onclick = () => alert('客服專線: 0800-666-888');
+    document.getElementById('dateSearchBtn').onclick = () => { let s = document.getElementById('startDate').value, e = document.getElementById('endDate').value; dateStart = new Date(s); dateStart.setHours(0,0,0,0); dateEnd = new Date(e); dateEnd.setHours(23,59,59,999); render(); };
+    document.getElementById('searchInput').addEventListener('input', (e) => { searchTerm = e.target.value.toLowerCase(); render(); });
+    document.getElementById('filterSelect').addEventListener('change', (e) => { currentFilter = e.target.value; render(); });
+    document.getElementById('avatarContainer').onclick = () => { let av = ['https://i.pravatar.cc/150?img=7', 'https://i.pravatar.cc/150?img=5', 'https://i.pravatar.cc/150?img=9']; document.getElementById('avatarImage').src = av[Math.floor(Math.random() * av.length)]; alert('更換頭像'); };
+    document.getElementById('displayNickname').onclick = () => { let n = prompt('新暱稱', '郝可愛'); if (n) document.getElementById('displayNickname').innerText = n; };
+    document.getElementById('headerPoints').onclick = () => alert(`點數: ${userPoints}`);
+    document.getElementById('vipBadge').onclick = () => alert('VIP1 特權: 返水0.2%');
+    
+    updateBadges();
+    document.getElementById('transactionContainer').style.display = 'block';
+    document.getElementById('sessionsContainer').style.display = 'none';
+    render();
+})();
+</script>
 </body>
 </html>
