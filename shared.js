@@ -2,9 +2,10 @@
 const T_PACHIN_STORAGE = {
     // 儲存 KEY
     FAVORITE_KEY: 't_pachin_favorites',
-    RESERVE_KEY: 't_pachin_reserves',
+    RESERVE_KEY: 't_pachin_reserved',  // 修改：與其他頁面統一
     USER_KEY: 't_pachin_user',
     PLAYED_KEY: 't_pachin_played',
+    POINTS_KEY: 't_pachin_user_points',  // 新增：獨立的點數 Key
     
     // ==================== 使用者資料 ====================
     getUserData() {
@@ -16,10 +17,19 @@ const T_PACHIN_STORAGE = {
             lastUpdated: Date.now()
         };
         
+        // 優先從獨立的點數 Key 讀取
+        const pointsStored = localStorage.getItem(this.POINTS_KEY);
+        if (pointsStored !== null) {
+            defaultData.points = parseInt(pointsStored, 10) || 6600;
+        }
+        
         const stored = localStorage.getItem(this.USER_KEY);
         if (stored) {
             try {
-                return { ...defaultData, ...JSON.parse(stored) };
+                const userData = JSON.parse(stored);
+                // 合併，優先使用獨立點數
+                userData.points = defaultData.points;
+                return { ...defaultData, ...userData };
             } catch (e) {
                 return defaultData;
             }
@@ -28,6 +38,9 @@ const T_PACHIN_STORAGE = {
     },
     
     saveUserData(userData) {
+        // 同時儲存到獨立點數 Key
+        localStorage.setItem(this.POINTS_KEY, userData.points);
+        
         localStorage.setItem(this.USER_KEY, JSON.stringify({
             ...userData,
             lastUpdated: Date.now()
@@ -35,6 +48,11 @@ const T_PACHIN_STORAGE = {
         
         window.dispatchEvent(new CustomEvent('t-pachin:user-updated', {
             detail: userData
+        }));
+        
+        // 同時觸發 points-updated 事件（相容性）
+        window.dispatchEvent(new CustomEvent('points-updated', {
+            detail: { points: userData.points }
         }));
     },
     
@@ -47,16 +65,39 @@ const T_PACHIN_STORAGE = {
     },
     
     getPoints() {
+        // 優先從獨立 Key 讀取
+        const pointsStored = localStorage.getItem(this.POINTS_KEY);
+        if (pointsStored !== null) {
+            return parseInt(pointsStored, 10) || 6600;
+        }
         return this.getUserData().points;
+    },
+    
+    setPoints(points) {
+        const userData = this.getUserData();
+        userData.points = Math.max(0, points);
+        this.saveUserData(userData);
+        this.updateAllPointsDisplay();
+        return userData.points;
     },
     
     updateAllPointsDisplay() {
         const points = this.getPoints();
-        document.querySelectorAll('.points-display').forEach(el => {
-            el.textContent = points.toLocaleString();
+        document.querySelectorAll('.points-display, .points-value, [data-points-display]').forEach(el => {
+            if (el.tagName === 'INPUT') {
+                el.value = points.toLocaleString();
+            } else {
+                el.textContent = points.toLocaleString();
+            }
         });
-        document.querySelectorAll('.token-display, .user-points').forEach(el => {
-            el.textContent = points.toLocaleString();
+        document.querySelectorAll('#userPoints, #headerPoints .points-value, #tokenBtn').forEach(el => {
+            if (el.id === 'userPoints') {
+                el.textContent = points;
+            } else if (el.id === 'tokenBtn') {
+                el.textContent = points.toLocaleString();
+            } else {
+                el.textContent = points.toLocaleString();
+            }
         });
     },
     
@@ -70,7 +111,11 @@ const T_PACHIN_STORAGE = {
                 return [];
             }
         }
-        return [];
+        // 預設收藏（與 about.html 一致）
+        return [
+            { id: 1, name: 'GOGO 小丑', number: 'J001', image: 'https://i.pinimg.com/736x/c3/72/db/c372db1b020ebf778ef707f63c122bf7.jpg', ratio: '2.5' },
+            { id: 2, name: '我是小丑-EX', number: 'J002', image: 'https://i.pinimg.com/736x/c3/72/db/c372db1b020ebf778ef707f63c122bf7.jpg', ratio: '2.8' }
+        ];
     },
     
     saveFavorites(favorites) {
@@ -78,6 +123,8 @@ const T_PACHIN_STORAGE = {
         window.dispatchEvent(new CustomEvent('t-pachin:favorites-updated', {
             detail: favorites
         }));
+        // 同時觸發 favorites-updated 事件
+        window.dispatchEvent(new CustomEvent('favorites-updated', { detail: { favorites } }));
         return favorites;
     },
     
@@ -106,12 +153,16 @@ const T_PACHIN_STORAGE = {
             try {
                 const reserves = JSON.parse(stored);
                 const now = Date.now();
-                return reserves.filter(r => r.expiresAt > now);
+                // 過濾過期的保留
+                return reserves.filter(r => !r.expiresAt || r.expiresAt > now);
             } catch (e) {
                 return [];
             }
         }
-        return [];
+        // 預設保留（與 about.html 一致）
+        return [
+            { id: 4, name: '新我是小丑-EX水晶版', number: 'J004', image: 'https://i.pinimg.com/736x/c3/72/db/c372db1b020ebf778ef707f63c122bf7.jpg', ratio: '3.0', reservedAt: Date.now() }
+        ];
     },
     
     saveReserves(reserves) {
@@ -119,6 +170,8 @@ const T_PACHIN_STORAGE = {
         window.dispatchEvent(new CustomEvent('t-pachin:reserves-updated', {
             detail: reserves
         }));
+        // 同時觸發 reserved-updated 事件
+        window.dispatchEvent(new CustomEvent('reserved-updated', { detail: { reserved: reserves } }));
         return reserves;
     },
     
@@ -134,7 +187,8 @@ const T_PACHIN_STORAGE = {
                 hour: '2-digit', minute: '2-digit'
             }),
             expiresAt: expiresAt,
-            addedAt: now
+            addedAt: now,
+            reservedAt: now
         };
         
         if (existingIndex !== -1) {
@@ -154,6 +208,10 @@ const T_PACHIN_STORAGE = {
         return reserves;
     },
     
+    isReserved(machineId) {
+        return this.getReserves().some(r => r.id === machineId);
+    },
+    
     // ==================== 玩過記錄 ====================
     getPlayed() {
         const stored = localStorage.getItem(this.PLAYED_KEY);
@@ -169,6 +227,9 @@ const T_PACHIN_STORAGE = {
     
     savePlayed(played) {
         localStorage.setItem(this.PLAYED_KEY, JSON.stringify(played));
+        window.dispatchEvent(new CustomEvent('t-pachin:played-updated', {
+            detail: played
+        }));
         return played;
     },
     
@@ -196,6 +257,35 @@ const T_PACHIN_STORAGE = {
         return played;
     },
     
+    // ==================== 機台佔用記錄 ====================
+    getOccupiedTokens() {
+        const stored = localStorage.getItem('t_pachin_occupied_tokens');
+        if (stored) {
+            try {
+                return JSON.parse(stored);
+            } catch (e) {
+                return {};
+            }
+        }
+        return {};
+    },
+    
+    saveOccupiedTokens(tokens) {
+        localStorage.setItem('t_pachin_occupied_tokens', JSON.stringify(tokens));
+    },
+    
+    setOccupiedToken(machineKey, tokens) {
+        const occupied = this.getOccupiedTokens();
+        occupied[machineKey] = tokens;
+        this.saveOccupiedTokens(occupied);
+    },
+    
+    removeOccupiedToken(machineKey) {
+        const occupied = this.getOccupiedTokens();
+        delete occupied[machineKey];
+        this.saveOccupiedTokens(occupied);
+    },
+    
     // ==================== 導航高亮 ====================
     highlightCurrentNav() {
         const currentPath = window.location.pathname.split('/').pop() || 'index.html';
@@ -207,6 +297,23 @@ const T_PACHIN_STORAGE = {
                 item.classList.remove('current-page');
             }
         });
+    },
+    
+    // ==================== 暱稱管理 ====================
+    getNickname() {
+        return this.getUserData().nickname;
+    },
+    
+    setNickname(nickname) {
+        if (nickname && nickname.trim()) {
+            const userData = this.getUserData();
+            userData.nickname = nickname.trim();
+            this.saveUserData(userData);
+            document.querySelectorAll('.nickname-display, .nickname-edit, #displayNickname').forEach(el => {
+                el.textContent = nickname.trim();
+            });
+        }
+        return nickname;
     }
 };
 
@@ -270,34 +377,95 @@ const CountdownManager = {
 // ==================== 初始化所有頁面共用功能 ====================
 function initializeSharedFeatures() {
     T_PACHIN_STORAGE.updateAllPointsDisplay();
+    T_PACHIN_STORAGE.highlightCurrentNav();
     
+    // 監聽點數更新事件
     window.addEventListener('t-pachin:user-updated', () => {
         T_PACHIN_STORAGE.updateAllPointsDisplay();
     });
     
-    T_PACHIN_STORAGE.highlightCurrentNav();
+    window.addEventListener('points-updated', (e) => {
+        if (e.detail && e.detail.points !== undefined) {
+            T_PACHIN_STORAGE.updateAllPointsDisplay();
+        }
+    });
     
-    document.querySelectorAll('.points-display').forEach(el => {
+    // 點數顯示點擊事件
+    document.querySelectorAll('.points-display, #tokenBtn').forEach(el => {
         el.addEventListener('click', () => {
             alert(`💰 目前點數：${T_PACHIN_STORAGE.getPoints().toLocaleString()}\n\n遊玩機台即可累積點數！`);
         });
     });
     
-    document.querySelectorAll('.nickname-display').forEach(el => {
+    // 暱稱編輯
+    document.querySelectorAll('.nickname-display, .nickname-edit, #displayNickname').forEach(el => {
         el.addEventListener('click', () => {
-            const newName = prompt('修改暱稱', el.textContent);
+            const currentName = T_PACHIN_STORAGE.getNickname();
+            const newName = prompt('修改暱稱', currentName);
             if (newName && newName.trim()) {
-                const userData = T_PACHIN_STORAGE.getUserData();
-                userData.nickname = newName.trim();
-                T_PACHIN_STORAGE.saveUserData(userData);
-                document.querySelectorAll('.nickname-display').forEach(e => {
-                    e.textContent = newName.trim();
-                });
+                T_PACHIN_STORAGE.setNickname(newName.trim());
             }
+        });
+    });
+    
+    // VIP 點擊
+    document.querySelectorAll('.vip-badge, #vipBadge').forEach(el => {
+        el.addEventListener('click', () => {
+            const userData = T_PACHIN_STORAGE.getUserData();
+            alert(`VIP ${userData.vipLevel} 特權: 返水0.2%\n累積遊玩可提升 VIP 等級！`);
         });
     });
 }
 
+// 頁面載入完成後自動初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSharedFeatures);
+} else {
+    initializeSharedFeatures();
+}
+
+// 匯出到全域
 window.T_PACHIN_STORAGE = T_PACHIN_STORAGE;
 window.CountdownManager = CountdownManager;
 window.initializeSharedFeatures = initializeSharedFeatures;
+
+// 相容性別名（給其他頁面使用）
+window.TPachin = {
+    points: {
+        get: () => T_PACHIN_STORAGE.getPoints(),
+        set: (points) => T_PACHIN_STORAGE.setPoints(points),
+        update: (delta) => T_PACHIN_STORAGE.updatePoints(delta),
+        on: (callback) => {
+            window.addEventListener('t-pachin:user-updated', (e) => callback(e.detail.points));
+            callback(T_PACHIN_STORAGE.getPoints());
+        }
+    },
+    favorites: {
+        getAll: () => T_PACHIN_STORAGE.getFavorites(),
+        add: (machine) => T_PACHIN_STORAGE.toggleFavorite(machine),
+        remove: (id) => {
+            const favorites = T_PACHIN_STORAGE.getFavorites();
+            const newFavorites = favorites.filter(f => f.id !== id);
+            T_PACHIN_STORAGE.saveFavorites(newFavorites);
+        },
+        is: (id) => T_PACHIN_STORAGE.isFavorite(id),
+        on: (callback) => {
+            window.addEventListener('t-pachin:favorites-updated', (e) => callback(e.detail));
+            callback(T_PACHIN_STORAGE.getFavorites());
+        }
+    },
+    reserved: {
+        getAll: () => T_PACHIN_STORAGE.getReserves(),
+        add: (machine) => T_PACHIN_STORAGE.addReserve(machine),
+        remove: (id) => T_PACHIN_STORAGE.removeReserve(id),
+        is: (id) => T_PACHIN_STORAGE.isReserved(id),
+        on: (callback) => {
+            window.addEventListener('t-pachin:reserves-updated', (e) => callback(e.detail));
+            callback(T_PACHIN_STORAGE.getReserves());
+        }
+    },
+    user: {
+        getNickname: () => T_PACHIN_STORAGE.getNickname(),
+        setNickname: (name) => T_PACHIN_STORAGE.setNickname(name)
+    }
+};
