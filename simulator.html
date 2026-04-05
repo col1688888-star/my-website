@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>パチスロ · 柏青斯洛模擬器</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;500;700;900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -82,6 +81,12 @@
             border-radius: 20px;
             border: 1px solid #4a80c0;
             cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-area:active {
+            background: #16232e;
         }
         .chart-labels {
             display: flex;
@@ -98,7 +103,7 @@
             display: flex;
             justify-content: space-around;
             align-items: flex-end;
-            height: 65px;
+            height: 70px;
             gap: 2px;
             margin-bottom: 6px;
         }
@@ -111,24 +116,29 @@
         }
         .block {
             width: 100%;
-            height: 10px;
+            height: 12px;
             border-radius: 2px;
             border: 1px solid #3a6a8a;
-            background: #2a3a4a;
+            transition: all 0.1s ease;
         }
-        .red-block {
+        .block.red-full {
             background: #ff3366;
-            box-shadow: 0 0 5px #ff3366;
+            box-shadow: 0 0 4px #ff3366;
             border-color: #ff88aa;
         }
-        .green-block {
+        .block.green-full {
             background: #33ff66;
-            box-shadow: 0 0 5px #33ff66;
+            box-shadow: 0 0 4px #33ff66;
             border-color: #88ffaa;
+        }
+        .block.dark {
+            background: #2a3a4a;
+            border-color: #3a6a8a;
         }
         .chart-values {
             display: flex;
             justify-content: space-around;
+            margin-bottom: 6px;
         }
         .chart-values span {
             color: #ffaa66;
@@ -137,6 +147,44 @@
             width: 8%;
             text-align: center;
             font-weight: bold;
+        }
+
+        .daily-tag-area {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 4px;
+            padding: 4px 0;
+            background: rgba(15, 25, 35, 0.5);
+            border-radius: 40px;
+            width: 100%;
+        }
+        .daily-tag {
+            background: linear-gradient(145deg, #1e3a4a, #0a1a2a);
+            border: 1px solid #4a80c0;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffd966;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            min-width: 60px;
+            letter-spacing: 1px;
+            font-family: 'Noto Sans TC', monospace;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .daily-tag.active {
+            background: linear-gradient(145deg, #f0b27a, #d98c2f);
+            color: #0a1a2a;
+            border-color: #ffecb3;
+            box-shadow: 0 0 10px #ffaa55;
+            text-shadow: none;
+        }
+        .daily-tag:active {
+            transform: scale(0.96);
         }
 
         .stats-panel {
@@ -186,9 +234,9 @@
 
         .video-section {
             position: relative;
-            margin: 15px 8px;  /* 從 50px 改為 15px，往上移動 */
+            margin: 15px 8px;
             margin-top: 15px;
-            margin-bottom: 35px;
+            margin-bottom: 15px;
         }
         .video-area {
             background: #000;
@@ -203,27 +251,221 @@
             height: 100%;
             object-fit: cover;
         }
-        .video-buttons {
+        
+        .manual-control-panel {
             position: absolute;
-            bottom: 12px;
-            right: 12px;
-            display: flex;
-            gap: 10px;
-            z-index: 15;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(20, 30, 45, 0.96), rgba(10, 20, 30, 0.98));
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #ffaa66;
+            border-radius: 16px 16px 0 0;
+            padding: 10px 16px;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 35;
+            box-shadow: 0 -3px 15px rgba(0,0,0,0.4);
         }
-        .video-btn {
-            background: rgba(0,0,0,0.7);
-            border: 1px solid #4a80c0;
-            border-radius: 24px;
-            padding: 6px 16px;
+        .manual-control-panel.show {
+            transform: translateY(0);
+        }
+        .manual-control-panel.hide {
+            transform: translateY(100%);
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        
+        .max-btn {
+            background: linear-gradient(145deg, #be3e62, #9e2e4a);
+            border: none;
+            border-radius: 28px;
+            padding: 4px 12px;
             font-size: 12px;
             font-weight: bold;
             color: white;
             cursor: pointer;
-            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 0 #5a1a2a;
+            transition: 0.05s linear;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 2px;
+            flex-shrink: 0;
         }
-        .video-btn:active {
+        .max-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 0 #5a1a2a;
+        }
+        
+        .joystick-control {
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 12px;
+            border-radius: 35px;
+            border: 1px solid #4a80c0;
+            flex-shrink: 0;
+            margin-left: -8px;
+        }
+        .joystick-base {
+            width: 38px;
+            height: 38px;
+            background: radial-gradient(circle at 30% 30%, #2a3a4a, #1a2a3a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 2px 4px rgba(255,255,255,0.1);
+            border: 1px solid #5a8ab0;
+        }
+        .joystick-stick {
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle at 35% 35%, #ffaa66, #d98c2f);
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: 0.05s linear;
+        }
+        .joystick-stick:active {
+            transform: scale(0.92);
+        }
+        
+        .reel-buttons {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .reel-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #3a5065, #1e2e3e);
+            border: 2px solid #ffaa66;
+            color: #ffd966;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.05s linear;
+            box-shadow: 0 2px 0 #0a1a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .reel-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 0px 0 #0a1a2a;
+        }
+        
+        .close-panel {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid #ffaa66;
+            border-radius: 20px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            color: #ffaa77;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.05s linear;
+            flex-shrink: 0;
+            margin-right: -4px;
+        }
+        .close-panel:active {
             transform: scale(0.95);
+            background: rgba(255,170,100,0.3);
+        }
+        
+        .maintenance-overlay, .countdown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+            border-radius: 14px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .maintenance-content, .countdown-content {
+            text-align: center;
+            background: linear-gradient(145deg, rgba(20, 30, 45, 0.9), rgba(10, 20, 30, 0.9));
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #ff8866;
+            min-width: 160px;
+        }
+        
+        .maintenance-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffaa77;
+        }
+        
+        .warning-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .bottom-action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 8px 8px 15px 8px;
+        }
+        .action-btn {
+            background: linear-gradient(145deg, #3a5065, #2a4055);
+            border: 1px solid #4a80c0;
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #d0ecff;
+            cursor: pointer;
+            text-align: center;
+            flex: 1;
+            transition: 0.1s;
+        }
+        .action-btn:active {
+            transform: scale(0.97);
+        }
+        .action-btn.active-auto {
+            background: linear-gradient(145deg, #2e7d64, #1e5d4a);
+            border-color: #4cae8c;
+            color: white;
+            animation: btnPulse 1s infinite;
+        }
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(76, 174, 140, 0.4); }
+            50% { box-shadow: 0 0 0 4px rgba(76, 174, 140, 0.6); }
+        }
+        .action-btn.exit-btn-bottom {
+            background: linear-gradient(145deg, #be3e62, #9e2e4a);
+            border-color: #ff8a9f;
+            color: white;
         }
 
         .notice-wrapper {
@@ -232,94 +474,65 @@
             margin-bottom: 8px;
         }
         .notice-card {
-            background: linear-gradient(135deg, rgba(10, 20, 30, 0.92), rgba(5, 12, 18, 0.96));
+            background: linear-gradient(135deg, rgba(30, 40, 55, 0.98), rgba(20, 30, 45, 0.98));
             backdrop-filter: blur(12px);
             border-radius: 20px;
-            padding: 10px 16px;
-            border: 1px solid rgba(255, 136, 77, 0.5);
+            padding: 10px 14px;
+            border: 2px solid #ffaa66;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            gap: 10px;
+            box-shadow: 0 0 12px rgba(255, 170, 100, 0.5);
+            animation: glowPulse 2s ease-in-out infinite;
         }
-        .megaphone-icon-only {
-            font-size: 28px;
-            cursor: pointer;
-            display: inline-block;
-            transition: all 0.2s ease;
-            filter: drop-shadow(0 0 4px rgba(255, 100, 50, 0.5));
-            animation: megaphoneWave 1.2s ease-in-out infinite;
+        
+        @keyframes glowPulse {
+            0%, 100% { border-color: #ffaa66; box-shadow: 0 0 8px rgba(255, 170, 100, 0.4); }
+            50% { border-color: #ffcc88; box-shadow: 0 0 18px rgba(255, 170, 100, 0.8); }
         }
-        .megaphone-icon-only:hover {
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 8px rgba(255, 100, 50, 0.8));
-            animation: none;
-        }
-        @keyframes megaphoneWave {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(12deg) scale(1.05); }
-            75% { transform: rotate(-8deg) scale(1.02); }
-        }
+        
         .notice-icon {
-            font-size: 20px;
-            animation: iconPulse 1.5s ease-in-out infinite;
+            font-size: 24px;
         }
         .notice-content {
             flex: 1;
         }
         .notice-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
-            color: #ffaa77;
-            margin-bottom: 2px;
-            letter-spacing: 0.5px;
+            color: #ffcc88;
+            text-shadow: 0 0 4px #ffaa66;
         }
         .notice-text {
             font-size: 11px;
-            color: #ffddbb;
-            line-height: 1.3;
+            color: #fff0cc;
+            font-weight: 500;
         }
         .notice-close {
-            background: rgba(255,255,255,0.15);
-            border: none;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid #ffaa66;
             border-radius: 20px;
             width: 24px;
             height: 24px;
             cursor: pointer;
-            color: #ffaa77;
+            color: #ffaa66;
             font-size: 12px;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        .notice-close:hover {
-            background: rgba(255,100,50,0.5);
-            color: white;
-            transform: scale(1.05);
+        
+        .tool-icon-only {
+            font-size: 24px;
+            cursor: pointer;
+            display: inline-block;
+            filter: drop-shadow(0 0 4px rgba(74, 128, 192, 0.5));
+            animation: toolPulse 1.5s ease-in-out infinite;
         }
-        @keyframes iconPulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
+        .tool-icon-only:hover {
+            transform: scale(1.1);
+            animation: none;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-10px); }
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease forwards;
-        }
-        .fade-out {
-            animation: fadeOut 0.2s ease forwards;
-        }
-
-        .video-spacer {
-            height: 35px;
+        @keyframes toolPulse {
+            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+            50% { transform: rotate(5deg) scale(1.08); opacity: 1; }
         }
 
         .drawer-trigger {
@@ -390,45 +603,59 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            padding: 4px 0;
         }
         .balance-label {
             color: #ffd966;
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: bold;
         }
         .balance-value {
             color: #fbbf24;
             font-family: monospace;
             font-size: 20px;
             font-weight: bold;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 12px;
+            border-radius: 30px;
+            min-width: 90px;
+            text-align: right;
+        }
+        .section-divider {
+            margin: 10px 0 6px 0;
+            border-top: 1px solid #4a80c0;
+            opacity: 0.5;
         }
         .full-buttons {
             display: flex;
             gap: 12px;
-            margin: 12px 0;
+            margin: 8px 0;
         }
         .full-btn {
             flex: 1;
-            background: linear-gradient(145deg, #3a5065, #2a4055);
-            border: 1px solid #4a80c0;
             border-radius: 30px;
-            padding: 8px 0;
-            font-size: 14px;
+            padding: 6px 0;
+            font-size: 13px;
             font-weight: bold;
-            color: #d0ecff;
             cursor: pointer;
             text-align: center;
+        }
+        .full-btn.add-all {
+            background: linear-gradient(145deg, #2e7d64, #1e5d4a);
+            border: 1px solid #4cae8c;
+            color: white;
+        }
+        .full-btn.sub-all {
+            background: linear-gradient(145deg, #be3e62, #9e2e4a);
+            border: 1px solid #ff8a9f;
+            color: white;
         }
         .custom-section {
             background: rgba(0,0,0,0.3);
             border-radius: 20px;
-            padding: 10px;
-            margin-top: 8px;
-        }
-        .custom-title {
-            font-size: 11px;
-            color: #8fcae0;
-            margin-bottom: 8px;
+            padding: 8px;
+            margin-top: 6px;
         }
         .custom-input-group {
             display: flex;
@@ -436,56 +663,36 @@
             align-items: center;
         }
         .custom-input {
-            width: 100px;
+            width: 90px;
             background: #0e151f;
             border: 1px solid #4a80c0;
             border-radius: 40px;
-            padding: 8px 10px;
+            padding: 6px 8px;
             color: #ffd966;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
         }
         .custom-btn {
             flex: 1;
-            background: linear-gradient(145deg, #3a5065, #2a4055);
-            border: 1px solid #4a80c0;
             border-radius: 30px;
-            padding: 8px 0;
-            font-size: 12px;
-            color: #d0ecff;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: bold;
             cursor: pointer;
             text-align: center;
         }
-        .coin-box-drawer {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: linear-gradient(145deg, #2d3748, #1a202c);
-            border-radius: 40px;
-            padding: 4px 12px 4px 8px;
-            border: 1px solid #fbbf24;
+        .custom-btn.add-custom {
+            background: linear-gradient(145deg, #2e7d64, #1e5d4a);
+            border: 1px solid #4cae8c;
+            color: white;
         }
-        .coin-symbol-drawer {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            background: radial-gradient(circle at 30% 30%, #4a5568, #1a202c);
-            border-radius: 50%;
-            position: relative;
-            border: 1px solid #fbbf24;
-        }
-        .coin-symbol-drawer::before {
-            content: '$';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fbbf24;
-            font-size: 10px;
-            font-weight: bold;
+        .custom-btn.sub-custom {
+            background: linear-gradient(145deg, #be3e62, #9e2e4a);
+            border: 1px solid #ff8a9f;
+            color: white;
         }
         .collapsible-section {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border-radius: 20px;
             background: rgba(0,0,0,0.2);
             overflow: hidden;
@@ -494,103 +701,123 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 12px;
+            padding: 8px 12px;
             background: rgba(74,128,192,0.2);
             cursor: pointer;
             border-radius: 20px;
         }
         .section-title-drawer {
-            font-size: 13px;
+            font-size: 12px;
             color: #ffd966;
             font-weight: bold;
             flex: 1;
         }
         .collapse-icon {
             color: #4a80c0;
-            font-size: 12px;
+            font-size: 10px;
         }
         .collapsible-content {
-            padding: 8px 0;
+            padding: 6px 0;
             display: none;
         }
         .collapsible-content.show {
             display: block;
         }
+        
         .machine-item {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid #4a80c0;
+            background: linear-gradient(145deg, rgba(30, 35, 45, 0.85), rgba(20, 25, 35, 0.85));
+            border: 1px solid #ff8844;
             border-radius: 20px;
-            padding: 10px;
-            margin-bottom: 8px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: 0.1s;
+        }
+        .machine-item:active {
+            transform: scale(0.99);
         }
         .machine-item-info {
             flex: 1;
         }
         .machine-item-name {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
-            color: #ffd966;
+            color: #ffaa66;
+            text-shadow: 0 0 4px #ff8844;
+            letter-spacing: 1px;
         }
         .machine-item-sub {
-            font-size: 10px;
-            color: #8fcae0;
+            font-size: 11px;
+            color: #ffcc99;
+            margin-top: 3px;
         }
         .machine-item-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
         .item-btn {
-            background: linear-gradient(145deg, #3a5065, #2a4055);
-            border: 1px solid #4a80c0;
+            padding: 6px 16px;
             border-radius: 30px;
-            padding: 4px 12px;
             font-size: 11px;
-            color: white;
+            font-weight: bold;
             cursor: pointer;
+            transition: 0.05s linear;
+            border: none;
+            font-family: inherit;
         }
-        .item-btn.enter { background: linear-gradient(145deg, #2e7d64, #1e5d4a); border-color: #4cae8c; }
-        .item-btn.leave { background: linear-gradient(145deg, #653a3a, #552a2a); border-color: #ff6666; }
+        .item-btn:active {
+            transform: scale(0.95);
+        }
+        .item-btn.enter { 
+            background: linear-gradient(145deg, #d97a2c, #b85a1c);
+            border: 1px solid #ffaa66;
+            color: white;
+            box-shadow: 0 2px 0 #6a3a1a;
+        }
+        .item-btn.enter:active {
+            transform: translateY(2px);
+            box-shadow: 0 0px 0 #6a3a1a;
+        }
+        .item-btn.leave, .item-btn.remove { 
+            background: linear-gradient(145deg, #6a4a3a, #5a3a2a);
+            border: 1px solid #cc8866;
+            color: #ffddcc;
+            box-shadow: 0 2px 0 #3a2a1a;
+        }
+        .item-btn.leave:active, .item-btn.remove:active {
+            transform: translateY(2px);
+            box-shadow: 0 0px 0 #3a2a1a;
+        }
+        
         .menu-item {
             padding: 10px 12px;
-            border-bottom: 1px solid #3a506a;
-            color: #d0ecff;
+            border-bottom: 1px solid #4a80c0;
+            color: #ffcc99;
             cursor: pointer;
             font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            font-weight: 500;
+            transition: 0.1s;
         }
-        .exit-btn {
-            background: #be3e62;
-            border: 1px solid #ff8a9f;
+        .menu-item:active {
+            background: rgba(255,136,68,0.2);
+        }
+        .exit-btn-drawer {
+            background: linear-gradient(145deg, #b84a3a, #983a2a);
+            border: 1px solid #ff8866;
             border-radius: 40px;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
-            margin-top: 16px;
+            margin-top: 12px;
             cursor: pointer;
             font-weight: bold;
             color: white;
+            font-size: 13px;
         }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: #1d2a36;
-            border: 1px solid #4a80c0;
-            border-radius: 30px;
-            padding: 10px;
-            text-align: center;
-            color: white;
-            z-index: 2000;
-            transform: translateY(100px);
-            transition: 0.3s;
-        }
-        .toast.show {
-            transform: translateY(0);
+        .exit-btn-drawer:active {
+            transform: scale(0.97);
         }
         .modal {
             position: fixed;
@@ -610,49 +837,111 @@
             opacity: 1;
             visibility: visible;
         }
-        .modal-card {
-            background: #1f2f3f;
-            border: 2px solid #ffd966;
+        .confirm-modal {
+            background: linear-gradient(145deg, #1f2f3f, #0f1a26);
+            border: 2px solid #ffaa66;
             border-radius: 32px;
-            padding: 24px;
+            padding: 20px;
             width: 280px;
             text-align: center;
+        }
+        .confirm-modal h3 {
+            color: #ffaa66;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+        .info-row {
+            margin: 10px 0;
+        }
+        .info-label {
+            color: #8fcae0;
+            font-size: 11px;
+        }
+        .info-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffaa66;
+            font-family: monospace;
+        }
+        .divider-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ffaa66, transparent);
+            margin: 12px 0;
         }
         .modal-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 20px;
+            margin-top: 16px;
         }
         .modal-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             border-radius: 30px;
             cursor: pointer;
+            font-weight: bold;
+            border: none;
+            font-size: 12px;
         }
         .modal-confirm {
-            background: #be3e62;
+            background: linear-gradient(145deg, #d97a2c, #b85a1c);
             color: white;
         }
         .modal-cancel {
-            background: #3a5065;
+            background: linear-gradient(145deg, #3a5065, #2a4055);
             color: white;
         }
+        
+        .float-message {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            color: #ffaa66;
+            padding: 8px 18px;
+            border-radius: 30px;
+            border: 1px solid #ffaa66;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            z-index: 2000;
+            transition: 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .float-message.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        /* 遊戲中佔位提示 */
+        .occupying-status {
+            background: linear-gradient(145deg, rgba(30, 40, 55, 0.9), rgba(20, 30, 45, 0.9));
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 10px;
+            color: #ffaa66;
+            border: 1px solid #ff8844;
+            margin-left: 8px;
+        }
+        
         @media (max-width: 430px) {
-            .machine { max-width: 100%; }
             .video-area { height: 500px; }
-            .video-section {
-                margin: 10px 8px;  /* 手機版也往上移動 */
-                margin-top: 10px;
-                margin-bottom: 20px;
-            }
-            .video-spacer { height: 25px; }
-            .stat-number { font-size: 18px; }
-            .stat-label { font-size: 10px; }
-            .notice-card { padding: 8px 12px; }
-            .notice-icon { font-size: 16px; }
-            .notice-title { font-size: 11px; }
-            .notice-text { font-size: 10px; }
-            .megaphone-icon-only { font-size: 24px; }
+            .float-message { font-size: 10px; white-space: normal; max-width: 80%; text-align: center; }
+            .max-btn { padding: 3px 10px; font-size: 11px; border-radius: 24px; }
+            .joystick-base { width: 34px; height: 34px; }
+            .joystick-stick { width: 22px; height: 22px; }
+            .reel-btn { width: 30px; height: 30px; font-size: 16px; }
+            .reel-buttons { gap: 14px; }
+            .close-panel { width: 26px; height: 26px; font-size: 12px; }
+            .control-group { gap: 12px; }
+            .joystick-control { margin-left: -4px; }
+            .close-panel { margin-right: -2px; }
+            .machine-item-name { font-size: 13px; }
+            .machine-item-sub { font-size: 10px; }
+            .item-btn { padding: 4px 12px; font-size: 10px; }
+            .occupying-status { font-size: 9px; padding: 2px 8px; }
         }
     </style>
 </head>
@@ -660,7 +949,7 @@
     <div class="machine">
         <div class="top-bar">
             <div class="vip-btn" id="vipBtn">⭐ VIP1</div>
-            <div class="machine-name" id="machineNameDisplay">減之</div>
+            <div class="machine-name" id="machineNameDisplay">小丑樂園</div>
             <div class="machine-info" id="machineInfoDisplay">NO.001｜每枚2</div>
         </div>
 
@@ -669,579 +958,646 @@
                 <div class="chart-labels" id="chartLabels"></div>
                 <div class="chart-bars" id="chartBars"></div>
                 <div class="chart-values" id="chartValues"></div>
+                <div class="daily-tag-area" id="dailyTagArea">
+                    <div class="daily-tag" data-day="today">今 日</div>
+                    <div class="daily-tag" data-day="yesterday">昨 日</div>
+                    <div class="daily-tag" data-day="daybefore">前 日</div>
+                </div>
             </div>
             <div class="stats-panel">
-                <div class="stat-row">
-                    <div class="stat-card">
-                        <div class="stat-label">總轉數</div>
-                        <div class="stat-number" id="totalSpins">12589</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">BB次數</div>
-                        <div class="stat-number" id="totalBB">156</div>
-                    </div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-card">
-                        <div class="stat-label">當前轉數</div>
-                        <div class="stat-number" id="currentSpins">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">RB次數</div>
-                        <div class="stat-number" id="totalRB">289</div>
-                    </div>
-                </div>
+                <div class="stat-row"><div class="stat-card"><div class="stat-label">總轉數</div><div class="stat-number" id="totalSpins">12589</div></div><div class="stat-card"><div class="stat-label">BB次數</div><div class="stat-number" id="totalBB">156</div></div></div>
+                <div class="stat-row"><div class="stat-card"><div class="stat-label">當前轉數</div><div class="stat-number" id="currentSpins">120</div></div><div class="stat-card"><div class="stat-label">RB次數</div><div class="stat-number" id="totalRB">289</div></div></div>
             </div>
         </div>
 
         <div class="notice-wrapper" id="noticeWrapper">
             <div class="notice-card" id="noticeCard">
-                <div class="notice-icon">🔧</div>
+                <div class="notice-icon">🔧⚠️</div>
                 <div class="notice-content">
-                    <div class="notice-title" id="noticeTitle">系統維護預告</div>
-                    <div class="notice-text" id="noticeText">減之001 將在 明日 08:00 進行維護</div>
+                    <div class="notice-title" id="noticeTitle">【系統維護預告】</div>
+                    <div class="notice-text" id="noticeText">小丑樂園 將在 明日 08:00 進行維護</div>
                 </div>
                 <button class="notice-close" id="noticeCloseBtn">✕</button>
             </div>
         </div>
 
         <div class="video-section">
-            <div class="video-area">
+            <div class="video-area" id="videoArea">
                 <video id="gameVideo" autoplay muted loop playsinline>
                     <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-glitch-digital-wave-41408-large.mp4" type="video/mp4">
                 </video>
-                <div class="video-buttons">
-                    <div class="video-btn" id="pipBtn">自動</div>
-                    <div class="video-btn" id="reserveBtn">保留</div>
+                <div class="manual-control-panel show" id="manualPanel">
+                    <div class="control-group">
+                        <button class="max-btn" id="maxSpinBtn">MAX</button>
+                        <div class="joystick-control">
+                            <div class="joystick-base">
+                                <div class="joystick-stick" id="joystickBtn"></div>
+                            </div>
+                        </div>
+                        <div class="reel-buttons">
+                            <button class="reel-btn" data-reel="1">●</button>
+                            <button class="reel-btn" data-reel="2">●</button>
+                            <button class="reel-btn" data-reel="3">●</button>
+                        </div>
+                        <button class="close-panel" id="closePanelBtn">✕</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="video-spacer"></div>
+        <div class="bottom-action-buttons">
+            <div class="action-btn" id="autoBtn">🎰 自動</div>
+            <div class="action-btn" id="reserveBtnBottom">📌 保留</div>
+            <div class="action-btn exit-btn-bottom" id="returnLobbyBtn">🏠 返回大廳</div>
+        </div>
 
         <div class="drawer-trigger" id="drawerTrigger">◀</div>
         <div class="drawer" id="drawer">
-            <div class="drawer-header">
-                <span>⚙️ 快捷工具</span>
-                <button class="drawer-close" id="drawerClose">✕</button>
-            </div>
+            <div class="drawer-header"><span>⚙️ 快捷工具</span><button class="drawer-close" id="drawerClose">✕</button></div>
             <div class="drawer-content" id="drawerContent"></div>
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
-    <div class="modal" id="exitModal">
-        <div class="modal-card">
-            <h3 style="color:#ffd966;">⚠️ 確認離開</h3>
-            <p style="color:#b0d4e0; margin:12px 0;">確定要離開機台嗎？<br>機台上剩餘的代幣將自動轉換為點數。</p>
+    <div class="float-message" id="floatMessage"></div>
+    
+    <!-- 返回大廳確認視窗 -->
+    <div class="modal" id="returnLobbyModal">
+        <div class="confirm-modal">
+            <h3 style="color:#ffaa66;">🏠 返回大廳確認</h3>
+            <div class="info-row">
+                <div class="info-label">機台代幣</div>
+                <div class="info-value" id="returnCoinsAmount">0</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">可兌換點數錢包</div>
+                <div class="info-value" id="returnPointsAmount">0</div>
+            </div>
+            <div class="divider-line"></div>
+            <div class="info-row">
+                <div class="info-label">兌換後點數錢包</div>
+                <div class="info-value" id="returnAfterPoints">0</div>
+            </div>
             <div class="modal-buttons">
-                <button class="modal-btn modal-cancel" id="exitCancel">取消</button>
-                <button class="modal-btn modal-confirm" id="exitConfirm">確定離開</button>
+                <button class="modal-btn modal-cancel" id="returnCancel">取消</button>
+                <button class="modal-btn modal-confirm" id="returnConfirm">確認返回</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 離開座位確認視窗 (快捷工具用) -->
+    <div class="modal" id="leaveSeatModal">
+        <div class="confirm-modal">
+            <h3 style="color:#ffaa66;">🚪 離開座位確認</h3>
+            <div class="info-row">
+                <div class="info-label">機台代幣</div>
+                <div class="info-value" id="leaveSeatCoins">0</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">可兌換點數錢包</div>
+                <div class="info-value" id="leaveSeatPoints">0</div>
+            </div>
+            <div class="divider-line"></div>
+            <div class="info-row">
+                <div class="info-label">兌換後點數錢包</div>
+                <div class="info-value" id="leaveSeatAfterPoints">0</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-cancel" id="leaveSeatCancel">取消</button>
+                <button class="modal-btn modal-confirm" id="leaveSeatConfirm">確認離開</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="confirmModal">
+        <div class="confirm-modal">
+            <h3 id="confirmTitle">🎪 點數換代幣</h3>
+            <div class="info-row"><div class="info-label">點數錢包</div><div class="info-value" id="confirmPointsIn">0</div></div>
+            <div class="info-row"><div class="info-label">代幣</div><div class="info-value" id="confirmCoins">0</div></div>
+            <div class="divider-line"></div>
+            <div class="info-row"><div class="info-label">得點</div><div class="info-value" id="confirmPointsOut">0</div></div>
+            <div class="modal-buttons"><button class="modal-btn modal-cancel" id="confirmCancel">取消</button><button class="modal-btn modal-confirm" id="confirmOk">確認</button></div>
+        </div>
+    </div>
+    
+    <!-- 離座確認視窗 (保留中的離座) -->
+    <div class="modal" id="leaveConfirmModal">
+        <div class="confirm-modal">
+            <h3 id="leaveConfirmTitle">🎪 離座確認</h3>
+            <div class="info-row">
+                <div class="info-label">機台代幣</div>
+                <div class="info-value" id="leaveCoinsAmount">0</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">可兌換點數錢包</div>
+                <div class="info-value" id="leavePointsAmount">0</div>
+            </div>
+            <div class="divider-line"></div>
+            <div class="info-row">
+                <div class="info-label">兌換後點數錢包</div>
+                <div class="info-value" id="leaveAfterPoints">0</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-cancel" id="leaveCancel">取消</button>
+                <button class="modal-btn modal-confirm" id="leaveConfirm">確認離座</button>
             </div>
         </div>
     </div>
 
     <script>
         (function(){
-            // ==================== 點數管理 (與 index.html 共用) ====================
-            const POINTS_KEY = 't_pachin_user_points';
-            let globalPoints = 6600;
+            // 點數錢包系統
+            let playerPoints = 6600;
+            try {
+                const stored = localStorage.getItem('pachinko_points');
+                if(stored !== null && !isNaN(parseInt(stored))) playerPoints = parseInt(stored);
+                else localStorage.setItem('pachinko_points', playerPoints);
+            } catch(e) {}
+            function savePoints() { try { localStorage.setItem('pachinko_points', playerPoints); } catch(e) {} }
             
-            function loadPoints() {
-                try {
-                    const stored = localStorage.getItem(POINTS_KEY);
-                    if (stored !== null) {
-                        globalPoints = parseInt(stored, 10);
-                        if (isNaN(globalPoints)) globalPoints = 6600;
-                    }
-                } catch(e) {
-                    globalPoints = 6600;
-                }
-            }
-            loadPoints();
+            // 小丑系列機台
+            let currentMachine = { name: '小丑樂園', subName: '歡樂馬戲團', ratio: 2, machineId: 1, coins: 0, exchangeRate: 2, cashbackRate: 0.9 };
+            let playerCurrentSpins = 120; // 初始120轉
+            let machineCoins = 0;
             
-            function savePointsToStorage() {
-                try {
-                    localStorage.setItem(POINTS_KEY, globalPoints);
-                } catch(e) {}
-                updatePointsDisplay();
-            }
+            // 保留列表 - 加入示範保留卡片 (其他機台的保留)
+            let reservedList = [
+                { name: '幸運小丑 櫻花版', time: '保留 12分鐘', spins: 200, machineId: 88 },
+                { name: '馬戲團之夜', time: '保留 30分鐘', spins: 500, machineId: 77 }
+            ];
+            const MAX_RESERVE = 4;
             
-            function updatePointsDisplay() {
-                const pointsSpan = document.getElementById('drawerPoints');
-                if (pointsSpan) pointsSpan.innerText = globalPoints.toLocaleString();
-            }
+            let favoriteList = [
+                { name: '🤡 笑臉小丑', ratio: 2, machineId: 88, desc: '櫻花版' },
+                { name: '🎪 馬戲團之夜', ratio: 2, machineId: 77, desc: '幻彩版' },
+                { name: '🎈 氣球小丑', ratio: 2, machineId: 66, desc: '歡樂版' }
+            ];
             
-            // ==================== 接收從 index.html 傳來的機台資訊 ====================
-            let currentMachine = {
-                name: '減之',
-                subName: '001號機',
-                ratio: 2,
-                machineId: 1,
-                coins: 0
-            };
+            let autoSpinInterval = null;
+            let isAutoSpinning = false;
+            let pendingLeaveIndex = null;
             
-            function loadMachineInfo() {
-                try {
-                    const stored = localStorage.getItem('t_pachin_machine_info');
-                    if (stored) {
-                        const info = JSON.parse(stored);
-                        currentMachine = {
-                            name: info.name || '減之',
-                            subName: info.subName || '001號機',
-                            ratio: parseFloat(info.ratio) || 2,
-                            machineId: info.machineId || 1,
-                            coins: info.coins || 0
-                        };
-                        localStorage.removeItem('t_pachin_machine_info');
-                    }
-                } catch(e) {
-                    console.log('讀取機台資訊失敗', e);
-                }
-                
-                document.getElementById('machineNameDisplay').innerText = currentMachine.name;
-                document.getElementById('machineInfoDisplay').innerHTML = `NO.${currentMachine.machineId}｜每枚${currentMachine.ratio}`;
-                
-                const noticeTextEl = document.getElementById('noticeText');
-                if (noticeTextEl) {
-                    noticeTextEl.innerHTML = `${currentMachine.name} ${currentMachine.subName} 遊玩中`;
-                }
-            }
-            loadMachineInfo();
+            let statsData = { today: { totalSpins: 12589, totalBB: 156, totalRB: 289 }, yesterday: { totalSpins: 9872, totalBB: 132, totalRB: 203 }, daybefore: { totalSpins: 11456, totalBB: 178, totalRB: 245 } };
+            const chartDataSets = { today: [25,30,35,40,45,50,55,60,65,70], yesterday: [42,38,33,52,48,67,71,59,63,55], daybefore: [18,22,29,41,53,49,44,58,62,48] };
+            let currentDataSetKey = 'today';
             
-            // ==================== 模擬器核心功能 ====================
-            const toast = document.getElementById('toast');
-            function showMessage(msg) {
-                toast.innerText = msg;
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2000);
-            }
-
-            let playerCurrentSpins = 0;
-            let playerCurrentBB = 0;
-            let playerCurrentRB = 0;
-            let machineTotalSpins = 12589;
-            let machineTotalBB = 156;
-            let machineTotalRB = 289;
-            let machineCoins = currentMachine.coins;
-            let playerPoints = globalPoints;
-            let reservedList = [];
-
-            const chartValues = [25, 30, 35, 40, 45, 50, 55, 60, 65, 70];
+            function updateChartColors() { const bars=document.getElementById('chartBars'); if(!bars)return; for(let i=0;i<10&&i<bars.children.length;i++){ const bar=bars.children[i], val=chartDataSets[currentDataSetKey][i]; let fill=1; if(val>=70) fill=5; else if(val>=55) fill=4; else if(val>=45) fill=3; else if(val>=35) fill=2; for(let b=0;b<5;b++){ bar.children[b].classList.remove('red-full','green-full','dark'); if(b<fill) bar.children[b].classList.add(b%2===0?'red-full':'green-full'); else bar.children[b].classList.add('dark'); } } }
+            function refreshStats() { const s=statsData[currentDataSetKey]; document.getElementById('totalSpins').innerText=s.totalSpins; document.getElementById('totalBB').innerText=s.totalBB; document.getElementById('totalRB').innerText=s.totalRB; document.getElementById('currentSpins').innerText=playerCurrentSpins; }
+            function initChart() { const labels=document.getElementById('chartLabels'),bars=document.getElementById('chartBars'),vals=document.getElementById('chartValues'); if(labels){labels.innerHTML='';for(let i=1;i<=10;i++){let s=document.createElement('span');s.innerText=i;labels.appendChild(s);}} if(bars){bars.innerHTML='';for(let i=0;i<10;i++){let bar=document.createElement('div');bar.className='bar';for(let b=0;b<5;b++){let block=document.createElement('div');block.className='block dark';bar.appendChild(block);}bars.appendChild(bar);}} if(vals){vals.innerHTML='';for(let i=0;i<10;i++){let s=document.createElement('span');s.innerText=chartDataSets.today[i];vals.appendChild(s);}} updateChartColors(); refreshStats(); }
+            function bindDailyTags() { document.querySelectorAll('.daily-tag').forEach(t=>t.addEventListener('click',e=>{ document.querySelectorAll('.daily-tag').forEach(x=>x.classList.remove('active')); t.classList.add('active'); if(t.dataset.day==='today') currentDataSetKey='today'; else if(t.dataset.day==='yesterday') currentDataSetKey='yesterday'; else currentDataSetKey='daybefore'; updateChartColors(); refreshStats(); })); document.querySelector('.daily-tag[data-day="today"]')?.classList.add('active'); }
             
-            const noticeWrapper = document.getElementById('noticeWrapper');
-            const noticeCard = document.getElementById('noticeCard');
-            const noticeCloseBtn = document.getElementById('noticeCloseBtn');
-            const noticeTitle = document.getElementById('noticeTitle');
-            const noticeText = document.getElementById('noticeText');
-            
-            let maintenanceDateStr = '';
-            
-            function setMaintenanceNotice() {
-                const now = new Date();
-                const maintenanceDate = new Date(now);
-                maintenanceDate.setDate(now.getDate() + 1);
-                maintenanceDate.setHours(8, 0, 0, 0);
-                maintenanceDateStr = `${maintenanceDate.getMonth()+1}/${maintenanceDate.getDate()} ${maintenanceDate.getHours().toString().padStart(2,'0')}:00`;
-                noticeTitle.innerHTML = '🔧 系統維護預告';
-                noticeText.innerHTML = `${currentMachine.name} ${currentMachine.subName} 將在 ${maintenanceDateStr} 進行維護`;
-            }
-            
-            function closeNotice() {
-                noticeCard.classList.add('fade-out');
-                setTimeout(() => {
-                    noticeCard.style.display = 'none';
-                    const megaphoneIcon = document.createElement('div');
-                    megaphoneIcon.className = 'megaphone-icon-only';
-                    megaphoneIcon.id = 'megaphoneIcon';
-                    megaphoneIcon.innerHTML = '📢';
-                    megaphoneIcon.onclick = () => openNotice(megaphoneIcon);
-                    noticeWrapper.appendChild(megaphoneIcon);
-                }, 200);
-            }
-            
-            function openNotice(megaphoneIcon) {
-                megaphoneIcon.remove();
-                noticeCard.style.display = 'flex';
-                noticeCard.classList.remove('fade-out');
-                noticeCard.classList.add('fade-in');
-                setTimeout(() => {
-                    noticeCard.classList.remove('fade-in');
-                }, 300);
-            }
-            
-            if (noticeCloseBtn) noticeCloseBtn.addEventListener('click', closeNotice);
-            
-            function initChart() {
-                const labelsDiv = document.getElementById('chartLabels');
-                const barsDiv = document.getElementById('chartBars');
-                const valuesDiv = document.getElementById('chartValues');
-                
-                if (labelsDiv) {
-                    labelsDiv.innerHTML = '';
-                    for(let i=1; i<=10; i++) {
-                        let span = document.createElement('span');
-                        span.innerText = i;
-                        labelsDiv.appendChild(span);
-                    }
-                }
-                
-                if (barsDiv) {
-                    barsDiv.innerHTML = '';
-                    for(let i=0; i<10; i++) {
-                        let bar = document.createElement('div');
-                        bar.className = 'bar';
-                        for(let b=0; b<5; b++) {
-                            let block = document.createElement('div');
-                            block.className = 'block';
-                            bar.appendChild(block);
-                        }
-                        barsDiv.appendChild(bar);
-                    }
-                }
-                
-                if (valuesDiv) {
-                    valuesDiv.innerHTML = '';
-                    for(let i=0; i<10; i++) {
-                        let span = document.createElement('span');
-                        span.innerText = chartValues[i];
-                        valuesDiv.appendChild(span);
-                    }
-                }
-                updateChartColors();
-            }
-            
-            function updateChartColors() {
-                const barsDiv = document.getElementById('chartBars');
-                if(!barsDiv) return;
-                for(let i=0; i<10; i++) {
-                    const bar = barsDiv.children[i];
-                    if(!bar) continue;
-                    const blocks = bar.children;
-                    const val = chartValues[i];
-                    let fillCount = 1;
-                    if(val >= 65) fillCount = 5;
-                    else if(val >= 55) fillCount = 4;
-                    else if(val >= 45) fillCount = 3;
-                    else if(val >= 35) fillCount = 2;
-                    else fillCount = 1;
-                    for(let b=0; b<blocks.length; b++) {
-                        blocks[b].classList.remove('red-block', 'green-block');
-                        if(b < fillCount) {
-                            blocks[b].classList.add(b % 2 === 0 ? 'red-block' : 'green-block');
-                        } else {
-                            blocks[b].style.background = '#2a3a4a';
-                        }
-                    }
-                }
-            }
-            
-            function updateStatsDisplay() {
-                const totalSpinsEl = document.getElementById('totalSpins');
-                const totalBBEl = document.getElementById('totalBB');
-                const currentSpinsEl = document.getElementById('currentSpins');
-                const totalRBEl = document.getElementById('totalRB');
-                if (totalSpinsEl) totalSpinsEl.innerText = machineTotalSpins;
-                if (totalBBEl) totalBBEl.innerText = machineTotalBB;
-                if (currentSpinsEl) currentSpinsEl.innerText = playerCurrentSpins;
-                if (totalRBEl) totalRBEl.innerText = machineTotalRB;
-            }
-            
-            function updateDrawerUI() {
-                const drawerCoins = document.getElementById('drawerCoins');
-                const drawerPoints = document.getElementById('drawerPoints');
-                if(drawerCoins) drawerCoins.innerText = machineCoins.toLocaleString();
-                if(drawerPoints) drawerPoints.innerText = playerPoints.toLocaleString();
-                
-                const reserveContainer = document.getElementById('reserveContainer');
-                if(reserveContainer) {
-                    if(reservedList.length === 0) {
-                        reserveContainer.innerHTML = '<div style="color:#8fcae0; padding:8px;">無保留中機台</div>';
-                    } else {
-                        reserveContainer.innerHTML = reservedList.map((item, idx) => `
-                            <div class="machine-item">
-                                <div class="machine-item-info">
-                                    <div class="machine-item-name">${currentMachine.name} NO.${currentMachine.machineId}</div>
-                                    <div class="machine-item-sub">${item.time}</div>
-                                </div>
-                                <div class="machine-item-actions">
-                                    <button class="item-btn enter" onclick="window.enterReserve(${idx})">進入</button>
-                                    <button class="item-btn leave" onclick="window.removeReserve(${idx})">離開</button>
-                                </div>
+            function updateReserveUI() {
+                const rc = document.getElementById('reserveContainer');
+                if(!rc) return;
+                if(reservedList.length === 0) {
+                    rc.innerHTML = '<div style="color:#ffaa66; padding:8px; text-align:center;">🎪 暫無保留機台<br>👉 點擊下方「保留」按鈕即可新增</div>';
+                } else {
+                    rc.innerHTML = reservedList.map((item, idx) => `
+                        <div class="machine-item">
+                            <div class="machine-item-info">
+                                <div class="machine-item-name">🎪 ${item.name}</div>
+                                <div class="machine-item-sub">⏰ ${item.time} | 🎲 轉數: ${item.spins} 轉</div>
                             </div>
-                        `).join('');
-                    }
+                            <div class="machine-item-actions">
+                                <button class="item-btn enter" onclick="window.enterReserve(${idx})">進入</button>
+                                <button class="item-btn leave" onclick="window.showLeaveConfirm(${idx})">離座</button>
+                            </div>
+                        </div>
+                    `).join('');
                 }
             }
             
-            window.enterReserve = function(idx) {
-                showMessage(`進入 ${reservedList[idx].spins} 轉的保留機台`);
-            };
-            window.removeReserve = function(idx) {
-                reservedList.splice(idx, 1);
-                updateDrawerUI();
-                showMessage('已取消保留');
+            function updateDrawerUI() { 
+                const dc=document.getElementById('drawerCoins'),dp=document.getElementById('drawerPoints'); 
+                if(dc)dc.innerText=machineCoins.toLocaleString(); 
+                if(dp)dp.innerText=playerPoints.toLocaleString(); 
+                updateReserveUI();
+            }
+            
+            function updateFavoriteUI() { 
+                const fc=document.getElementById('favoriteContainer'); 
+                if(fc){ 
+                    if(favoriteList.length===0) fc.innerHTML='<div style="color:#ffaa66; padding:8px; text-align:center;">🎈 暫無收藏機台</div>'; 
+                    else fc.innerHTML=favoriteList.map((item,idx)=>`
+                        <div class="machine-item">
+                            <div class="machine-item-info">
+                                <div class="machine-item-name">${item.name}</div>
+                                <div class="machine-item-sub">🎪 ${item.desc} | 🎰 每枚${item.ratio} 代幣</div>
+                            </div>
+                            <div class="machine-item-actions">
+                                <button class="item-btn enter" onclick="window.enterFavorite(${idx})">進入</button>
+                                <button class="item-btn remove" onclick="window.removeFavorite(${idx})">移除</button>
+                            </div>
+                        </div>
+                    `).join(''); 
+                } 
+            }
+            window.enterFavorite = function(idx) { showMessage(`🎪 進入 ${favoriteList[idx]?.name}`); };
+            window.removeFavorite = function(idx) { favoriteList.splice(idx,1); updateFavoriteUI(); showMessage('🎈 已移除收藏'); };
+            window.enterReserve = function(idx) { 
+                showMessage(`🎪 進入 ${reservedList[idx]?.name}，轉數: ${reservedList[idx]?.spins} 轉`);
             };
             
-            function addSpin() {
-                if (machineCoins < currentMachine.ratio) {
-                    showMessage(`⚠️ 代幣不足！需要 ${currentMachine.ratio} 枚代幣`);
-                    return;
+            window.showLeaveConfirm = function(idx) {
+                pendingLeaveIndex = idx;
+                const leaveCoins = reservedList[idx]?.spins || 0;
+                const exchangeRate = currentMachine.cashbackRate;
+                const getPoints = Math.floor(leaveCoins * exchangeRate);
+                const afterPoints = playerPoints + getPoints;
+                
+                document.getElementById('leaveCoinsAmount').innerHTML = leaveCoins.toLocaleString();
+                document.getElementById('leavePointsAmount').innerHTML = getPoints.toLocaleString();
+                document.getElementById('leaveAfterPoints').innerHTML = afterPoints.toLocaleString();
+                document.getElementById('leaveConfirmModal').classList.add('show');
+            };
+            
+            function confirmLeave() {
+                if(pendingLeaveIndex !== null && reservedList[pendingLeaveIndex]) {
+                    const leaveItem = reservedList[pendingLeaveIndex];
+                    const getPoints = Math.floor(leaveItem.spins * currentMachine.cashbackRate);
+                    playerPoints += getPoints;
+                    savePoints();
+                    reservedList.splice(pendingLeaveIndex, 1);
+                    updateDrawerUI();
+                    showMessage(`🎪 離座成功！從 ${leaveItem.name} 獲得 ${getPoints.toLocaleString()} 點數錢包`);
+                    pendingLeaveIndex = null;
+                }
+                document.getElementById('leaveConfirmModal').classList.remove('show');
+            }
+            
+            function cancelLeave() {
+                pendingLeaveIndex = null;
+                document.getElementById('leaveConfirmModal').classList.remove('show');
+            }
+            
+            function enterCurrentMachine() {
+                showMessage(`🎪 您正在遊玩 ${currentMachine.name}，無需再次進入`);
+            }
+            
+            function showMessage(msg) { 
+                const floatMsg = document.getElementById('floatMessage');
+                floatMsg.innerText = msg;
+                floatMsg.classList.add('show');
+                setTimeout(() => floatMsg.classList.remove('show'), 2000);
+            }
+            
+            const manualPanel = document.getElementById('manualPanel');
+            
+            function showManualPanel() {
+                manualPanel.classList.remove('hide');
+                manualPanel.classList.add('show');
+            }
+            
+            function hideManualPanel() {
+                manualPanel.classList.remove('show');
+                manualPanel.classList.add('hide');
+            }
+            
+            function toggleManualPanel() {
+                if(manualPanel.classList.contains('show')) {
+                    hideManualPanel();
+                } else {
+                    showManualPanel();
+                }
+            }
+            
+            function normalSpin() {
+                if (machineCoins < currentMachine.ratio) { 
+                    showMessage(`🎪 代幣不足！需要 ${currentMachine.ratio} 枚代幣`); 
+                    return false; 
                 }
                 machineCoins -= currentMachine.ratio;
                 playerCurrentSpins++;
                 const rand = Math.random();
-                if(rand < 0.08) {
-                    playerCurrentBB++;
-                    machineTotalBB++;
-                    showMessage(`🎉 第${playerCurrentSpins}轉 開出BB！`);
-                } else if(rand < 0.15) {
-                    playerCurrentRB++;
-                    machineTotalRB++;
-                    showMessage(`🎉 第${playerCurrentSpins}轉 開出RB！`);
-                } else if(playerCurrentSpins % 20 === 0) {
-                    showMessage(`第${playerCurrentSpins}轉`);
-                }
-                machineTotalSpins++;
-                updateStatsDisplay();
+                if(rand < 0.08) showMessage(`🤡 第${playerCurrentSpins}轉 開出BB！`);
+                else if(rand < 0.15) showMessage(`🎈 第${playerCurrentSpins}轉 開出RB！`);
+                else if(playerCurrentSpins % 20 === 0) showMessage(`🎪 第${playerCurrentSpins}轉`);
+                refreshStats();
                 updateDrawerUI();
+                return true;
             }
             
-            function addAllPoints() {
-                if(playerPoints > 0) {
-                    machineCoins += playerPoints;
-                    showMessage(`上分 +${playerPoints.toLocaleString()} 代幣`);
-                    playerPoints = 0;
-                    updateDrawerUI();
-                    globalPoints = playerPoints;
-                    savePointsToStorage();
-                } else {
-                    showMessage('沒有點數可以上分！');
+            function maxSpin() {
+                if(isAutoSpinning) { showMessage('請先停止自動模式'); return; }
+                if (machineCoins < 6) { 
+                    showMessage(`🎪 代幣不足！需要 6 枚代幣`); 
+                    return; 
                 }
+                machineCoins -= 6;
+                playerCurrentSpins++;
+                const rand = Math.random();
+                if(rand < 0.08) showMessage(`🤡 MAX！第${playerCurrentSpins}轉 開出BB！`);
+                else if(rand < 0.15) showMessage(`🎈 MAX！第${playerCurrentSpins}轉 開出RB！`);
+                else if(playerCurrentSpins % 20 === 0) showMessage(`🎪 MAX轉 第${playerCurrentSpins}轉`);
+                refreshStats();
+                updateDrawerUI();
+                showMessage('⚡ MAX模式！一次扣6枚代幣');
             }
             
-            function subAllPoints() {
+            function singleSpin() {
+                if(isAutoSpinning) { showMessage('請先停止自動模式'); return; }
+                normalSpin();
+            }
+            
+            function showExchangeConfirm(amount, getCoins, futurePoints, onConfirm) {
+                const modal = document.getElementById('confirmModal');
+                document.getElementById('confirmTitle').innerHTML = '🎪 點數換代幣';
+                document.getElementById('confirmPointsIn').innerHTML = amount.toLocaleString();
+                document.getElementById('confirmCoins').innerHTML = getCoins.toLocaleString();
+                document.getElementById('confirmPointsOut').innerHTML = futurePoints.toLocaleString();
+                const confirmOk = document.getElementById('confirmOk'), confirmCancel = document.getElementById('confirmCancel');
+                const handleConfirm = () => { modal.classList.remove('show'); confirmOk.removeEventListener('click', handleConfirm); confirmCancel.removeEventListener('click', handleCancel); onConfirm(); };
+                const handleCancel = () => { modal.classList.remove('show'); confirmOk.removeEventListener('click', handleConfirm); confirmCancel.removeEventListener('click', handleCancel); };
+                confirmOk.addEventListener('click', handleConfirm); confirmCancel.addEventListener('click', handleCancel);
+                modal.classList.add('show');
+            }
+            function showCashbackConfirm(amount, getPoints, onConfirm) {
+                const modal = document.getElementById('confirmModal');
+                document.getElementById('confirmTitle').innerHTML = '🎈 代幣換點數錢包';
+                document.getElementById('confirmPointsIn').innerHTML = amount.toLocaleString();
+                document.getElementById('confirmCoins').innerHTML = '';
+                document.getElementById('confirmPointsOut').innerHTML = getPoints.toLocaleString();
+                const confirmOk = document.getElementById('confirmOk'), confirmCancel = document.getElementById('confirmCancel');
+                const handleConfirm = () => { modal.classList.remove('show'); confirmOk.removeEventListener('click', handleConfirm); confirmCancel.removeEventListener('click', handleCancel); onConfirm(); };
+                const handleCancel = () => { modal.classList.remove('show'); confirmOk.removeEventListener('click', handleConfirm); confirmCancel.removeEventListener('click', handleCancel); };
+                confirmOk.addEventListener('click', handleConfirm); confirmCancel.addEventListener('click', handleCancel);
+                modal.classList.add('show');
+            }
+            
+            function addAllPoints() { if(playerPoints<=0){ showMessage('🎪 沒有點數可以上分！'); return; } const amount=playerPoints, getCoins=Math.floor(amount*currentMachine.exchangeRate), futurePoints=Math.floor(getCoins*currentMachine.cashbackRate); showExchangeConfirm(amount,getCoins,futurePoints,()=>{ machineCoins+=getCoins; showMessage(`🎪 總上分 +${getCoins.toLocaleString()} 代幣`); playerPoints=0; updateDrawerUI(); savePoints(); }); }
+            function subAllPoints() { if(machineCoins<=0){ showMessage('🎪 沒有代幣可以下分！'); return; } const getPoints=Math.floor(machineCoins*currentMachine.cashbackRate); showCashbackConfirm(machineCoins,getPoints,()=>{ playerPoints+=getPoints; showMessage(`🎈 總下分 +${getPoints.toLocaleString()} 點數錢包`); machineCoins=0; updateDrawerUI(); savePoints(); }); }
+            function addCustomPoints() { const amt=parseInt(document.getElementById('exchangeAmount')?.value)||0; if(amt<=0){ showMessage('請輸入大於0的數量'); return; } if(playerPoints<amt){ showMessage(`🎪 點數錢包不足！目前持有: ${playerPoints.toLocaleString()}`); return; } const getCoins=amt*currentMachine.exchangeRate, futurePoints=Math.floor(getCoins*currentMachine.cashbackRate); showExchangeConfirm(amt,getCoins,futurePoints,()=>{ machineCoins+=getCoins; playerPoints-=amt; updateDrawerUI(); savePoints(); showMessage(`🎪 上分 +${getCoins.toLocaleString()} 代幣`); }); }
+            function subCustomPoints() { const amt=parseInt(document.getElementById('exchangeAmount2')?.value)||0; if(amt<=0){ showMessage('請輸入大於0的數量'); return; } if(machineCoins<amt){ showMessage(`🎪 代幣不足！目前持有: ${machineCoins.toLocaleString()}`); return; } const getPoints=Math.floor(amt*currentMachine.cashbackRate); showCashbackConfirm(amt,getPoints,()=>{ playerPoints+=getPoints; machineCoins-=amt; updateDrawerUI(); savePoints(); showMessage(`🎈 下分 +${getPoints.toLocaleString()} 點數錢包`); }); }
+            
+            const video = document.getElementById('gameVideo');
+            
+            function startAutoSpin() {
+                if(isAutoSpinning) return;
+                if(machineCoins < currentMachine.ratio) { showMessage(`🎪 代幣不足，無法開始自動轉輪`); return; }
+                isAutoSpinning = true;
+                const autoBtn = document.getElementById('autoBtn');
+                autoBtn.classList.add('active-auto');
+                autoBtn.textContent = '⏹️ 停止';
+                showMessage('🎪 自動轉輪開始 + 畫中畫模式 (每轉扣2枚)');
+                hideManualPanel();
+                if(video && document.pictureInPictureEnabled !== false) {
+                    if(document.pictureInPictureElement !== video) {
+                        video.requestPictureInPicture().catch(e => showMessage('畫中畫不支援'));
+                    }
+                }
+                autoSpinInterval = setInterval(() => {
+                    if(!isAutoSpinning) return;
+                    const success = normalSpin();
+                    if(!success || machineCoins < currentMachine.ratio) {
+                        if(machineCoins < currentMachine.ratio) showMessage('🎪 代幣不足，自動轉輪已停止');
+                        stopAutoSpin();
+                    }
+                }, 500);
+            }
+            
+            function stopAutoSpin() {
+                if(autoSpinInterval) { clearInterval(autoSpinInterval); autoSpinInterval = null; }
+                isAutoSpinning = false;
+                const autoBtn = document.getElementById('autoBtn');
+                autoBtn.classList.remove('active-auto');
+                autoBtn.textContent = '🎰 自動';
+                showMessage('⏹️ 自動轉輪已停止');
+                showManualPanel();
+            }
+            
+            function toggleAutoSpin() { 
+                if(isAutoSpinning) stopAutoSpin(); 
+                else startAutoSpin(); 
+            }
+            
+            function addReserve(){ 
+                const mins = Math.floor(playerCurrentSpins / 100) * 6; 
+                if(mins <= 0){ 
+                    showMessage('🎪 轉數不足100，無法保留<br>繼續轉動機台吧！'); 
+                    return; 
+                } 
+                if(reservedList.length >= MAX_RESERVE) {
+                    showMessage(`🎪 保留已達上限 (最多${MAX_RESERVE}台)，請先離座一台再保留`);
+                    return;
+                }
+                let timeStr = mins >= 60 ? `${Math.floor(mins/60)}小時${mins%60}分` : `${mins}分鐘`;
+                if(mins >= 1440) timeStr = '24小時';
+                reservedList.push({ name: `${currentMachine.name} ${currentMachine.subName}`, time: `保留 ${timeStr}`, spins: playerCurrentSpins, machineId: currentMachine.machineId });
+                updateDrawerUI();
+                showMessage(`🎪 已保留機台！保留時間: ${timeStr}<br>可在「保留中」查看`);
+            }
+            
+            // 返回大廳功能 (底部按鈕)
+            function returnToLobby() {
+                const getPoints = Math.floor(machineCoins * currentMachine.cashbackRate);
+                const afterPoints = playerPoints + getPoints;
+                
+                document.getElementById('returnCoinsAmount').innerHTML = machineCoins.toLocaleString();
+                document.getElementById('returnPointsAmount').innerHTML = getPoints.toLocaleString();
+                document.getElementById('returnAfterPoints').innerHTML = afterPoints.toLocaleString();
+                document.getElementById('returnLobbyModal').classList.add('show');
+            }
+            
+            function confirmReturnToLobby() {
+                // 顯示遊戲中=(佔位中)狀態
+                const gameMachineItem = document.querySelector('.collapsible-section:first-child .machine-item');
+                if(gameMachineItem) {
+                    const machineNameDiv = gameMachineItem.querySelector('.machine-item-name');
+                    const originalName = machineNameDiv.innerHTML;
+                    machineNameDiv.innerHTML = `${originalName} <span class="occupying-status">遊戲中=(佔位中)</span>`;
+                }
+                
+                // 如果有自動轉輪，先停止
+                if(isAutoSpinning) stopAutoSpin();
+                
+                // 兌換機台上的代幣
                 if(machineCoins > 0) {
-                    playerPoints += machineCoins;
-                    showMessage(`下分 +${machineCoins.toLocaleString()} 點數`);
+                    const pts = Math.floor(machineCoins * currentMachine.cashbackRate);
+                    playerPoints += pts;
+                    savePoints();
+                    showMessage(`🎪 返回大廳！兌換 ${pts} 點數錢包`);
                     machineCoins = 0;
                     updateDrawerUI();
-                    globalPoints = playerPoints;
-                    savePointsToStorage();
+                    refreshStats();
                 } else {
-                    showMessage('沒有代幣可以下分！');
+                    showMessage('🎪 返回大廳！');
                 }
-            }
-            
-            function addCustomPoints() {
-                const amount = parseInt(document.getElementById('exchangeAmount')?.value) || 0;
-                if(amount <= 0) { showMessage('請輸入大於0的數量'); return; }
-                if(playerPoints >= amount) {
-                    machineCoins += amount;
-                    playerPoints -= amount;
-                    updateDrawerUI();
-                    globalPoints = playerPoints;
-                    savePointsToStorage();
-                    showMessage(`上分 +${amount.toLocaleString()} 代幣`);
-                } else {
-                    showMessage(`點數不足！目前持有: ${playerPoints.toLocaleString()}`);
-                }
-            }
-            
-            function subCustomPoints() {
-                const amount = parseInt(document.getElementById('exchangeAmount')?.value) || 0;
-                if(amount <= 0) { showMessage('請輸入大於0的數量'); return; }
-                if(machineCoins >= amount) {
-                    playerPoints += amount;
-                    machineCoins -= amount;
-                    updateDrawerUI();
-                    globalPoints = playerPoints;
-                    savePointsToStorage();
-                    showMessage(`下分 +${amount.toLocaleString()} 點數`);
-                } else {
-                    showMessage(`代幣不足！目前持有: ${machineCoins.toLocaleString()}`);
-                }
-            }
-            
-            function exitMachine() {
-                if(machineCoins > 0) {
-                    playerPoints += machineCoins;
-                    globalPoints = playerPoints;
-                    savePointsToStorage();
-                    showMessage(`離開機台，自動兌換 ${machineCoins.toLocaleString()} 代幣 → 點數`);
-                    machineCoins = 0;
-                }
-                showMessage('已離開機台，返回首頁');
-                drawer.classList.remove('open');
-                updateDrawerUI();
+                
+                // 更新遊戲中顯示
                 setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
+                    const currentSpinsEl = document.getElementById('currentSpins');
+                    if(currentSpinsEl) {
+                        currentSpinsEl.innerText = '佔位中';
+                    }
+                }, 100);
+                
+                document.getElementById('returnLobbyModal').classList.remove('show');
+            }
+            
+            function cancelReturnToLobby() {
+                document.getElementById('returnLobbyModal').classList.remove('show');
+            }
+            
+            // 離開座位功能 (快捷工具) - 將機台上所有代幣兌換
+            function showLeaveSeatConfirm() {
+                const getPoints = Math.floor(machineCoins * currentMachine.cashbackRate);
+                const afterPoints = playerPoints + getPoints;
+                
+                document.getElementById('leaveSeatCoins').innerHTML = machineCoins.toLocaleString();
+                document.getElementById('leaveSeatPoints').innerHTML = getPoints.toLocaleString();
+                document.getElementById('leaveSeatAfterPoints').innerHTML = afterPoints.toLocaleString();
+                document.getElementById('leaveSeatModal').classList.add('show');
+            }
+            
+            function confirmLeaveSeat() {
+                if(isAutoSpinning) stopAutoSpin(); 
+                if(machineCoins > 0){ 
+                    const pts = Math.floor(machineCoins * currentMachine.cashbackRate); 
+                    playerPoints += pts; 
+                    savePoints(); 
+                    showMessage(`🎪 離開座位！兌換 ${pts} 點數錢包`); 
+                    machineCoins = 0; 
+                } 
+                showMessage('🎪 已離開座位'); 
+                document.getElementById('leaveSeatModal').classList.remove('show');
+                setTimeout(()=>window.location.href='index.html',800);
+            }
+            
+            function cancelLeaveSeat() {
+                document.getElementById('leaveSeatModal').classList.remove('show');
             }
             
             function initDrawer() {
-                const drawerContent = document.getElementById('drawerContent');
-                if (!drawerContent) return;
-                drawerContent.innerHTML = `
-                    <div class="exchange-card">
-                        <div class="balance-row">
-                            <span class="balance-label">💰 機台代幣</span>
-                            <div class="coin-box-drawer">
-                                <span class="coin-symbol-drawer"></span>
-                                <span class="balance-value" id="drawerCoins">${machineCoins.toLocaleString()}</span>
-                            </div>
+                const dc=document.getElementById('drawerContent');
+                if(!dc)return;
+                dc.innerHTML=`<div class="exchange-card"><div class="balance-row"><span class="balance-label">🎪 我的點數錢包</span><span class="balance-value" id="drawerPoints">${playerPoints.toLocaleString()}</span></div><div class="balance-row"><span class="balance-label">🎰 機台代幣</span><span class="balance-value" id="drawerCoins">${machineCoins.toLocaleString()}</span></div><div class="section-divider"></div><div class="full-buttons"><button class="full-btn add-all" id="addAllBtn">總上分</button><button class="full-btn sub-all" id="subAllBtn">總下分</button></div><div class="custom-section"><div class="custom-input-group"><input type="number" id="exchangeAmount" class="custom-input" value="1000"><button class="custom-btn add-custom" id="addCustomBtn">上分</button></div></div><div class="custom-section"><div class="custom-input-group"><input type="number" id="exchangeAmount2" class="custom-input" value="1000"><button class="custom-btn sub-custom" id="subCustomBtn">下分</button></div></div></div>
+                <div class="collapsible-section"><div class="section-header-click"><span class="section-title-drawer">🎪 遊戲中</span><span class="collapse-icon">▶</span></div><div class="collapsible-content">
+                    <div class="machine-item">
+                        <div class="machine-item-info">
+                            <div class="machine-item-name">🤡 ${currentMachine.name} ${currentMachine.subName}</div>
+                            <div class="machine-item-sub">🎰 每枚${currentMachine.ratio} 代幣 | 🎲 當前 ${playerCurrentSpins} 轉</div>
                         </div>
-                        <div class="balance-row">
-                            <span class="balance-label">🎯 我的點數</span>
-                            <div class="coin-box-drawer">
-                                <span class="coin-symbol-drawer"></span>
-                                <span class="balance-value" id="drawerPoints">${playerPoints.toLocaleString()}</span>
-                            </div>
-                        </div>
-                        <div class="full-buttons">
-                            <button class="full-btn" id="addAllBtn">上分</button>
-                            <button class="full-btn" id="subAllBtn">下分</button>
-                        </div>
-                        <div class="custom-section">
-                            <div class="custom-title">自訂上下分 (1:1兌換)</div>
-                            <div class="custom-input-group">
-                                <input type="number" id="exchangeAmount" class="custom-input" placeholder="數量" value="1000">
-                                <button class="custom-btn" id="addCustomBtn">上分</button>
-                                <button class="custom-btn" id="subCustomBtn">下分</button>
-                            </div>
+                        <div class="machine-item-actions">
+                            <button class="item-btn enter" onclick="window.enterCurrentMachine()">進入</button>
                         </div>
                     </div>
-                    
-                    <div class="collapsible-section">
-                        <div class="section-header-click" data-target="playingContent">
-                            <span class="section-title-drawer">🎮 遊戲中</span>
-                            <span class="collapse-icon">▶</span>
-                        </div>
-                        <div class="collapsible-content" id="playingContent">
-                            <div class="machine-item">
-                                <div class="machine-item-info">
-                                    <div class="machine-item-name">${currentMachine.name} NO.${currentMachine.machineId}</div>
-                                    <div class="machine-item-sub">每枚${currentMachine.ratio}</div>
-                                </div>
-                                <div class="machine-item-actions">
-                                    <button class="item-btn enter">遊玩中</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="collapsible-section">
-                        <div class="section-header-click" data-target="reserveContent">
-                            <span class="section-title-drawer">⏳ 保留中</span>
-                            <span class="collapse-icon">▶</span>
-                        </div>
-                        <div class="collapsible-content" id="reserveContent">
-                            <div id="reserveContainer"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="collapsible-section">
-                        <div class="section-header-click" data-target="favoriteContent">
-                            <span class="section-title-drawer">❤️ 收藏中</span>
-                            <span class="collapse-icon">▶</span>
-                        </div>
-                        <div class="collapsible-content" id="favoriteContent">
-                            <div class="machine-item">
-                                <div class="machine-item-info">
-                                    <div class="machine-item-name">幸運小丑 櫻花版</div>
-                                    <div class="machine-item-sub">每枚2</div>
-                                </div>
-                                <div class="machine-item-actions">
-                                    <button class="item-btn enter">進入</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="section-title-drawer" style="margin-top: 12px;">🛠️ 系統工具</div>
-                    <div class="menu-item" id="refreshBtn">🔄 頁面重整</div>
-                    <div class="menu-item" id="videoLineBtn">📡 視訊線路</div>
-                    <div class="menu-item" id="strategyBtn">📖 機台攻略</div>
-                    <div class="exit-btn" id="exitMachineBtn">🚪 離開機台</div>
-                `;
-                
-                document.getElementById('addAllBtn')?.addEventListener('click', addAllPoints);
-                document.getElementById('subAllBtn')?.addEventListener('click', subAllPoints);
-                document.getElementById('addCustomBtn')?.addEventListener('click', addCustomPoints);
-                document.getElementById('subCustomBtn')?.addEventListener('click', subCustomPoints);
-                document.getElementById('refreshBtn')?.addEventListener('click', () => { showMessage('頁面重整'); setTimeout(() => location.reload(), 500); });
-                document.getElementById('videoLineBtn')?.addEventListener('click', () => showMessage('切換視訊線路'));
-                document.getElementById('strategyBtn')?.addEventListener('click', () => showMessage('📖 機台攻略：20:00後RB機率較高'));
-                document.getElementById('exitMachineBtn')?.addEventListener('click', () => exitModal.classList.add('show'));
-                
-                document.querySelectorAll('.collapsible-section').forEach(section => {
-                    const header = section.querySelector('.section-header-click');
-                    const content = section.querySelector('.collapsible-content');
-                    const icon = header?.querySelector('.collapse-icon');
-                    if(content && icon) {
-                        content.classList.remove('show');
-                        icon.textContent = '▶';
-                        header.addEventListener('click', () => {
-                            content.classList.toggle('show');
-                            icon.textContent = content.classList.contains('show') ? '▼' : '▶';
-                        });
-                    }
-                });
-                
+                </div></div>
+                <div class="collapsible-section"><div class="section-header-click"><span class="section-title-drawer">⏳ 保留中</span><span class="collapse-icon">▶</span></div><div class="collapsible-content"><div id="reserveContainer"></div></div></div>
+                <div class="collapsible-section"><div class="section-header-click"><span class="section-title-drawer">❤️ 我的收藏</span><span class="collapse-icon">▶</span></div><div class="collapsible-content"><div id="favoriteContainer"></div></div></div>
+                <div class="section-title-drawer" style="margin-top:10px;">🛠️ 系統工具</div>
+                <div class="menu-item" id="toggleManualBtn">🎮 手動面板</div>
+                <div class="menu-item" id="refreshBtn">🔄 頁面重整</div>
+                <div class="exit-btn-drawer" id="exitMachineBtn">🚪 離開座位</div>`;
+                document.getElementById('addAllBtn')?.addEventListener('click',addAllPoints);
+                document.getElementById('subAllBtn')?.addEventListener('click',subAllPoints);
+                document.getElementById('addCustomBtn')?.addEventListener('click',addCustomPoints);
+                document.getElementById('subCustomBtn')?.addEventListener('click',subCustomPoints);
+                document.getElementById('toggleManualBtn')?.addEventListener('click', toggleManualPanel);
+                document.getElementById('refreshBtn')?.addEventListener('click',()=>{ if(isAutoSpinning) stopAutoSpin(); location.reload(); });
+                document.getElementById('exitMachineBtn')?.addEventListener('click', showLeaveSeatConfirm);
+                document.querySelectorAll('.collapsible-section').forEach(sec=>{ const h=sec.querySelector('.section-header-click'),c=sec.querySelector('.collapsible-content'),i=h?.querySelector('.collapse-icon'); if(c&&i){ c.classList.remove('show'); i.textContent='▶'; h.addEventListener('click',()=>{ c.classList.toggle('show'); i.textContent=c.classList.contains('show')?'▼':'▶'; }); } });
                 updateDrawerUI();
+                updateFavoriteUI();
             }
             
-            const chartArea = document.getElementById('chartClickArea');
-            if (chartArea) chartArea.addEventListener('click', addSpin);
-            document.getElementById('reserveBtn')?.addEventListener('click', addReserve);
+            document.getElementById('leaveConfirm')?.addEventListener('click', confirmLeave);
+            document.getElementById('leaveCancel')?.addEventListener('click', cancelLeave);
+            // 返回大廳按鈕事件
+            document.getElementById('returnConfirm')?.addEventListener('click', confirmReturnToLobby);
+            document.getElementById('returnCancel')?.addEventListener('click', cancelReturnToLobby);
+            // 離開座位按鈕事件
+            document.getElementById('leaveSeatConfirm')?.addEventListener('click', confirmLeaveSeat);
+            document.getElementById('leaveSeatCancel')?.addEventListener('click', cancelLeaveSeat);
             
-            function addReserve() {
-                const minutes = Math.floor(playerCurrentSpins / 100) * 6;
-                if(minutes <= 0) {
-                    showMessage('轉數不足100，無法保留');
-                    return;
-                }
-                let timeStr = minutes >= 60 ? `${Math.floor(minutes/60)}小時${minutes%60}分鐘` : `${minutes}分鐘`;
-                if(minutes >= 1440) timeStr = '24小時';
-                reservedList.push({ time: `剩 ${timeStr}`, spins: playerCurrentSpins });
-                showMessage(`已保留機台，可保留 ${timeStr}`);
-                updateDrawerUI();
+            window.enterCurrentMachine = enterCurrentMachine;
+            
+            document.getElementById('chartClickArea')?.addEventListener('click', () => { if(!isAutoSpinning) singleSpin(); });
+            document.getElementById('autoBtn')?.addEventListener('click', toggleAutoSpin);
+            document.getElementById('reserveBtnBottom')?.addEventListener('click', addReserve);
+            document.getElementById('returnLobbyBtn')?.addEventListener('click', returnToLobby);
+            document.getElementById('vipBtn')?.addEventListener('click',()=>showMessage('🎪 VIP1 等級 - 小丑貴賓'));
+            
+            document.getElementById('joystickBtn')?.addEventListener('click', () => singleSpin());
+            document.getElementById('maxSpinBtn')?.addEventListener('click', maxSpin);
+            document.querySelectorAll('.reel-btn').forEach(btn => {
+                btn.addEventListener('click', () => singleSpin());
+            });
+            document.getElementById('closePanelBtn')?.addEventListener('click', () => hideManualPanel());
+            
+            const drawer=document.getElementById('drawer'),trigger=document.getElementById('drawerTrigger'),close=document.getElementById('drawerClose');
+            trigger?.addEventListener('click',()=>drawer.classList.add('open'));
+            close?.addEventListener('click',()=>drawer.classList.remove('open'));
+            
+            let maintenanceTargetTime = null, countdownInterval = null;
+            function setMaintenanceTime() {
+                const now = new Date();
+                const demoTime = new Date(now);
+                demoTime.setSeconds(now.getSeconds() + 120);
+                maintenanceTargetTime = demoTime.getTime();
+                const dateStr = `${demoTime.getMonth()+1}/${demoTime.getDate()} ${demoTime.getHours().toString().padStart(2,'0')}:${demoTime.getMinutes().toString().padStart(2,'0')}`;
+                const noticeText = document.getElementById('noticeText');
+                if(noticeText) noticeText.innerHTML = `🔔 ${currentMachine.name} ${currentMachine.subName} 將在 ${dateStr} 進行維護`;
+                startMaintenanceCheck();
             }
-            
-            const drawer = document.getElementById('drawer');
-            const drawerTrigger = document.getElementById('drawerTrigger');
-            const drawerClose = document.getElementById('drawerClose');
-            if (drawerTrigger) drawerTrigger.addEventListener('click', () => drawer.classList.add('open'));
-            if (drawerClose) drawerClose.addEventListener('click', () => drawer.classList.remove('open'));
-            document.addEventListener('click', (e) => {
-                if(drawer && drawerTrigger && !drawer.contains(e.target) && !drawerTrigger.contains(e.target)) {
-                    drawer.classList.remove('open');
-                }
-            });
-            
-            const exitModal = document.getElementById('exitModal');
-            document.getElementById('exitCancel')?.addEventListener('click', () => exitModal.classList.remove('show'));
-            document.getElementById('exitConfirm')?.addEventListener('click', () => {
-                exitMachine();
-                exitModal.classList.remove('show');
-            });
-            
-            document.getElementById('vipBtn')?.addEventListener('click', () => showMessage('⭐ VIP 1 等級'));
-            
-            const video = document.getElementById('gameVideo');
-            document.getElementById('pipBtn')?.addEventListener('click', async () => {
-                try {
-                    if(document.pictureInPictureElement === video) await document.exitPictureInPicture();
-                    else await video.requestPictureInPicture();
-                } catch(e) { showMessage('PIP不支援'); }
-            });
+            function startMaintenanceCheck() { if(countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(checkMaintenance, 1000); checkMaintenance(); }
+            function checkMaintenance() {
+                if(!maintenanceTargetTime) return;
+                const remainingMs = maintenanceTargetTime - Date.now();
+                if(remainingMs <= 0) { removeAllOverlays(); if(countdownInterval) clearInterval(countdownInterval); showMaintenanceFinalMessage(); return; }
+                const remainingSeconds = Math.floor(remainingMs/1000);
+                if(remainingSeconds <= 120 && remainingSeconds > 0) showMaintenanceOverlay(remainingSeconds);
+                else removeAllOverlays();
+            }
+            function showMaintenanceOverlay(seconds) {
+                if(document.getElementById('mainOverlay')) return;
+                const videoArea = document.getElementById('videoArea');
+                if(!videoArea) return;
+                const overlay = document.createElement('div');
+                overlay.id = 'mainOverlay';
+                overlay.className = 'maintenance-overlay';
+                overlay.innerHTML = `<div class="maintenance-content"><div class="warning-icon">⏰</div><div class="maintenance-title">維護倒數 ${Math.floor(seconds/60)}:${(seconds%60).toString().padStart(2,'0')}</div></div>`;
+                videoArea.appendChild(overlay);
+                const interval = setInterval(() => {
+                    const overlayEl = document.getElementById('mainOverlay');
+                    if(!overlayEl) { clearInterval(interval); return; }
+                    const newRemaining = maintenanceTargetTime - Date.now();
+                    if(newRemaining <= 0) { clearInterval(interval); removeAllOverlays(); return; }
+                    const sec = Math.floor(newRemaining/1000);
+                    const titleEl = overlayEl.querySelector('.maintenance-title');
+                    if(titleEl) titleEl.innerHTML = `維護倒數 ${Math.floor(sec/60)}:${(sec%60).toString().padStart(2,'0')}`;
+                }, 1000);
+            }
+            function removeAllOverlays() { const el=document.getElementById('mainOverlay'); if(el) el.remove(); }
+            function showMaintenanceFinalMessage() {
+                const videoArea = document.getElementById('videoArea');
+                if(!videoArea || document.getElementById('finalMain')) return;
+                const final = document.createElement('div');
+                final.id = 'finalMain';
+                final.className = 'maintenance-overlay';
+                final.innerHTML = `<div class="maintenance-content"><div class="warning-icon">🛠️</div><div class="maintenance-title">系統維護中</div></div>`;
+                videoArea.appendChild(final);
+                showMessage('系統維護中，機台已暫停服務');
+                if(isAutoSpinning) stopAutoSpin();
+            }
             
             initChart();
             initDrawer();
-            updateStatsDisplay();
-            setMaintenanceNotice();
+            refreshStats();
+            bindDailyTags();
+            setMaintenanceTime();
             
-            showMessage(`歡迎進入 ${currentMachine.name} ${currentMachine.subName}！`);
+            const noticeClose = document.getElementById('noticeCloseBtn');
+            const noticeCard = document.getElementById('noticeCard');
+            const noticeWrapper = document.getElementById('noticeWrapper');
+            if(noticeClose) noticeClose.addEventListener('click',()=>{
+                noticeCard.style.display='none';
+                const tool=document.createElement('div');
+                tool.className='tool-icon-only';
+                tool.innerHTML='🔧';
+                tool.onclick=()=>{ tool.remove(); noticeCard.style.display='flex'; };
+                noticeWrapper.appendChild(tool);
+            });
+            
+            showMessage(`🎪 歡迎來到 ${currentMachine.name} ${currentMachine.subName}！`);
         })();
     </script>
 </body>
