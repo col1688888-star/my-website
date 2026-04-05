@@ -1259,6 +1259,7 @@
             </div>
             <div class="sub-confirm-detail">
                 <div class="detail-row"><span class="detail-label">每枚代幣</span><span class="detail-value" id="confirmRatio">2</span></div>
+                <div class="detail-row"><span class="detail-label">每枚得點(離座)</span><span class="detail-value" id="confirmRedeemPoint">1.8</span></div>
                 <div class="detail-row"><span class="detail-label">最低兌換</span><span class="detail-value" style="color:#ffaa66;">100 代幣</span></div>
                 <div class="detail-row"><span class="detail-label">目前點數</span><span class="detail-value" id="confirmPoints">6,600</span></div>
             </div>
@@ -1363,6 +1364,7 @@
     const confirmMachineName = document.getElementById('confirmMachineName');
     const confirmSubName = document.getElementById('confirmSubName');
     const confirmRatioSpan = document.getElementById('confirmRatio');
+    const confirmRedeemPointSpan = document.getElementById('confirmRedeemPoint');
     const confirmPointsSpan = document.getElementById('confirmPoints');
     const tokenInput = document.getElementById('confirmTokenInput');
     const tokenRemainSpan = document.getElementById('confirmTokenRemain');
@@ -1371,15 +1373,26 @@
     let currentSubData = null;
 
     window.openSubConfirm = function(machineName, subName, ratio, machineId) {
+        const ratioNum = parseFloat(ratio);
+        const redeemPoint = (ratioNum * 0.9).toFixed(2);
+        
         confirmMachineName.textContent = machineName;
         confirmSubName.textContent = subName;
         confirmRatioSpan.textContent = ratio;
+        confirmRedeemPointSpan.textContent = redeemPoint;
         confirmPointsSpan.textContent = points.toLocaleString();
         tokenInput.value = '';
         tokenInput.min = 100;
         tokenInput.max = points;
         tokenRemainSpan.textContent = `剩餘點數: ${points.toLocaleString()}`;
-        currentSubData = { machineName, subName, ratio, machineId };
+        
+        currentSubData = { 
+            machineName, 
+            subName, 
+            ratio: ratioNum, 
+            machineId,
+            pointValue: ratioNum * 0.9
+        };
         subModal.classList.add('show');
     };
 
@@ -1405,17 +1418,20 @@
         points -= tokenUsed;
         savePoints();
         subModal.classList.remove('show');
+        
+        const machineInfo = {
+            name: currentSubData.machineName,
+            subName: currentSubData.subName,
+            ratio: currentSubData.ratio,
+            pointValue: currentSubData.pointValue,
+            machineId: currentSubData.machineId,
+            coins: tokenUsed
+        };
+        localStorage.setItem('t_pachin_machine_info', JSON.stringify(machineInfo));
+        
         showHologramLoading(currentSubData.machineName, currentSubData.machineId || 1, currentSubData.ratio);
         setTimeout(() => {
             hideHologramLoading();
-            const machineInfo = {
-                name: currentSubData.machineName,
-                subName: currentSubData.subName,
-                ratio: currentSubData.ratio,
-                machineId: currentSubData.machineId,
-                coins: tokenUsed
-            };
-            localStorage.setItem('t_pachin_machine_info', JSON.stringify(machineInfo));
             window.location.href = 'simulator.html';
         }, 5000);
     });
