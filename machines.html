@@ -723,6 +723,7 @@
             font-size: 1.1rem; 
         }
 
+        /* ========== 下方導覽列 - 寬度 50px，高度與其他頁面一致 ========== */
         .bottom-nav {
             background: linear-gradient(145deg, #2a2f3f, #1a1f2f);
             border-top: 2px solid #4a80c0;
@@ -734,7 +735,7 @@
                 inset 0 -3px 8px rgba(0, 0, 0, 0.6);
             width: 100%;
             max-width: 448px;
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1.5rem;
             margin-top: 1rem;
             z-index: 50;
             display: flex;
@@ -761,10 +762,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             color: #b0c4de;
             transition: all 0.1s ease;
             border-radius: 20px;
-            padding: 0.5rem 0.75rem;
+            padding: 0.4rem 0.75rem;
             text-decoration: none;
             outline: none;
             font-family: 'Noto Sans TC', 'Noto Sans JP', 'Orbitron', sans-serif;
@@ -775,6 +777,12 @@
                 inset 0 -3px 5px rgba(0, 0, 0, 0.3);
             text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(74, 128, 192, 0.2);
+            cursor: pointer;
+            
+            /* 固定寬度 50px，高度自動 */
+            flex: none;
+            width: 50px;
+            min-height: 60px;
         }
 
         .nav-item:hover {
@@ -811,7 +819,7 @@
         }
 
         .nav-item i {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             margin-bottom: 2px;
             filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.5));
         }
@@ -819,7 +827,25 @@
         .nav-item span {
             font-weight: 700;
             letter-spacing: 0.5px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
+        }
+
+        /* 手機小螢幕時稍微縮減 */
+        @media (max-width: 420px) {
+            .bottom-nav {
+                padding: 0.5rem 1rem;
+            }
+            .nav-item {
+                padding: 0.35rem 0;
+                width: 45px;
+                min-height: 55px;
+            }
+            .nav-item i {
+                font-size: 1.1rem;
+            }
+            .nav-item span {
+                font-size: 0.6rem;
+            }
         }
 
         .sub-confirm-modal {
@@ -1265,7 +1291,7 @@
         <div class="flex justify-between items-center w-full">
             <a href="index.html" class="nav-item"><i class="fa fa-home"></i><span class="text-xs mt-1">首頁</span></a>
             <a href="machines.html" class="nav-item current-page"><i class="fa fa-gamepad"></i><span class="text-xs mt-1">機台</span></a>
-            <a href="news.html" class="nav-item"><i class="fa fa-bell"></i><span class="text-xs mt-1">公告</span><span class="nav-badge" id="newsBadge"></span></a>
+            <a href="news.html" class="nav-item"><i class="fa fa-bell"></i><span class="text-xs mt-1">公告</span></a>
             <a href="about.html" class="nav-item"><i class="fa fa-user"></i><span class="text-xs mt-1">我的</span></a>
         </div>
     </nav>
@@ -1396,7 +1422,7 @@
 
     subModal.addEventListener('click', (e) => { if (e.target === subModal) subModal.classList.remove('show'); });
 
-    // ==================== 通用提示彈窗 (支援觸控滑動 + 滑鼠拖曳關閉) ====================
+    // ==================== 通用提示彈窗 ====================
     window.showAlertMessage = function(title, message, isUrgent = false) {
         const container = document.getElementById('alertContainer');
         const alertDiv = document.createElement('div');
@@ -1415,7 +1441,6 @@
         let startY = 0, currentY = 0, isDragging = false;
         let startTime = 0;
         
-        // 觸控事件 (手機)
         const touchStart = (e) => {
             startY = e.touches[0].clientY;
             startTime = Date.now();
@@ -1455,7 +1480,6 @@
             }
         };
         
-        // 滑鼠事件 (電腦)
         const mouseDown = (e) => {
             startY = e.clientY;
             startTime = Date.now();
@@ -1497,19 +1521,16 @@
             document.removeEventListener('mouseup', mouseUp);
         };
         
-        // 綁定觸控事件 (手機)
         alertDiv.addEventListener('touchstart', touchStart, { passive: false });
         alertDiv.addEventListener('touchmove', touchMove, { passive: false });
         alertDiv.addEventListener('touchend', touchEnd);
         
-        // 綁定滑鼠事件 (電腦)
         alertDiv.addEventListener('mousedown', (e) => {
             mouseDown(e);
             document.addEventListener('mousemove', mouseMove);
             document.addEventListener('mouseup', mouseUp);
         });
         
-        // 8秒後自動消失
         setTimeout(() => {
             if (alertDiv.parentNode) {
                 alertDiv.style.transform = `translateX(-50%) translateY(-200px)`;
@@ -1624,7 +1645,7 @@
         });
     });
 
-    // ==================== 保留倒數警示窗 (支援觸控滑動 + 滑鼠拖曳關閉) ====================
+    // 保留倒數警示窗
     setInterval(()=>{
         const now=Date.now();
         reserveMachines.forEach(m=>{
@@ -1650,7 +1671,6 @@
                 let startY=0,curY=0,isDragging=false;
                 let startTime=0;
                 
-                // 觸控事件
                 const ts=e=>{ 
                     startY=e.touches[0].clientY; 
                     startTime=Date.now();
@@ -1690,7 +1710,6 @@
                     }
                 };
                 
-                // 滑鼠事件
                 const mouseDown = (e) => {
                     startY = e.clientY;
                     startTime = Date.now();
@@ -1732,12 +1751,10 @@
                     document.removeEventListener('mouseup', mouseUp);
                 };
                 
-                // 綁定觸控事件
                 alert.addEventListener('touchstart', ts, { passive: false });
                 alert.addEventListener('touchmove', tm, { passive: false });
                 alert.addEventListener('touchend', te);
                 
-                // 綁定滑鼠事件
                 alert.addEventListener('mousedown', (e) => {
                     mouseDown(e);
                     document.addEventListener('mousemove', mouseMove);
@@ -1758,7 +1775,6 @@
     },10000);
 
     renderFavoriteList(); renderReserveList(); renderPlayedList();
-    document.getElementById('newsBadge').style.display = 'block';
 })();
 </script>
 </body>
